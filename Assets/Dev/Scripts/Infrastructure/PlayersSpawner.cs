@@ -19,7 +19,7 @@ namespace Dev.Infrastructure
 
         private Dictionary<PlayerRef, Player> _players = new Dictionary<PlayerRef, Player>();
 
-        public Subject<Player> Spawned { get; } = new Subject<Player>();
+        public Subject<PlayerSpawnEventContext> Spawned { get; } = new Subject<PlayerSpawnEventContext>();
 
         public Player SpawnPlayer(PlayerRef playerRef)
         {
@@ -52,7 +52,11 @@ namespace Dev.Infrastructure
         [Rpc]
         private void RPC_OnPlayerSpawnedInvoke(Player player)
         {
-            Spawned.OnNext(player);
+            var spawnEventContext = new PlayerSpawnEventContext();
+            spawnEventContext.PlayerRef = player.Object.InputAuthority;
+            spawnEventContext.Transform = player.transform;
+
+            Spawned.OnNext(spawnEventContext);
         }
         
         public void PlayerLeft(PlayerRef playerRef)
@@ -83,5 +87,12 @@ namespace Dev.Infrastructure
             return false;
         }
         
+    }
+
+
+    public struct PlayerSpawnEventContext
+    {
+        public PlayerRef PlayerRef;
+        public Transform Transform;
     }
 }
