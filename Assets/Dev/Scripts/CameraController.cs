@@ -7,9 +7,9 @@ namespace Dev
     {
         [SerializeField] private float _followSpeed = 1.5f;
         [SerializeField] private Camera _camera;
-        
+
         private Transform _target;
-        
+
         public void SetupTarget(Transform target)
         {
             _target = target;
@@ -20,20 +20,19 @@ namespace Dev
             if (HasInputAuthority)
             {
                 FindObjectOfType<CameraService>().RPC_SetMainCameraState(false);
-                
+
                 SetupTarget(Runner.GetPlayerObject(Runner.LocalPlayer).transform);
             }
             else
             {
                 gameObject.SetActive(false);
             }
-
         }
 
         public override void Render()
         {
             if (HasInputAuthority == false) return;
-            
+
             FollowTarget();
         }
 

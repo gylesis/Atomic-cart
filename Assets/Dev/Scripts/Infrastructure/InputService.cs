@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dev.Infrastructure;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Infrastructure
 {
     public class InputService : NetworkContext, INetworkRunnerCallbacks
     {

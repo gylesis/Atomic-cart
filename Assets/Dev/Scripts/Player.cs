@@ -1,4 +1,5 @@
 ﻿using Dev.Infrastructure;
+using Dev.Weapons;
 using Fusion;
 using UnityEngine;
 
@@ -8,8 +9,11 @@ namespace Dev
     {
         [SerializeField] private float _speed;
         [SerializeField] private NetworkRigidbody2D _networkRigidbody2D;
+        [SerializeField] private WeaponController _weaponController;
 
-        private Rigidbody2D Rigidbody => _networkRigidbody2D.Rigidbody;
+        private Vector2 ShootDirection => transform.up;
+        
+        public Rigidbody2D Rigidbody => _networkRigidbody2D.Rigidbody;
 
         public override void FixedUpdateNetwork()
         {
@@ -45,7 +49,7 @@ namespace Dev
 
         private void Shoot()
         {
-           // Debug.Log($"Shoot");
+            _weaponController.TryToFire(ShootDirection);
         }
         
     }
