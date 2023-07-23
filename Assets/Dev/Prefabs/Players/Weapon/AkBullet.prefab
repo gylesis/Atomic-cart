@@ -124,6 +124,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
   _networkRigidbody2D: {fileID: 2255149966835474387}
+  _overlapRadius: 1
+  _hitMask:
+    serializedVersion: 2
+    m_Bits: 200
 --- !u!1 &5931614683876948982
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Dev.Infrastructure;
 using Fusion;
+using UniRx;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Dev.Weapons.Guns
 {
@@ -9,6 +12,12 @@ namespace Dev.Weapons.Guns
     public abstract class Projectile : NetworkContext
     {
         [SerializeField] private NetworkRigidbody2D _networkRigidbody2D;
+        [SerializeField] private float _overlapRadius = 1f;
+        [SerializeField] private LayerMask _hitMask;
+
+        [Networked] public TickTimer DestroyTimer { get; set; }
+
+        public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
 
         private Vector3 _moveDirection;
         private float _force;
@@ -26,6 +35,44 @@ namespace Dev.Weapons.Guns
             if (HasStateAuthority == false) return;
 
             _networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
+
+            var overlapSphere = OverlapSphere(transform.position, _overlapRadius, _hitMask, out var hits);
+
+            if (overlapSphere)
+            {
+                bool needToDestroy = false;
+
+                foreach (LagCompensatedHit hit in hits)
+                {
+                    var isPlayer = hit.GameObject.TryGetComponent<Player>(out var player);
+
+                    if (isPlayer)
+                    {
+                        PlayerRef owner = Object.InputAuthority;
+                        PlayerRef target = player.Object.InputAuthority;
+
+                        if (target == owner) continue;
+
+                        needToDestroy = true;
+
+                        ApplyHitToPlayer(player);
+                    }
+                    else
+                    {
+                        needToDestroy = true;
+                    }
+                }
+
+                if (needToDestroy)
+                {
+                    ToDestroy.OnNext(this);
+                }
+            }
+        }
+
+        private void ApplyHitToPlayer(Player player)
+        {
+            ApplyForceToPlayer(player, 1);
         }
 
         protected bool OverlapSphere(Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
@@ -73,6 +120,12 @@ namespace Dev.Weapons.Guns
             Debug.DrawRay(player.transform.position, forceDirection * 2, Color.blue, 5f);
 
             player.Rigidbody.AddForce(forceDirection * forcePower, ForceMode2D.Impulse);
+        }
+
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawWireSphere(transform.position, _overlapRadius);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Fusion;
+using UnityEngine;
 
 namespace Dev.Weapons.Guns
 {
@@ -15,6 +16,9 @@ namespace Dev.Weapons.Guns
 
                     OnProjectileBeforeSpawned(projectile);
                 });
+
         }
+
+       
     }
 }

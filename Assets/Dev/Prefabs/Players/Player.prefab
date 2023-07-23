@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5544195138406101501}
   - component: {fileID: 5544195138406101502}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 3459795353489080509}
   - component: {fileID: 86314474022417395}
   - component: {fileID: 5999655236562569822}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +296,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3706869247759106061}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Weapons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -330,6 +330,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: AkWeapon
       objectReference: {fileID: 0}
+    - target: {fileID: 293801350586480439, guid: 9b92def86228e264995e6ff644efde54, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 487771405634186604, guid: 9b92def86228e264995e6ff644efde54, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1132521736288956241, guid: 9b92def86228e264995e6ff644efde54, type: 3}
       propertyPath: Flags
       value: 3073
@@ -341,6 +349,10 @@ PrefabInstance:
     - target: {fileID: 1132521736288956241, guid: 9b92def86228e264995e6ff644efde54, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1993258505494220801, guid: 9b92def86228e264995e6ff644efde54, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8557491148401728974, guid: 9b92def86228e264995e6ff644efde54, type: 3}
       propertyPath: m_RootOrder
@@ -385,6 +397,10 @@ PrefabInstance:
     - target: {fileID: 8557491148401728974, guid: 9b92def86228e264995e6ff644efde54, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8815676149450278923, guid: 9b92def86228e264995e6ff644efde54, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b92def86228e264995e6ff644efde54, type: 3}

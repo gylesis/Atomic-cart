@@ -1,64 +1,64 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Dev.Effects;
 using Fusion;
+using UniRx;
 using UnityEngine;
 
 namespace Dev.Weapons.Guns
 {
+    [OrderAfter(typeof(Projectile))]
     public abstract class ProjectileWeapon : Weapon
     {
         [SerializeField] protected float _projectileSpeed = 15f;
         [SerializeField] protected float _projectileAliveTime = 1;
-        
+
         [SerializeField] protected Projectile _projectilePrefab;
 
-        protected Dictionary<Projectile, TickTimer> _aliveBullets = new Dictionary<Projectile, TickTimer>();
-
-
-        private List<Projectile> _toRemove = new List<Projectile>(10);
+        protected List<Projectile> _aliveProjectiles = new List<Projectile>();
 
         public override void FixedUpdateNetwork()
         {
-            base.FixedUpdateNetwork();
-            
             if (Object.HasStateAuthority == false) return;
 
-            
-            foreach (var pair in _aliveBullets)
+            for (var index = _aliveProjectiles.Count - 1; index >= 0; index--)
             {
-                TickTimer destroyTimer = pair.Value;
-                Projectile projectile = pair.Key;
+                Projectile projectile = _aliveProjectiles[index];
+                
+                TickTimer destroyTimer = projectile.DestroyTimer;
 
-                var expired = destroyTimer.Expired(Runner);
+                var expired = destroyTimer.ExpiredOrNotRunning(Runner);
 
                 if (expired)
                 {
                     OnProjectileExpired(projectile);
-
-                    _toRemove.Add(projectile);
                 }
             }
-            
-            for (var index = _toRemove.Count - 1; index     >= 0; index    --)
-            {
-                Projectile projectile = _toRemove[index];
-                
-                Runner.Despawn(projectile.Object);
 
-                _aliveBullets.Remove(projectile);
-                _toRemove.Remove(projectile);
-            }
+        }
+
+        protected virtual void OnProjectileBeforeSpawned(Projectile projectile)
+        {
+            projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
+            projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, _projectileAliveTime);
+            
+            _aliveProjectiles.Add(projectile);
+        }
+
+        private void OnProjectileDestroy(Projectile projectile)
+        {
+            DestroyProjectile(projectile);
         }
 
         protected virtual void OnProjectileExpired(Projectile projectile)
         {
-            FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);
+            DestroyProjectile(projectile);
         }
-        
-        protected virtual void OnProjectileBeforeSpawned(Projectile projectile)
+
+        private void DestroyProjectile(Projectile projectile)
         {
-            _aliveBullets.Add(projectile, TickTimer.CreateFromSeconds(Runner, _projectileAliveTime));
+            _aliveProjectiles.Remove(projectile);
+            FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);
+            Runner.Despawn(projectile.Object);
         }
     }
 }
