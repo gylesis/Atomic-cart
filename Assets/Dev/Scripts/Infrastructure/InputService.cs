@@ -28,19 +28,27 @@ namespace Dev
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
-            var x = Input.GetAxisRaw("Horizontal");
-            var y = Input.GetAxisRaw("Vertical");
+            Vector2 joystickDirection = _movementJoystick.Direction;
+
+            var moveDirection = joystickDirection;
             
-            //var moveDirection = new Vector2(x, y);
-            var moveDirection = _movementJoystick.Direction;
-            moveDirection.Normalize();
-            
-            Vector2 lookDirection = _aimJoystick.Direction;
-            lookDirection.Normalize();
-            
+            if (joystickDirection == Vector2.zero)
+            {
+                var x = Input.GetAxis("Horizontal");
+                var y = Input.GetAxis("Vertical");
+
+                var keyBoardInput = new Vector2(x, y);
+                moveDirection = keyBoardInput;
+                
+                moveDirection.Normalize();
+            }
+
+            Vector2 aimJoystickDirection = _aimJoystick.Direction;
+
             PlayerInput playerInput = new PlayerInput();
+            
             playerInput.MoveDirection = moveDirection;
-            playerInput.LookDirection = lookDirection;
+            playerInput.LookDirection = aimJoystickDirection;
 
             input.Set(playerInput);
         }

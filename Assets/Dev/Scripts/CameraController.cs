@@ -1,5 +1,4 @@
-﻿using System;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using UnityEngine;
 
 namespace Dev
