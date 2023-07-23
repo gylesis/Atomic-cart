@@ -14,12 +14,18 @@ namespace Dev.Infrastructure
         [SerializeField] private InputService _inputServicePrefab;
         [SerializeField] private NetworkObject _playerPrefab;
 
+        public Joystick MovementJoystick => _movementJoystick;
+        public Joystick AimJoystick => _aimJoystick;
+
         [Networked]
         private int PlayersCount { get; set; }
 
         private Dictionary<PlayerRef, Player> _players = new Dictionary<PlayerRef, Player>();
 
         public Subject<PlayerSpawnEventContext> Spawned { get; } = new Subject<PlayerSpawnEventContext>();
+
+        [Networked]
+        private NetworkDictionary<PlayerRef, InputService> _inputs { get; }
 
         public Player SpawnPlayer(PlayerRef playerRef)
         {
@@ -30,10 +36,8 @@ namespace Dev.Infrastructure
 
             InputService inputService = Runner.Spawn(_inputServicePrefab, Vector3.zero, Quaternion.identity, playerRef);
 
-            inputService.Init(_movementJoystick, _aimJoystick);
-            
-            Runner.AddCallbacks(inputService);
-            
+            _inputs.Add(playerRef, inputService);
+
             Runner.SetPlayerObject(playerRef, playerNetObj);
 
             var playerName = $"Player №{playerNetObj.InputAuthority.PlayerId}";
@@ -48,14 +52,16 @@ namespace Dev.Infrastructure
 
             return player;
         }
-
-        [Rpc]
+        
+        
+        [Rpc(RpcSources.All, RpcTargets.All)]
         private void RPC_OnPlayerSpawnedInvoke(Player player)
         {
             var spawnEventContext = new PlayerSpawnEventContext();
             spawnEventContext.PlayerRef = player.Object.InputAuthority;
             spawnEventContext.Transform = player.transform;
 
+            Debug.Log($"Player spawned");
             Spawned.OnNext(spawnEventContext);
         }
         

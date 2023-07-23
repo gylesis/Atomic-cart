@@ -13,6 +13,7 @@ namespace Dev.Infrastructure
         {
             _networkRunner = GetComponent<NetworkRunner>();
             _networkRunner.AddCallbacks(FindObjectOfType<EntryPoint>());
+            _networkRunner.ProvideInput = true;
 
             var startGameArgs = new StartGameArgs();
 

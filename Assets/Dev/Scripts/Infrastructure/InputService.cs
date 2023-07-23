@@ -12,10 +12,14 @@ namespace Dev
         private Joystick _aimJoystick;
         private Joystick _movementJoystick;
 
-        public void Init(Joystick movementJoystick, Joystick aimJoystick)
+        public override void Spawned()
         {
-            _movementJoystick = movementJoystick;
-            _aimJoystick = aimJoystick;
+            Runner.AddCallbacks(this);
+
+            var playersSpawner = FindObjectOfType<PlayersSpawner>();
+
+            _aimJoystick = playersSpawner.AimJoystick;
+            _movementJoystick = playersSpawner.MovementJoystick;
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }

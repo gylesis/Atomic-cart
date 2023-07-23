@@ -14,23 +14,11 @@ namespace Dev
 
         private void Awake()
         {
-            Debug.Log($"Awake");
-
             _playersSpawner = FindObjectOfType<PlayersSpawner>();
+            _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
 
-        public override void Spawned()
-        {
-            Debug.Log($"Spawned");
-
-            if (Runner.IsServer)
-            {
-                _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
-            }
-        }
-
-        [Rpc]
-        private void RPC_SetCameraState([RpcTarget] PlayerRef target, bool isOn)
+        public void RPC_SetMainCameraState(bool isOn)
         {
             _mainCamera.gameObject.SetActive(isOn);
         }
@@ -40,13 +28,15 @@ namespace Dev
             Transform playerTransform = spawnEventContext.Transform;
             PlayerRef playerRef = spawnEventContext.PlayerRef;
 
-            RPC_SetCameraState(playerRef, false);
+            if (Runner.IsServer)
+            {
+                CameraController cameraController = Runner.Spawn(_cameraControllerPrefab, playerTransform.position,
+                    Quaternion.identity,
+                    playerRef);
 
-            CameraController cameraController = Runner.Spawn(_cameraControllerPrefab, playerTransform.position,
-                Quaternion.identity,
-                playerRef);
-
-            cameraController.SetupTarget(playerTransform);
+               // RPC_SpawnCamera(playerRef);
+            }
         }
+
     }
 }
