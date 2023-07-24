@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  _speed: 300
+  _speed: 500
   _networkRigidbody2D: {fileID: 5544195138823906171}
   _weaponController: {fileID: 5999655236562569822}
 --- !u!50 &5544195138823906170
@@ -233,7 +233,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1.61
+  m_Radius: 1.1
 --- !u!114 &3459795353489080509
 MonoBehaviour:
   m_ObjectHideFlags: 0

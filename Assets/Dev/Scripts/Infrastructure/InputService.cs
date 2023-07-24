@@ -39,7 +39,7 @@ namespace Dev.Infrastructure
                 var keyBoardInput = new Vector2(x, y);
                 moveDirection = keyBoardInput;
                 
-                moveDirection.Normalize();
+                //moveDirection.Normalize();
             }
 
             Vector2 aimJoystickDirection = _aimJoystick.Direction;

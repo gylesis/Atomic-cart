@@ -9,10 +9,17 @@ namespace Dev.Infrastructure
     public class EntryPoint : NetworkContext, INetworkRunnerCallbacks
     {
         private PlayersSpawner _playersSpawner;
+        private PlayersDataService _playersDataService;
+        private PlayersHealthService _playersHealthService;
 
         private void Awake()
         {
             _playersSpawner = FindObjectOfType<PlayersSpawner>();
+            _playersHealthService = FindObjectOfType<PlayersHealthService>();
+            _playersDataService = FindObjectOfType<PlayersDataService>();
+
+            _playersHealthService.Init(_playersSpawner);
+            _playersDataService.Init(_playersSpawner);
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)

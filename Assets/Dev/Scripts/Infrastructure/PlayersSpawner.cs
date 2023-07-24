@@ -3,6 +3,7 @@ using Fusion;
 using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Dev.Infrastructure
 {
@@ -52,7 +53,17 @@ namespace Dev.Infrastructure
 
             return player;
         }
-        
+
+        public void RespawnPlayer(PlayerRef playerRef)
+        {
+            var spawnPoints = LevelService.Instance.CurrentLevel.SpawnPoints;
+
+            SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+            Player player = _players[playerRef];
+
+            player.transform.position = spawnPoint.transform.position;
+        }
         
         [Rpc(RpcSources.All, RpcTargets.All)]
         private void RPC_OnPlayerSpawnedInvoke(Player player)

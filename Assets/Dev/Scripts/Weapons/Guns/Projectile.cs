@@ -21,9 +21,11 @@ namespace Dev.Weapons.Guns
 
         private Vector3 _moveDirection;
         private float _force;
+        private int _damage;
 
-        public void Init(Vector3 moveDirection, float force)
+        public void Init(Vector3 moveDirection, float force, int damage)
         {
+            _damage = damage;
             _force = force;
             _moveDirection = moveDirection;
 
@@ -72,7 +74,7 @@ namespace Dev.Weapons.Guns
 
         private void ApplyHitToPlayer(Player player)
         {
-            ApplyForceToPlayer(player, 1);
+            PlayersHealthService.Instance.ApplyDamage(player.Object.InputAuthority, _damage);
         }
 
         protected bool OverlapSphere(Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)

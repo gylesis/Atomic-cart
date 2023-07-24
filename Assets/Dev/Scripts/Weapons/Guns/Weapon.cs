@@ -10,7 +10,7 @@ namespace Dev.Weapons.Guns
         [SerializeField] protected Transform _view;
 
         [SerializeField] protected float _cooldown = 1f;
-        [SerializeField] protected float _damage = 10;
+        [SerializeField] protected int _damage = 10;
         [SerializeField] protected float _shootDelay = 0;
         [Networked] public TickTimer CooldownTimer { get; set; }
         [Networked] public TickTimer ShootDelayTimer { get; set; }
@@ -19,7 +19,7 @@ namespace Dev.Weapons.Guns
         public virtual bool AllowToShoot => CooldownTimer.ExpiredOrNotRunning(Runner);
 
         public float Cooldown => _cooldown;
-        public float Damage => _damage;
+        public int Damage => _damage;
         public float ShootDelay => _shootDelay;
 
         public Vector2 ShootPos => _shootPoint.position;

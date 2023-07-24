@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
   _networkRigidbody2D: {fileID: 2255149966835474387}
-  _overlapRadius: 1
+  _overlapRadius: 0.5
   _hitMask:
     serializedVersion: 2
     m_Bits: 200

@@ -1,5 +1,4 @@
-﻿using Fusion;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Dev.Weapons.Guns
 {
@@ -12,13 +11,12 @@ namespace Dev.Weapons.Guns
                 {
                     Projectile projectile = o.GetComponent<Projectile>();
 
-                    projectile.Init(direction, _projectileSpeed);
+                    projectile.Init(direction, _projectileSpeed, _damage);
 
                     OnProjectileBeforeSpawned(projectile);
                 });
 
         }
-
        
     }
 }
