@@ -11,6 +11,8 @@ namespace Dev
         [SerializeField] private NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] private WeaponController _weaponController;
 
+        [Range(0f,1f)] [SerializeField] private float _shootThreshold = 0.75f;
+            
         [SerializeField] private HitboxRoot _hitboxRoot;
 
         public HitboxRoot HitboxRoot => _hitboxRoot;
@@ -42,7 +44,7 @@ namespace Dev
             {
                 var magnitude = lookDirection.sqrMagnitude;
 
-                if (magnitude >= 0.75f)
+                if (magnitude >= _shootThreshold)
                 {
                     Shoot();
                 }

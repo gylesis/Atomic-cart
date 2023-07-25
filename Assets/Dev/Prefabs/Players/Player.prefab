@@ -169,6 +169,7 @@ MonoBehaviour:
   _speed: 500
   _networkRigidbody2D: {fileID: 5544195138823906171}
   _weaponController: {fileID: 5999655236562569822}
+  _shootThreshold: 0.6
   _hitboxRoot: {fileID: 3459795353489080509}
 --- !u!50 &5544195138823906170
 Rigidbody2D:
