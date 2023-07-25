@@ -30,7 +30,13 @@ namespace Dev.Infrastructure
             }
         }
 
-        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+        {
+            if (runner.IsServer)
+            {
+                _playersSpawner.DespawnPlayer(player);
+            }
+        }
 
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
 

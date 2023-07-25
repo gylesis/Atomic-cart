@@ -110,6 +110,7 @@ namespace Dev.Weapons
             //_weaponUiView.ShootReloadView(time, maxCooldown);
         }
 
+        
         [Rpc]
         public void RPC_ChooseWeapon(int index)
         {

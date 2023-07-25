@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -67,7 +68,7 @@ namespace Dev.Infrastructure
             transform.DOScale(targetValue, duration);
         }
 
-        [Rpc]
+        [Rpc]   
         public void RPC_SetParent(NetworkObject networkObject, NetworkObject newParent)
         {
             if (newParent == null)

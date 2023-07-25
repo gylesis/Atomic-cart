@@ -11,6 +11,10 @@ namespace Dev
         [SerializeField] private NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] private WeaponController _weaponController;
 
+        [SerializeField] private HitboxRoot _hitboxRoot;
+
+        public HitboxRoot HitboxRoot => _hitboxRoot;
+
         private Vector2 ShootDirection => transform.up;
         
         public Rigidbody2D Rigidbody => _networkRigidbody2D.Rigidbody;

@@ -69,6 +69,7 @@ namespace Dev
             if(HasStateAuthority == false) return;
             
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
 
         private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
@@ -79,6 +80,11 @@ namespace Dev
             PlayersHealth.Add(playerRef, startHealth);
         }
 
+        private void OnPlayerDespawned(PlayerRef playerRef)
+        {
+            PlayersHealth.Remove(playerRef);
+        }
+        
         public void ApplyDamage(PlayerRef playerRef, int damage)
         {
             if (HasStateAuthority == false) return;
@@ -112,18 +118,22 @@ namespace Dev
 
             Player player = playerObject.GetComponent<Player>();
             player.RPC_DoScale(0.5f, 0f);
+            
+            player.HitboxRoot.HitboxRootActive = false;
 
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe((l =>
             {
                 _playersSpawner.RespawnPlayer(playerRef);
                 
                 RestorePlayerHealth(playerRef, 100);
-                
+
                 player.RPC_DoScale(0, 1);
+                
+                player.HitboxRoot.HitboxRootActive = true;
             }));
         }
         
-        private void RestorePlayerHealth(PlayerRef playerRef, int restoreHealth)
+        public void RestorePlayerHealth(PlayerRef playerRef, int restoreHealth)
         {
             PlayersHealth.Set(playerRef, restoreHealth);
         }

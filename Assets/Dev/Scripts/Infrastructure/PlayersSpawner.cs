@@ -24,6 +24,7 @@ namespace Dev.Infrastructure
         private Dictionary<PlayerRef, Player> _players = new Dictionary<PlayerRef, Player>();
 
         public Subject<PlayerSpawnEventContext> Spawned { get; } = new Subject<PlayerSpawnEventContext>();
+        public Subject<PlayerRef> DeSpawned { get; } = new Subject<PlayerRef>();
 
         [Networked]
         private NetworkDictionary<PlayerRef, InputService> _inputs { get; }
@@ -54,6 +55,11 @@ namespace Dev.Infrastructure
             return player;
         }
 
+        public void DespawnPlayer(PlayerRef playerRef)
+        {
+            PlayerLeft(playerRef);
+        }
+
         public void RespawnPlayer(PlayerRef playerRef)
         {
             var spawnPoints = LevelService.Instance.CurrentLevel.SpawnPoints;
@@ -78,6 +84,8 @@ namespace Dev.Infrastructure
         
         public void PlayerLeft(PlayerRef playerRef)
         {
+            DeSpawned.OnNext(playerRef);
+            
             Player player = _players[playerRef];
             
             Runner.Despawn(player.Object);
