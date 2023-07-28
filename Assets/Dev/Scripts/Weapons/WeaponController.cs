@@ -111,7 +111,6 @@ namespace Dev.Weapons
         }
 
         
-        [Rpc]
         public void RPC_ChooseWeapon(int index)
         {
             if (_weapons.Count == 0)
