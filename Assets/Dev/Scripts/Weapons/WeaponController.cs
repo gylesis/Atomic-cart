@@ -2,7 +2,6 @@
 using System.Linq;
 using Dev.Infrastructure;
 using Dev.Weapons.Guns;
-using Dev.Weapons.View;
 using Fusion;
 using JetBrains.Annotations;
 using UniRx;
@@ -12,7 +11,7 @@ namespace Dev.Weapons
 {
     public class WeaponController : NetworkContext
     {
-        [SerializeField] private List<Weapon> _weapons;
+        [SerializeField] private List<Weapon> _weapons; // TODO need to sync when we want to spawn weapons in runtime
 
         public int WeaponsAmount => _weapons.Count;
 
@@ -36,6 +35,8 @@ namespace Dev.Weapons
             RPC_SelectViewWeapon();
         }
 
+        public bool HasAnyWeapon => _weapons.Count > 0 && CurrentWeapon != null;
+        
         public bool HasWeapon(string name)
         {
             Weapon weapon = _weapons.FirstOrDefault(x => x.WeaponData.Name == name);
@@ -63,7 +64,38 @@ namespace Dev.Weapons
                 }
             }
         }
+        
+        public void TryToFire()
+        {
+            AllowToShoot = CurrentWeapon.AllowToShoot;
 
+            if (AllowToShoot)
+            {
+                var shootDelay = CurrentWeapon.ShootDelay;
+
+                if (shootDelay == 0)
+                {
+                    Shoot();
+                }
+            }
+        }
+        
+
+        public void AimWeaponTowards(Vector2 direction)
+        {
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            if (angle < 0)
+            {
+                angle += 360;
+            }
+
+            Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+
+            CurrentWeapon.transform.up = direction;
+            // CurrentWeapon.transform.rotation = targetRotation;
+        }
+        
         private void Shoot(Vector2 direction, float power = 1)
         {
             var cooldown = CurrentWeapon.Cooldown;
@@ -76,6 +108,22 @@ namespace Dev.Weapons
 
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
+        
+        private void Shoot()
+        {
+            var cooldown = CurrentWeapon.Cooldown;
+
+            //Debug.Log($"Power {power}");
+
+            CurrentWeapon.Shoot(CurrentWeapon.ShootDirection, 1);
+            CurrentWeapon.CooldownTimer = TickTimer.CreateFromSeconds(Runner, cooldown);
+            CurrentWeapon.ShootDelayTimer = TickTimer.None;
+
+            //_weaponUiView.ShootReloadView(cooldown, cooldown);
+        }
+        
+        
+        
 
         public override void FixedUpdateNetwork()
         {

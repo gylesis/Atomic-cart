@@ -24,6 +24,8 @@ namespace Dev.Weapons.Guns
 
         public Vector2 ShootPos => _shootPoint.position;
         public Transform ShootPoint => _shootPoint;
+
+        public Vector2 ShootDirection => transform.up;
         public WeaponData WeaponData { get; private set; }
 
         public void Init(WeaponData weaponData)

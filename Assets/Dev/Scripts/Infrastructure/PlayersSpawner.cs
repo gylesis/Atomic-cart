@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Fusion;
 using UniRx;
 using Unity.Mathematics;
@@ -30,6 +31,12 @@ namespace Dev.Infrastructure
         private Dictionary<PlayerRef, List<NetworkObject>> _playerServices =
             new Dictionary<PlayerRef, List<NetworkObject>>();
 
+        private TeamsService _teamsService;
+
+        private void Awake()
+        {
+            _teamsService = FindObjectOfType<TeamsService>(); // TODO TEMP, need DI
+        }
 
         public Player SpawnPlayer(PlayerRef playerRef)
         {
@@ -55,7 +62,26 @@ namespace Dev.Infrastructure
 
             _players.Add(playerRef, player);
 
+            AssignTeam(playerRef);
+
             return player;
+        }
+
+        private void AssignTeam(PlayerRef playerRef)
+        {
+            TeamSide teamSide = TeamSide.Red;
+
+            Color color = Color.red;
+            
+            if (_players.Count % 2 == 0)
+            {
+                teamSide = TeamSide.Blue;
+                color = Color.blue;
+            }
+
+            _teamsService.RPC_AssignForTeam(playerRef, teamSide);
+            
+            _players[playerRef].PlayerView.RPC_SetTeamColor(color);
         }
 
         private void SetCamera(PlayerRef playerRef, Player player)
