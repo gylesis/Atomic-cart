@@ -1,32 +1,58 @@
-﻿using Fusion;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Fusion;
 
 namespace Dev.Infrastructure
 {
     public class TeamsService : NetworkContext
     {
-        private Team _blueTeam;
-        private Team _redTeam;
+        private List<Team> _teams = new List<Team>();
 
+       // public Team RedTeam => _teams.First(x => x.TeamSide == TeamSide.Red);
+       // public Team BlueTeam => _teams.First(x => x.TeamSide == TeamSide.Blue);
+        
         public override void Spawned()
         {
             if(HasStateAuthority == false) return;
 
-            _blueTeam = new Team(TeamSide.Blue);
-            _redTeam = new Team(TeamSide.Red);
+            var blueTeam = new Team(TeamSide.Blue);
+            var redTeam = new Team(TeamSide.Red);
+            
+            _teams.Add(blueTeam);
+            _teams.Add(redTeam);
         }
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_AssignForTeam(PlayerRef playerRef, TeamSide teamSide)
+        private Team GetTeamByMember(PlayerRef playerRef)
         {
-            switch (teamSide)
+            foreach (Team team in _teams)
             {
-                case TeamSide.Blue:
-                    _blueTeam.AddMember(playerRef);
-                    break;
-                case TeamSide.Red:
-                    _redTeam.AddMember(playerRef);
-                    break;
+                var hasPlayer = team.HasPlayer(playerRef);
+
+                if (hasPlayer)
+                {
+                    return team;
+                }
             }
+
+            return null;
+        }
+
+        public TeamSide GetPlayerTeamSide(PlayerRef playerRef)
+        {
+            return GetTeamByMember(playerRef).TeamSide;
+        }
+        
+        public void AssignForTeam(PlayerRef playerRef, TeamSide teamSide)
+        {
+            Team team = _teams.First(x => x.TeamSide == teamSide);
+            team.AddMember(playerRef);
+        }
+
+        public void RemoveFromTeam(PlayerRef playerRef)
+        {
+            Team team = GetTeamByMember(playerRef);
+            
+            team.RemoveMember(playerRef);
         }
         
     }

@@ -13,6 +13,8 @@ namespace Dev.Infrastructure
             TeamSide = teamSide;
         }
 
+        public bool HasPlayer(PlayerRef playerRef) => _players.Contains(playerRef);
+        
         public void AddMember(PlayerRef playerRef)
         {
             _players.Add(playerRef);

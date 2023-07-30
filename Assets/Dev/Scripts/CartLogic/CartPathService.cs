@@ -18,6 +18,8 @@ namespace Dev
         [Space] [SerializeField] private Cart _cart;
         [SerializeField] private List<CartPathPoint> _pathPoints;
 
+        [SerializeField] private TeamSide _allowedTeamToMoveCart;
+        
         [SerializeField] private PathDrawer _pathDrawer;
 
         private CartPathPoint _currentPoint;
@@ -27,7 +29,10 @@ namespace Dev
 
         [Networked] private NetworkBool AllowToMove { get; set; }
 
+        public Subject<CartPathPoint> PointReached { get; } = new Subject<CartPathPoint>();
+
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
+        private TeamsService _teamsService;
 
         [ContextMenu(nameof(UpdatePath))]
         private void UpdatePath()
@@ -38,6 +43,8 @@ namespace Dev
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;
+
+            _teamsService = FindObjectOfType<TeamsService>();
 
             PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
             playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
@@ -144,6 +151,10 @@ namespace Dev
 
         private void OnCartZoneEntered(PlayerRef playerRef)
         {
+            TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
+            
+            if(teamSide != _allowedTeamToMoveCart) return;
+
             _playersInsideCartZone.Add(playerRef);
 
             AllowToMove = true;
@@ -174,4 +185,6 @@ namespace Dev
             }
         }
     }
+    
+    
 }

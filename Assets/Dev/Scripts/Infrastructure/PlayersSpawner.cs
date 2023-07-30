@@ -21,7 +21,7 @@ namespace Dev.Infrastructure
         public Joystick MovementJoystick => _movementJoystick;
         public Joystick AimJoystick => _aimJoystick;
 
-        [Networked] private int PlayersCount { get; set; }
+        [Networked] public int PlayersCount { get; set; }
 
         private Dictionary<PlayerRef, Player> _players = new Dictionary<PlayerRef, Player>();
 
@@ -57,10 +57,10 @@ namespace Dev.Infrastructure
             player.RPC_SetName(playerName);
 
             PlayersCount++;
+            
+            _players.Add(playerRef, player);
 
             RPC_OnPlayerSpawnedInvoke(player);
-
-            _players.Add(playerRef, player);
 
             AssignTeam(playerRef);
 
@@ -79,7 +79,7 @@ namespace Dev.Infrastructure
                 color = Color.blue;
             }
 
-            _teamsService.RPC_AssignForTeam(playerRef, teamSide);
+            _teamsService.AssignForTeam(playerRef, teamSide);
             
             _players[playerRef].PlayerView.RPC_SetTeamColor(color);
         }
@@ -117,6 +117,8 @@ namespace Dev.Infrastructure
             {
                 Runner.Despawn(networkObject);
             }
+            
+            _teamsService.RemoveFromTeam(playerRef);
 
             _playerServices.Remove(playerRef);
 
