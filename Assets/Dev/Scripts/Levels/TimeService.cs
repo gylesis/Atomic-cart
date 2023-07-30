@@ -30,8 +30,20 @@ namespace Dev
         public override void Spawned()
         {
             if(HasStateAuthority == false) return;
+            _cartPathService.PointReached.Subscribe(OnControlPoint);
+            //  _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+        }
 
-          //  _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+        [Rpc]
+        private void RPC_DebugToConcole(string message)
+        {
+            Debug.Log(message);
+        }
+
+
+        private void OnControlPoint (Unit obj)
+        {
+            RPC_DebugToConcole("Добавили времени: 30 сек");
         }
 
         [ContextMenu(nameof(AddTime))]
@@ -84,6 +96,8 @@ namespace Dev
             }
             
         }
+        
+        
         
     }
 

@@ -29,7 +29,9 @@ namespace Dev
 
         [Networked] private NetworkBool AllowToMove { get; set; }
 
-        public Subject<CartPathPoint> PointReached { get; } = new Subject<CartPathPoint>();
+        public Subject<Unit> PointReached { get; } = new Subject<Unit>();
+        
+        
 
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
         private TeamsService _teamsService;
@@ -134,6 +136,7 @@ namespace Dev
 
         private void SetNewPoints(int currentPointIndex)
         {
+
             currentPointIndex++;
             _currentPoint = _nextPoint;
 
@@ -147,6 +150,9 @@ namespace Dev
             }
 
             _currentPointIndex = currentPointIndex;
+            
+            if (_currentPoint.IsControlPoint()==true) PointReached.OnNext(Unit.Default);
+
         }
 
         private void OnCartZoneEntered(PlayerRef playerRef)

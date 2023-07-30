@@ -1822,6 +1822,10 @@ PrefabInstance:
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: -9189380203511034971
       objectReference: {fileID: 0}
+    - target: {fileID: 848631681657948465, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
+      propertyPath: isControlPoint
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 848631681657948466, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -2817,6 +2821,10 @@ PrefabInstance:
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: 5820162926210653580
       objectReference: {fileID: 0}
+    - target: {fileID: 848631681657948465, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
+      propertyPath: isControlPoint
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 848631681657948466, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -3786,6 +3794,10 @@ PrefabInstance:
     - target: {fileID: 848631681657948464, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: -6458733135115276146
+      objectReference: {fileID: 0}
+    - target: {fileID: 848631681657948465, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
+      propertyPath: isControlPoint
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 848631681657948466, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
       propertyPath: m_RootOrder
@@ -5636,7 +5648,7 @@ MonoBehaviour:
   - {fileID: 358661254}
   - {fileID: 763828654}
   - {fileID: 773066603}
-  _allowedTeamToMoveCart: 0
+  _allowedTeamToMoveCart: 1
   _pathDrawer: {fileID: 9017474259926686306, guid: ee533397332d41d47b66236c1c791831, type: 3}
 --- !u!114 &1517839248
 MonoBehaviour:
@@ -7180,6 +7192,10 @@ PrefabInstance:
     - target: {fileID: 848631681657948464, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: -964166327505198428
+      objectReference: {fileID: 0}
+    - target: {fileID: 848631681657948465, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
+      propertyPath: isControlPoint
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 848631681657948466, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
       propertyPath: m_RootOrder
