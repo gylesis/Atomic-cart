@@ -155,21 +155,31 @@ namespace Dev
 
         }
 
+        private bool IsCartBlocked()
+        {
+            bool isBlocked = false;
+            foreach (var playerRef in _playersInsideCartZone)
+            {
+                TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerRef);
+            
+                if(playerTeamSide != _allowedTeamToMoveCart) isBlocked=true;
+            }
+
+            return isBlocked == true;
+        }
+
         private void OnCartZoneEntered(PlayerRef playerRef)
         {
-            TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
-            
-            if(teamSide != _allowedTeamToMoveCart) return;
-
             _playersInsideCartZone.Add(playerRef);
-
-            AllowToMove = true;
+            
+            AllowToMove = IsCartBlocked();
         }
 
         private void OnCartZoneExit(PlayerRef playerRef)
         {
             _playersInsideCartZone.Remove(playerRef);
-
+            AllowToMove = IsCartBlocked();
+            
             if (_playersInsideCartZone.Count == 0)
             {
                 AllowToMove = false;
