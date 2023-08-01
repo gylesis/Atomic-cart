@@ -7,19 +7,20 @@ namespace Dev
 {
     public class TimeService : NetworkContext
     {
-        [SerializeField] private Vector2Int _startTime;
-
         [SerializeField] private GameTimeView _gameTimeView;
-        
+        [SerializeField] private TimeContainer _startTime;
+        [SerializeField] private TimeContainer _timeRewardForCapturingPoint;
+
         private PlayersSpawner _playersSpawner;
 
         [Networked] private TickTimer LeftTime { get; set; }
+
 
         private int _lastIntTime = 0;
         private CartPathService _cartPathService;
 
         //public Subject<TimeTickEventContext> TimeTick { get; } = new Subject<TimeTickEventContext>();
-        
+
         private void Awake()
         {
             _playersSpawner = FindObjectOfType<PlayersSpawner>();
@@ -29,76 +30,62 @@ namespace Dev
 
         public override void Spawned()
         {
-            if(HasStateAuthority == false) return;
+            if (HasStateAuthority == false) return;
+
             _cartPathService.PointReached.Subscribe(OnControlPoint);
-            //  _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
 
-        [Rpc]
-        private void RPC_DebugToConcole(string message)
+        private void OnControlPoint(Unit obj)
         {
-            Debug.Log(message);
-        }
-
-
-        private void OnControlPoint (Unit obj)
-        {
-            RPC_DebugToConcole("Добавили времени: 30 сек");
+            AddTime();
         }
 
         [ContextMenu(nameof(AddTime))]
         private void AddTime()
         {
-            LeftTime = TickTimer.CreateFromSeconds( Runner,LeftTime.RemainingTime(Runner).Value + 200);
+            LeftTime = TickTimer.CreateFromSeconds(Runner, LeftTime.RemainingTime(Runner).Value + _timeRewardForCapturingPoint.OverallSeconds);
         }
-        
+
         private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
         {
             if (_playersSpawner.PlayersCount > 0)
             {
                 if (LeftTime.ExpiredOrNotRunning(Runner))
                 {
-                    int minutesToSeconds = _startTime.x * 60;
-                    int seconds = _startTime.y;
+                    int overallSeconds = _startTime.OverallSeconds;
 
-                    int overallSeconds = minutesToSeconds + seconds;
+                    _lastIntTime = _startTime.Seconds;
 
-                    _lastIntTime = seconds;
-
-                    TickTimer.CreateFromSeconds(Runner, overallSeconds);
+                    LeftTime = TickTimer.CreateFromSeconds(Runner, overallSeconds);
                 }
             }
         }
 
         public override void FixedUpdateNetwork()
         {
-            if(HasStateAuthority == false) return;
+            if (HasStateAuthority == false) return;
 
             if (LeftTime.ExpiredOrNotRunning(Runner) == false)
             {
-                int remainingTime = (int) LeftTime.RemainingTime(Runner).Value;
+                int remainingTime = (int)LeftTime.RemainingTime(Runner).Value;
 
-                int seconds = remainingTime / 360;
+                int seconds = remainingTime % 60;
 
                 if (seconds != _lastIntTime)
                 {
                     _lastIntTime = remainingTime;
                     TimeTickEventContext tickEventContext = new TimeTickEventContext();
-                    
+
                     tickEventContext.LeftMinutes = remainingTime / 60;
                     tickEventContext.LeftSeconds = seconds;
-                    
+
                     _gameTimeView.RPC_UpdateTime(tickEventContext);
-                    
+
                     //TimeTick.OnNext(tickEventContext);
                 }
-                
             }
-            
         }
-        
-        
-        
     }
 
     public struct TimeTickEventContext
@@ -106,5 +93,4 @@ namespace Dev
         public int LeftMinutes;
         public int LeftSeconds;
     }
-    
 }

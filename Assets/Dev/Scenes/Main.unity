@@ -2825,6 +2825,10 @@ PrefabInstance:
       propertyPath: isControlPoint
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 848631681657948465, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
+      propertyPath: _isControlPoint
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 848631681657948466, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -3797,6 +3801,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 848631681657948465, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
       propertyPath: isControlPoint
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 848631681657948465, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
+      propertyPath: _isControlPoint
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 848631681657948466, guid: 329507aaf2403b54fae23deaba2da523, type: 3}
