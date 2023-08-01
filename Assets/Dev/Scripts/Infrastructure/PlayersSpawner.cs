@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusion;
 using UniRx;
 using Unity.Mathematics;
@@ -30,6 +29,8 @@ namespace Dev.Infrastructure
 
         private Dictionary<PlayerRef, List<NetworkObject>> _playerServices =
             new Dictionary<PlayerRef, List<NetworkObject>>();
+
+        public IReadOnlyCollection<Player> Players => _players.Values;
 
         private TeamsService _teamsService;
 
@@ -129,7 +130,9 @@ namespace Dev.Infrastructure
 
         public void RespawnPlayer(PlayerRef playerRef)
         {
-            var spawnPoints = LevelService.Instance.CurrentLevel.SpawnPoints;
+            TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerRef);
+
+            var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(playerTeamSide);
 
             SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 

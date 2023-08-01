@@ -53,14 +53,11 @@ namespace Dev
             _cart.CartZoneEntered.TakeUntilDestroy(this).Subscribe((OnCartZoneEntered));
             _cart.CartZoneExit.TakeUntilDestroy(this).Subscribe((OnCartZoneExit));
 
-            _currentPoint = _pathPoints[_currentPointIndex];
-            _nextPoint = _pathPoints[_currentPointIndex + 1];
+            ResetCart();
 
             var points = _pathPoints.Select(x => x.transform.position).ToArray();
 
             RPC_DrawCartPath(points);
-
-            InitCart();
         }
 
         private void OnPlayerLeft(PlayerRef playerRef)
@@ -90,6 +87,16 @@ namespace Dev
             _cart.transform.rotation = targetRotation;
         }
 
+        public void ResetCart()
+        {
+            _currentPointIndex = 0;
+            
+            _currentPoint = _pathPoints[_currentPointIndex];
+            _nextPoint = _pathPoints[_currentPointIndex + 1];
+
+            InitCart();
+        }
+        
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;

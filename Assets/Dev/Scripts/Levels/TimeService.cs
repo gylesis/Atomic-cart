@@ -21,6 +21,8 @@ namespace Dev
 
         //public Subject<TimeTickEventContext> TimeTick { get; } = new Subject<TimeTickEventContext>();
 
+        public Subject<Unit> GameTimeRanOut { get; } = new Subject<Unit>();
+
         private void Awake()
         {
             _playersSpawner = FindObjectOfType<PlayersSpawner>();
@@ -36,6 +38,15 @@ namespace Dev
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
 
+        public void ResetTimer()
+        {
+            int overallSeconds = _startTime.OverallSeconds;
+
+            _lastIntTime = _startTime.Seconds;
+
+            LeftTime = TickTimer.CreateFromSeconds(Runner, overallSeconds);
+        }
+        
         private void OnControlPoint(Unit obj)
         {
             AddTime();
@@ -53,11 +64,7 @@ namespace Dev
             {
                 if (LeftTime.ExpiredOrNotRunning(Runner))
                 {
-                    int overallSeconds = _startTime.OverallSeconds;
-
-                    _lastIntTime = _startTime.Seconds;
-
-                    LeftTime = TickTimer.CreateFromSeconds(Runner, overallSeconds);
+                    ResetTimer();
                 }
             }
         }
@@ -84,6 +91,12 @@ namespace Dev
 
                     //TimeTick.OnNext(tickEventContext);
                 }
+
+                if (remainingTime == 0)
+                {
+                    GameTimeRanOut.OnNext(Unit.Default);
+                }
+                
             }
         }
     }

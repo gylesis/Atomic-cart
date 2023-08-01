@@ -365,6 +365,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5544195138823906173}
   - component: {fileID: 5544195138823906169}
+  - component: {fileID: 5429065874298734006}
   - component: {fileID: 5544195138823906172}
   - component: {fileID: 5544195138823906170}
   - component: {fileID: 5544195138823906171}
@@ -421,11 +422,26 @@ MonoBehaviour:
   - {fileID: 898484371}
   - {fileID: 8374390159332501458}
   NetworkedBehaviours:
+  - {fileID: 5429065874298734006}
   - {fileID: 5544195138823906172}
   - {fileID: 5544195138823906171}
   - {fileID: 3459795353489080509}
   - {fileID: 5999655236562569822}
   SimulationBehaviours: []
+--- !u!114 &5429065874298734006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5544195138823906174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afe19be252cb4874bf099a34c6108f5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  _player: {fileID: 5544195138823906172}
 --- !u!114 &5544195138823906172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,6 +461,7 @@ MonoBehaviour:
   _networkRigidbody2D: {fileID: 5544195138823906171}
   _hitboxRoot: {fileID: 3459795353489080509}
   _weaponController: {fileID: 5999655236562569822}
+  _playerController: {fileID: 5429065874298734006}
 --- !u!50 &5544195138823906170
 Rigidbody2D:
   serializedVersion: 4

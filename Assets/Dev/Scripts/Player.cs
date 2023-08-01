@@ -1,4 +1,5 @@
-﻿using Dev.Infrastructure;
+﻿using System;
+using Dev.Infrastructure;
 using Dev.Weapons;
 using Fusion;
 using UnityEngine;
@@ -14,77 +15,15 @@ namespace Dev
         [SerializeField] private HitboxRoot _hitboxRoot;
         [SerializeField] private WeaponController _weaponController;
 
+        [SerializeField] private PlayerController _playerController;
+
+        public PlayerController PlayerController => _playerController;
         public PlayerView PlayerView => _playerView;
-
         public HitboxRoot HitboxRoot => _hitboxRoot;
-
         public Rigidbody2D Rigidbody => _networkRigidbody2D.Rigidbody;
+        public WeaponController WeaponController => _weaponController;
 
-        [Networked] private Vector2 LastMoveDirection { get; set; }
-        [Networked] private Vector2 LastLookDirection { get; set; }
-
-        public override void FixedUpdateNetwork()
-        {
-            var hasInput = GetInput<PlayerInput>(out var input);
-
-            if (hasInput == false) return;
-
-            Rigidbody.velocity = input.MoveDirection * _speed * Runner.DeltaTime;
-
-            HandleAnimation(input);
-
-            AimRotation(input);
-        }
-
-        private void HandleAnimation(PlayerInput input)
-        {
-            Vector2 moveDirection = input.MoveDirection;
-            
-            float sign = 1;
-
-            if (moveDirection == Vector2.zero)
-            {
-                sign = Mathf.Sign(Vector2.Dot(Vector2.left, LastMoveDirection));
-            }
-            else
-            {
-                LastMoveDirection = moveDirection;
-                sign = Mathf.Sign(Vector2.Dot(Vector2.left, moveDirection));
-            }
-
-            bool isRight = sign == 1;
-
-            _playerView.OnMove(moveDirection.magnitude, isRight);
-        }
-
-        private void AimRotation(PlayerInput input)
-        {
-            if (_weaponController.HasAnyWeapon == false) return;
-
-            Vector2 lookDirection = input.LookDirection;
-
-            if (input.LookDirection == Vector2.zero)
-            {
-                lookDirection = LastLookDirection;
-            }
-            else
-            {
-                LastLookDirection = lookDirection;
-
-                var magnitude = lookDirection.sqrMagnitude;
-
-                if (magnitude >= _shootThreshold)
-                {
-                    Shoot();
-                }
-            }
-
-            _weaponController.AimWeaponTowards(lookDirection);
-        }
-
-        private void Shoot()
-        {
-            _weaponController.TryToFire();
-        }
+        public float Speed => _speed;
+        public float ShootThreshold => _shootThreshold;
     }
 }
