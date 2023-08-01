@@ -88,7 +88,7 @@ namespace Dev
         }
     }
 
-    public struct TimeTickEventContext
+    public struct TimeTickEventContext : INetworkStruct
     {
         public int LeftMinutes;
         public int LeftSeconds;

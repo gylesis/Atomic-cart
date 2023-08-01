@@ -1,4 +1,5 @@
 ﻿using Dev.Infrastructure;
+using Fusion;
 using TMPro;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace Dev
     {
         [SerializeField] private TMP_Text _timeText;
 
+        [Rpc]
         public void RPC_UpdateTime(TimeTickEventContext tickEventContext)
         {
             _timeText.text = $"{tickEventContext.LeftMinutes} : {tickEventContext.LeftSeconds} ";
