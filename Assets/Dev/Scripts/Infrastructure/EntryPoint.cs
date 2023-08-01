@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
@@ -22,10 +23,12 @@ namespace Dev.Infrastructure
             _playersDataService.Init(_playersSpawner);
         }
 
-        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+        public async void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             if (runner.IsServer)
             {
+                await Task.Delay(100);
+                
                 _playersSpawner.SpawnPlayer(player);
             }
         }

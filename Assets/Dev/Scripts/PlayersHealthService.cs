@@ -16,6 +16,8 @@ namespace Dev
 
         public static PlayersHealthService Instance { get; private set; }
 
+        public Subject<PlayerDieEventContext> PlayerKilled { get; } = new Subject<PlayerDieEventContext>();
+
         private bool _init;
         
         private void OnGUI()
@@ -85,15 +87,15 @@ namespace Dev
             PlayersHealth.Remove(playerRef);
         }
         
-        public void ApplyDamage(PlayerRef playerRef, int damage)
+        public void ApplyDamage(PlayerRef target, PlayerRef owner, int damage)
         {
             if (HasStateAuthority == false) return;
 
-            int playerCurrentHealth = PlayersHealth[playerRef];
+            int playerCurrentHealth = PlayersHealth[target];
 
             if(playerCurrentHealth == 0) return;
             
-            var nickname = PlayersDataService.Instance.GetNickname(playerRef);
+            var nickname = PlayersDataService.Instance.GetNickname(target);
             
             Debug.Log($"Damage applied to player {nickname} with {damage} damage");
             
@@ -102,17 +104,17 @@ namespace Dev
             if (playerCurrentHealth <= 0)
             {
                 playerCurrentHealth = 0;
-                OnPlayerHealthZero(playerRef);
+                OnPlayerHealthZero(target, owner);
             }
 
-            ApplyForceToPlayer(playerRef, damage);
+            ApplyForceToPlayer(target, damage);
             
             Debug.Log($"Player {nickname} has {playerCurrentHealth} health");
 
-            PlayersHealth.Set(playerRef, playerCurrentHealth);
+            PlayersHealth.Set(target, playerCurrentHealth);
         }
 
-        private void OnPlayerHealthZero(PlayerRef playerRef)
+        private void OnPlayerHealthZero(PlayerRef playerRef, PlayerRef owner)
         {
             NetworkObject playerObject = Runner.GetPlayerObject(playerRef);
 
@@ -121,6 +123,12 @@ namespace Dev
             
             player.HitboxRoot.HitboxRootActive = false;
 
+            var playerDieEventContext = new PlayerDieEventContext();
+            playerDieEventContext.Killer = owner;
+            playerDieEventContext.Killed = playerRef;
+            
+            PlayerKilled.OnNext(playerDieEventContext);
+            
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe((l =>
             {
                 _playersSpawner.RespawnPlayer(playerRef);
@@ -152,5 +160,10 @@ namespace Dev
             player.Rigidbody.AddForce(forceDirection * forcePower, ForceMode2D.Impulse);
         }
     }
-    
+
+    public struct PlayerDieEventContext
+    {
+        public PlayerRef Killer;
+        public PlayerRef Killed;
+    }
 }
