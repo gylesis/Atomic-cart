@@ -4,12 +4,8 @@ namespace Dev
 {
     public class CartPathPoint : MonoBehaviour
     {
-        [SerializeField] private bool isControlPoint;
+        [SerializeField] private bool _isControlPoint;
 
-        public bool IsControlPoint()
-        {
-            return isControlPoint;
-        }
-
+        public bool IsControlPoint => _isControlPoint;
     }
 }

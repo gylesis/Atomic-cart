@@ -19,7 +19,7 @@ namespace Dev
         [SerializeField] private List<CartPathPoint> _pathPoints;
 
         [SerializeField] private TeamSide _allowedTeamToMoveCart;
-        
+
         [SerializeField] private PathDrawer _pathDrawer;
 
         private CartPathPoint _currentPoint;
@@ -30,8 +30,7 @@ namespace Dev
         [Networked] private NetworkBool AllowToMove { get; set; }
 
         public Subject<Unit> PointReached { get; } = new Subject<Unit>();
-        
-        
+
 
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
         private TeamsService _teamsService;
@@ -60,7 +59,7 @@ namespace Dev
             var points = _pathPoints.Select(x => x.transform.position).ToArray();
 
             RPC_DrawCartPath(points);
-            
+
             InitCart();
         }
 
@@ -75,7 +74,7 @@ namespace Dev
         private void InitCart()
         {
             _cart.transform.position = _currentPoint.transform.position;
-            
+
             Vector3 direction = _nextPoint.transform.position - _currentPoint.transform.position;
             direction.Normalize();
 
@@ -108,13 +107,13 @@ namespace Dev
                 SetNewPoints(_currentPointIndex);
             }
         }
-        
+
         [Rpc]
         private void RPC_DrawCartPath(Vector3[] points)
         {
             _pathDrawer.DrawPath(points);
         }
-        
+
         private void MoveCartAlongPoints()
         {
             Vector3 direction = _nextPoint.transform.position - _currentPoint.transform.position;
@@ -136,7 +135,6 @@ namespace Dev
 
         private void SetNewPoints(int currentPointIndex)
         {
-
             currentPointIndex++;
             _currentPoint = _nextPoint;
 
@@ -150,42 +148,41 @@ namespace Dev
             }
 
             _currentPointIndex = currentPointIndex;
-            
-            if (_currentPoint.IsControlPoint()==true) PointReached.OnNext(Unit.Default);
 
+            if (_currentPoint.IsControlPoint) PointReached.OnNext(Unit.Default);
         }
 
         private bool IsCartBlocked()
         {
-            bool isBlocked = false;
             foreach (var playerRef in _playersInsideCartZone)
             {
                 TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerRef);
-            
-                if(playerTeamSide != _allowedTeamToMoveCart) isBlocked=true;
+
+                if (playerTeamSide != _allowedTeamToMoveCart) return true;
             }
 
-            return isBlocked == true;
+            return false;
         }
 
         private void OnCartZoneEntered(PlayerRef playerRef)
         {
             _playersInsideCartZone.Add(playerRef);
-            
-            AllowToMove = IsCartBlocked();
+
+            AllowToMove = !IsCartBlocked();
         }
 
         private void OnCartZoneExit(PlayerRef playerRef)
         {
             _playersInsideCartZone.Remove(playerRef);
-            AllowToMove = IsCartBlocked();
+            
+            AllowToMove = !IsCartBlocked();
             
             if (_playersInsideCartZone.Count == 0)
             {
                 AllowToMove = false;
             }
         }
-        
+
         private void OnDrawGizmos()
         {
             for (var i = 0; i < _pathPoints.Count; i++)
@@ -201,6 +198,4 @@ namespace Dev
             }
         }
     }
-    
-    
 }
