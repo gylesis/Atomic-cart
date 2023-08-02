@@ -62,6 +62,8 @@ namespace Dev.Infrastructure
             _players.Add(playerRef, player);
 
             AssignTeam(playerRef);
+
+            RespawnPlayer(playerRef);
             
             RPC_OnPlayerSpawnedInvoke(player);
 
