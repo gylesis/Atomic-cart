@@ -20,10 +20,15 @@ namespace Dev.Weapons.Guns
         {
             if (Object.HasStateAuthority == false) return;
 
+            PollAliveProjectilesForDestroy();
+        }
+
+        private void PollAliveProjectilesForDestroy()
+        {
             for (var index = _aliveProjectiles.Count - 1; index >= 0; index--)
             {
                 Projectile projectile = _aliveProjectiles[index];
-                
+
                 TickTimer destroyTimer = projectile.DestroyTimer;
 
                 var expired = destroyTimer.ExpiredOrNotRunning(Runner);
@@ -33,7 +38,6 @@ namespace Dev.Weapons.Guns
                     OnProjectileExpired(projectile);
                 }
             }
-
         }
 
         protected virtual void OnProjectileBeforeSpawned(Projectile projectile)

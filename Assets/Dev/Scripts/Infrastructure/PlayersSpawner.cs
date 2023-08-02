@@ -150,7 +150,7 @@ namespace Dev.Infrastructure
             spawnEventContext.PlayerRef = player.Object.InputAuthority;
             spawnEventContext.Transform = player.transform;
 
-            Debug.Log($"Player spawned");
+//            Debug.Log($"Player spawned");
             Spawned.OnNext(spawnEventContext);
         }
 

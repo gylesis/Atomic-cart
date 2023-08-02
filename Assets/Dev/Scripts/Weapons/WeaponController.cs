@@ -122,9 +122,6 @@ namespace Dev.Weapons
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
         
-        
-        
-
         public override void FixedUpdateNetwork()
         {
             if (Object.HasInputAuthority == false) return;
@@ -163,7 +160,6 @@ namespace Dev.Weapons
         {
             if (_weapons.Count == 0)
             {
-                Debug.Log($"No weapons to choose");
                 return;
             }
 
@@ -185,10 +181,6 @@ namespace Dev.Weapons
 
             RPC_SelectViewWeapon();
 
-            if (Object.HasInputAuthority)
-            {
-                Debug.Log($"Chosen weapon is {chosenWeapon.name}");
-            }
         }
 
         [Rpc]
