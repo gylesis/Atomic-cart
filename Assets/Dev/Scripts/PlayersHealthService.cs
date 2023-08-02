@@ -3,6 +3,7 @@ using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Dev
@@ -16,10 +17,13 @@ namespace Dev
 
         public static PlayersHealthService Instance { get; private set; }
 
+        [SerializeField] private bool _isFriendlyOff = true;
+        
         public Subject<PlayerDieEventContext> PlayerKilled { get; } = new Subject<PlayerDieEventContext>();
 
         private bool _init;
-        
+        private TeamsService _teamsService;
+
         private void OnGUI()
         {
             if(_init == false) return;
@@ -62,6 +66,8 @@ namespace Dev
         public void Init(PlayersSpawner playersSpawner)
         {
             _playersSpawner = playersSpawner;
+
+            _teamsService = FindObjectOfType<TeamsService>();
         }
 
         public override void Spawned()
@@ -87,15 +93,23 @@ namespace Dev
             PlayersHealth.Remove(playerRef);
         }
         
-        public void ApplyDamage(PlayerRef target, PlayerRef owner, int damage)
+        public void ApplyDamage(PlayerRef victim, PlayerRef shooter, int damage)
         {
             if (HasStateAuthority == false) return;
 
-            int playerCurrentHealth = PlayersHealth[target];
+            if (_isFriendlyOff)
+            {
+                TeamSide victimTeamSide = _teamsService.GetPlayerTeamSide(victim);
+                TeamSide shooterTeamSide = _teamsService.GetPlayerTeamSide(shooter);
+                
+                if(victimTeamSide == shooterTeamSide) return;
+            }
+
+            int playerCurrentHealth = PlayersHealth[victim];
 
             if(playerCurrentHealth == 0) return;
             
-            var nickname = PlayersDataService.Instance.GetNickname(target);
+            var nickname = PlayersDataService.Instance.GetNickname(victim);
             
             Debug.Log($"Damage applied to player {nickname} with {damage} damage");
             
@@ -104,14 +118,14 @@ namespace Dev
             if (playerCurrentHealth <= 0)
             {
                 playerCurrentHealth = 0;
-                OnPlayerHealthZero(target, owner);
+                OnPlayerHealthZero(victim, shooter);
             }
 
-            ApplyForceToPlayer(target, damage);
+            ApplyForceToPlayer(victim, damage);
             
             Debug.Log($"Player {nickname} has {playerCurrentHealth} health");
 
-            PlayersHealth.Set(target, playerCurrentHealth);
+            PlayersHealth.Set(victim, playerCurrentHealth);
         }
 
         private void OnPlayerHealthZero(PlayerRef playerRef, PlayerRef owner)
