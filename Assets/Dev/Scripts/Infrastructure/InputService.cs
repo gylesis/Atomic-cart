@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Dev.UI;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
@@ -10,6 +11,12 @@ namespace Dev.Infrastructure
     {
         private Joystick _aimJoystick;
         private Joystick _movementJoystick;
+        private PopUpService _popUpService;
+
+        private void Awake()
+        {
+            _popUpService = FindObjectOfType<PopUpService>();
+        }
 
         public override void Spawned()
         {
@@ -30,7 +37,7 @@ namespace Dev.Infrastructure
             Vector2 joystickDirection = _movementJoystick.Direction;
 
             var moveDirection = joystickDirection;
-            
+
             if (joystickDirection == Vector2.zero)
             {
                 var x = Input.GetAxis("Horizontal");
@@ -38,14 +45,14 @@ namespace Dev.Infrastructure
 
                 var keyBoardInput = new Vector2(x, y);
                 moveDirection = keyBoardInput;
-                
+
                 //moveDirection.Normalize();
             }
 
             Vector2 aimJoystickDirection = _aimJoystick.Direction;
 
             PlayerInput playerInput = new PlayerInput();
-            
+
             playerInput.MoveDirection = moveDirection;
             playerInput.LookDirection = aimJoystickDirection;
 
@@ -79,5 +86,4 @@ namespace Dev.Infrastructure
 
         public void OnSceneLoadStart(NetworkRunner runner) { }
     }
-   
 }

@@ -34,7 +34,7 @@ namespace Dev.UI
             _procceedButton.Clicked.OnNext(Unit.Default);
         }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _canvasGroup.alpha = 0;
             _canvasGroup.interactable = false;

@@ -11,7 +11,7 @@ namespace Dev
     {
         private PlayersSpawner _playersSpawner;
 
-        [Networked]
+        [Networked, Capacity(20)]
         private NetworkDictionary<PlayerRef, int> PlayersHealth { get; }
 
         public static PlayersHealthService Instance { get; private set; }

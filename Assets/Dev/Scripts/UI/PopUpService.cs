@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev.UI
 {
-    public class PopUpService // i'd like to add event polling while closing popup or menu
+    public class PopUpService : MonoBehaviour
     {
-        private readonly Dictionary<Type, PopUp> _popUpsPrefabs;
-        private readonly Dictionary<Type, PopUp> _spawnedPrefabs = new Dictionary<Type, PopUp>();
+        [SerializeField] private Transform _popUpsParent;
+        
+        private Dictionary<Type, PopUp> _popUpsPrefabs;
+        private Dictionary<Type, PopUp> _spawnedPrefabs = new Dictionary<Type, PopUp>();
 
-        private Transform _parent;
+       // public Subject<Unit> PopUpClosed { get; } = new Subject<Unit>();
 
-        public Subject<Unit> PopUpClosed { get; } = new Subject<Unit>();
-
-        public PopUpService(PopUp[] popUps, Transform parent)
+        private void Awake()
         {
-            _parent = parent;
+            var popUps = _popUpsParent.GetComponentsInChildren<PopUp>();
+
             _popUpsPrefabs = popUps.ToDictionary(x => x.GetType());
 
             foreach (PopUp popUp in popUps)
@@ -27,6 +29,7 @@ namespace Dev.UI
                 _spawnedPrefabs.Add(type, popUp);
             }
         }
+
 
         public bool TryGetPopUp<TPopUp>(out TPopUp popUp) where TPopUp : PopUp
         {
@@ -53,5 +56,18 @@ namespace Dev.UI
 
             return popUp;
         }
+
+        public void ShowPopUp<TPopUp>() where TPopUp : PopUp
+        {
+            var tryGetPopUp = TryGetPopUp<TPopUp>(out var popUp);
+
+            if (tryGetPopUp)
+            {
+                popUp.Show();
+            }
+            
+            
+        }
+        
     }
 }

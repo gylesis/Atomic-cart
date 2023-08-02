@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Fusion;
 
 namespace Dev.Infrastructure
 {
     public class TeamsService : NetworkContext
     {
-        private List<Team> _teams = new List<Team>();
+        [Networked, Capacity(2)] private NetworkLinkedList<Team> Teams { get; }
 
        // public Team RedTeam => _teams.First(x => x.TeamSide == TeamSide.Red);
        // public Team BlueTeam => _teams.First(x => x.TeamSide == TeamSide.Blue);
@@ -18,13 +17,13 @@ namespace Dev.Infrastructure
             var blueTeam = new Team(TeamSide.Blue);
             var redTeam = new Team(TeamSide.Red);
             
-            _teams.Add(blueTeam);
-            _teams.Add(redTeam);
+            Teams.Add(blueTeam);
+            Teams.Add(redTeam);
         }
 
         private Team GetTeamByMember(PlayerRef playerRef)
         {
-            foreach (Team team in _teams)
+            foreach (Team team in Teams)
             {
                 var hasPlayer = team.HasPlayer(playerRef);
 
@@ -34,7 +33,7 @@ namespace Dev.Infrastructure
                 }
             }
 
-            return null;
+            return Teams.First();
         }
 
         public TeamSide GetPlayerTeamSide(PlayerRef playerRef)
@@ -44,8 +43,12 @@ namespace Dev.Infrastructure
         
         public void AssignForTeam(PlayerRef playerRef, TeamSide teamSide)
         {
-            Team team = _teams.First(x => x.TeamSide == teamSide);
+            Team team = Teams.First(x => x.TeamSide == teamSide);
+            int indexOf = Teams.IndexOf(team);
+
             team.AddMember(playerRef);
+            
+            Teams.Set(indexOf, team);
         }
 
         public void RemoveFromTeam(PlayerRef playerRef)

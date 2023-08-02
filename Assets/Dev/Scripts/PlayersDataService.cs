@@ -1,5 +1,4 @@
-﻿using System;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 
@@ -9,7 +8,7 @@ namespace Dev
     {
         private PlayersSpawner _playersSpawner;
 
-        [Networked] private NetworkDictionary<PlayerRef, PlayerData> PlayersHealth { get; }
+        [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, PlayerData> PlayersHealth { get; }
 
         public static PlayersDataService Instance { get; private set; }
 

@@ -1,4 +1,5 @@
-﻿using Dev.Infrastructure;
+﻿using System;
+using Dev.Infrastructure;
 using Fusion;
 using TMPro;
 using UnityEngine;
@@ -12,7 +13,14 @@ namespace Dev
         [Rpc]
         public void RPC_UpdateTime(TimeTickEventContext tickEventContext)
         {
-            _timeText.text = $"{tickEventContext.LeftMinutes} : {tickEventContext.LeftSeconds} ";
+            var timeSpan = new TimeSpan(0, 0, tickEventContext.LeftMinutes, tickEventContext.LeftSeconds);
+
+            string minutes = timeSpan.ToString("mm");
+            string seconds = timeSpan.ToString("ss");
+
+            string timeTextText = $"{minutes} : {seconds}";
+            
+            _timeText.text = timeTextText;
         }
         
     }

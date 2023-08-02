@@ -1,4 +1,6 @@
-﻿using Dev.Infrastructure;
+﻿using System;
+using Dev.Infrastructure;
+using Dev.UI;
 using Dev.Weapons;
 using Fusion;
 using UnityEngine;
@@ -8,6 +10,7 @@ namespace Dev
     public class PlayerController : NetworkContext
     {
         [SerializeField] private Player _player;
+        private PopUpService _popUpService;
         private WeaponController _weaponController => _player.WeaponController;
         private float Speed => _player.Speed;
         private PlayerView PlayerView => _player.PlayerView;
@@ -19,7 +22,12 @@ namespace Dev
         public bool AllowToMove { get; set; } = true;
 
         public bool AllowToShoot { get; set; } = true;
-        
+
+        private void Awake()
+        {
+            _popUpService = FindObjectOfType<PopUpService>();
+        }
+
         public override void FixedUpdateNetwork()
         {
             var hasInput = GetInput<PlayerInput>(out var input);
@@ -37,6 +45,22 @@ namespace Dev
             {
                 AimRotation(input);
             }
+        }
+
+        public override void Render()
+        {
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
+                scoreMenu.Show();
+            }
+            
+            if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
+                scoreMenu.Hide();
+            }
+            
         }
 
         private void HandleAnimation(PlayerInput input)
