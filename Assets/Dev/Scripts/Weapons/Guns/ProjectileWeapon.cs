@@ -61,8 +61,14 @@ namespace Dev.Weapons.Guns
         private void DestroyProjectile(Projectile projectile)
         {
             _aliveProjectiles.Remove(projectile);
-            FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);
+            SpawnVFXOnDestroyProjectile(projectile);
             Runner.Despawn(projectile.Object);
+        }
+
+        protected virtual void SpawnVFXOnDestroyProjectile(Projectile projectile)
+        {
+            FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);
+            
         }
     }
 }

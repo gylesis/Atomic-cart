@@ -42,10 +42,9 @@ namespace Dev.Weapons.Guns
 
             var overlapSphere = OverlapSphere(transform.position, _overlapRadius, _hitMask, out var hits);
 
+
             if (overlapSphere)
             {
-                bool needToDestroy = false;
-
                 foreach (LagCompensatedHit hit in hits)
                 {
                     var isPlayer = hit.GameObject.TryGetComponent<Player>(out var player);
@@ -57,24 +56,31 @@ namespace Dev.Weapons.Guns
 
                         if (target == owner) continue;
 
-                        needToDestroy = true;
-
                         ApplyHitToPlayer(player);
+
+                        ToDestroy.OnNext(this);
+
+                        break;
                     }
                     else
                     {
-                        needToDestroy = true;
-                    }
-                }
+                        OnObstacleHit(hit);
 
-                if (needToDestroy)
-                {
-                    ToDestroy.OnNext(this);
+                        ToDestroy.OnNext(this);
+
+                        break;
+                    }
                 }
             }
         }
 
-        private void ApplyHitToPlayer(Player player)
+
+        protected virtual void OnObstacleHit(LagCompensatedHit obstacleHit)
+        {
+        }
+
+
+        protected virtual void ApplyHitToPlayer(Player player)
         {
             PlayersHealthService.Instance.ApplyDamage(player.Object.InputAuthority, _owner, _damage);
         }

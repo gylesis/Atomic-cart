@@ -15,3 +15,5 @@ MonoBehaviour:
   _effects:
   - Name: bullet_explosion
     Prefab: {fileID: 7856808388828264647, guid: 33b93045875d70f48b472f24dbd1a6e4, type: 3}
+  - Name: bazooka_projectile_explosion
+    Prefab: {fileID: 7856808388828264647, guid: 8d38aca004a391d4b874c18c04d4a8e9, type: 3}

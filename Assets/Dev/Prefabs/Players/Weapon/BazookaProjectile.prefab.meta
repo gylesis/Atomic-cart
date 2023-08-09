@@ -1,8 +1,8 @@
 fileFormatVersion: 2
-guid: aebd7ef925dd4fe4690c3238e879f914
-timeCreated: 1537606270
-licenseType: Store
-DefaultImporter:
+guid: 0bf2e56b164e34b4d8c61cf72e5beb7c
+labels:
+- FusionPrefab
+PrefabImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
