@@ -17,7 +17,7 @@ namespace Dev
 
         public static PlayersHealthService Instance { get; private set; }
 
-        [SerializeField] private bool _isFriendlyOff = true;
+        [SerializeField] private bool _isFriendlyOn;
         
         public Subject<PlayerDieEventContext> PlayerKilled { get; } = new Subject<PlayerDieEventContext>();
 
@@ -97,7 +97,7 @@ namespace Dev
         {
             if (HasStateAuthority == false) return;
 
-            if (_isFriendlyOff)
+            if (_isFriendlyOn)
             {
                 TeamSide victimTeamSide = _teamsService.GetPlayerTeamSide(victim);
                 TeamSide shooterTeamSide = _teamsService.GetPlayerTeamSide(shooter);
@@ -121,8 +121,6 @@ namespace Dev
                 OnPlayerHealthZero(victim, shooter);
             }
 
-            ApplyForceToPlayer(victim, damage);
-            
             Debug.Log($"Player {nickname} has {playerCurrentHealth} health");
 
             PlayersHealth.Set(victim, playerCurrentHealth);
@@ -158,20 +156,6 @@ namespace Dev
         public void RestorePlayerHealth(PlayerRef playerRef, int restoreHealth)
         {
             PlayersHealth.Set(playerRef, restoreHealth);
-        }
-        
-        private void ApplyForceToPlayer(PlayerRef playerRef, float forcePower)
-        {
-            NetworkObject playerObject = Runner.GetPlayerObject(playerRef);
-    
-            Player player = playerObject.GetComponent<Player>();
-            
-            var forceDirection = new Vector2(Random.Range(-1f, 1f), Random.Range(0f, 1f));
-            forceDirection.Normalize();
-
-            Debug.DrawRay(player.transform.position, forceDirection * 2, Color.blue, 5f);
-
-            player.Rigidbody.AddForce(forceDirection * forcePower, ForceMode2D.Impulse);
         }
     }
 

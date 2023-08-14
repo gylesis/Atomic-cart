@@ -15,7 +15,7 @@ namespace Dev
         private float Speed => _player.Speed;
         private PlayerView PlayerView => _player.PlayerView;
         private float ShootThreshold => _player.ShootThreshold;
-        
+
         [Networked] private Vector2 LastMoveDirection { get; set; }
         [Networked] private Vector2 LastLookDirection { get; set; }
 
@@ -36,7 +36,9 @@ namespace Dev
 
             if (AllowToMove)
             {
-                _player.Rigidbody.velocity = input.MoveDirection * Speed * Runner.DeltaTime;
+                Vector2 velocity = input.MoveDirection * Speed * Runner.DeltaTime;
+                
+                _player.Rigidbody.velocity = velocity;
             }
 
             HandleAnimation(input);
@@ -54,19 +56,18 @@ namespace Dev
                 var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
                 scoreMenu.Show();
             }
-            
+
             if (Input.GetKeyUp(KeyCode.Tab))
             {
                 var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
                 scoreMenu.Hide();
             }
-            
         }
 
         private void HandleAnimation(PlayerInput input)
         {
             Vector2 moveDirection = input.MoveDirection;
-            
+
             float sign = 1;
 
             if (moveDirection == Vector2.zero)
@@ -113,6 +114,5 @@ namespace Dev
         {
             _weaponController.TryToFire();
         }
-        
     }
 }

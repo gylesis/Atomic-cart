@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Dev.Weapons.Guns
 {
@@ -12,8 +10,8 @@ namespace Dev.Weapons.Guns
     public abstract class Projectile : NetworkContext
     {
         [SerializeField] private NetworkRigidbody2D _networkRigidbody2D;
-        [SerializeField] private float _overlapRadius = 1f;
-        [SerializeField] private LayerMask _hitMask;
+        [SerializeField] protected float _overlapRadius = 1f;
+        [SerializeField] protected LayerMask _hitMask;
 
         [Networked] public TickTimer DestroyTimer { get; set; }
 
@@ -21,7 +19,7 @@ namespace Dev.Weapons.Guns
 
         private Vector3 _moveDirection;
         private float _force;
-        private int _damage;
+        protected int _damage;
         private PlayerRef _owner;
 
         public void Init(Vector3 moveDirection, float force, int damage, PlayerRef owner)
@@ -74,17 +72,23 @@ namespace Dev.Weapons.Guns
             }
         }
 
-
-        protected virtual void OnObstacleHit(LagCompensatedHit obstacleHit)
-        {
-        }
-
+        protected virtual void OnObstacleHit(LagCompensatedHit obstacleHit) { }
 
         protected virtual void ApplyHitToPlayer(Player player)
         {
-            PlayersHealthService.Instance.ApplyDamage(player.Object.InputAuthority, _owner, _damage);
+            ApplyDamage(player, _owner, _damage);
         }
 
+        protected void ApplyDamage(Player target, PlayerRef shooter, int damage)
+        {
+            PlayersHealthService.Instance.ApplyDamage(target.Object.InputAuthority, shooter, damage);
+        }
+        
+        protected void ApplyDamage(PlayerRef target, PlayerRef shooter, int damage)
+        {
+            PlayersHealthService.Instance.ApplyDamage(target, shooter, damage);
+        }
+        
         protected bool OverlapSphere(Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
         {
             hits = new List<LagCompensatedHit>();
@@ -95,45 +99,14 @@ namespace Dev.Weapons.Guns
             return hits.Count > 0;
         }
 
-        protected void ExplodePlayer(Vector3 pos, float radius, float explosionForcePower,
-            bool needToCheckWalls = false)
+        protected void ApplyForceToPlayer(Player player, Vector2 forceDirection, float forcePower)
         {
-            var overlapSphere = OverlapSphere(pos, radius, LayerMask.NameToLayer("Player"), out var hits);
-
-            // Debug.Log($"Hits count {hits.Count}");
-
-            if (overlapSphere)
-            {
-                foreach (LagCompensatedHit hit in hits)
-                {
-                    // Debug.Log($"Hit {hit.GameObject.name}", hit.GameObject);
-
-                    var player = hit.GameObject.GetComponent<Player>();
-
-                    PlayerRef owner = Object.InputAuthority;
-                    PlayerRef target = player.Object.InputAuthority;
-
-                    if (target == owner) continue;
-
-                    // player.Damaged?.Invoke(owner, target);
-
-                    ApplyForceToPlayer(player, explosionForcePower);
-                }
-            }
-        }
-
-        protected void ApplyForceToPlayer(Player player, float forcePower)
-        {
-            var forceDirection = new Vector2(Random.Range(-1f, 1f), Random.Range(0f, 1f));
-            forceDirection.Normalize();
-
-            Debug.DrawRay(player.transform.position, forceDirection * 2, Color.blue, 5f);
+            Debug.DrawRay(player.transform.position, forceDirection * forcePower, Color.blue, 5f);
 
             player.Rigidbody.AddForce(forceDirection * forcePower, ForceMode2D.Impulse);
         }
 
-
-        private void OnDrawGizmos()
+        protected virtual void OnDrawGizmos()
         {
             Gizmos.DrawWireSphere(transform.position, _overlapRadius);
         }
