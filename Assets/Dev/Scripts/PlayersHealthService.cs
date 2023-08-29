@@ -150,7 +150,9 @@ namespace Dev
 
             Player player = playerObject.GetComponent<Player>();
             player.RPC_DoScale(0.5f, 0f);
-            
+
+            player.PlayerController.AllowToMove = false;
+            player.PlayerController.AllowToShoot = false;
             player.HitboxRoot.HitboxRootActive = false;
 
             var playerDieEventContext = new PlayerDieEventContext();
@@ -166,8 +168,6 @@ namespace Dev
                 RestorePlayerHealth(playerRef, 100);
 
                 player.RPC_DoScale(0, 1);
-                
-                player.HitboxRoot.HitboxRootActive = true;
             }));
         }
         

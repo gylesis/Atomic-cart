@@ -25,7 +25,7 @@ namespace Dev.Weapons
         private Player _player;
         private WeaponProvider _weaponProvider;
 
-        public bool AllowToShoot { get; set; } = true;
+        public bool AllowToShoot { get; private set; } = true;
         [HideInInspector] [Networked] [CanBeNull] public Weapon CurrentWeapon { get; set; }
 
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();

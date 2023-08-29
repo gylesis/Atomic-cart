@@ -152,6 +152,11 @@ namespace Dev.Infrastructure
             Player player = _players[playerRef];
 
             player.transform.position = spawnPoint.transform.position;
+            
+            player.PlayerController.AllowToMove = true;
+            player.PlayerController.AllowToShoot = true;
+            
+            player.HitboxRoot.HitboxRootActive = true;
         }
 
         
