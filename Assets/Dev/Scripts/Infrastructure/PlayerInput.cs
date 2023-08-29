@@ -7,5 +7,7 @@ namespace Dev.Infrastructure
     {
         public Vector2 MoveDirection;
         public Vector2 LookDirection;
+
+        public int WeaponNum;
     }
 }

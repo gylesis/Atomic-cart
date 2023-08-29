@@ -13,6 +13,19 @@ namespace Dev.Infrastructure
         private Joystick _movementJoystick;
         private PopUpService _popUpService;
 
+        private KeyCode[] _keyCodes =
+        {
+            KeyCode.Alpha1,
+            KeyCode.Alpha2,
+            KeyCode.Alpha3,
+            KeyCode.Alpha4,
+            KeyCode.Alpha5,
+            KeyCode.Alpha6,
+            KeyCode.Alpha7,
+            KeyCode.Alpha8,
+            KeyCode.Alpha9,
+        };
+        
         private void Awake()
         {
             _popUpService = FindObjectOfType<PopUpService>();
@@ -55,7 +68,17 @@ namespace Dev.Infrastructure
 
             playerInput.MoveDirection = moveDirection;
             playerInput.LookDirection = aimJoystickDirection;
-
+            playerInput.WeaponNum = 22;
+            
+            for (int i = 0; i < _keyCodes.Length; i++)
+            {
+                if (Input.GetKeyDown(_keyCodes[i]))
+                {
+                    int numberPressed = i + 1;
+                    playerInput.WeaponNum = numberPressed;
+                }
+            }
+                
             input.Set(playerInput);
         }
 

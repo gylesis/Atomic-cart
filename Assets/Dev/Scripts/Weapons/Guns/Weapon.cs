@@ -14,8 +14,8 @@ namespace Dev.Weapons.Guns
         [SerializeField] protected float _shootDelay = 0;
         [Networked] public TickTimer CooldownTimer { get; set; }
         [Networked] public TickTimer ShootDelayTimer { get; set; }
-        
-       
+
+
         public virtual bool AllowToShoot => CooldownTimer.ExpiredOrNotRunning(Runner);
 
         public float Cooldown => _cooldown;
@@ -26,8 +26,9 @@ namespace Dev.Weapons.Guns
         public Transform ShootPoint => _shootPoint;
 
         public Vector2 ShootDirection => transform.up;
-        public WeaponData WeaponData { get; private set; }
 
+        [Networked] public WeaponData WeaponData { get; private set; }
+        
         public void Init(WeaponData weaponData)
         {
             WeaponData = weaponData;
@@ -43,6 +44,4 @@ namespace Dev.Weapons.Guns
             _view.gameObject.SetActive(isActive);
         }
     }
-    
-    
 }

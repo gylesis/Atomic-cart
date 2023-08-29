@@ -11,43 +11,62 @@ namespace Dev.Weapons
 {
     public class WeaponController : NetworkContext
     {
-        [SerializeField] private List<Weapon> _weapons; // TODO need to sync when we want to spawn weapons in runtime
+        [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
 
-        public int WeaponsAmount => _weapons.Count;
+        [Networked, Capacity(4)]
+        private NetworkLinkedList<Weapon> Weapons { get; }
 
-       // private WeaponUiView _weaponUiView;
+        [SerializeField] private Transform _weaponParent;
+
+        public Transform WeaponParent => _weaponParent;
+
+        public int WeaponsAmount => Weapons.Count;
+
         private Player _player;
+        private WeaponProvider _weaponProvider;
 
         public bool AllowToShoot { get; set; } = true;
-        [Networked] [CanBeNull] public Weapon CurrentWeapon { get; set; }
+        [HideInInspector] [Networked] [CanBeNull] public Weapon CurrentWeapon { get; set; }
 
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();
 
         public override void Spawned()
         {
-          //  _weaponUiView = FindObjectOfType<WeaponUiView>();
+            if (HasStateAuthority == false) return;
 
-            if (Object.HasInputAuthority)
+            foreach (Weapon weapon in Weapons)
             {
-                RPC_ChooseWeapon(1);
+                weapon.transform.parent = WeaponParent;
             }
-
-            RPC_SelectViewWeapon();
+            
+            _weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
 
-        public bool HasAnyWeapon => _weapons.Count > 0 && CurrentWeapon != null;
-        
+        public void Init(WeaponSetupContext weaponSetupContext)
+        {
+            _weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.Name.Value, true);
+        }
+
+        public bool HasAnyWeapon => Weapons.Count > 0 && CurrentWeapon != null;
+
         public bool HasWeapon(string name)
         {
-            Weapon weapon = _weapons.FirstOrDefault(x => x.WeaponData.Name == name);
+            Weapon weapon = Weapons.FirstOrDefault(x => x.WeaponData.Name == name);
 
             return weapon != null;
         }
 
         [Rpc]
-        public void RPC_AddWeapon(Weapon weapon)
+        public void RPC_AddWeapon(Weapon weapon, bool withChoose = false)
         {
-            _weapons.Add(weapon);
+            Weapons.Add(weapon);
+
+            weapon.transform.parent = WeaponParent;
+
+            if (withChoose)
+            {
+                RPC_ChooseWeapon(Weapons.Count);
+            }
         }
 
         public void TryToFire(Vector2 direction)
@@ -64,7 +83,7 @@ namespace Dev.Weapons
                 }
             }
         }
-        
+
         public void TryToFire()
         {
             AllowToShoot = CurrentWeapon.AllowToShoot;
@@ -79,7 +98,6 @@ namespace Dev.Weapons
                 }
             }
         }
-        
 
         public void AimWeaponTowards(Vector2 direction)
         {
@@ -92,10 +110,9 @@ namespace Dev.Weapons
 
             Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
 
-            CurrentWeapon.transform.up = direction;
-            // CurrentWeapon.transform.rotation = targetRotation;
+            WeaponParent.transform.up = direction;
         }
-        
+
         private void Shoot(Vector2 direction, float power = 1)
         {
             var cooldown = CurrentWeapon.Cooldown;
@@ -108,7 +125,7 @@ namespace Dev.Weapons
 
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
-        
+
         private void Shoot()
         {
             var cooldown = CurrentWeapon.Cooldown;
@@ -121,9 +138,30 @@ namespace Dev.Weapons
 
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
-        
+
         public override void FixedUpdateNetwork()
         {
+            if (HasStateAuthority)
+            {
+                var hasInput = GetInput<PlayerInput>(out var input);
+
+                if (hasInput)
+                {
+                    if (input.WeaponNum != 22)
+                    {
+                        if (input.WeaponNum == 1)
+                        {
+                            _weaponProvider.ProvideWeaponToPlayer<AkWeapon>(Object.InputAuthority, true);
+                        }
+                        else if (input.WeaponNum == 2)
+                        {
+                            _weaponProvider.ProvideWeaponToPlayer<BazookaWeapon>(Object.InputAuthority, true);
+                        }
+                    }
+                }
+            }
+
+
             if (Object.HasInputAuthority == false) return;
 
             if (CurrentWeapon == null) return;
@@ -139,6 +177,7 @@ namespace Dev.Weapons
 
         private void OnWeaponChanged(Weapon weapon)
         {
+            return;
             float time;
             var maxCooldown = weapon.Cooldown;
 
@@ -155,17 +194,18 @@ namespace Dev.Weapons
             //_weaponUiView.ShootReloadView(time, maxCooldown);
         }
 
-        
+
+        [Rpc]
         public void RPC_ChooseWeapon(int index)
         {
-            if (_weapons.Count == 0)
+            if (Weapons.Count == 0)
             {
                 return;
             }
 
-            var weaponIndex = Mathf.Clamp(index - 1, 0, _weapons.Count - 1);
+            var weaponIndex = Mathf.Clamp(index - 1, 0, Weapons.Count - 1);
 
-            Weapon chosenWeapon = _weapons[weaponIndex];
+            Weapon chosenWeapon = Weapons[weaponIndex];
 
             if (CurrentWeapon == chosenWeapon)
             {
@@ -180,13 +220,40 @@ namespace Dev.Weapons
             OnWeaponChanged(chosenWeapon);
 
             RPC_SelectViewWeapon();
-
         }
 
         [Rpc]
+        public void RPC_ChooseWeapon(string weaponName)
+        {
+            if (Weapons.Count == 0)
+            {
+                return; 
+            }
+
+            Weapon weapon = Weapons.First(x => x.WeaponData.Name == weaponName);
+
+            if (CurrentWeapon == weapon)
+            {
+                Debug.Log($"Weapon already chosen");
+                return;
+            }
+
+            CurrentWeapon = weapon;
+            CurrentWeapon.OnChosen();
+
+            WeaponChanged.OnNext(CurrentWeapon);
+            OnWeaponChanged(weapon);
+
+            RPC_SelectViewWeapon();
+        }
+
+        
+        
+        
+        [Rpc]
         private void RPC_SelectViewWeapon()
         {
-            foreach (Weapon weapon in _weapons)
+            foreach (Weapon weapon in Weapons)
             {
                 if (weapon == CurrentWeapon)
                 {
@@ -197,21 +264,5 @@ namespace Dev.Weapons
                 weapon.SetViewState(false);
             }
         }
-
-        /*public void TryToFireClickedUp(Vector3 direction)
-        {
-            var shootDelay = CurrentWeapon.ShootDelay;
-
-            if (shootDelay == 0) return;
-
-            AllowToShoot = CurrentWeapon.CooldownTimer.ExpiredOrNotRunning(Runner);
-
-            if (AllowToShoot)
-            {
-                var power = CurrentWeapon.ShootDelayTimer.RemainingTime(Runner) / shootDelay;
-
-                Shoot(direction, 1 - power.Value);
-            }
-        }*/
     }
 }

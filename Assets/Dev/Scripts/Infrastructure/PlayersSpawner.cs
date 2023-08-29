@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Dev.Weapons;
 using Fusion;
 using UniRx;
 using Unity.Mathematics;
@@ -67,7 +68,15 @@ namespace Dev.Infrastructure
             
             RPC_OnPlayerSpawnedInvoke(player);
 
+            LoadWeapon(player);
+
             return player;
+        }
+
+        private void LoadWeapon(Player player)
+        {
+            var weaponSetupContext = new WeaponSetupContext("AkWeapon");
+            player.WeaponController.Init(weaponSetupContext);
         }
 
         private void AssignTeam(PlayerRef playerRef)
@@ -103,6 +112,8 @@ namespace Dev.Infrastructure
             _playerServices[playerRef].Add(inputService.Object);
         }
 
+        public Vector3 GetPlayerPos(PlayerRef playerRef) => _players[playerRef].transform.position;
+        
         public void DespawnPlayer(PlayerRef playerRef)
         {
             PlayerLeft(playerRef);
@@ -143,7 +154,7 @@ namespace Dev.Infrastructure
             player.transform.position = spawnPoint.transform.position;
         }
 
-        [Rpc(RpcSources.All, RpcTargets.All)]
+        
         private void RPC_OnPlayerSpawnedInvoke(Player player)
         {
             var spawnEventContext = new PlayerSpawnEventContext();

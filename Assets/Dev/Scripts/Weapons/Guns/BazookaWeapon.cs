@@ -31,7 +31,8 @@ namespace Dev.Weapons.Guns
             NetworkObject networkObject = Runner.GetPlayerObject(Object.InputAuthority);
             Player player = networkObject.GetComponent<Player>();
 
-            player.Rigidbody.AddForce(-direction * _firePushPower, ForceMode2D.Impulse);
+            player.Rigidbody.velocity = -direction * _firePushPower;
+           // player.Rigidbody.AddForce(-direction * _firePushPower, ForceMode2D.Impulse);
             player.PlayerController.AllowToMove = false;
             Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe((l => { player.PlayerController.AllowToMove = true; }));
         }

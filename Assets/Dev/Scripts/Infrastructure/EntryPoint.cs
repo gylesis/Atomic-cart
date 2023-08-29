@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dev.Weapons;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace Dev.Infrastructure
 {
     public class EntryPoint : NetworkContext, INetworkRunnerCallbacks
     {
+        
         private PlayersSpawner _playersSpawner;
         private PlayersDataService _playersDataService;
         private PlayersHealthService _playersHealthService;

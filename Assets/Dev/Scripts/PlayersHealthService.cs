@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 namespace Dev
 {
@@ -23,6 +22,7 @@ namespace Dev
 
         private bool _init;
         private TeamsService _teamsService;
+        private WorldTextProvider _worldTextProvider;
 
         private void OnGUI()
         {
@@ -68,6 +68,7 @@ namespace Dev
             _playersSpawner = playersSpawner;
 
             _teamsService = FindObjectOfType<TeamsService>();
+            _worldTextProvider = FindObjectOfType<WorldTextProvider>();
         }
 
         public override void Spawned()
@@ -112,6 +113,10 @@ namespace Dev
             var nickname = PlayersDataService.Instance.GetNickname(victim);
             
             Debug.Log($"Damage applied to player {nickname} with {damage} damage");
+
+            Vector3 playerPos = _playersSpawner.GetPlayerPos(victim);
+            RPC_SpawnDamageHint(shooter, playerPos, damage);
+            RPC_SpawnDamageHint(victim, playerPos, damage);
             
             playerCurrentHealth -= damage;
 
@@ -126,6 +131,12 @@ namespace Dev
             PlayersHealth.Set(victim, playerCurrentHealth);
         }
 
+        [Rpc]
+        private void RPC_SpawnDamageHint([RpcTarget] PlayerRef playerRef ,Vector3 pos, int damage)
+        {
+            _worldTextProvider.SpawnDamageText(pos, damage);
+        }
+            
         private void OnPlayerHealthZero(PlayerRef playerRef, PlayerRef owner)
         {
             NetworkObject playerObject = Runner.GetPlayerObject(playerRef);

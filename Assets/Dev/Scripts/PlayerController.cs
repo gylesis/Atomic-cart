@@ -10,6 +10,8 @@ namespace Dev
     public class PlayerController : NetworkContext
     {
         [SerializeField] private Player _player;
+        [SerializeField] private float _speedLowerSpeed = 1.1f;
+       
         private PopUpService _popUpService;
         private WeaponController _weaponController => _player.WeaponController;
         private float Speed => _player.Speed;
@@ -36,10 +38,36 @@ namespace Dev
 
             if (AllowToMove)
             {
-                Vector2 velocity = input.MoveDirection * Speed * Runner.DeltaTime;
-                
-                _player.Rigidbody.velocity = velocity;
+                if (input.MoveDirection != Vector2.zero)
+                {
+                    Vector2 velocity = input.MoveDirection * (Speed * Runner.DeltaTime);
+                    _player.Rigidbody.velocity = velocity;
+                }
             }
+
+            if (input.MoveDirection == Vector2.zero)
+            {
+                Vector2 velocity = _player.Rigidbody.velocity;
+
+                if (velocity.sqrMagnitude != 0)
+                {
+                    float lowerModifier = (_speedLowerSpeed * Runner.DeltaTime);
+                    
+                    float xSign = Mathf.Sign(velocity.x) == 1 ? 1 : -1;
+                    float ySign = Mathf.Sign(velocity.y) == 1 ? 1 : -1;
+
+                    //Debug.Log($"xSign {xSign}, ySign {ySign}, x vel: {velocity.x}, y vel {velocity.y}");
+                    
+                    velocity.x *= lowerModifier * xSign;
+                    velocity.y *= lowerModifier * ySign;
+                    
+                    velocity.x = Mathf.Clamp(velocity.x, 0, float.MaxValue);
+                    velocity.y = Mathf.Clamp(velocity.y, 0, float.MaxValue);
+                    
+                    _player.Rigidbody.velocity = velocity;
+                }
+            }
+
 
             HandleAnimation(input);
 
