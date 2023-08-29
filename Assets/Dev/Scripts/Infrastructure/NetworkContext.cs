@@ -45,6 +45,12 @@ namespace Dev.Infrastructure
         }
 
         [Rpc]
+        public void RPC_SetLocalRotation(Vector3 eulerAngles)
+        {
+            transform.localRotation = Quaternion.Euler(eulerAngles);
+        }
+        
+        [Rpc]
         public void RPC_SetName(NetworkObject networkObject, string str)
         {
             networkObject.gameObject.name = str;

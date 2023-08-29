@@ -1,11 +1,12 @@
 ﻿using Dev.Infrastructure;
 using Dev.Weapons;
+using Dev.Weapons.Guns;
 using Fusion;
 using UnityEngine;
 
 namespace Dev
 {
-    public class Player : NetworkContext
+    public class Player : NetworkContext, IDamageable
     {
         [SerializeField] private float _speed;
         [Range(0f, 1f)] [SerializeField] private float _shootThreshold = 0.75f;
@@ -24,5 +25,6 @@ namespace Dev
 
         public float Speed => _speed;
         public float ShootThreshold => _shootThreshold;
+        public PlayerRef PlayerRef => Object.InputAuthority;
     }
 }

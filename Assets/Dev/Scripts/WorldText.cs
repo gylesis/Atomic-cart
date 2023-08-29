@@ -7,7 +7,7 @@ namespace Dev
     {
         [SerializeField] private TMP_Text _text;
 
-        public void Init(string text, Color color)
+        public void Setup(string text, Color color)
         {
             _text.color = color;
             _text.text = text;

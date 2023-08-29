@@ -16,15 +16,15 @@ namespace Dev.Weapons.Guns
         
         protected override void ApplyHitToPlayer(Player player)
         {
-           ExplodeAt(transform.position);
+           ExplodeAtAndHitPlayers(transform.position);
         }
 
         protected override void OnObstacleHit(LagCompensatedHit obstacleHit)
         {
-            ExplodeAt(transform.position);
+            ExplodeAtAndHitPlayers(transform.position);
         }
 
-        private void ExplodeAt(Vector3 pos)
+        private void ExplodeAtAndHitPlayers(Vector3 pos)
         {
             var overlapSphere = OverlapSphere(pos, _explosionRadius, _hitMask, out var hits);
 

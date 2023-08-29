@@ -46,7 +46,7 @@ namespace Dev.Weapons
                     var weaponData = new WeaponData(-1, weaponStaticData.WeaponName);
                     weapon.Init(weaponData);
                     weapon.RPC_SetPos(weaponPos);
-                    weapon.RPC_SetRotation(Vector3.zero);
+                    weapon.RPC_SetRotation(player.WeaponController.WeaponParent.rotation.eulerAngles);
                 }));
             
             playerWeaponController.RPC_AddWeapon(weaponInstance, withChose);
@@ -82,13 +82,11 @@ namespace Dev.Weapons
                     var weaponData = new WeaponData(-1, weaponStaticData.WeaponName);
                     weapon.Init(weaponData);
                     weapon.RPC_SetPos(weaponPos);
-                    weapon.RPC_SetRotation(Vector3.zero);
+                    weapon.RPC_SetRotation(player.WeaponController.WeaponParent.rotation.eulerAngles);
                 }));
             
             playerWeaponController.RPC_AddWeapon(weaponInstance, withChose);
         }
-        
-        
-        
+      
     }
 }

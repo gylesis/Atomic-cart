@@ -40,34 +40,54 @@ namespace Dev.Weapons.Guns
 
             var overlapSphere = OverlapSphere(transform.position, _overlapRadius, _hitMask, out var hits);
 
-
             if (overlapSphere)
             {
+                PlayerRef shooter = Object.InputAuthority;
+
+                bool needToDestroy = false;
+                
                 foreach (LagCompensatedHit hit in hits)
                 {
+                    var isDamageable = hit.GameObject.TryGetComponent<IDamageable>(out var damagable);
+
+                    if (isDamageable == false || damagable is IObstacleDamageable obstacleDamageable)
+                    {
+                        OnObstacleHit(hit);
+                        needToDestroy = true;
+                        break;
+                    }
+
+                    bool isDummyTarget = damagable.PlayerRef == PlayerRef.None;
+
+                    if (isDummyTarget)
+                    {
+                        DummyTarget dummyTarget = damagable as DummyTarget;
+
+                        ApplyDamageToDummyTarget(dummyTarget, shooter, _damage);
+                        needToDestroy = true;
+
+                        break;
+                    }
+
                     var isPlayer = hit.GameObject.TryGetComponent<Player>(out var player);
 
                     if (isPlayer)
                     {
-                        PlayerRef owner = Object.InputAuthority;
                         PlayerRef target = player.Object.InputAuthority;
 
-                        if (target == owner) continue;
+                        if (target == shooter) continue;
 
                         ApplyHitToPlayer(player);
-
-                        ToDestroy.OnNext(this);
-
-                        break;
-                    }
-                    else
-                    {
-                        OnObstacleHit(hit);
-
-                        ToDestroy.OnNext(this);
+                        needToDestroy = true;
 
                         break;
                     }
+                    
+                }
+
+                if (needToDestroy)
+                {
+                    ToDestroy.OnNext(this);
                 }
             }
         }
@@ -79,16 +99,21 @@ namespace Dev.Weapons.Guns
             ApplyDamage(player, _owner, _damage);
         }
 
+        protected void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
+        {
+            PlayersHealthService.Instance.ApplyDamageToDummyTarget(dummyTarget, shooter, damage);
+        }
+
         protected void ApplyDamage(Player target, PlayerRef shooter, int damage)
         {
             PlayersHealthService.Instance.ApplyDamage(target.Object.InputAuthority, shooter, damage);
         }
-        
+
         protected void ApplyDamage(PlayerRef target, PlayerRef shooter, int damage)
         {
             PlayersHealthService.Instance.ApplyDamage(target, shooter, damage);
         }
-        
+
         protected bool OverlapSphere(Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
         {
             hits = new List<LagCompensatedHit>();
@@ -111,4 +136,11 @@ namespace Dev.Weapons.Guns
             Gizmos.DrawWireSphere(transform.position, _overlapRadius);
         }
     }
+
+    public interface IDamageable
+    {
+        PlayerRef PlayerRef { get; }
+    }
+
+    public interface IObstacleDamageable : IDamageable { }
 }

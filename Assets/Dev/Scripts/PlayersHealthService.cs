@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Dev.Infrastructure;
 using Fusion;
 using UniRx;
@@ -97,7 +96,7 @@ namespace Dev
         public void ApplyDamage(PlayerRef victim, PlayerRef shooter, int damage)
         {
             if (HasStateAuthority == false) return;
-
+            
             if (_isFriendlyOn)
             {
                 TeamSide victimTeamSide = _teamsService.GetPlayerTeamSide(victim);
@@ -112,7 +111,7 @@ namespace Dev
             
             var nickname = PlayersDataService.Instance.GetNickname(victim);
             
-            Debug.Log($"Damage applied to player {nickname} with {damage} damage");
+            Debug.Log($"Damage {damage} applied to player {nickname}");
 
             Vector3 playerPos = _playersSpawner.GetPlayerPos(victim);
             RPC_SpawnDamageHint(shooter, playerPos, damage);
@@ -131,6 +130,14 @@ namespace Dev
             PlayersHealth.Set(victim, playerCurrentHealth);
         }
 
+        public void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
+        {   
+            Debug.Log($"Damage {damage} applied to dummy target {dummyTarget.name}");
+
+            Vector3 playerPos = dummyTarget.transform.position;
+            RPC_SpawnDamageHint(shooter, playerPos, damage);
+        }
+        
         [Rpc]
         private void RPC_SpawnDamageHint([RpcTarget] PlayerRef playerRef ,Vector3 pos, int damage)
         {

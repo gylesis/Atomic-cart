@@ -1,13 +1,41 @@
 ﻿using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Pool;
+using Random = UnityEngine.Random;
 
 namespace Dev
 {
     public class WorldTextProvider : MonoBehaviour
     {
         [SerializeField] private WorldText _worldTextPrefab;
-
         [SerializeField] private Color _damageTextColor = Color.red;
+        
+        private ObjectPool<WorldText> _worldTextPool;
+
+        private void Awake()
+        {
+            _worldTextPool = new ObjectPool<WorldText>(CreateFunc, ActionOnGet, ActionOnRelease, null, true, 25);
+        }
+
+        private void ActionOnRelease(WorldText obj)
+        {
+            obj.gameObject.SetActive(false);
+            
+            obj.transform.localScale = Vector3.one;
+            obj.transform.rotation = Quaternion.identity;
+        }
+
+        private void ActionOnGet(WorldText obj)
+        {
+            obj.gameObject.SetActive(true);
+        }
+
+        private WorldText CreateFunc()
+        {
+            WorldText worldText = Instantiate(_worldTextPrefab);
+
+            return worldText;
+        }
 
         public void SpawnDamageText(Vector3 pos, int damage)
         {   
@@ -20,12 +48,14 @@ namespace Dev
             eulerAngles.z = Random.Range(-20f, 20f);
 
             rotation.eulerAngles = eulerAngles;
-            
-            WorldText worldText = Instantiate(_worldTextPrefab, pos, rotation);
+
+            WorldText worldText = _worldTextPool.Get();
+            worldText.transform.position = pos;
+            worldText.transform.rotation = rotation;
 
             string text = $"-{damage}";
             
-            worldText.Init(text, _damageTextColor);
+            worldText.Setup(text, _damageTextColor);
 
             Sequence sequence = DOTween.Sequence();
 
@@ -37,7 +67,7 @@ namespace Dev
                 .Append(worldText.transform.DOScale(0,0.4f))
                 .AppendCallback((() =>
                 {
-                    Destroy(worldText);
+                    _worldTextPool.Release(worldText);
                 }));
 
             sequence.Play();
