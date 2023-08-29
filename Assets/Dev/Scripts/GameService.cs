@@ -2,6 +2,7 @@
 using Dev.Infrastructure;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev
 {
@@ -11,14 +12,14 @@ namespace Dev
         private PlayersSpawner _playersSpawner;
         private CartPathService _cartPathService;
 
-        private void Awake()
+        [Inject]
+        private void Init(TimeService timeService, PlayersSpawner playersSpawner, CartPathService cartPathService)
         {
-            _timeService = FindObjectOfType<TimeService>();
-            _playersSpawner = FindObjectOfType<PlayersSpawner>();
-            _cartPathService = FindObjectOfType<CartPathService>();
+            _timeService = timeService;
+            _playersSpawner = playersSpawner;
+            _cartPathService = cartPathService;
         }
-
-
+        
         public override void Spawned()
         {
             if(HasStateAuthority == false) return;

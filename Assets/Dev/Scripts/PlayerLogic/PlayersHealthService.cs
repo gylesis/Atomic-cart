@@ -3,6 +3,7 @@ using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev
 {
@@ -62,12 +63,12 @@ namespace Dev
             }
         }
 
-        public void Init(PlayersSpawner playersSpawner)
+        [Inject]
+        public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider)
         {
             _playersSpawner = playersSpawner;
-
-            _teamsService = FindObjectOfType<TeamsService>();
-            _worldTextProvider = FindObjectOfType<WorldTextProvider>();
+            _teamsService = teamsService;
+            _worldTextProvider = worldTextProvider;
         }
 
         public override void Spawned()

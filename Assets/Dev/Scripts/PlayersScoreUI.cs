@@ -4,6 +4,7 @@ using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev
 {
@@ -19,13 +20,13 @@ namespace Dev
         [Networked, Capacity(20)]
         private NetworkLinkedList<PlayerScoreUI> ScoreUis { get; }
 
-        private void Awake()
+        [Inject]
+        private void Init(TeamsService teamsService, PlayersSpawner playersSpawner)
         {
-            _teamsService = FindObjectOfType<TeamsService>();
-
-            _playersSpawner = FindObjectOfType<PlayersSpawner>();
+            _teamsService = teamsService;
+            _playersSpawner = playersSpawner;
         }
-
+        
         public override void Spawned()
         {
             if(HasStateAuthority == false)
@@ -34,7 +35,6 @@ namespace Dev
             }
 
             _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
-
         }
 
         private void OnPlayerDespawned(PlayerRef playerRef)

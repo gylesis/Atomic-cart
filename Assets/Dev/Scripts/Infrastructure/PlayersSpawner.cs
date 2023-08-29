@@ -4,6 +4,7 @@ using Fusion;
 using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 namespace Dev.Infrastructure
@@ -35,11 +36,12 @@ namespace Dev.Infrastructure
 
         private TeamsService _teamsService;
 
-        private void Awake()
+        [Inject]
+        private void Init(TeamsService teamsService)
         {
-            _teamsService = FindObjectOfType<TeamsService>(); // TODO TEMP, need DI
+            _teamsService = teamsService;
         }
-
+        
         public Player SpawnPlayer(PlayerRef playerRef)
         {
             var playersLength = PlayersCount;

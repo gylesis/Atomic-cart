@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e93b288b0f46b9ac1ffdf62fda1e30, type: 3}
+  m_Name: MarineCharacterData
+  m_EditorClassIdentifier: 
+  CharacterClass: 2
+  PlayerPrefab: {fileID: 865472631746096383, guid: 9ac618e84feb9ca4cb93e0c33dc17924, type: 3}
+  CharacterStats:
+    MoveSpeed: 500
+    SpeedLowerSpeed: 0

@@ -1,6 +1,7 @@
 ﻿using Dev.Infrastructure;
 using Fusion;
 using UniRx;
+using Zenject;
 
 namespace Dev
 {
@@ -20,6 +21,7 @@ namespace Dev
             }
         }
 
+        [Inject]
         public void Init(PlayersSpawner playersSpawner)
         {
             _playersSpawner = playersSpawner;

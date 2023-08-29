@@ -4,6 +4,7 @@ using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev
 {
@@ -14,20 +15,26 @@ namespace Dev
         private List<PlayerScoreData> _playerScoreList = new List<PlayerScoreData>();
         private TeamsService _teamsService;
         private PlayersDataService _playersDataService;
+        private PlayersSpawner _playersSpawner;
+        private PlayersHealthService _playersHealthService;
 
+        [Inject]
+        private void Init(TeamsService teamsService, PlayersDataService playersDataService, PlayersSpawner playersSpawner, PlayersHealthService playersHealthService)
+        {
+            _teamsService = teamsService;
+            _playersDataService = playersDataService;
+            _playersHealthService = playersHealthService;
+            _playersSpawner = playersSpawner;
+        }
+        
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;
             
-            var playersSpawner = FindObjectOfType<PlayersSpawner>();
-            playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
-            playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 
-            _teamsService = FindObjectOfType<TeamsService>();
-            _playersDataService = FindObjectOfType<PlayersDataService>();
-
-            var playerHealthService = FindObjectOfType<PlayersHealthService>();
-            playerHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
+            _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
         }
 
         private void OnPlayerDespawned(PlayerRef playerRef)

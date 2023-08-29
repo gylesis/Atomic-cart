@@ -1,30 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dev.Weapons;
 using Fusion;
 using Fusion.Sockets;
-using UnityEngine;
+using Zenject;
 
 namespace Dev.Infrastructure
 {
     public class EntryPoint : NetworkContext, INetworkRunnerCallbacks
     {
-        
         private PlayersSpawner _playersSpawner;
-        private PlayersDataService _playersDataService;
-        private PlayersHealthService _playersHealthService;
 
-        private void Awake()
+        [Inject]
+        private void Init(PlayersSpawner playersSpawner,PlayersHealthService playersHealthService,PlayersDataService playersDataService )
         {
-            _playersSpawner = FindObjectOfType<PlayersSpawner>();
-            _playersHealthService = FindObjectOfType<PlayersHealthService>();
-            _playersDataService = FindObjectOfType<PlayersDataService>();
-
-            _playersHealthService.Init(_playersSpawner);
-            _playersDataService.Init(_playersSpawner);
+            _playersSpawner = playersSpawner;
         }
-
+        
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             if (runner.IsServer)

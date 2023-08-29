@@ -1,5 +1,6 @@
 ﻿using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev.UI
 {
@@ -12,9 +13,14 @@ namespace Dev.UI
         protected override void Awake()
         {
             _showTab.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnShowTabButtonClicked()));
-            _popUpService = FindObjectOfType<PopUpService>();
         }
 
+        [Inject]
+        private void Init(PopUpService popUpService)
+        {
+            _popUpService = popUpService;
+        }
+        
         private void OnShowTabButtonClicked()
         {
             var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var playersScoreMenu);

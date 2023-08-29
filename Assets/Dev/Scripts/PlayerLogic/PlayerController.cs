@@ -4,6 +4,7 @@ using Dev.UI;
 using Dev.Weapons;
 using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Dev
 {
@@ -24,10 +25,11 @@ namespace Dev
         public bool AllowToMove { get; set; } = true;
 
         public bool AllowToShoot { get; set; } = true;
-
+        
+       
         private void Awake()
         {
-            _popUpService = FindObjectOfType<PopUpService>();
+            _popUpService = DependenciesContainer.Instance.GetDependency<PopUpService>();
         }
 
         public override void FixedUpdateNetwork()

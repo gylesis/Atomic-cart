@@ -2,6 +2,7 @@
 using Fusion;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev
 {
@@ -23,12 +24,14 @@ namespace Dev
 
         public Subject<Unit> GameTimeRanOut { get; } = new Subject<Unit>();
 
-        private void Awake()
-        {
-            _playersSpawner = FindObjectOfType<PlayersSpawner>();
-            _cartPathService = FindObjectOfType<CartPathService>();
-        }
 
+        [Inject]
+        private void Init(CartPathService cartPathService, PlayersSpawner playersSpawner)
+        {
+            _playersSpawner = playersSpawner;
+            _cartPathService = cartPathService;
+        }
+        
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;

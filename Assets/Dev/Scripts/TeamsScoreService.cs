@@ -4,6 +4,7 @@ using Fusion;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev
 {
@@ -18,12 +19,14 @@ namespace Dev
         [Networked] private TeamScoreData BlueTeamScoreData { get; set; }
         [Networked] private TeamScoreData RedTeamScoreData { get; set; }
     
-        private void Awake()
-        {
-            _teamsService = FindObjectOfType<TeamsService>();
-            _cartPathService = FindObjectOfType<CartPathService>();
-        }
 
+        [Inject]
+        private void Init(TeamsService teamsService, CartPathService cartPathService)
+        {
+            _teamsService = teamsService;
+            _cartPathService = cartPathService;
+        }
+        
         public override void Spawned()
         {
             if (HasStateAuthority == false)
