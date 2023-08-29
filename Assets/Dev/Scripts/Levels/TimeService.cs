@@ -26,7 +26,6 @@ namespace Dev
         private void Awake()
         {
             _playersSpawner = FindObjectOfType<PlayersSpawner>();
-
             _cartPathService = FindObjectOfType<CartPathService>();
         }
 

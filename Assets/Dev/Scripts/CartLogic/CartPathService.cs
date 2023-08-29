@@ -5,6 +5,7 @@ using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev
 {
@@ -18,10 +19,11 @@ namespace Dev
         [Space] [SerializeField] private Cart _cart;
         [SerializeField] private List<CartPathPoint> _pathPoints;
 
-        [SerializeField] private TeamSide _allowedTeamToMoveCart;
-
+        [SerializeField] private TeamSide _teamToCapturePoints = TeamSide.Red;
         [SerializeField] private PathDrawer _pathDrawer;
 
+        public TeamSide TeamToCapturePoints => _teamToCapturePoints;
+        
         private CartPathPoint _currentPoint;
         private CartPathPoint _nextPoint;
 
@@ -165,7 +167,7 @@ namespace Dev
             {
                 TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerRef);
 
-                if (playerTeamSide != _allowedTeamToMoveCart) return true;
+                if (playerTeamSide != _teamToCapturePoints) return true;
             }
 
             return false;

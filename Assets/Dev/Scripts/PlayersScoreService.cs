@@ -24,7 +24,6 @@ namespace Dev
             playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 
             _teamsService = FindObjectOfType<TeamsService>();
-
             _playersDataService = FindObjectOfType<PlayersDataService>();
 
             var playerHealthService = FindObjectOfType<PlayersHealthService>();
