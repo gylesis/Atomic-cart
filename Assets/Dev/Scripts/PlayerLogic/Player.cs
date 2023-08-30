@@ -8,7 +8,6 @@ namespace Dev
 {
     public class Player : NetworkContext, IDamageable
     {
-        [SerializeField] private float _speed;
         [Range(0f, 1f)] [SerializeField] private float _shootThreshold = 0.75f;
         [SerializeField] private PlayerView _playerView;
         [SerializeField] private NetworkRigidbody2D _networkRigidbody2D;
@@ -23,8 +22,15 @@ namespace Dev
         public Rigidbody2D Rigidbody => _networkRigidbody2D.Rigidbody;
         public WeaponController WeaponController => _weaponController;
 
-        public float Speed => _speed;
         public float ShootThreshold => _shootThreshold;
         public PlayerRef PlayerRef => Object.InputAuthority;
+
+        [Networked] public CharacterClass CharacterClass { get; private set; }
+        
+        public void Init(CharacterClass characterClass)
+        {
+            CharacterClass = characterClass;
+        }
+        
     }
 }

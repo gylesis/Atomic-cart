@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 7
   m_Sprite: {fileID: -1433731438, guid: 06b82550a17c01542bfb927e8cd312a5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -193,8 +193,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1055819660}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.28, z: 0}
-  m_LocalScale: {x: 2.66, y: 4.25, z: 1}
+  m_LocalPosition: {x: 0, y: 0.82, z: 0}
+  m_LocalScale: {x: 2.54, y: 3.12, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5544195138823906173}
@@ -442,7 +442,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
   _player: {fileID: 5544195138823906172}
-  _speedLowerSpeed: 1.1
 --- !u!114 &5544195138823906172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,13 +455,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  _speed: 500
   _shootThreshold: 0.6
   _playerView: {fileID: 898484370}
   _networkRigidbody2D: {fileID: 5544195138823906171}
   _hitboxRoot: {fileID: 3459795353489080509}
   _weaponController: {fileID: 5999655236562569822}
   _playerController: {fileID: 5429065874298734006}
+  _CharacterClass: 0
 --- !u!50 &5544195138823906170
 Rigidbody2D:
   serializedVersion: 4

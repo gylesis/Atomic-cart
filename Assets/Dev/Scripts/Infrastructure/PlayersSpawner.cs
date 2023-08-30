@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Dev.UI;
 using Dev.Weapons;
 using Fusion;
 using UniRx;
@@ -35,13 +37,89 @@ namespace Dev.Infrastructure
         public IReadOnlyCollection<Player> Players => _players.Values;
 
         private TeamsService _teamsService;
+        private PopUpService _popUpService;
+        private CharactersDataContainer _charactersDataContainer;
 
         [Inject]
-        private void Init(TeamsService teamsService)
+        private void Init(TeamsService teamsService, PopUpService popUpService,
+            CharactersDataContainer charactersDataContainer)
         {
+            _charactersDataContainer = charactersDataContainer;
+            _popUpService = popUpService;
             _teamsService = teamsService;
         }
-        
+
+        public void SpawnPlayerByCharacterClass(PlayerRef playerRef)
+        {
+            _popUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
+
+            characterChooseMenu.StartChoosingCharacter((characterClass =>
+            {
+                Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe((l =>
+                {
+                    _popUpService.HidePopUp<CharacterChooseMenu>();
+                }));
+                
+                SpawnPlayer(playerRef, characterClass);
+            }));
+        }
+
+        public Player SpawnPlayer(PlayerRef playerRef, CharacterClass characterClass)
+        {
+            AssignTeam(playerRef);
+            
+            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(characterClass);
+
+            Player playerPrefab = characterData.PlayerPrefab;
+
+            TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
+            Vector3 spawnPos = GetSpawnPos(teamSide);
+
+            Player player = Runner.Spawn(playerPrefab, spawnPos,
+                quaternion.identity, playerRef);
+
+            player.PlayerController.Init(characterData.CharacterStats);
+            
+            player.Init(characterClass);
+
+            NetworkObject playerNetObj = player.Object;
+            Runner.SetPlayerObject(playerRef, playerNetObj);
+
+            _playerServices.Add(playerRef, new List<NetworkObject>());
+
+            SetInputService(playerRef);
+            SetCamera(playerRef, player);
+
+            var playerName = $"Player №{playerNetObj.InputAuthority.PlayerId}";
+            player.RPC_SetName(playerName);
+
+            PlayersCount++;
+
+            _players.Add(playerRef, player);
+
+            //RespawnPlayer(playerRef);
+
+            RPC_OnPlayerSpawnedInvoke(player);
+            
+            LoadWeapon(player);
+
+            ColorTeamBanner(playerRef);
+
+            return player;
+        }
+
+        private void ColorTeamBanner(PlayerRef playerRef)
+        {
+            Color color = Color.red;
+
+            if (_players.Count % 2 == 0)
+            {
+                color = Color.blue;
+            }
+
+            _players[playerRef].PlayerView.RPC_SetTeamColor(color);
+        }
+
         public Player SpawnPlayer(PlayerRef playerRef)
         {
             var playersLength = PlayersCount;
@@ -61,13 +139,13 @@ namespace Dev.Infrastructure
             player.RPC_SetName(playerName);
 
             PlayersCount++;
-            
+
             _players.Add(playerRef, player);
 
             AssignTeam(playerRef);
 
             RespawnPlayer(playerRef);
-            
+
             RPC_OnPlayerSpawnedInvoke(player);
 
             LoadWeapon(player);
@@ -77,25 +155,20 @@ namespace Dev.Infrastructure
 
         private void LoadWeapon(Player player)
         {
-            var weaponSetupContext = new WeaponSetupContext("AkWeapon");
-            player.WeaponController.Init(weaponSetupContext);
+            //  var weaponSetupContext = new WeaponSetupContext("AkWeapon");
+            //  player.WeaponController.Init(weaponSetupContext);
         }
 
         private void AssignTeam(PlayerRef playerRef)
         {
             TeamSide teamSide = TeamSide.Red;
 
-            Color color = Color.red;
-            
             if (_players.Count % 2 == 0)
             {
                 teamSide = TeamSide.Blue;
-                color = Color.blue;
             }
 
             _teamsService.AssignForTeam(playerRef, teamSide);
-            
-            _players[playerRef].PlayerView.RPC_SetTeamColor(color);
         }
 
         private void SetCamera(PlayerRef playerRef, Player player)
@@ -115,7 +188,7 @@ namespace Dev.Infrastructure
         }
 
         public Vector3 GetPlayerPos(PlayerRef playerRef) => _players[playerRef].transform.position;
-        
+
         public void DespawnPlayer(PlayerRef playerRef)
         {
             PlayerLeft(playerRef);
@@ -133,7 +206,7 @@ namespace Dev.Infrastructure
             {
                 Runner.Despawn(networkObject);
             }
-            
+
             _teamsService.RemoveFromTeam(playerRef);
 
             _playerServices.Remove(playerRef);
@@ -154,14 +227,23 @@ namespace Dev.Infrastructure
             Player player = _players[playerRef];
 
             player.transform.position = spawnPoint.transform.position;
-            
+
             player.PlayerController.AllowToMove = true;
             player.PlayerController.AllowToShoot = true;
-            
+
             player.HitboxRoot.HitboxRootActive = true;
         }
 
-        
+        public Vector3 GetSpawnPos(TeamSide teamSide)
+        {
+            var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(teamSide);
+
+            SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+            return spawnPoint.transform.position;
+        }
+
+
         private void RPC_OnPlayerSpawnedInvoke(Player player)
         {
             var spawnEventContext = new PlayerSpawnEventContext();
@@ -193,6 +275,7 @@ namespace Dev.Infrastructure
 
     public struct PlayerSpawnEventContext
     {
+        public CharacterClass CharacterClass;
         public PlayerRef PlayerRef;
         public Transform Transform;
     }

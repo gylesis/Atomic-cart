@@ -8,6 +8,8 @@ namespace Dev.Infrastructure
         public CharacterClass CharacterClass;
         public Player PlayerPrefab;
 
+        public Sprite CharacterIcon;
+        
         [Header("Stats")]
         public CharacterStats CharacterStats;
     }

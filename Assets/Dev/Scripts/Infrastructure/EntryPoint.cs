@@ -12,18 +12,18 @@ namespace Dev.Infrastructure
         private PlayersSpawner _playersSpawner;
 
         [Inject]
-        private void Init(PlayersSpawner playersSpawner,PlayersHealthService playersHealthService,PlayersDataService playersDataService )
+        private void Init(PlayersSpawner playersSpawner)
         {
             _playersSpawner = playersSpawner;
         }
-        
+
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             if (runner.IsServer)
             {
                 await Task.Delay(100);
-                
-                _playersSpawner.SpawnPlayer(player);
+
+                _playersSpawner.SpawnPlayerByCharacterClass(player);
             }
         }
 

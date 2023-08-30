@@ -17,12 +17,12 @@ namespace Dev.Weapons.Guns
 
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
 
-        private Vector3 _moveDirection;
+        private Vector2 _moveDirection;
         private float _force;
         protected int _damage;
         private PlayerRef _owner;
 
-        public void Init(Vector3 moveDirection, float force, int damage, PlayerRef owner)
+        public void Init(Vector2 moveDirection, float force, int damage, PlayerRef owner)
         {
             _owner = owner;
             _damage = damage;
@@ -31,7 +31,7 @@ namespace Dev.Weapons.Guns
 
             transform.up = _moveDirection;
         }
-
+    
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;

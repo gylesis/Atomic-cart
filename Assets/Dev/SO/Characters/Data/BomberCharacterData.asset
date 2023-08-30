@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterClass: 3
   PlayerPrefab: {fileID: 0}
+  CharacterIcon: {fileID: 0}
   CharacterStats:
+    Health: 100
     MoveSpeed: 500
-    SpeedLowerSpeed: 0
+    SpeedLowerSpeed: 1.1
+    ShootThreshold: 0.75

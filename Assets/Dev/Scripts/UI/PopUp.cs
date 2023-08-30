@@ -16,6 +16,7 @@ namespace Dev.UI
         public Subject<bool> OnHide { get; } = new Subject<bool>();
 
         private IDisposable _disposable;
+        protected PopUpService PopUpService;
 
         private void Reset()
         {
@@ -23,6 +24,11 @@ namespace Dev.UI
             _procceedButton = GetComponentInChildren<DefaultReactiveButton>();
         }
 
+        public void InitPopUpService(PopUpService popUpService)
+        {
+            PopUpService = popUpService;
+        }
+        
         public void OnSucceedButtonClicked(Action action)
         {
             _disposable?.Dispose();

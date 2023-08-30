@@ -30,7 +30,6 @@ namespace Dev.UI
             }
         }
 
-
         public bool TryGetPopUp<TPopUp>(out TPopUp popUp) where TPopUp : PopUp
         {
             popUp = null;
@@ -66,8 +65,17 @@ namespace Dev.UI
                 popUp.Show();
             }
             
-            
         }
         
+        public void HidePopUp<TPopUp>() where TPopUp : PopUp
+        {
+            var tryGetPopUp = TryGetPopUp<TPopUp>(out var popUp);
+
+            if (tryGetPopUp)
+            {
+                popUp.Hide();
+            }
+            
+        }
     }
 }

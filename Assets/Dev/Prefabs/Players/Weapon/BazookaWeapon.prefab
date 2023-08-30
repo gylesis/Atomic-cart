@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 8
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.4339623, g: 0.14533643, b: 0.14533643, a: 0.90588236}
   m_FlipX: 0
@@ -199,6 +199,8 @@ MonoBehaviour:
   _projectileSpeed: 1500
   _projectileAliveTime: 2
   _projectilePrefab: {fileID: -964699253970526838, guid: 0bf2e56b164e34b4d8c61cf72e5beb7c, type: 3}
+  _explosionRadius: 2
+  _firePushPower: 5
 --- !u!4 &5643736420937599800 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6010108543459295257, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}

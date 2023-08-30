@@ -9,5 +9,7 @@ namespace Dev.Infrastructure
         [SerializeField] private CharacterData[] _datas;
 
         public CharacterData GetCharacterDataByClass(CharacterClass characterClass) => _datas.First(x => x.CharacterClass == characterClass);
+
+        public CharacterData[] Datas => _datas;
     }
 }

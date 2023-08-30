@@ -23,6 +23,7 @@ namespace Dev
         private bool _init;
         private TeamsService _teamsService;
         private WorldTextProvider _worldTextProvider;
+        private CharactersDataContainer _charactersDataContainer;
 
         private void OnGUI()
         {
@@ -64,8 +65,9 @@ namespace Dev
         }
 
         [Inject]
-        public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider)
+        public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider, CharactersDataContainer charactersDataContainer)
         {
+            _charactersDataContainer = charactersDataContainer;
             _playersSpawner = playersSpawner;
             _teamsService = teamsService;
             _worldTextProvider = worldTextProvider;
@@ -85,7 +87,8 @@ namespace Dev
         {
             PlayerRef playerRef = spawnEventContext.PlayerRef;
 
-            int startHealth = 100;
+            int startHealth = _charactersDataContainer.GetCharacterDataByClass(spawnEventContext.CharacterClass).CharacterStats.Health;
+
             PlayersHealth.Add(playerRef, startHealth);
         }
 

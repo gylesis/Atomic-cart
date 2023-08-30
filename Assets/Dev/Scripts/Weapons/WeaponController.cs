@@ -32,6 +32,11 @@ namespace Dev.Weapons
 
         public override void Spawned()
         {
+            if (HasInputAuthority)
+            {
+                RPC_AddWeapon(WeaponParent.GetComponentInChildren<Weapon>(), true);
+            }
+
             if (HasStateAuthority == false) return;
 
             foreach (Weapon weapon in Weapons)

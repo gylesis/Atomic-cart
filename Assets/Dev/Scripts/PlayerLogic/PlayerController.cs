@@ -1,37 +1,41 @@
-﻿using System;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using Dev.UI;
 using Dev.Weapons;
 using Fusion;
 using UnityEngine;
-using Zenject;
 
 namespace Dev
 {
     public class PlayerController : NetworkContext
     {
         [SerializeField] private Player _player;
-        [SerializeField] private float _speedLowerSpeed = 1.1f;
        
-        private PopUpService _popUpService;
         private WeaponController _weaponController => _player.WeaponController;
-        private float Speed => _player.Speed;
         private PlayerView PlayerView => _player.PlayerView;
-        private float ShootThreshold => _player.ShootThreshold;
 
         [Networked] private Vector2 LastMoveDirection { get; set; }
         [Networked] private Vector2 LastLookDirection { get; set; }
 
         public bool AllowToMove { get; set; } = true;
-
         public bool AllowToShoot { get; set; } = true;
+
+        private float Speed => _characterStats.MoveSpeed;
+        private float ShootThreshold => _characterStats.ShootThreshold;
+        private float SpeedLowerSpeed => _characterStats.SpeedLowerSpeed;
         
-       
+        private PopUpService _popUpService;
+        private CharacterStats _characterStats;
+
         private void Awake()
         {
             _popUpService = DependenciesContainer.Instance.GetDependency<PopUpService>();
         }
 
+        public void Init(CharacterStats characterStats)
+        {
+            _characterStats = characterStats;
+        }
+        
         public override void FixedUpdateNetwork()
         {
             var hasInput = GetInput<PlayerInput>(out var input);
@@ -53,7 +57,7 @@ namespace Dev
 
                 if (velocity.sqrMagnitude != 0)
                 {
-                    float lowerModifier = (_speedLowerSpeed * Runner.DeltaTime);
+                    float lowerModifier = (SpeedLowerSpeed * Runner.DeltaTime);
                     
                     float xSign = Mathf.Sign(velocity.x) == 1 ? 1 : -1;
                     float ySign = Mathf.Sign(velocity.y) == 1 ? 1 : -1;
