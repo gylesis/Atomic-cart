@@ -41,7 +41,7 @@ namespace Dev
                 var guiStyle = new GUIStyle();
                 guiStyle.fontSize = 40;
                 
-                Color color = Color.black;
+                Color color = Color.white;
 
                 if (health == 0)
                 {
@@ -168,16 +168,24 @@ namespace Dev
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe((l =>
             {
                 _playersSpawner.RespawnPlayer(playerRef);
-                
-                RestorePlayerHealth(playerRef, 100);
+
+                RestorePlayerHealth(playerRef);
 
                 player.RPC_DoScale(0, 1);
             }));
-        }
+        }   
         
-        public void RestorePlayerHealth(PlayerRef playerRef, int restoreHealth)
+        public void RestorePlayerHealth(PlayerRef playerRef)
         {
-            PlayersHealth.Set(playerRef, restoreHealth);
+            NetworkObject playerObject = Runner.GetPlayerObject(playerRef);
+
+            Player player = playerObject.GetComponent<Player>();
+            
+            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(player.CharacterClass);
+
+            Debug.Log($"Restoring health for player {playerRef} - {characterData.CharacterStats.Health}");
+            
+            PlayersHealth.Set(playerRef, characterData.CharacterStats.Health);
         }
     }
 

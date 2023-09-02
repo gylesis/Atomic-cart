@@ -43,6 +43,21 @@ namespace Dev
             _pathPoints = GetComponentsInChildren<CartPathPoint>().ToList();
         }
 
+        private void Awake()
+        {
+            foreach (CartPathPoint pathPoint in _pathPoints)
+            {
+                if (pathPoint.IsControlPoint)
+                {
+                    pathPoint.transform.localScale = Vector3.one * 3f; 
+                }
+                else
+                {
+                    pathPoint.View.gameObject.SetActive(false);
+                }
+            }
+        }
+
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;

@@ -193,10 +193,10 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _shootPoint: {fileID: 8329106418942572176}
   _view: {fileID: 5643736420937599800}
-  _cooldown: 0.15
+  _cooldown: 0.2
   _damage: 10
   _shootDelay: 0
-  _projectileSpeed: 1200
+  _projectileSpeed: 1400
   _projectileAliveTime: 1
   _projectilePrefab: {fileID: 2255149966835474389, guid: bb21c81cb5816ba42b04833d9c9aeaec, type: 3}
 --- !u!4 &5643736420937599800 stripped

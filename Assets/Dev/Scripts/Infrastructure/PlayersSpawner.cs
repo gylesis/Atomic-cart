@@ -51,6 +51,12 @@ namespace Dev.Infrastructure
 
         public void SpawnPlayerByCharacterClass(PlayerRef playerRef)
         {
+            RPC_GetCharacterClass(playerRef);
+        }
+
+        [Rpc]
+        private void RPC_GetCharacterClass([RpcTarget] PlayerRef playerRef)
+        {
             _popUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
 
             characterChooseMenu.StartChoosingCharacter((characterClass =>
@@ -59,15 +65,24 @@ namespace Dev.Infrastructure
                 {
                     _popUpService.HidePopUp<CharacterChooseMenu>();
                 }));
-                
-                SpawnPlayer(playerRef, characterClass);
+
+                RPC_SetCharacterClass(characterClass, playerRef);
             }));
         }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_SetCharacterClass(CharacterClass characterClass, PlayerRef playerRef)
+        {
+            Debug.Log($"Player {playerRef} chose {characterClass}");
+
+            SpawnPlayer(playerRef, characterClass);
+        }
+
 
         public Player SpawnPlayer(PlayerRef playerRef, CharacterClass characterClass)
         {
             AssignTeam(playerRef);
-            
+
             CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(characterClass);
 
             Player playerPrefab = characterData.PlayerPrefab;
@@ -78,8 +93,9 @@ namespace Dev.Infrastructure
             Player player = Runner.Spawn(playerPrefab, spawnPos,
                 quaternion.identity, playerRef);
 
-            player.PlayerController.Init(characterData.CharacterStats);
-            
+            player.PlayerController.RPC_Init(characterData.CharacterStats.MoveSpeed,
+                characterData.CharacterStats.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
+
             player.Init(characterClass);
 
             NetworkObject playerNetObj = player.Object;
@@ -100,7 +116,7 @@ namespace Dev.Infrastructure
             //RespawnPlayer(playerRef);
 
             RPC_OnPlayerSpawnedInvoke(player);
-            
+
             LoadWeapon(player);
 
             ColorTeamBanner(playerRef);
@@ -110,17 +126,25 @@ namespace Dev.Infrastructure
 
         private void ColorTeamBanner(PlayerRef playerRef)
         {
+            TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
+
             Color color = Color.red;
 
-            if (_players.Count % 2 == 0)
+            switch (teamSide)
             {
-                color = Color.blue;
+                case TeamSide.Blue:
+                    color = Color.blue;
+
+                    break;
+                case TeamSide.Red:
+                    color = Color.red;
+                    break;
             }
 
             _players[playerRef].PlayerView.RPC_SetTeamColor(color);
         }
 
-        public Player SpawnPlayer(PlayerRef playerRef)
+        /*public Player SpawnPlayer(PlayerRef playerRef)
         {
             var playersLength = PlayersCount;
 
@@ -151,7 +175,7 @@ namespace Dev.Infrastructure
             LoadWeapon(player);
 
             return player;
-        }
+        }*/
 
         private void LoadWeapon(Player player)
         {
@@ -161,11 +185,11 @@ namespace Dev.Infrastructure
 
         private void AssignTeam(PlayerRef playerRef)
         {
-            TeamSide teamSide = TeamSide.Red;
+            TeamSide teamSide = TeamSide.Blue;
 
             if (_players.Count % 2 == 0)
             {
-                teamSide = TeamSide.Blue;
+                teamSide = TeamSide.Red;
             }
 
             _teamsService.AssignForTeam(playerRef, teamSide);
@@ -249,6 +273,7 @@ namespace Dev.Infrastructure
             var spawnEventContext = new PlayerSpawnEventContext();
             spawnEventContext.PlayerRef = player.Object.InputAuthority;
             spawnEventContext.Transform = player.transform;
+            spawnEventContext.CharacterClass = player.CharacterClass;
 
 //            Debug.Log($"Player spawned");
             Spawned.OnNext(spawnEventContext);

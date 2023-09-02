@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45e93b288b0f46b9ac1ffdf62fda1e30, type: 3}
   m_Name: EngineerCharacterData
   m_EditorClassIdentifier: 
-  CharacterClass: 0
+  CharacterClass: 1
   PlayerPrefab: {fileID: 0}
   CharacterIcon: {fileID: 0}
   CharacterStats:

@@ -24,6 +24,7 @@ namespace Dev.UI
 
             foreach (PopUp popUp in popUps)
             {
+                popUp.InitPopUpService(this);
                 Type type = popUp.GetType();
 
                 _spawnedPrefabs.Add(type, popUp);

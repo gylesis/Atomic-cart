@@ -16,7 +16,7 @@ namespace Dev.Infrastructure
         {
             _playersSpawner = playersSpawner;
         }
-
+        
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             if (runner.IsServer)
@@ -24,7 +24,14 @@ namespace Dev.Infrastructure
                 await Task.Delay(100);
 
                 _playersSpawner.SpawnPlayerByCharacterClass(player);
+                
+                
+                
             }
+            
+            
+           
+            
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
