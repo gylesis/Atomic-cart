@@ -10,12 +10,15 @@ namespace Dev
     {
         [SerializeField] private Player _player;
 
+       
         private WeaponController _weaponController => _player.WeaponController;
         private PlayerView PlayerView => _player.PlayerView;
 
         [Networked] private Vector2 LastMoveDirection { get; set; }
-        [Networked] private Vector2 LastLookDirection { get; set; }
+        [Networked] public Vector2 LastLookDirection { get; private set; }
 
+        [Networked] public NetworkBool IsPlayerAiming { get; private set; }
+        
         public bool AllowToMove { get; set; } = true;
         public bool AllowToShoot { get; set; } = true;
 
@@ -98,6 +101,9 @@ namespace Dev
                 var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
                 scoreMenu.Hide();
             }
+
+          
+
         }
 
         private void HandleAnimation(PlayerInput input)
@@ -129,10 +135,13 @@ namespace Dev
 
             if (input.LookDirection == Vector2.zero)
             {
+                IsPlayerAiming = false;
                 lookDirection = LastLookDirection;
             }
             else
             {
+                IsPlayerAiming = true;
+
                 LastLookDirection = lookDirection;
 
                 var magnitude = lookDirection.sqrMagnitude;
@@ -143,9 +152,14 @@ namespace Dev
                 }
             }
 
+           
+
             _weaponController.AimWeaponTowards(lookDirection);
         }
 
+        
+     
+        
         private void Shoot()
         {
             _weaponController.TryToFire();

@@ -1,4 +1,5 @@
-﻿using Zenject;
+﻿using Fusion;
+using Zenject;
 
 namespace Dev.Infrastructure
 {
@@ -24,6 +25,6 @@ namespace Dev.Infrastructure
         {
             return _diContainer.Resolve<TType>();
         }
-        
+
     }
 }

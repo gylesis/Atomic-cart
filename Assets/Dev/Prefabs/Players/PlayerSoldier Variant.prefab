@@ -87,6 +87,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5429065874298734006, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: _aimDistance
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: NestedObjects.Array.size
       value: 2
