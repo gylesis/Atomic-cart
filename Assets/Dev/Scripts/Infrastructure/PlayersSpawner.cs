@@ -51,12 +51,16 @@ namespace Dev.Infrastructure
 
         public void SpawnPlayerByCharacterClass(PlayerRef playerRef)
         {
+            Debug.Log($"Request to spawn player {playerRef}");
+            
             RPC_GetCharacterClass(playerRef);
         }
 
         [Rpc]
         private void RPC_GetCharacterClass([RpcTarget] PlayerRef playerRef)
         {
+            Debug.Log($"Ask for character class");
+
             _popUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
 
             characterChooseMenu.StartChoosingCharacter((characterClass =>
@@ -89,6 +93,7 @@ namespace Dev.Infrastructure
 
             TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
             Vector3 spawnPos = GetSpawnPos(teamSide);
+            //Vector3 spawnPos = Vector3.zero;
 
             Player player = Runner.Spawn(playerPrefab, spawnPos,
                 quaternion.identity, playerRef);
@@ -218,6 +223,17 @@ namespace Dev.Infrastructure
             PlayerLeft(playerRef);
         }
 
+        public void SetPlayerActiveState(PlayerRef playerRef, bool isOn)
+        {
+            Player player = _players[playerRef];
+            
+            player.gameObject.SetActive(isOn);
+
+            player.PlayerController.AllowToMove = isOn;
+            player.PlayerController.AllowToShoot = isOn;
+            
+        }
+        
         public void PlayerLeft(PlayerRef playerRef)
         {
             DeSpawned.OnNext(playerRef);

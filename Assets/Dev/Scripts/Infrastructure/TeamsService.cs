@@ -9,8 +9,9 @@ namespace Dev.Infrastructure
 
        // public Team RedTeam => _teams.First(x => x.TeamSide == TeamSide.Red);
        // public Team BlueTeam => _teams.First(x => x.TeamSide == TeamSide.Blue);
-        
-        public override void Spawned()
+
+
+       public override void Spawned()
         {
             if(HasStateAuthority == false) return;
 

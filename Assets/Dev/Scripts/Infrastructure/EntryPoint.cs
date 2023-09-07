@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fusion;
 using Fusion.Sockets;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace Dev.Infrastructure
@@ -16,22 +18,23 @@ namespace Dev.Infrastructure
         {
             _playersSpawner = playersSpawner;
         }
-        
+
+        public override void Spawned()
+        {
+            Runner.AddCallbacks(this);
+            Debug.Log($"Entry point spawned");
+        }
+
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
+            /*Debug.Log($"Player Joined");
+                
             if (runner.IsServer)
             {
                 await Task.Delay(100);
 
                 _playersSpawner.SpawnPlayerByCharacterClass(player);
-                
-                
-                
-            }
-            
-            
-           
-            
+            }*/
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -48,8 +51,11 @@ namespace Dev.Infrastructure
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
 
-        public void OnConnectedToServer(NetworkRunner runner) { }
-
+        public void OnConnectedToServer(NetworkRunner runner)
+        {
+            Debug.Log($"On Connected to server");
+        }
+    
         public void OnDisconnectedFromServer(NetworkRunner runner) { }
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
@@ -67,34 +73,26 @@ namespace Dev.Infrastructure
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 
-        public void OnSceneLoadDone(NetworkRunner runner)
+        public async void OnSceneLoadDone(NetworkRunner runner)
         {
-            if (runner.IsServer)
-            {
-                foreach (PlayerRef playerRef in Runner.ActivePlayers)
-                {
-                    if(_playersSpawner.IsPlayerSpawned(playerRef)) continue;
-                    
-                    _playersSpawner.SpawnPlayer(playerRef);
-                }
+            Debug.Log($"OnSceneLoadDone");
 
+            await Task.Delay(500);
+
+            foreach (PlayerRef playerRef in PlayerManager.PlayerQueue)
+            {
+                // Debug.Log($"Respawning Player {_playersDataService.GetNickname(playerRef)}");
+                Debug.Log($"Spawning Player {playerRef}");
+
+                _playersSpawner.SpawnPlayerByCharacterClass(playerRef);
             }
             
-            Debug.Log($"OnSceneLoadDone");
+            PlayerManager.PlayerQueue.Clear();
         }
 
         public void OnSceneLoadStart(NetworkRunner runner)
         {
             Debug.Log($"OnSceneLoadStart");
-        }
-    }
-    
-    
-    public class SceneHandler : NetworkSceneManagerDefault
-    {
-        protected override YieldInstruction LoadSceneAsync(SceneRef sceneRef, LoadSceneParameters parameters, Action<Scene> loaded)
-        {
-            return base.LoadSceneAsync(sceneRef, parameters, loaded);
         }
     }
 }
