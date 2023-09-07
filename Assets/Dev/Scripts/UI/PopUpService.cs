@@ -31,6 +31,7 @@ namespace Dev.UI
             }
         }
 
+
         public bool TryGetPopUp<TPopUp>(out TPopUp popUp) where TPopUp : PopUp
         {
             popUp = null;

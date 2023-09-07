@@ -67,8 +67,34 @@ namespace Dev.Infrastructure
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 
-        public void OnSceneLoadDone(NetworkRunner runner) { }
+        public void OnSceneLoadDone(NetworkRunner runner)
+        {
+            if (runner.IsServer)
+            {
+                foreach (PlayerRef playerRef in Runner.ActivePlayers)
+                {
+                    if(_playersSpawner.IsPlayerSpawned(playerRef)) continue;
+                    
+                    _playersSpawner.SpawnPlayer(playerRef);
+                }
 
-        public void OnSceneLoadStart(NetworkRunner runner) { }
+            }
+            
+            Debug.Log($"OnSceneLoadDone");
+        }
+
+        public void OnSceneLoadStart(NetworkRunner runner)
+        {
+            Debug.Log($"OnSceneLoadStart");
+        }
+    }
+    
+    
+    public class SceneHandler : NetworkSceneManagerDefault
+    {
+        protected override YieldInstruction LoadSceneAsync(SceneRef sceneRef, LoadSceneParameters parameters, Action<Scene> loaded)
+        {
+            return base.LoadSceneAsync(sceneRef, parameters, loaded);
+        }
     }
 }

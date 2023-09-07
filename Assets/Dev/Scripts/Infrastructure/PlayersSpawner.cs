@@ -6,8 +6,8 @@ using Fusion;
 using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
-using Zenject;
 using Random = UnityEngine.Random;
+using Zenject;
 
 namespace Dev.Infrastructure
 {
