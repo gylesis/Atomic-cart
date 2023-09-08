@@ -18,7 +18,7 @@ namespace Dev.Infrastructure
         protected override IEnumerator SwitchScene(SceneRef prevScene, SceneRef newScene,
             FinishedLoadingDelegate finished)
         {
-            Debug.Log($"Switching Scene from {prevScene} to {newScene}");
+           // Debug.Log($"Switching Scene from {prevScene} to {newScene}");
 
             if (newScene <= 0)
             {
@@ -28,9 +28,9 @@ namespace Dev.Infrastructure
 
             if (prevScene > 0)
             {
-                yield return new WaitForSeconds(1.0f);
+               // yield return new WaitForSeconds(1.0f);
 
-                Debug.Log("De-spawning all players");
+               // Debug.Log("De-spawning all players");
 
                 /*foreach (Player player in _playersSpawner.Players)
                 {
@@ -44,16 +44,16 @@ namespace Dev.Infrastructure
                     yield return new WaitForSeconds(0.1f);
                 }*/
 
-                yield return new WaitForSeconds(1.5f - PlayerManager.allPlayers.Count * 0.1f);
+               // yield return new WaitForSeconds(1.5f - PlayerManager.allPlayers.Count * 0.1f);
 
-                Debug.Log("De-spawned all players");
+                //Debug.Log("De-spawned all players");
             }
 
             yield return null;
-            Debug.Log($"Start loading scene {newScene} in single peer mode");
+            //Debug.Log($"Start loading scene {newScene} in single peer mode");
 
             _loadedScene = default;
-            Debug.Log($"Loading scene {newScene}");
+            //Debug.Log($"Loading scene {newScene}");
 
             List<NetworkObject> sceneObjects = new List<NetworkObject>();
 
@@ -72,7 +72,7 @@ namespace Dev.Infrastructure
             finished(sceneObjects);
             
             
-            Debug.Log($"Unloading Scene {0}");
+           // Debug.Log($"Unloading Scene {0}");
             SceneManager.UnloadSceneAsync(0);
         }
     }

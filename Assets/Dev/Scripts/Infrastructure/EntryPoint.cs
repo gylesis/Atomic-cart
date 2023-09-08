@@ -22,7 +22,6 @@ namespace Dev.Infrastructure
         public override void Spawned()
         {
             Runner.AddCallbacks(this);
-            Debug.Log($"Entry point spawned");
         }
 
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -77,7 +76,7 @@ namespace Dev.Infrastructure
         {
             Debug.Log($"OnSceneLoadDone");
 
-            await Task.Delay(500);
+            await Task.Delay(3000); // TODO 
 
             foreach (PlayerRef playerRef in PlayerManager.PlayerQueue)
             {
