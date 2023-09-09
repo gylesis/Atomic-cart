@@ -20,11 +20,22 @@ namespace Dev.Infrastructure
         [SerializeField] private CartPathService _cartPathService;
         [SerializeField] private PopUpService _popUpService;
         [SerializeField] private TimeService _timeService;
+        [SerializeField] private GameService _gameService;
 
-        public override void InstallBindings()
+        [SerializeField] private LevelService _levelService;
+        
+        [SerializeField] private JoysticksContainer _joysticksContainer;
+        
+        public override void InstallBindings()  
         {
             Container.Bind<DependenciesContainer>().AsSingle().NonLazy();
 
+            Container.Bind<JoysticksContainer>().FromInstance(_joysticksContainer).AsSingle();
+
+            Container.Bind<GameService>().FromInstance(_gameService).AsSingle();
+            
+            Container.Bind<LevelService>().FromInstance(_levelService).AsSingle();
+            
             Container.Bind<PlayersSpawner>().FromInstance(_playersSpawner).AsSingle();
             Container.Bind<PlayersHealthService>().FromInstance(_playersHealthService).AsSingle();
             Container.Bind<PlayersDataService>().FromInstance(_playersDataService).AsSingle();

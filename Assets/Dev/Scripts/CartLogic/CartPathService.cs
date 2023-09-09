@@ -59,10 +59,10 @@ namespace Dev.CartLogic
             }
         }
 
-        public override void Spawned()
+        protected override void ServerSubscriptions()
         {
-            if (HasStateAuthority == false) return;
-
+            base.ServerSubscriptions();
+            
             _teamsService = FindObjectOfType<TeamsService>();
 
             PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
@@ -76,6 +76,7 @@ namespace Dev.CartLogic
             var points = _pathPoints.Select(x => x.transform.position).ToArray();
 
             RPC_DrawCartPath(points);
+            
         }
 
         private void OnPlayerLeft(PlayerRef playerRef)

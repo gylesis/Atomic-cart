@@ -136,6 +136,36 @@ namespace Dev.PlayerLogic
 
             PlayersHealth.Set(victim, playerCurrentHealth);
         }
+        
+        
+        public void ApplyDamageFromServer(PlayerRef victim, int damage)
+        {   
+            if (HasStateAuthority == false) return;
+
+            int playerCurrentHealth = PlayersHealth[victim];
+
+            if (playerCurrentHealth == 0) return;
+
+            var nickname = PlayersDataService.Instance.GetNickname(victim);
+
+            Debug.Log($"Damage {damage} applied to player {nickname} from server");
+
+            Vector3 playerPos = _playersSpawner.GetPlayerPos(victim);
+            RPC_SpawnDamageHint(victim, playerPos, damage);
+
+            playerCurrentHealth -= damage;
+
+            if (playerCurrentHealth <= 0)
+            {
+                playerCurrentHealth = 0;
+                OnPlayerHealthZero(victim, PlayerRef.None);
+            }
+
+            Debug.Log($"Player {nickname} has {playerCurrentHealth} health");
+
+            PlayersHealth.Set(victim, playerCurrentHealth);
+        }
+        
 
         public void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
         {
@@ -172,7 +202,7 @@ namespace Dev.PlayerLogic
             {
                 _playersSpawner.RespawnPlayer(playerRef);
 
-                player.RPC_DoScale(0, 1);
+                player.RPC_DoScale(0);
             }));
         }
 

@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: GameSettings
   m_EditorClassIdentifier: 
   _timeAfterWinGame: 5
+  _cameraZoomModifier: 25

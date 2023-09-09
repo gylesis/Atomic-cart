@@ -2,12 +2,13 @@
 using Dev.Utils;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev.Levels.Interactions
 {
-    public class PlayerInteractionZone : TriggerZone
+    public class PlayerInteractionZone : InteractionZone
     {
-        [SerializeField] private TriggerZone _triggerZone;
+        [FormerlySerializedAs("_triggerZone")] [SerializeField] private InteractionZone _interactionZone;
 
         public Subject<Player> PlayerEntered { get; } = new Subject<Player>();
         public Subject<Player> PlayerExit { get; } = new Subject<Player>();
@@ -16,8 +17,8 @@ namespace Dev.Levels.Interactions
         {
             base.ServerSubscriptions();
 
-            _triggerZone.TriggerEntered.TakeUntilDestroy(this).Subscribe((OnZoneEntered));
-            _triggerZone.TriggerExit.TakeUntilDestroy(this).Subscribe((OnZoneExit));
+            _interactionZone.TriggerEntered.TakeUntilDestroy(this).Subscribe((OnZoneEntered));
+            _interactionZone.TriggerExit.TakeUntilDestroy(this).Subscribe((OnZoneExit));
         }
 
         private void OnZoneEntered(Collider2D obj)

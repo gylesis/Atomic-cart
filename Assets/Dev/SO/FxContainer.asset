@@ -17,3 +17,5 @@ MonoBehaviour:
     Prefab: {fileID: 7856808388828264647, guid: 33b93045875d70f48b472f24dbd1a6e4, type: 3}
   - Name: bazooka_projectile_explosion
     Prefab: {fileID: 7856808388828264647, guid: 8d38aca004a391d4b874c18c04d4a8e9, type: 3}
+  - Name: barrel_explosion
+    Prefab: {fileID: 4941201134760119841, guid: fdaff80a67ea70a49bd7887788fc9183, type: 3}

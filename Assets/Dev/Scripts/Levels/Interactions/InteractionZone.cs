@@ -2,10 +2,10 @@
 using UniRx;
 using UnityEngine;
 
-namespace Dev.Utils
+namespace Dev.Levels.Interactions
 {
     [RequireComponent(typeof(Collider2D))]
-    public class TriggerZone : NetworkContext
+    public class InteractionZone : NetworkContext
     {
         public Subject<Collider2D> TriggerEntered { get; } = new Subject<Collider2D>();
         public Subject<Collider2D> TriggerExit { get; } = new Subject<Collider2D>();

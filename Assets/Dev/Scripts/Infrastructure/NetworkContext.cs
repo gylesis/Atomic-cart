@@ -12,7 +12,9 @@ namespace Dev.Infrastructure
 
         public override void Spawned()
         {
+            IsActive = true;
             CorrectState();
+            ServerSubscriptions();
         }
 
         protected virtual void ServerSubscriptions()
@@ -20,7 +22,11 @@ namespace Dev.Infrastructure
             if (HasStateAuthority == false) return;
         }
 
-        private void CorrectState()
+        
+        /// <summary>
+        /// Method for restoring state for new clients who connected after changing state happened
+        /// </summary>
+        protected virtual void CorrectState()
         {
             gameObject.SetActive(IsActive);
         }
@@ -91,9 +97,9 @@ namespace Dev.Infrastructure
         }
 
         [Rpc]
-        public void RPC_DoScale(float duration, float targetValue = 1)
+        public void RPC_DoScale(float duration, float targetValue = 1, Ease ease = Ease.Linear)
         {
-            transform.DOScale(targetValue, duration);
+            transform.DOScale(targetValue, duration).SetEase(ease);
         }
 
         [Rpc]

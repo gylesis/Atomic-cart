@@ -15,16 +15,8 @@ namespace Dev.Infrastructure
 {
     public class PlayersSpawner : NetworkContext
     {
-        [SerializeField] private Joystick _movementJoystick;
-        [SerializeField] private Joystick _aimJoystick;
-
         [SerializeField] private InputService _inputServicePrefab;
-        [SerializeField] private NetworkObject _playerPrefab;
-
         [SerializeField] private CameraController _cameraControllerPrefab;
-
-        public Joystick MovementJoystick => _movementJoystick;
-        public Joystick AimJoystick => _aimJoystick;
 
         [Networked] public int PlayersCount { get; set; }
 
@@ -70,18 +62,17 @@ namespace Dev.Infrastructure
                     _popUpService.HidePopUp<CharacterChooseMenu>();
                 }));
 
-                RPC_SetCharacterClass(characterClass, playerRef);
+                RPC_SpawnPlayerByCharacter(characterClass, playerRef);
             }));
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_SetCharacterClass(CharacterClass characterClass, PlayerRef playerRef)
+        private void RPC_SpawnPlayerByCharacter(CharacterClass characterClass, PlayerRef playerRef)
         {
             Debug.Log($"Player {playerRef} chose {characterClass}");
 
             SpawnPlayer(playerRef, characterClass);
         }
-
 
         public Player SpawnPlayer(PlayerRef playerRef, CharacterClass characterClass)
         {
@@ -97,9 +88,14 @@ namespace Dev.Infrastructure
             Player player = Runner.Spawn(playerPrefab, spawnPos,
                 quaternion.identity, playerRef);
 
+            PlayerManager.AddPlayer(player);
+            
             player.PlayerController.RPC_Init(characterData.CharacterStats.MoveSpeed,
                 characterData.CharacterStats.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
 
+            player.PlayerController.AllowToMove = true;
+            player.PlayerController.AllowToShoot = true;
+            
             player.Init(characterClass);
 
             NetworkObject playerNetObj = player.Object;
@@ -238,6 +234,8 @@ namespace Dev.Infrastructure
 
             Player player = _players[playerRef];
 
+            PlayerManager.RemovePlayer(player);
+            
             Runner.Despawn(player.Object);
 
             foreach (NetworkObject networkObject in _playerServices[playerRef])
@@ -251,6 +249,8 @@ namespace Dev.Infrastructure
 
             _players.Remove(playerRef);
 
+            
+            
             PlayersCount--;
         }
 

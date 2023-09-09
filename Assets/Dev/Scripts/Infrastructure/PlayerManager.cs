@@ -8,7 +8,7 @@ namespace Dev.Infrastructure
     public class PlayerManager : MonoBehaviour
     {
         private static List<Player> _allPlayers = new List<Player>();
-        public static List<Player> allPlayers => _allPlayers;
+        public static List<Player> AllPlayers => _allPlayers;
 
         //private static Queue<Player> _playerQueue = new Queue<Player>();
         public static Queue<PlayerRef> PlayerQueue = new Queue<PlayerRef>();
@@ -27,7 +27,7 @@ namespace Dev.Infrastructure
             // Sort the player list when adding players
             for (int i = 0; i < _allPlayers.Count; i++)
             {
-                if (_allPlayers[i].PlayerRef > player.PlayerRef)
+                if (_allPlayers[i].Id > player.Id)
                 {
                     insertIndex = i;
                     break;
@@ -43,7 +43,7 @@ namespace Dev.Infrastructure
             if (player == null || !_allPlayers.Contains(player))
                 return;
 
-            Debug.Log("Player Removed " + player.PlayerRef);
+            Debug.Log("Player Removed " + player.Id);
 
             _allPlayers.Remove(player);
         }

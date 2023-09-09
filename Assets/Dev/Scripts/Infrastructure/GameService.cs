@@ -23,6 +23,8 @@ namespace Dev.Infrastructure
 
         private bool _teamsSwapHappened;
 
+        public Subject<Unit> GameRestarted { get; } = new Subject<Unit>();
+
         [Inject]
         private void Init(TimeService timeService, PlayersSpawner playersSpawner, CartPathService cartPathService,
             PopUpService popUpService, GameSettings gameSettings, TeamsScoreService teamsScoreService,
@@ -37,10 +39,10 @@ namespace Dev.Infrastructure
             _cartPathService = cartPathService;
         }
 
-        public override void Spawned()
+        protected override void ServerSubscriptions()
         {
-            if (HasStateAuthority == false) return;
-
+            base.ServerSubscriptions();
+            
             _timeService.GameTimeRanOut.TakeUntilDestroy(this).Subscribe((unit => OnGameTimeRanOut()));
             _cartPathService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
         }
@@ -138,6 +140,8 @@ namespace Dev.Infrastructure
                 SetEnemiesFreezeState(false);
                 _timeService.ResetTimer();
                 _timeService.SetPauseState(false);
+                
+                GameRestarted.OnNext(Unit.Default);
             }));
         }
 

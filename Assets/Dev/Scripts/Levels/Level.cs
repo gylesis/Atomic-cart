@@ -1,4 +1,6 @@
-﻿using Dev.Infrastructure;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using UnityEngine;
 
@@ -8,6 +10,15 @@ namespace Dev.Levels
     {
         [SerializeField] private SpawnPoint[] _redTeamSpawnPoints;
         [SerializeField] private SpawnPoint[] _blueTeamSpawnPoints;
+
+        private List<Obstacle> _obstacles;
+
+        private void Awake()
+        {
+            _obstacles = GetComponentsInChildren<Obstacle>(true).ToList();
+        }
+
+        public List<Obstacle> Obstacles => _obstacles;
 
         public SpawnPoint[] GetSpawnPointsByTeam(TeamSide teamSide)
         {

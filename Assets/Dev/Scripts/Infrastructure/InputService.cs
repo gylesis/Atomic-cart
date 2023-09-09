@@ -35,10 +35,10 @@ namespace Dev.Infrastructure
         {
             Runner.AddCallbacks(this);
 
-            var playersSpawner = FindObjectOfType<PlayersSpawner>();
+            JoysticksContainer joysticksContainer = DependenciesContainer.Instance.GetDependency<JoysticksContainer>();
 
-            _aimJoystick = playersSpawner.AimJoystick;
-            _movementJoystick = playersSpawner.MovementJoystick;
+            _aimJoystick = joysticksContainer.AimJoystick;
+            _movementJoystick = joysticksContainer.MovementJoystick;
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }

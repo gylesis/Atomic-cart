@@ -21,7 +21,7 @@ namespace Dev.Weapons.Guns
                 {
                     BazookaProjectile projectile = o.GetComponent<BazookaProjectile>();
 
-                    projectile.Init(direction, _projectileSpeed, _damage, Object.InputAuthority, _explosionRadius);
+                    projectile.Init(direction, _projectileSpeed, Damage, Object.InputAuthority, _explosionRadius);
 
                     OnProjectileBeforeSpawned(projectile);
                 });

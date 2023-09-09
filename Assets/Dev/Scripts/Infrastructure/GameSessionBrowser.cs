@@ -79,7 +79,7 @@ namespace Dev.Infrastructure
 
             startGameArgs.GameMode = GameMode.Host;
             startGameArgs.SessionName = _inputField.text;
-            startGameArgs.SceneManager = FindObjectOfType<LevelManager>();
+            startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
             startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
 
             StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
@@ -92,7 +92,7 @@ namespace Dev.Infrastructure
 
             startGameArgs.GameMode = GameMode.Client;
             startGameArgs.SessionName = _inputField.text;
-            startGameArgs.SceneManager = FindObjectOfType<LevelManager>();
+            startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
 
             _runner.StartGame(startGameArgs);
         }
@@ -113,15 +113,12 @@ namespace Dev.Infrastructure
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
         {
             Debug.Log($"Player joined {playerRef}");
-
+            
             if (runner.IsServer)
             {
+                runner.RemoveCallbacks(this);
+                
                 PlayerManager.AddPlayerForQueue(playerRef);
-
-                Vector3 spawnPos = Vector3.zero + Vector3.right * Random.Range(-10f, 10f);
-
-                var player = _runner.Spawn(_playerPrefab, spawnPos,
-                    quaternion.identity, playerRef);
 
                 if (PlayerManager.PlayerQueue.Count == 1)
                 {

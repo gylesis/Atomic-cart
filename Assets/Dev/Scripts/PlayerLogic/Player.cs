@@ -23,7 +23,6 @@ namespace Dev.PlayerLogic
         public WeaponController WeaponController => _weaponController;
 
         public float ShootThreshold => _shootThreshold;
-        public PlayerRef PlayerRef => Object.InputAuthority;
 
         [Networked] public CharacterClass CharacterClass { get; private set; }
 
@@ -32,5 +31,7 @@ namespace Dev.PlayerLogic
         {
             CharacterClass = characterClass;
         }
+
+        public int Id => Object.InputAuthority;
     }
 }

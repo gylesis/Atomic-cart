@@ -1,4 +1,6 @@
-﻿using Dev.Infrastructure;
+﻿using System;
+using Dev.Infrastructure;
+using Dev.Utils;
 using UnityEngine;
 
 namespace Dev
@@ -9,10 +11,16 @@ namespace Dev
         [SerializeField] private Camera _camera;
 
         private Transform _target;
+        private GameSettings _gameSettings;
 
         public void SetupTarget(Transform target)
         {
             _target = target;
+        }
+
+        private void Start()
+        {
+            _gameSettings = DependenciesContainer.Instance.GetDependency<GameSettings>();
         }
 
         public override void Spawned()
@@ -33,6 +41,8 @@ namespace Dev
         {
             if (HasInputAuthority == false) return;
 
+            _camera.orthographicSize = _gameSettings.CameraZoomModifier;
+            
             FollowTarget();
         }
 

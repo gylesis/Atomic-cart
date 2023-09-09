@@ -1,4 +1,5 @@
-﻿using Dev.Infrastructure;
+﻿using System;
+using Dev.Infrastructure;
 using Dev.UI;
 using Dev.Weapons;
 using Fusion;
@@ -9,8 +10,6 @@ namespace Dev.PlayerLogic
     public class PlayerController : NetworkContext
     {
         [SerializeField] private Player _player;
-
-
         private WeaponController _weaponController => _player.WeaponController;
         private PlayerView PlayerView => _player.PlayerView;
 
@@ -19,26 +18,38 @@ namespace Dev.PlayerLogic
 
         [Networked] public NetworkBool IsPlayerAiming { get; private set; }
 
-        public bool AllowToMove { get; set; } = true;
-        public bool AllowToShoot { get; set; } = true;
+        [Networked(OnChanged = nameof(OnAllowToMoveChanged))] public NetworkBool AllowToMove { get; set; } = true;
+        [Networked(OnChanged = nameof(OnAllowToShootChanged))] public NetworkBool AllowToShoot { get; set; } = true;
 
-        private float Speed;
-        private float ShootThreshold;
-        private float SpeedLowerSpeed;
+        private float _speed;
+        private float _shootThreshold;
+        private float _speedLowerSpeed;
 
         private PopUpService _popUpService;
+        private JoysticksContainer _joysticksContainer;
 
         private void Awake()
         {
             _popUpService = DependenciesContainer.Instance.GetDependency<PopUpService>();
+            _joysticksContainer = DependenciesContainer.Instance.GetDependency<JoysticksContainer>();
         }
 
         [Rpc]
         public void RPC_Init(float moveSpeed, float shootThreshold, float speedLowerVelocity)
         {
-            Speed = moveSpeed;
-            ShootThreshold = shootThreshold;
-            SpeedLowerSpeed = speedLowerVelocity;
+            _speed = moveSpeed;
+            _shootThreshold = shootThreshold;
+            _speedLowerSpeed = speedLowerVelocity;
+        }
+
+        public static void OnAllowToMoveChanged(Changed<PlayerController> changed)
+        {
+            changed.Behaviour._joysticksContainer.MovementJoystick.gameObject.SetActive(changed.Behaviour.AllowToMove);
+        }
+
+        public static void OnAllowToShootChanged(Changed<PlayerController> changed)
+        {
+            changed.Behaviour._joysticksContainer.AimJoystick.gameObject.SetActive(changed.Behaviour.AllowToShoot);
         }
 
         public override void FixedUpdateNetwork()
@@ -51,7 +62,7 @@ namespace Dev.PlayerLogic
             {
                 if (input.MoveDirection != Vector2.zero)
                 {
-                    Vector2 velocity = input.MoveDirection * (Speed * Runner.DeltaTime);
+                    Vector2 velocity = input.MoveDirection * (_speed * Runner.DeltaTime);
                     _player.Rigidbody.velocity = velocity;
                 }
             }
@@ -62,7 +73,7 @@ namespace Dev.PlayerLogic
 
                 if (velocity.sqrMagnitude != 0)
                 {
-                    float lowerModifier = (SpeedLowerSpeed * Runner.DeltaTime);
+                    float lowerModifier = (_speedLowerSpeed * Runner.DeltaTime);
 
                     float xSign = Mathf.Sign(velocity.x) == 1 ? 1 : -1;
                     float ySign = Mathf.Sign(velocity.y) == 1 ? 1 : -1;
@@ -143,7 +154,7 @@ namespace Dev.PlayerLogic
 
                 var magnitude = lookDirection.sqrMagnitude;
 
-                if (magnitude >= ShootThreshold)
+                if (magnitude >= _shootThreshold)
                 {
                     Shoot();
                 }
@@ -152,7 +163,6 @@ namespace Dev.PlayerLogic
 
             _weaponController.AimWeaponTowards(lookDirection);
         }
-
 
         private void Shoot()
         {

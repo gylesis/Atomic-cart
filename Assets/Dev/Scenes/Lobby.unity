@@ -890,6 +890,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowHierarchyWindowOverlay: 1
+  _sceneName: Main
 --- !u!4 &726411289
 Transform:
   m_ObjectHideFlags: 0
@@ -951,6 +952,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  _IsActive:
+    _value: 1
   _playerPrefab: {fileID: 288489960748301886, guid: 0374aaea6fc4fe94bb2498df3cf80c38, type: 3}
   _inputField: {fileID: 200511017}
   _joinButton: {fileID: 408255763}
@@ -1534,7 +1537,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1388250181}
   - component: {fileID: 1388250180}
-  - component: {fileID: 1388250179}
+  - component: {fileID: 1388250182}
   m_Layer: 0
   m_Name: SceneLoader
   m_TagString: Untagged
@@ -1542,20 +1545,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1388250179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1388250178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef4d0b2394274780b403eb7dff663de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  _sceneName: Main
 --- !u!114 &1388250180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1577,8 +1566,7 @@ MonoBehaviour:
   NetworkGuid:
     RawGuidValue: b133349171e647f6901fc3ac22caef6a
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1388250179}
+  NetworkedBehaviours: []
   SimulationBehaviours: []
 --- !u!4 &1388250181
 Transform:
@@ -1595,6 +1583,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1388250182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388250178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adbbd17916d14b48ae17a8d578365b5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowHierarchyWindowOverlay: 1
+  _sceneName: Main
 --- !u!1 &1466242868
 GameObject:
   m_ObjectHideFlags: 0

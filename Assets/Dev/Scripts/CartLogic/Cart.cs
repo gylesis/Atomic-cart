@@ -20,14 +20,7 @@ namespace Dev.CartLogic
             base.ServerSubscriptions();
 
             _interactionZone.PlayerEntered.TakeUntilDestroy(this).Subscribe((OnPlayerEnteredCartZone));
-            _interactionZone.PlayerEntered.TakeUntilDestroy(this).Subscribe((OnPlayerExitCartZone));
-        }
-
-        private void OnPlayerExitCartZone(Player player)
-        {
-            PlayerRef playerRef = player.Object.InputAuthority;
-
-            CartZoneExit.OnNext(playerRef);
+            _interactionZone.PlayerExit.TakeUntilDestroy(this).Subscribe((OnPlayerExitCartZone));
         }
 
         private void OnPlayerEnteredCartZone(Player player)
@@ -35,6 +28,13 @@ namespace Dev.CartLogic
             PlayerRef playerRef = player.Object.InputAuthority;
 
             CartZoneEntered.OnNext(playerRef);
+        }
+
+        private void OnPlayerExitCartZone(Player player)
+        {
+            PlayerRef playerRef = player.Object.InputAuthority;
+
+            CartZoneExit.OnNext(playerRef);
         }
     }
 }

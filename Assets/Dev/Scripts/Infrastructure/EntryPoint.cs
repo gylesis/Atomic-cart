@@ -28,7 +28,7 @@ namespace Dev.Infrastructure
                 var startGameArgs = new StartGameArgs();
 
                 startGameArgs.GameMode = GameMode.Host;
-                startGameArgs.SceneManager = FindObjectOfType<LevelManager>();
+                startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
                 startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
 
                 runner.StartGame(startGameArgs);

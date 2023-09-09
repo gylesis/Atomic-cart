@@ -1,3 +1,4 @@
+using Dev.Levels;
 using Dev.PlayerLogic;
 using Fusion;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace Dev.Weapons.Guns
             ExplodeAtAndHitPlayers(transform.position);
         }
 
-        protected override void OnObstacleHit(LagCompensatedHit obstacleHit)
+        protected override void OnObstacleHit(Obstacle obstacle)
         {
             ExplodeAtAndHitPlayers(transform.position);
         }
