@@ -1,24 +1,22 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayersScoreUI : NetworkContext
     {
         [SerializeField] private PlayerScoreUIContainer _blueTeamScores;
         [SerializeField] private PlayerScoreUIContainer _redTeamScores;
-        
+
         [SerializeField] private PlayerScoreUI _playerScoreUIPrefab;
         private TeamsService _teamsService;
         private PlayersSpawner _playersSpawner;
 
-        [Networked, Capacity(20)]
-        private NetworkLinkedList<PlayerScoreUI> ScoreUis { get; }
+        [Networked, Capacity(20)] private NetworkLinkedList<PlayerScoreUI> ScoreUis { get; }
 
         [Inject]
         private void Init(TeamsService teamsService, PlayersSpawner playersSpawner)
@@ -26,10 +24,10 @@ namespace Dev
             _teamsService = teamsService;
             _playersSpawner = playersSpawner;
         }
-        
+
         public override void Spawned()
         {
-            if(HasStateAuthority == false)
+            if (HasStateAuthority == false)
             {
                 return;
             }
@@ -42,7 +40,7 @@ namespace Dev
             for (var index = ScoreUis.Count - 1; index >= 0; index--)
             {
                 PlayerScoreUI playerScoreUI = ScoreUis.Get(index);
-                
+
                 if (playerScoreUI.PlayerId == playerRef)
                 {
                     ScoreUis.Remove(playerScoreUI);
@@ -56,8 +54,8 @@ namespace Dev
         {
             Destroy(playerScoreUI.gameObject);
         }
-        
-        
+
+
         public void UpdateScores(PlayerScoreData[] scoreDatas)
         {
             for (var index = 0; index < scoreDatas.Length; index++)
@@ -71,7 +69,7 @@ namespace Dev
 
                     playerScoreUI.RPC_UpdateData(scoreData.PlayerFragCount, scoreData.PlayerDeathCount);
                     playerScoreUI.RPC_InitNickname(scoreData.Nickname);
-                    
+
                     continue;
                 }
 
@@ -80,7 +78,8 @@ namespace Dev
                     (runner, o) =>
                     {
                         PlayerScoreUI playerScoreUI = o.GetComponent<PlayerScoreUI>();
-                        playerScoreUI.RPC_Init(scoreData.Nickname, scoreData.PlayerFragCount, scoreData.PlayerDeathCount,
+                        playerScoreUI.RPC_Init(scoreData.Nickname, scoreData.PlayerFragCount,
+                            scoreData.PlayerDeathCount,
                             playerId);
                     });
 
@@ -100,7 +99,7 @@ namespace Dev
                 RPC_SetScoreUIParent(playerScoreUI, playerTeamSide);
             }
         }
-        
+
 
         [Rpc]
         private void RPC_SetScoreUIParent(PlayerScoreUI playerScoreUI, TeamSide teamSide)
@@ -114,8 +113,5 @@ namespace Dev
                 playerScoreUI.transform.parent = _redTeamScores.ScoresUIParent;
             }
         }
-        
-
-
     }
 }

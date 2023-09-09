@@ -1,7 +1,4 @@
 ﻿namespace Dev.UI
 {
-    public class PlayersScoreMenu : PopUp
-    {
-        
-    }
+    public class PlayersScoreMenu : PopUp { }
 }

@@ -4,7 +4,7 @@ using Fusion;
 using TMPro;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Levels
 {
     public class GameTimeView : NetworkContext
     {
@@ -19,9 +19,8 @@ namespace Dev
             string seconds = timeSpan.ToString("ss");
 
             string timeTextText = $"{minutes} : {seconds}";
-            
+
             _timeText.text = timeTextText;
         }
-        
     }
 }

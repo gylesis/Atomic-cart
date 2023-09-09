@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Dev.Infrastructure
+namespace Dev.Utils
 {
     [CreateAssetMenu(fileName = "GameSettings", menuName = "StaticData/GameSettings", order = 0)]
     public class GameSettings : ScriptableObject

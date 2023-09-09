@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Fusion;
+﻿using Fusion;
 
-namespace Dev.Infrastructure
+namespace Dev.PlayerLogic
 {
     public struct Team : INetworkStruct
     {
@@ -14,7 +13,7 @@ namespace Dev.Infrastructure
         }
 
         public bool HasPlayer(PlayerRef playerRef) => Players.Contains(playerRef);
-        
+
         public void AddMember(PlayerRef playerRef)
         {
             Players.Add(playerRef);
@@ -24,6 +23,5 @@ namespace Dev.Infrastructure
         {
             Players.Remove(playerRef);
         }
-    
     }
 }

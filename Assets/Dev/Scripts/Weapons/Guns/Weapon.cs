@@ -28,7 +28,7 @@ namespace Dev.Weapons.Guns
         public Vector2 ShootDirection => transform.up;
 
         [Networked] public WeaponData WeaponData { get; private set; }
-        
+
         public void Init(WeaponData weaponData)
         {
             WeaponData = weaponData;

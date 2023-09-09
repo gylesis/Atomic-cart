@@ -70,4 +70,3 @@ namespace Dev.Infrastructure
         public void OnSceneLoadStart(NetworkRunner runner) { }
     }
 }
-

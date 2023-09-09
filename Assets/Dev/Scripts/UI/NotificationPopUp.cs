@@ -9,7 +9,7 @@ namespace Dev.UI
     {
         [SerializeField] private TMP_Text _title;
         [SerializeField] private TMP_Text _description;
-        
+
         private int _removeCooldown = 5;
 
         public void Init(string title, string description, int removeCooldown)
@@ -18,15 +18,12 @@ namespace Dev.UI
             _title.text = title;
             _description.text = description;
         }
-        
+
         public override void Show()
         {
             base.Show();
 
-            Observable.Timer(TimeSpan.FromSeconds(_removeCooldown)).Subscribe((l =>
-            {
-                Hide();
-            }));
+            Observable.Timer(TimeSpan.FromSeconds(_removeCooldown)).Subscribe((l => { Hide(); }));
 
             Observable
                 .Timer(TimeSpan.Zero)
@@ -37,7 +34,5 @@ namespace Dev.UI
                     //Debug.Log($"Time left to close notification {_removeCooldown - l + 1}");
                 }));
         }
-
-        
     }
 }

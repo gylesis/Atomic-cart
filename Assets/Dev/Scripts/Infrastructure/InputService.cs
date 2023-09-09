@@ -25,7 +25,7 @@ namespace Dev.Infrastructure
             KeyCode.Alpha8,
             KeyCode.Alpha9,
         };
-        
+
         private void Awake()
         {
             _popUpService = FindObjectOfType<PopUpService>();
@@ -69,7 +69,7 @@ namespace Dev.Infrastructure
             playerInput.MoveDirection = moveDirection;
             playerInput.LookDirection = aimJoystickDirection;
             playerInput.WeaponNum = 22;
-            
+
             for (int i = 0; i < _keyCodes.Length; i++)
             {
                 if (Input.GetKeyDown(_keyCodes[i]))
@@ -78,7 +78,7 @@ namespace Dev.Infrastructure
                     playerInput.WeaponNum = numberPressed;
                 }
             }
-                
+
             input.Set(playerInput);
         }
 

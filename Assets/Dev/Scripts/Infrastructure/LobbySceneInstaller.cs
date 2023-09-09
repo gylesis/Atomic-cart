@@ -2,7 +2,5 @@
 
 namespace Dev.Infrastructure
 {
-    public class LobbySceneInstaller : MonoInstaller
-    {
-    }
+    public class LobbySceneInstaller : MonoInstaller { }
 }

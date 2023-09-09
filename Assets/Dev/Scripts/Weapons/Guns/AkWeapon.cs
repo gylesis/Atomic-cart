@@ -15,8 +15,6 @@ namespace Dev.Weapons.Guns
 
                     OnProjectileBeforeSpawned(projectile);
                 });
-
         }
-       
     }
 }

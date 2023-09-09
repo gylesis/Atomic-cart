@@ -3,7 +3,7 @@ using Fusion;
 using UniRx;
 using Zenject;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayersDataService : NetworkContext
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dev.Infrastructure
+namespace Dev.PlayerLogic
 {
     [Serializable]
     public class CharacterStats

@@ -1,5 +1,4 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -8,6 +7,29 @@ namespace Dev.Infrastructure
     [RequireComponent(typeof(NetworkObject))]
     public abstract class NetworkContext : NetworkBehaviour
     {
+        [Networked(OnChanged = nameof(OnActiveStateChanged))]
+        public NetworkBool IsActive { get; set; } = true;
+
+        public override void Spawned()
+        {
+            CorrectState();
+        }
+
+        protected virtual void ServerSubscriptions()
+        {
+            if (HasStateAuthority == false) return;
+        }
+
+        private void CorrectState()
+        {
+            gameObject.SetActive(IsActive);
+        }
+
+        private static void OnActiveStateChanged(Changed<NetworkContext> changed)
+        {
+            changed.Behaviour.gameObject.SetActive(changed.Behaviour.IsActive);
+        }
+
         [Rpc]
         public void RPC_SetPos(NetworkObject networkObject, Vector3 pos)
         {
@@ -49,7 +71,7 @@ namespace Dev.Infrastructure
         {
             transform.localRotation = Quaternion.Euler(eulerAngles);
         }
-        
+
         [Rpc]
         public void RPC_SetName(NetworkObject networkObject, string str)
         {
@@ -74,7 +96,7 @@ namespace Dev.Infrastructure
             transform.DOScale(targetValue, duration);
         }
 
-        [Rpc]   
+        [Rpc]
         public void RPC_SetParent(NetworkObject networkObject, NetworkObject newParent)
         {
             if (newParent == null)

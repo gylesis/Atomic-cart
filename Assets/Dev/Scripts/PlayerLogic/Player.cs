@@ -4,7 +4,7 @@ using Dev.Weapons.Guns;
 using Fusion;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class Player : NetworkContext, IDamageable
     {
@@ -24,14 +24,13 @@ namespace Dev
 
         public float ShootThreshold => _shootThreshold;
         public PlayerRef PlayerRef => Object.InputAuthority;
-    
+
         [Networked] public CharacterClass CharacterClass { get; private set; }
-        
-        
+
+
         public void Init(CharacterClass characterClass)
         {
             CharacterClass = characterClass;
         }
-        
     }
 }

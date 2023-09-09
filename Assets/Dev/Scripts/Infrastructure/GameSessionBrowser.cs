@@ -48,7 +48,7 @@ namespace Dev.Infrastructure
             guiStyle.normal.textColor = color;
 
             var position = new Rect(Screen.width - 300, Screen.height - 150, 10, 10);
-            
+
             GUI.Label(position, label, guiStyle);
         }
 

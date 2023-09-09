@@ -1,12 +1,15 @@
 ﻿using System;
-using Dev.Infrastructure;
+using Dev.CartLogic;
+using Dev.Levels;
+using Dev.PlayerLogic;
 using Dev.UI;
+using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.Infrastructure
 {
     public class GameService : NetworkContext
     {
@@ -19,10 +22,11 @@ namespace Dev
         private TeamsService _teamsService;
 
         private bool _teamsSwapHappened;
-        
+
         [Inject]
         private void Init(TimeService timeService, PlayersSpawner playersSpawner, CartPathService cartPathService,
-            PopUpService popUpService, GameSettings gameSettings, TeamsScoreService teamsScoreService, TeamsService teamsService)
+            PopUpService popUpService, GameSettings gameSettings, TeamsScoreService teamsScoreService,
+            TeamsService teamsService)
         {
             _teamsService = teamsService;
             _teamsScoreService = teamsScoreService;
@@ -46,23 +50,24 @@ namespace Dev
             if (_cartPathService.IsOnLastPoint == false) return;
 
             _timeService.SetPauseState(true);
-            
+
             if (_teamsSwapHappened == false)
             {
                 RestartGame(_gameSettings.TimeAfterWinGame, (() =>
                 {
                     _teamsSwapHappened = true;
-                    
+
                     _teamsScoreService.SwapTeamScores();
                     _teamsService.SwapTeams();
                 }));
-                
+
                 string title = $"Restarting game";
                 TeamSide teamToCapturePoints = _cartPathService.TeamToCapturePoints;
                 string colorTag = teamToCapturePoints == TeamSide.Red ? "red" : "blue";
-                string description = $"Team <color={colorTag}>{teamToCapturePoints}</color> captured all control points";
+                string description =
+                    $"Team <color={colorTag}>{teamToCapturePoints}</color> captured all control points";
                 int timeAfterWinGame = _gameSettings.TimeAfterWinGame;
-                
+
                 RPC_ShowRestartNotification(title, description, timeAfterWinGame);
             }
             else
@@ -72,8 +77,8 @@ namespace Dev
                     _teamsSwapHappened = false;
                     _teamsScoreService.ResetScores();
                 }));
-                
-                
+
+
                 TeamScoreData wonTeamScoreData = _teamsScoreService.GetWonTeam();
                 TeamSide wonTeam = wonTeamScoreData.Team;
 
@@ -81,10 +86,9 @@ namespace Dev
                 string colorTag = wonTeam == TeamSide.Red ? "red" : "blue";
                 string description = $"Team <color={colorTag}>{wonTeam}</color> most scored!";
                 int timeAfterWinGame = _gameSettings.TimeAfterWinGame;
-                
+
                 RPC_ShowRestartNotification(title, description, timeAfterWinGame);
             }
-            
         }
 
 

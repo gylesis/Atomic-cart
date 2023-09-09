@@ -44,7 +44,7 @@ namespace Dev.Weapons.Guns
         {
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
             projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, _projectileAliveTime);
-            
+
             _aliveProjectiles.Add(projectile);
         }
 
@@ -68,7 +68,6 @@ namespace Dev.Weapons.Guns
         protected virtual void SpawnVFXOnDestroyProjectile(Projectile projectile)
         {
             FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);
-            
         }
     }
 }

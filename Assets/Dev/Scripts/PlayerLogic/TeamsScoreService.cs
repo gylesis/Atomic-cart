@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Dev.CartLogic;
 using Dev.Infrastructure;
 using Fusion;
 using TMPro;
@@ -6,7 +6,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class TeamsScoreService : NetworkContext
     {
@@ -18,7 +18,7 @@ namespace Dev
 
         [Networked] private TeamScoreData BlueTeamScoreData { get; set; }
         [Networked] private TeamScoreData RedTeamScoreData { get; set; }
-    
+
 
         [Inject]
         private void Init(TeamsService teamsService, CartPathService cartPathService)
@@ -26,7 +26,7 @@ namespace Dev
             _teamsService = teamsService;
             _cartPathService = cartPathService;
         }
-        
+
         public override void Spawned()
         {
             if (HasStateAuthority == false)
@@ -37,9 +37,9 @@ namespace Dev
 
             BlueTeamScoreData = new TeamScoreData(TeamSide.Blue, 0);
             RedTeamScoreData = new TeamScoreData(TeamSide.Red, 0);
-            
+
             _cartPathService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
-            
+
             RPC_UpdateTeamsScores();
         }
 
@@ -61,14 +61,14 @@ namespace Dev
                     RedTeamScoreData = new TeamScoreData(teamSide, score);
                     break;
             }
-            
+
             RPC_UpdateTeamsScores();
         }
 
         private void EvaluateTeamScore(TeamSide teamSide)
         {
             int score;
-            
+
             switch (teamSide)
             {
                 case TeamSide.Blue:
@@ -81,7 +81,7 @@ namespace Dev
                     score = 0;
                     break;
             }
-            
+
             SetTeamScore(teamSide, score);
         }
 
@@ -89,7 +89,7 @@ namespace Dev
         {
             int blueTeamScore = BlueTeamScoreData.Score;
             int redTeamScore = RedTeamScoreData.Score;
-            
+
             SetTeamScore(TeamSide.Blue, redTeamScore);
             SetTeamScore(TeamSide.Red, blueTeamScore);
         }
@@ -100,7 +100,7 @@ namespace Dev
             {
                 return BlueTeamScoreData;
             }
-            else if(RedTeamScoreData.Score > BlueTeamScoreData.Score)
+            else if (RedTeamScoreData.Score > BlueTeamScoreData.Score)
             {
                 return RedTeamScoreData;
             }
@@ -109,20 +109,19 @@ namespace Dev
                 return RedTeamScoreData; // TODO what if draw
             }
         }
-        
+
         public void ResetScores()
         {
             SetTeamScore(TeamSide.Blue, 0);
             SetTeamScore(TeamSide.Red, 0);
         }
-        
+
         [Rpc]
         private void RPC_UpdateTeamsScores()
         {
             _blueScoreText.text = $"{BlueTeamScoreData.Score}";
             _redScoreText.text = $"{RedTeamScoreData.Score}";
         }
-        
     }
 
 

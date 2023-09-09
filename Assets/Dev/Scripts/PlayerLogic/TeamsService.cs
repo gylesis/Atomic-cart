@@ -1,7 +1,8 @@
 ﻿using System.Linq;
+using Dev.Infrastructure;
 using Fusion;
 
-namespace Dev.Infrastructure
+namespace Dev.PlayerLogic
 {
     public class TeamsService : NetworkContext
     {
@@ -78,9 +79,6 @@ namespace Dev.Infrastructure
                 RemoveFromTeam(redTeamPlayer);
                 AssignForTeam(redTeamPlayer, TeamSide.Blue);
             }
-            
-            
-            
         }
     }
 }

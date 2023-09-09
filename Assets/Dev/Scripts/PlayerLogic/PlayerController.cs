@@ -4,13 +4,13 @@ using Dev.Weapons;
 using Fusion;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayerController : NetworkContext
     {
         [SerializeField] private Player _player;
 
-       
+
         private WeaponController _weaponController => _player.WeaponController;
         private PlayerView PlayerView => _player.PlayerView;
 
@@ -18,7 +18,7 @@ namespace Dev
         [Networked] public Vector2 LastLookDirection { get; private set; }
 
         [Networked] public NetworkBool IsPlayerAiming { get; private set; }
-        
+
         public bool AllowToMove { get; set; } = true;
         public bool AllowToShoot { get; set; } = true;
 
@@ -101,9 +101,6 @@ namespace Dev
                 var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
                 scoreMenu.Hide();
             }
-
-          
-
         }
 
         private void HandleAnimation(PlayerInput input)
@@ -152,14 +149,11 @@ namespace Dev
                 }
             }
 
-           
 
             _weaponController.AimWeaponTowards(lookDirection);
         }
 
-        
-     
-        
+
         private void Shoot()
         {
             _weaponController.TryToFire();

@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Dev
+namespace Dev.CartLogic
 {
     public class CartPathService : NetworkContext
     {
@@ -23,17 +22,17 @@ namespace Dev
         [SerializeField] private PathDrawer _pathDrawer;
 
         public TeamSide TeamToCapturePoints => _teamToCapturePoints;
-        
+
         private CartPathPoint _currentPoint;
         private CartPathPoint _nextPoint;
         private CartPathPoint _prevPoint;
-    
+
         private int _currentPointIndex = 0;
 
         [Networked] private NetworkBool AllowToMove { get; set; }
 
         public bool IsOnLastPoint => _currentPointIndex >= _pathPoints.Count - 1;
-        
+
         public Subject<Unit> PointReached { get; } = new Subject<Unit>();
 
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
@@ -51,7 +50,7 @@ namespace Dev
             {
                 if (pathPoint.IsControlPoint)
                 {
-                    pathPoint.transform.localScale = Vector3.one * 3f; 
+                    pathPoint.transform.localScale = Vector3.one * 3f;
                 }
                 else
                 {
@@ -109,20 +108,20 @@ namespace Dev
         public void ResetCart()
         {
             _currentPointIndex = 0;
-            
+
             _currentPoint = _pathPoints[_currentPointIndex];
             _nextPoint = _pathPoints[_currentPointIndex + 1];
 
             InitCart();
         }
-        
+
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
 
             if (_nextPoint == null) return;
-            
-            if(_currentPoint == null) return;
+
+            if (_currentPoint == null) return;
 
             if (AllowToMove == false) return;
 
@@ -181,7 +180,6 @@ namespace Dev
             if (_currentPoint.IsControlPoint)
             {
                 PointReached.OnNext(Unit.Default);
-                
             }
         }
 
@@ -207,9 +205,9 @@ namespace Dev
         private void OnCartZoneExit(PlayerRef playerRef)
         {
             _playersInsideCartZone.Remove(playerRef);
-            
+
             AllowToMove = !IsCartBlocked();
-            
+
             if (_playersInsideCartZone.Count == 0)
             {
                 AllowToMove = false;

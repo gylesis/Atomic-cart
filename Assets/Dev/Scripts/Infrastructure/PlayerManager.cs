@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Dev.PlayerLogic;
 using Fusion;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace Dev.Infrastructure
         {
             PlayerQueue.Enqueue(playerRef);
         }
-        
+
         public static void AddPlayer(Player player)
         {
             Debug.Log("Player Added");
@@ -34,7 +35,7 @@ namespace Dev.Infrastructure
             }
 
             _allPlayers.Insert(insertIndex, player);
-           // _playerQueue.Enqueue(player);
+            // _playerQueue.Enqueue(player);
         }
 
         public static void RemovePlayer(Player player)

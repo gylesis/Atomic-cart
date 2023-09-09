@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Dev.Infrastructure;
+using Dev.Levels;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -31,7 +33,7 @@ namespace Dev.Weapons.Guns
 
             transform.up = _moveDirection;
         }
-    
+
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
@@ -45,7 +47,7 @@ namespace Dev.Weapons.Guns
                 PlayerRef shooter = Object.InputAuthority;
 
                 bool needToDestroy = false;
-                
+
                 foreach (LagCompensatedHit hit in hits)
                 {
                     var isDamageable = hit.GameObject.TryGetComponent<IDamageable>(out var damagable);
@@ -82,7 +84,6 @@ namespace Dev.Weapons.Guns
 
                         break;
                     }
-                    
                 }
 
                 if (needToDestroy)

@@ -21,5 +21,5 @@ namespace Dev.Infrastructure
             _networkRunner = FindObjectOfType<NetworkRunner>();
             _networkRunner.SetActiveScene(sceneName);
         }
-    }   
+    }
 }

@@ -3,13 +3,13 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Random = UnityEngine.Random;
 
-namespace Dev
+namespace Dev.Utils
 {
     public class WorldTextProvider : MonoBehaviour
     {
         [SerializeField] private WorldText _worldTextPrefab;
         [SerializeField] private Color _damageTextColor = Color.red;
-        
+
         private ObjectPool<WorldText> _worldTextPool;
 
         private void Awake()
@@ -20,7 +20,7 @@ namespace Dev
         private void ActionOnRelease(WorldText obj)
         {
             obj.gameObject.SetActive(false);
-            
+
             obj.transform.localScale = Vector3.one;
             obj.transform.rotation = Quaternion.identity;
         }
@@ -38,7 +38,7 @@ namespace Dev
         }
 
         public void SpawnDamageText(Vector3 pos, int damage)
-        {   
+        {
             pos += (Vector3)Random.insideUnitCircle * 4;
 
             Quaternion rotation = Quaternion.identity;
@@ -54,25 +54,20 @@ namespace Dev
             worldText.transform.rotation = rotation;
 
             string text = $"-{damage}";
-            
+
             worldText.Setup(text, _damageTextColor);
 
             Sequence sequence = DOTween.Sequence();
 
             float scale = Random.Range(1.2f, 1.6f);
-            
+
             sequence
                 .Append(worldText.transform.DOScale(scale, 0.5f).SetEase(Ease.OutBounce))
                 .AppendInterval(0.5f)
-                .Append(worldText.transform.DOScale(0,0.4f))
-                .AppendCallback((() =>
-                {
-                    _worldTextPool.Release(worldText);
-                }));
+                .Append(worldText.transform.DOScale(0, 0.4f))
+                .AppendCallback((() => { _worldTextPool.Release(worldText); }));
 
             sequence.Play();
         }
-        
-        
     }
 }

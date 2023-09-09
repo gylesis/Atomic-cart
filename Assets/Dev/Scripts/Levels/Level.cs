@@ -1,13 +1,14 @@
 ﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Levels
 {
     public class Level : NetworkContext
     {
         [SerializeField] private SpawnPoint[] _redTeamSpawnPoints;
         [SerializeField] private SpawnPoint[] _blueTeamSpawnPoints;
-        
+
         public SpawnPoint[] GetSpawnPointsByTeam(TeamSide teamSide)
         {
             switch (teamSide)
@@ -29,7 +30,7 @@ namespace Dev
             {
                 Gizmos.DrawSphere(point.transform.position, 0.2f);
             }
-            
+
             Gizmos.color = Color.blue;
 
             foreach (SpawnPoint point in _blueTeamSpawnPoints)

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Dev.PlayerLogic;
+using Dev.Weapons;
 using Dev.Weapons.Guns;
 using Fusion;
 using UnityEngine;
 
-namespace Dev.Weapons
+namespace Dev.Infrastructure
 {
     public class WeaponProvider
     {
@@ -16,21 +17,22 @@ namespace Dev.Weapons
             _weaponStaticDataContainer = weaponStaticDataContainer;
         }
 
-        public void ProvideWeaponToPlayer<TWeaponType>(PlayerRef playerRef, bool withChose = false) where TWeaponType : Weapon
+        public void ProvideWeaponToPlayer<TWeaponType>(PlayerRef playerRef, bool withChose = false)
+            where TWeaponType : Weapon
         {
             Player player = _runner.GetPlayerObject(playerRef).GetComponent<Player>();
 
             WeaponController playerWeaponController = player.WeaponController;
 
             WeaponStaticData weaponStaticData = _weaponStaticDataContainer.GetData<TWeaponType>();
-            
-            if(playerWeaponController.HasWeapon(weaponStaticData.WeaponName))
+
+            if (playerWeaponController.HasWeapon(weaponStaticData.WeaponName))
             {
                 if (withChose)
                 {
                     playerWeaponController.RPC_ChooseWeapon(weaponStaticData.WeaponName);
                 }
-                
+
                 Debug.Log($"This weapon is already chosen");
                 return;
             }
@@ -38,7 +40,7 @@ namespace Dev.Weapons
             Weapon weaponPrefab = weaponStaticData.Prefab;
 
             Vector3 weaponPos = player.WeaponController.WeaponParent.transform.position;
-            
+
             Weapon weaponInstance = _runner.Spawn(weaponPrefab, weaponPos, Quaternion.Euler(0, 0, 0),
                 playerRef, ((runner, o) =>
                 {
@@ -48,25 +50,25 @@ namespace Dev.Weapons
                     weapon.RPC_SetPos(weaponPos);
                     weapon.RPC_SetRotation(player.WeaponController.WeaponParent.rotation.eulerAngles);
                 }));
-            
+
             playerWeaponController.RPC_AddWeapon(weaponInstance, withChose);
         }
-        
+
         public void ProvideWeaponToPlayer(PlayerRef playerRef, string weaponName, bool withChose = false)
         {
             Player player = _runner.GetPlayerObject(playerRef).GetComponent<Player>();
-            
+
             WeaponController playerWeaponController = player.WeaponController;
 
             WeaponStaticData weaponStaticData = _weaponStaticDataContainer.GetData(weaponName);
-            
-            if(playerWeaponController.HasWeapon(weaponStaticData.WeaponName))
+
+            if (playerWeaponController.HasWeapon(weaponStaticData.WeaponName))
             {
                 if (withChose)
                 {
                     playerWeaponController.RPC_ChooseWeapon(weaponStaticData.WeaponName);
                 }
-                
+
                 Debug.Log($"This weapon is already chosen");
                 return;
             }
@@ -74,7 +76,7 @@ namespace Dev.Weapons
             Weapon weaponPrefab = weaponStaticData.Prefab;
 
             Vector3 weaponPos = player.WeaponController.WeaponParent.transform.position;
-            
+
             Weapon weaponInstance = _runner.Spawn(weaponPrefab, weaponPos, Quaternion.Euler(0, 0, 0),
                 playerRef, ((runner, o) =>
                 {
@@ -84,9 +86,8 @@ namespace Dev.Weapons
                     weapon.RPC_SetPos(weaponPos);
                     weapon.RPC_SetRotation(player.WeaponController.WeaponParent.rotation.eulerAngles);
                 }));
-            
+
             playerWeaponController.RPC_AddWeapon(weaponInstance, withChose);
         }
-      
     }
 }

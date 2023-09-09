@@ -12,11 +12,11 @@ namespace Dev.Effects
         public bool TryGetEffectDataByName(string name, out Effect effect)
         {
             effect = null;
-            
+
             EffectStaticData effectStaticData = _effects.FirstOrDefault(x => x.Name == name);
 
             var hasEffect = effectStaticData != null;
-            
+
             if (hasEffect)
             {
                 effect = effectStaticData.Prefab;

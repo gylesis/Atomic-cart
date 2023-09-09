@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace Dev.Utils
 {
-    public class TriggerBox : NetworkContext
+    [RequireComponent(typeof(Collider2D))]
+    public class TriggerZone : NetworkContext
     {
         public Subject<Collider2D> TriggerEntered { get; } = new Subject<Collider2D>();
         public Subject<Collider2D> TriggerExit { get; } = new Subject<Collider2D>();

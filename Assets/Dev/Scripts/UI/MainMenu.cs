@@ -7,12 +7,12 @@ namespace Dev.UI
     public class MainMenu : PopUp
     {
         [SerializeField] private DefaultReactiveButton _showTab;
-        
+
         protected override void Awake()
         {
             _showTab.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnShowTabButtonClicked()));
         }
-        
+
         private void OnShowTabButtonClicked()
         {
             var tryGetPopUp = PopUpService.TryGetPopUp<PlayersScoreMenu>(out var playersScoreMenu);
@@ -20,17 +20,15 @@ namespace Dev.UI
             if (tryGetPopUp)
             {
                 Hide();
-                
+
                 playersScoreMenu.Show();
-                
+
                 playersScoreMenu.OnSucceedButtonClicked((() =>
                 {
                     playersScoreMenu.Hide();
                     Show();
                 }));
             }
-            
         }
-        
     }
 }

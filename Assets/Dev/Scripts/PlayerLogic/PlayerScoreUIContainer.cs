@@ -1,7 +1,7 @@
 ﻿using Dev.Infrastructure;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayerScoreUIContainer : NetworkContext
     {

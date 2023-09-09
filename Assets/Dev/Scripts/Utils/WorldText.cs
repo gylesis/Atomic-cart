@@ -1,7 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Utils
 {
     public class WorldText : MonoBehaviour
     {

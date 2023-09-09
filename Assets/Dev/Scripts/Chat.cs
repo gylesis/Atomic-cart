@@ -22,8 +22,8 @@ namespace Dev
 
         public override void Spawned()
         {
-           // Debug.Log($"Connecting to chat");
-           // Connect();
+            // Debug.Log($"Connecting to chat");
+            // Connect();
         }
 
         private void Connect()
@@ -59,7 +59,6 @@ namespace Dev
                         _chatClient.Disconnect();
                     }
                 }
-                
             }
         }
 
@@ -86,7 +85,7 @@ namespace Dev
             _chatClient.Subscribe(_mainChannelKey);
 
             ShowChannel(_mainChannelKey);
-            
+
             _chatClient.SetOnlineStatus(ChatUserStatus.Online);
         }
 

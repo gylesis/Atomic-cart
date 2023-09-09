@@ -1,5 +1,4 @@
-﻿
-using Fusion;
+﻿using Fusion;
 
 namespace Dev.Weapons.Guns
 {
@@ -13,6 +12,5 @@ namespace Dev.Weapons.Guns
             Id = id;
             Name = name;
         }
-
     }
 }

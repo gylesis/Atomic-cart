@@ -24,7 +24,7 @@ namespace Dev.Infrastructure
                 NetworkRunner runner = gameObject.AddComponent<NetworkRunner>();
 
                 runner.AddCallbacks(this);
-                
+
                 var startGameArgs = new StartGameArgs();
 
                 startGameArgs.GameMode = GameMode.Host;

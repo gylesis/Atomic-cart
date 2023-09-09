@@ -6,7 +6,8 @@ using UnityEngine;
 
 namespace Dev.Weapons
 {
-    [CreateAssetMenu(menuName = "StaticData/WeaponStaticDataContainer", fileName = "WeaponStaticDataContainer", order = 0)]
+    [CreateAssetMenu(menuName = "StaticData/WeaponStaticDataContainer", fileName = "WeaponStaticDataContainer",
+        order = 0)]
     public class WeaponStaticDataContainer : ScriptableObject
     {
         [SerializeField] private List<WeaponStaticData> _weaponStaticDatas;
@@ -15,12 +16,12 @@ namespace Dev.Weapons
         {
             return _weaponStaticDatas.First(x => x.WeaponType == typeof(TWeaponType));
         }
-        
-        public WeaponStaticData GetData(string weaponName) 
+
+        public WeaponStaticData GetData(string weaponName)
         {
             return _weaponStaticDatas.First(x => x.WeaponName == weaponName);
         }
-        
+
         private void OnValidate()
         {
             foreach (WeaponStaticData data in _weaponStaticDatas)

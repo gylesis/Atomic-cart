@@ -8,7 +8,7 @@ namespace Dev.Infrastructure
         private DiContainer _diContainer;
 
         public static DependenciesContainer Instance { get; private set; }
-        
+
         public DependenciesContainer(DiContainer diContainer)
         {
             if (Instance != null)
@@ -17,7 +17,7 @@ namespace Dev.Infrastructure
             }
 
             _diContainer = diContainer;
-            
+
             Instance = this;
         }
 
@@ -25,6 +25,5 @@ namespace Dev.Infrastructure
         {
             return _diContainer.Resolve<TType>();
         }
-
     }
 }

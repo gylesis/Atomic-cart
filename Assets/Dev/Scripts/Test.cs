@@ -40,4 +40,4 @@ namespace Dev
             Debug.Log($"Connected to photon");
         }*/
     }
-}   
+}

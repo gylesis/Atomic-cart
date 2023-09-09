@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Dev.Levels;
+using Dev.PlayerLogic;
 using Dev.UI;
 using Dev.Weapons;
 using Fusion;
@@ -223,14 +225,13 @@ namespace Dev.Infrastructure
         public void SetPlayerActiveState(PlayerRef playerRef, bool isOn)
         {
             Player player = _players[playerRef];
-            
+
             player.gameObject.SetActive(isOn);
 
             player.PlayerController.AllowToMove = isOn;
             player.PlayerController.AllowToShoot = isOn;
-            
         }
-        
+
         public void PlayerLeft(PlayerRef playerRef)
         {
             DeSpawned.OnNext(playerRef);
@@ -256,7 +257,7 @@ namespace Dev.Infrastructure
         public void RespawnPlayer(PlayerRef playerRef)
         {
             _playersHealthService.RestorePlayerHealth(playerRef);
-            
+
             TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerRef);
 
             var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(playerTeamSide);

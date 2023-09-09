@@ -6,12 +6,12 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayersScoreService : NetworkContext
     {
         [SerializeField] private PlayersScoreUI _playersScoreUI;
-        
+
         private List<PlayerScoreData> _playerScoreList = new List<PlayerScoreData>();
         private TeamsService _teamsService;
         private PlayersDataService _playersDataService;
@@ -19,18 +19,19 @@ namespace Dev
         private PlayersHealthService _playersHealthService;
 
         [Inject]
-        private void Init(TeamsService teamsService, PlayersDataService playersDataService, PlayersSpawner playersSpawner, PlayersHealthService playersHealthService)
+        private void Init(TeamsService teamsService, PlayersDataService playersDataService,
+            PlayersSpawner playersSpawner, PlayersHealthService playersHealthService)
         {
             _teamsService = teamsService;
             _playersDataService = playersDataService;
             _playersHealthService = playersHealthService;
             _playersSpawner = playersSpawner;
         }
-        
+
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;
-            
+
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 
@@ -51,7 +52,7 @@ namespace Dev
 
             string killerPlayerName = _playersDataService.GetNickname(killerPlayer);
             string deadPlayerName = _playersDataService.GetNickname(deadPlayer);
-            
+
             foreach (var player in _playerScoreList)
             {
                 if (player.PlayerId == deadPlayer)
@@ -64,9 +65,9 @@ namespace Dev
                     player.PlayerFragCount++;
                 }
             }
-            
+
             _playersScoreUI.UpdateScores(_playerScoreList.ToArray());
-            
+
             Debug.Log($"{killerPlayerName} извиняется, за то что трахнул {deadPlayerName}");
         }
 
@@ -76,15 +77,15 @@ namespace Dev
             var playerScoreData = new PlayerScoreData();
 
             PlayerRef playerId = playerSpawnData.PlayerRef;
-            
+
             playerScoreData.PlayerId = playerId;
             playerScoreData.PlayerTeamSide = _teamsService.GetPlayerTeamSide(playerId);
             playerScoreData.Nickname = _playersDataService.GetNickname(playerId);
             playerScoreData.PlayerDeathCount = 0;
             playerScoreData.PlayerFragCount = 0;
-            
+
             _playerScoreList.Add(playerScoreData);
-            
+
             _playersScoreUI.UpdateScores(_playerScoreList.ToArray());
         }
     }

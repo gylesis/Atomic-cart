@@ -1,7 +1,6 @@
-using Dev.Infrastructure;
 using Fusion;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayerScoreData : INetworkStruct
     {

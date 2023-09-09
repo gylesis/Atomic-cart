@@ -6,12 +6,7 @@ namespace Dev
 {
     public class Console : ILogger
     {
-
-        
-        
-        public static void Log(string msg)
-        {
-        }
+        public static void Log(string msg) { }
 
         public void LogFormat(LogType logType, Object context, string format, params object[] args)
         {
@@ -28,9 +23,7 @@ namespace Dev
             throw new NotImplementedException();
         }
 
-        public void Log(LogType logType, object message)
-        {
-        }
+        public void Log(LogType logType, object message) { }
 
         public void Log(LogType logType, object message, Object context)
         {

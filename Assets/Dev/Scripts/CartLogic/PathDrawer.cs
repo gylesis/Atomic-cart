@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Dev
+namespace Dev.CartLogic
 {
     public class PathDrawer : MonoBehaviour
     {
@@ -17,6 +17,5 @@ namespace Dev
         {
             _lineRenderer.positionCount = 0;
         }
-        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Dev.Weapons.Guns;
 using Fusion;
 using JetBrains.Annotations;
@@ -13,8 +14,7 @@ namespace Dev.Weapons
     {
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
 
-        [Networked, Capacity(4)]
-        private NetworkLinkedList<Weapon> Weapons { get; }
+        [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
 
         [SerializeField] private Transform _weaponParent;
 
@@ -26,7 +26,11 @@ namespace Dev.Weapons
         private WeaponProvider _weaponProvider;
 
         public bool AllowToShoot { get; private set; } = true;
-        [HideInInspector] [Networked] [CanBeNull] public Weapon CurrentWeapon { get; set; }
+
+        [HideInInspector]
+        [Networked]
+        [CanBeNull]
+        public Weapon CurrentWeapon { get; set; }
 
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();
 
@@ -43,7 +47,7 @@ namespace Dev.Weapons
             {
                 weapon.transform.parent = WeaponParent;
             }
-            
+
             _weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
 
@@ -232,7 +236,7 @@ namespace Dev.Weapons
         {
             if (Weapons.Count == 0)
             {
-                return; 
+                return;
             }
 
             Weapon weapon = Weapons.First(x => x.WeaponData.Name == weaponName);
@@ -252,9 +256,7 @@ namespace Dev.Weapons
             RPC_SelectViewWeapon();
         }
 
-        
-        
-        
+
         [Rpc]
         private void RPC_SelectViewWeapon()
         {

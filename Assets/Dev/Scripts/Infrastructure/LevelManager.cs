@@ -14,11 +14,11 @@ namespace Dev.Infrastructure
         {
             _loadedScene = SceneManager.GetActiveScene();
         }
-        
+
         protected override IEnumerator SwitchScene(SceneRef prevScene, SceneRef newScene,
             FinishedLoadingDelegate finished)
         {
-           // Debug.Log($"Switching Scene from {prevScene} to {newScene}");
+            // Debug.Log($"Switching Scene from {prevScene} to {newScene}");
 
             if (newScene <= 0)
             {
@@ -28,9 +28,9 @@ namespace Dev.Infrastructure
 
             if (prevScene > 0)
             {
-               // yield return new WaitForSeconds(1.0f);
+                // yield return new WaitForSeconds(1.0f);
 
-               // Debug.Log("De-spawning all players");
+                // Debug.Log("De-spawning all players");
 
                 /*foreach (Player player in _playersSpawner.Players)
                 {
@@ -44,7 +44,7 @@ namespace Dev.Infrastructure
                     yield return new WaitForSeconds(0.1f);
                 }*/
 
-               // yield return new WaitForSeconds(1.5f - PlayerManager.allPlayers.Count * 0.1f);
+                // yield return new WaitForSeconds(1.5f - PlayerManager.allPlayers.Count * 0.1f);
 
                 //Debug.Log("De-spawned all players");
             }
@@ -70,9 +70,9 @@ namespace Dev.Infrastructure
 
             Debug.Log($"Switched Scene from {prevScene} to {newScene} - loaded {sceneObjects.Count} scene objects");
             finished(sceneObjects);
-            
-            
-           // Debug.Log($"Unloading Scene {0}");
+
+
+            // Debug.Log($"Unloading Scene {0}");
             SceneManager.UnloadSceneAsync(0);
         }
     }

@@ -28,7 +28,7 @@ namespace Dev.UI
         {
             PopUpService = popUpService;
         }
-        
+
         public void OnSucceedButtonClicked(Action action)
         {
             _disposable?.Dispose();
