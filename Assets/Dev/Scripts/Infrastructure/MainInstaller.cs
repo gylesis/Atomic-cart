@@ -10,16 +10,17 @@ namespace Dev.Infrastructure
         [SerializeField] private PlayersHealthService _playersHealthService;
         [SerializeField] private PlayersDataService _playersDataService;
         [SerializeField] private TeamsService _teamsService;
+        [SerializeField] private TeamsScoreService _teamsScoreService;
         
         [SerializeField] private WorldTextProvider _worldTextProvider;
         [SerializeField] private CartPathService _cartPathService;
         [SerializeField] private PopUpService _popUpService;
         [SerializeField] private TimeService _timeService;
-        
+
         public override void InstallBindings()
         {
             Container.Bind<DependenciesContainer>().AsSingle().NonLazy();
-            
+
             Container.Bind<PlayersSpawner>().FromInstance(_playersSpawner).AsSingle();
             Container.Bind<PlayersHealthService>().FromInstance(_playersHealthService).AsSingle();
             Container.Bind<PlayersDataService>().FromInstance(_playersDataService).AsSingle();
@@ -31,6 +32,7 @@ namespace Dev.Infrastructure
             Container.Bind<PopUpService>().FromInstance(_popUpService).AsSingle();
             Container.Bind<TimeService>().FromInstance(_timeService).AsSingle();
             Container.Bind<TeamsService>().FromInstance(_teamsService).AsSingle();
+            Container.Bind<TeamsScoreService>().FromInstance(_teamsScoreService).AsSingle();
 
         }
     }

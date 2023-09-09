@@ -26,13 +26,15 @@ namespace Dev
         
         private CartPathPoint _currentPoint;
         private CartPathPoint _nextPoint;
-
+        private CartPathPoint _prevPoint;
+    
         private int _currentPointIndex = 0;
 
         [Networked] private NetworkBool AllowToMove { get; set; }
 
+        public bool IsOnLastPoint => _currentPointIndex >= _pathPoints.Count - 1;
+        
         public Subject<Unit> PointReached { get; } = new Subject<Unit>();
-
 
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
         private TeamsService _teamsService;
@@ -119,6 +121,8 @@ namespace Dev
             if (HasStateAuthority == false) return;
 
             if (_nextPoint == null) return;
+            
+            if(_currentPoint == null) return;
 
             if (AllowToMove == false) return;
 
@@ -160,6 +164,7 @@ namespace Dev
         private void SetNewPoints(int currentPointIndex)
         {
             currentPointIndex++;
+            _prevPoint = _currentPoint;
             _currentPoint = _nextPoint;
 
             if (currentPointIndex > _pathPoints.Count - 1)
@@ -173,7 +178,11 @@ namespace Dev
 
             _currentPointIndex = currentPointIndex;
 
-            if (_currentPoint.IsControlPoint) PointReached.OnNext(Unit.Default);
+            if (_currentPoint.IsControlPoint)
+            {
+                PointReached.OnNext(Unit.Default);
+                
+            }
         }
 
         private bool IsCartBlocked()

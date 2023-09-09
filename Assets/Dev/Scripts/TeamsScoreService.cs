@@ -47,19 +47,75 @@ namespace Dev
         {
             TeamSide teamToCapturePoints = _cartPathService.TeamToCapturePoints;
 
-            switch (teamToCapturePoints)
+            EvaluateTeamScore(teamToCapturePoints);
+        }
+
+        private void SetTeamScore(TeamSide teamSide, int score)
+        {
+            switch (teamSide)
             {
                 case TeamSide.Blue:
-                    BlueTeamScoreData = new TeamScoreData(teamToCapturePoints, BlueTeamScoreData.Score + 1);
+                    BlueTeamScoreData = new TeamScoreData(teamSide, score);
                     break;
                 case TeamSide.Red:
-                    RedTeamScoreData = new TeamScoreData(teamToCapturePoints, RedTeamScoreData.Score + 1);
+                    RedTeamScoreData = new TeamScoreData(teamSide, score);
                     break;
             }
-
+            
             RPC_UpdateTeamsScores();
         }
 
+        private void EvaluateTeamScore(TeamSide teamSide)
+        {
+            int score;
+            
+            switch (teamSide)
+            {
+                case TeamSide.Blue:
+                    score = BlueTeamScoreData.Score + 1;
+                    break;
+                case TeamSide.Red:
+                    score = RedTeamScoreData.Score + 1;
+                    break;
+                default:
+                    score = 0;
+                    break;
+            }
+            
+            SetTeamScore(teamSide, score);
+        }
+
+        public void SwapTeamScores()
+        {
+            int blueTeamScore = BlueTeamScoreData.Score;
+            int redTeamScore = RedTeamScoreData.Score;
+            
+            SetTeamScore(TeamSide.Blue, redTeamScore);
+            SetTeamScore(TeamSide.Red, blueTeamScore);
+        }
+
+        public TeamScoreData GetWonTeam()
+        {
+            if (BlueTeamScoreData.Score > RedTeamScoreData.Score)
+            {
+                return BlueTeamScoreData;
+            }
+            else if(RedTeamScoreData.Score > BlueTeamScoreData.Score)
+            {
+                return RedTeamScoreData;
+            }
+            else
+            {
+                return RedTeamScoreData; // TODO what if draw
+            }
+        }
+        
+        public void ResetScores()
+        {
+            SetTeamScore(TeamSide.Blue, 0);
+            SetTeamScore(TeamSide.Red, 0);
+        }
+        
         [Rpc]
         private void RPC_UpdateTeamsScores()
         {
@@ -68,6 +124,7 @@ namespace Dev
         }
         
     }
+
 
     public struct TeamScoreData : INetworkStruct
     {

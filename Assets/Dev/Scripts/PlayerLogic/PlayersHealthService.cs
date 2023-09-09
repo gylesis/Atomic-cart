@@ -169,8 +169,6 @@ namespace Dev
             {
                 _playersSpawner.RespawnPlayer(playerRef);
 
-                RestorePlayerHealth(playerRef);
-
                 player.RPC_DoScale(0, 1);
             }));
         }   

@@ -24,7 +24,8 @@ namespace Dev
 
         public Subject<Unit> GameTimeRanOut { get; } = new Subject<Unit>();
 
-
+        [Networked] public NetworkBool IsPaused { get; private set; }
+        
         [Inject]
         private void Init(CartPathService cartPathService, PlayersSpawner playersSpawner)
         {
@@ -40,6 +41,11 @@ namespace Dev
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
 
+        public void SetPauseState(bool isPause)
+        {
+            IsPaused = isPause;
+        }
+        
         public void ResetTimer()
         {
             int overallSeconds = _startTime.OverallSeconds;
@@ -75,6 +81,8 @@ namespace Dev
         {
             if (HasStateAuthority == false) return;
 
+            if(IsPaused) return;
+            
             if (LeftTime.ExpiredOrNotRunning(Runner) == false)
             {
                 int remainingTime = (int)LeftTime.RemainingTime(Runner).Value;

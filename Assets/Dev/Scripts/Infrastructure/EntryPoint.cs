@@ -13,6 +13,28 @@ namespace Dev.Infrastructure
     {
         private PlayersSpawner _playersSpawner;
 
+        private void Awake()
+        {
+            if (FindObjectOfType<NetworkRunner>() != null)
+            {
+                return;
+            }
+            else
+            {
+                NetworkRunner runner = gameObject.AddComponent<NetworkRunner>();
+
+                runner.AddCallbacks(this);
+                
+                var startGameArgs = new StartGameArgs();
+
+                startGameArgs.GameMode = GameMode.Host;
+                startGameArgs.SceneManager = FindObjectOfType<LevelManager>();
+                startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
+
+                runner.StartGame(startGameArgs);
+            }
+        }
+
         [Inject]
         private void Init(PlayersSpawner playersSpawner)
         {
@@ -24,16 +46,16 @@ namespace Dev.Infrastructure
             Runner.AddCallbacks(this);
         }
 
-        public async void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+        public async void OnPlayerJoined(NetworkRunner runner, PlayerRef player) // for new player after lobby started
         {
-            /*Debug.Log($"Player Joined");
-                
+            Debug.Log($"Player Joined");
+
             if (runner.IsServer)
             {
-                await Task.Delay(100);
+                await Task.Delay(500);
 
                 _playersSpawner.SpawnPlayerByCharacterClass(player);
-            }*/
+            }
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -50,11 +72,8 @@ namespace Dev.Infrastructure
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
 
-        public void OnConnectedToServer(NetworkRunner runner)
-        {
-            Debug.Log($"On Connected to server");
-        }
-    
+        public void OnConnectedToServer(NetworkRunner runner) { }
+
         public void OnDisconnectedFromServer(NetworkRunner runner) { }
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
@@ -85,7 +104,7 @@ namespace Dev.Infrastructure
 
                 _playersSpawner.SpawnPlayerByCharacterClass(playerRef);
             }
-            
+
             PlayerManager.PlayerQueue.Clear();
         }
 

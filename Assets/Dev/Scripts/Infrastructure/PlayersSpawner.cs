@@ -39,11 +39,13 @@ namespace Dev.Infrastructure
         private TeamsService _teamsService;
         private PopUpService _popUpService;
         private CharactersDataContainer _charactersDataContainer;
+        private PlayersHealthService _playersHealthService;
 
         [Inject]
         private void Init(TeamsService teamsService, PopUpService popUpService,
-            CharactersDataContainer charactersDataContainer)
+            CharactersDataContainer charactersDataContainer, PlayersHealthService playersHealthService)
         {
+            _playersHealthService = playersHealthService;
             _charactersDataContainer = charactersDataContainer;
             _popUpService = popUpService;
             _teamsService = teamsService;
@@ -51,16 +53,12 @@ namespace Dev.Infrastructure
 
         public void SpawnPlayerByCharacterClass(PlayerRef playerRef)
         {
-            Debug.Log($"Request to spawn player {playerRef}");
-            
             RPC_GetCharacterClass(playerRef);
         }
 
         [Rpc]
         private void RPC_GetCharacterClass([RpcTarget] PlayerRef playerRef)
         {
-            Debug.Log($"Ask for character class");
-
             _popUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
 
             characterChooseMenu.StartChoosingCharacter((characterClass =>
@@ -93,7 +91,6 @@ namespace Dev.Infrastructure
 
             TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
             Vector3 spawnPos = GetSpawnPos(teamSide);
-            //Vector3 spawnPos = Vector3.zero;
 
             Player player = Runner.Spawn(playerPrefab, spawnPos,
                 quaternion.identity, playerRef);
@@ -258,6 +255,8 @@ namespace Dev.Infrastructure
 
         public void RespawnPlayer(PlayerRef playerRef)
         {
+            _playersHealthService.RestorePlayerHealth(playerRef);
+            
             TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerRef);
 
             var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(playerTeamSide);
@@ -272,6 +271,8 @@ namespace Dev.Infrastructure
             player.PlayerController.AllowToShoot = true;
 
             player.HitboxRoot.HitboxRootActive = true;
+
+            ColorTeamBanner(playerRef);
         }
 
         public Vector3 GetSpawnPos(TeamSide teamSide)

@@ -1,10 +1,11 @@
-﻿using Fusion;
+﻿using System.Collections.Generic;
+using Fusion;
 
 namespace Dev.Infrastructure
 {
     public struct Team : INetworkStruct
     {
-        [Networked, Capacity(10)] private NetworkLinkedList<PlayerRef> Players => default;
+        [Networked, Capacity(10)] public NetworkLinkedList<PlayerRef> Players => default;
         [Networked] public TeamSide TeamSide { get; private set; }
 
         public Team(TeamSide teamSide)

@@ -123,7 +123,7 @@ namespace Dev.Infrastructure
                 var player = _runner.Spawn(_playerPrefab, spawnPos,
                     quaternion.identity, playerRef);
 
-                if (PlayerManager.PlayerQueue.Count > 1)
+                if (PlayerManager.PlayerQueue.Count == 1)
                 {
                     await Task.Delay(500);
 
