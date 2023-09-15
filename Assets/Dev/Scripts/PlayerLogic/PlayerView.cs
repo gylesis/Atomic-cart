@@ -2,7 +2,7 @@
 using Fusion;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayerView : NetworkContext
     {
@@ -16,11 +16,12 @@ namespace Dev
         [SerializeField] private float _aimLerpSpeed = 1;
 
         [SerializeField] private SpriteRenderer _crosshairSpriteRenderer;
-        
+
         private static readonly int Move = Animator.StringToHash("Move");
         private Player _player;
 
-        [Networked(OnChanged = nameof(OnTeamColorChanged))] private Color TeamColor { get; set; }
+        [Networked(OnChanged = nameof(OnTeamColorChanged))]
+        private Color TeamColor { get; set; }
 
         public void OnMove(float velocity, bool isRight)
         {
@@ -39,7 +40,7 @@ namespace Dev
         {
             changed.Behaviour._teamBanner.color = changed.Behaviour.TeamColor;
         }
-        
+
         [Rpc]
         public void RPC_SetTeamColor(Color color)
         {
@@ -48,11 +49,13 @@ namespace Dev
 
         public override void Render()
         {
-            if (_player == null)
-            {
-                _player = Runner.GetPlayerObject(Object.InputAuthority).GetComponent<Player>();
-            }
+            if(HasInputAuthority == false) return;
             
+            if (_player == null && Player.LocalPlayer != null)
+            {
+                _player = Player.LocalPlayer;
+            }
+
             float crosshairColorTarget = _player.PlayerController.IsPlayerAiming ? 1 : 0;
 
             Color color = _crosshairSpriteRenderer.color;
@@ -60,9 +63,9 @@ namespace Dev
             color.a = Mathf.Lerp(color.a, crosshairColorTarget, Runner.DeltaTime * 20);
 
             _crosshairSpriteRenderer.color = color;
-            
+
             Vector3 lookDirection = _player.PlayerController.LastLookDirection;
-            
+
             _groundAimTransform.localPosition = Vector3.Lerp(_groundAimTransform.localPosition,
                 Vector3.zero + lookDirection * _aimDistance, _aimLerpSpeed * Runner.DeltaTime);
         }

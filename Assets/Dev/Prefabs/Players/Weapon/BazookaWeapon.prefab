@@ -191,10 +191,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  _IsActive:
+    _value: 1
   _shootPoint: {fileID: 8329106418942572176}
   _view: {fileID: 5643736420937599800}
   _cooldown: 1.5
-  _damage: 30
+  _minDamage: 35
+  _maxDamage: 45
   _shootDelay: 0
   _projectileSpeed: 1500
   _projectileAliveTime: 2

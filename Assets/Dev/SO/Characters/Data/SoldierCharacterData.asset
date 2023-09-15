@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e93b288b0f46b9ac1ffdf62fda1e30, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d6cbdfff1fee2f4fba059bb79ed1c7b, type: 3}
   m_Name: SoldierCharacterData
   m_EditorClassIdentifier: 
   CharacterClass: 0

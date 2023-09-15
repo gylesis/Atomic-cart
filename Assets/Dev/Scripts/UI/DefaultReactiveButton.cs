@@ -48,7 +48,6 @@ namespace Dev.UI
         }
     }
 
-
     [RequireComponent(typeof(Button))]
     public abstract class ReactiveButton<TValue> : MonoBehaviour
     {

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using Dev.UI;
 using Fusion;
@@ -25,7 +25,7 @@ namespace Dev.Infrastructure
             KeyCode.Alpha8,
             KeyCode.Alpha9,
         };
-        
+
         private void Awake()
         {
             _popUpService = FindObjectOfType<PopUpService>();
@@ -35,10 +35,10 @@ namespace Dev.Infrastructure
         {
             Runner.AddCallbacks(this);
 
-            var playersSpawner = FindObjectOfType<PlayersSpawner>();
+            JoysticksContainer joysticksContainer = DependenciesContainer.Instance.GetDependency<JoysticksContainer>();
 
-            _aimJoystick = playersSpawner.AimJoystick;
-            _movementJoystick = playersSpawner.MovementJoystick;
+            _aimJoystick = joysticksContainer.AimJoystick;
+            _movementJoystick = joysticksContainer.MovementJoystick;
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
@@ -69,7 +69,7 @@ namespace Dev.Infrastructure
             playerInput.MoveDirection = moveDirection;
             playerInput.LookDirection = aimJoystickDirection;
             playerInput.WeaponNum = 22;
-            
+
             for (int i = 0; i < _keyCodes.Length; i++)
             {
                 if (Input.GetKeyDown(_keyCodes[i]))
@@ -78,7 +78,7 @@ namespace Dev.Infrastructure
                     playerInput.WeaponNum = numberPressed;
                 }
             }
-                
+
             input.Set(playerInput);
         }
 

@@ -7,7 +7,7 @@ namespace Dev
     {
         [SerializeField] private Camera _mainCamera;
 
-        public void RPC_SetMainCameraState(bool isOn)
+        public void SetMainCameraState(bool isOn)
         {
             _mainCamera.gameObject.SetActive(isOn);
         }

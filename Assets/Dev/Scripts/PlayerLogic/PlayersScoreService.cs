@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayersScoreService : NetworkContext
     {
         [SerializeField] private PlayersScoreUI _playersScoreUI;
-        
+
         private List<PlayerScoreData> _playerScoreList = new List<PlayerScoreData>();
         private TeamsService _teamsService;
         private PlayersDataService _playersDataService;
@@ -19,22 +20,40 @@ namespace Dev
         private PlayersHealthService _playersHealthService;
 
         [Inject]
-        private void Init(TeamsService teamsService, PlayersDataService playersDataService, PlayersSpawner playersSpawner, PlayersHealthService playersHealthService)
+        private void Init(TeamsService teamsService, PlayersDataService playersDataService,
+            PlayersSpawner playersSpawner, PlayersHealthService playersHealthService)
         {
             _teamsService = teamsService;
             _playersDataService = playersDataService;
             _playersHealthService = playersHealthService;
             _playersSpawner = playersSpawner;
         }
-        
+
         public override void Spawned()
         {
-            if (HasStateAuthority == false) return;
-            
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 
             _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
+        }
+
+        private async void OnPlayerSpawned(PlayerSpawnEventContext playerSpawnData)
+        {
+            await Task.Delay(500);
+            
+            var playerScoreData = new PlayerScoreData();
+
+            PlayerRef playerId = playerSpawnData.PlayerRef;
+
+            playerScoreData.PlayerId = playerId;
+            playerScoreData.PlayerTeamSide = _teamsService.GetPlayerTeamSide(playerId);
+            playerScoreData.Nickname = _playersDataService.GetNickname(playerId);
+            playerScoreData.PlayerDeathCount = 0;
+            playerScoreData.PlayerFragCount = 0;
+
+            _playerScoreList.Add(playerScoreData);
+
+            _playersScoreUI.UpdateScores(_playerScoreList.ToArray());
         }
 
         private void OnPlayerDespawned(PlayerRef playerRef)
@@ -49,9 +68,21 @@ namespace Dev
             PlayerRef killerPlayer = context.Killer;
             PlayerRef deadPlayer = context.Killed;
 
-            string killerPlayerName = _playersDataService.GetNickname(killerPlayer);
-            string deadPlayerName = _playersDataService.GetNickname(deadPlayer);
+            bool isKilledByServer = killerPlayer == PlayerRef.None;
             
+            string killerName;
+
+            if (isKilledByServer)
+            {
+                killerName = "Server";
+            }
+            else
+            {
+                killerName = _playersDataService.GetNickname(killerPlayer);
+            }
+            
+            string deadName = _playersDataService.GetNickname(deadPlayer);
+
             foreach (var player in _playerScoreList)
             {
                 if (player.PlayerId == deadPlayer)
@@ -59,33 +90,19 @@ namespace Dev
                     player.PlayerDeathCount++;
                 }
 
-                if (player.PlayerId == killerPlayer)
+                if (isKilledByServer == false)
                 {
-                    player.PlayerFragCount++;
+                    if (player.PlayerId == killerPlayer)
+                    {
+                        player.PlayerFragCount++;
+                    }
                 }
             }
-            
+
             _playersScoreUI.UpdateScores(_playerScoreList.ToArray());
-            
-            Debug.Log($"{killerPlayerName} извиняется, за то что трахнул {deadPlayerName}");
-        }
 
-
-        private void OnPlayerSpawned(PlayerSpawnEventContext playerSpawnData)
-        {
-            var playerScoreData = new PlayerScoreData();
-
-            PlayerRef playerId = playerSpawnData.PlayerRef;
-            
-            playerScoreData.PlayerId = playerId;
-            playerScoreData.PlayerTeamSide = _teamsService.GetPlayerTeamSide(playerId);
-            playerScoreData.Nickname = _playersDataService.GetNickname(playerId);
-            playerScoreData.PlayerDeathCount = 0;
-            playerScoreData.PlayerFragCount = 0;
-            
-            _playerScoreList.Add(playerScoreData);
-            
-            _playersScoreUI.UpdateScores(_playerScoreList.ToArray());
+            Debug.Log($"{killerName} killed {deadName}");
         }
     }
+
 }

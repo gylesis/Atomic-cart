@@ -17,15 +17,40 @@ namespace Dev.Infrastructure
     public class GameSessionBrowser : NetworkContext, INetworkRunnerCallbacks
     {
         [SerializeField] private NetworkObject _playerPrefab;
-        
+
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private DefaultReactiveButton _joinButton;
         [SerializeField] private DefaultReactiveButton _hostButton;
-        [SerializeField] private TMP_Text _debugText;   
-            
+        [SerializeField] private TMP_Text _debugText;
+
         private List<SessionInfo> _sessionInfos;
 
         private NetworkRunner _runner;
+
+        private void OnGUI()
+        {
+            string label = String.Empty;
+            Color color = Color.white;
+
+            if (_runner.IsCloudReady)
+            {
+                label = "Connected to Photon";
+                color = Color.green;
+            }
+            else
+            {
+                label = "Not connected to Photon";
+                color = Color.red;
+            }
+
+            var guiStyle = new GUIStyle();
+            guiStyle.fontSize = 25;
+            guiStyle.normal.textColor = color;
+
+            var position = new Rect(Screen.width - 300, Screen.height - 150, 10, 10);
+
+            GUI.Label(position, label, guiStyle);
+        }
 
         private void Awake()
         {
@@ -39,7 +64,7 @@ namespace Dev.Infrastructure
         {
             CreateSession();
         }
-        
+
         private void OnJoinButtonClicked()
         {
             JoinSession();
@@ -51,10 +76,10 @@ namespace Dev.Infrastructure
             var startGameArgs = new StartGameArgs();
 
             _runner.AddCallbacks(this);
-            
-            startGameArgs.GameMode = GameMode.Host;
+
+            startGameArgs.GameMode = GameMode.Shared;
             startGameArgs.SessionName = _inputField.text;
-            startGameArgs.SceneManager = FindObjectOfType<LevelManager>();
+            startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
             startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
 
             StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
@@ -65,36 +90,43 @@ namespace Dev.Infrastructure
         {
             var startGameArgs = new StartGameArgs();
 
-            startGameArgs.GameMode = GameMode.Client;
+            startGameArgs.GameMode = GameMode.Shared;
             startGameArgs.SessionName = _inputField.text;
-            startGameArgs.SceneManager = FindObjectOfType<LevelManager>();
+            startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
 
             _runner.StartGame(startGameArgs);
+        }
+
+        private void Update()
+        {
+            CheckForBrowserState();
+        }
+
+        private void CheckForBrowserState()
+        {
+            _inputField.gameObject.SetActive(_runner.IsCloudReady);
+            _joinButton.gameObject.SetActive(_runner.IsCloudReady);
+            _hostButton.gameObject.SetActive(_runner.IsCloudReady);
+            _debugText.gameObject.SetActive(_runner.IsCloudReady);
         }
 
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
         {
             Debug.Log($"Player joined {playerRef}");
             
-            if (runner.IsServer)
+            if (runner.IsSharedModeMasterClient)
             {
-                PlayerManager.AddPlayerForQueue(playerRef);
+                runner.RemoveCallbacks(this);
                 
-                Vector3 spawnPos = Vector3.zero + Vector3.right * Random.Range(-10f,10f);
+                PlayerManager.AddPlayerForQueue(playerRef);
 
-                var player = _runner.Spawn(_playerPrefab, spawnPos,
-                    quaternion.identity, playerRef);
-
-                if (PlayerManager.PlayerQueue.Count > 1)
+                if (PlayerManager.PlayerQueue.Count == 1)
                 {
                     await Task.Delay(500);
-                    
-                     FindObjectOfType<SceneLoader>().LoadScene("Main");
-                     
-                    
+
+                    FindObjectOfType<SceneLoader>().LoadScene("Main");
                 }
             }
-            
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
@@ -121,15 +153,16 @@ namespace Dev.Infrastructure
             _sessionInfos = sessionList;
 
             _debugText.text = String.Empty;
-            
+
             foreach (SessionInfo sessionInfo in sessionList)
             {
-                string message = $"Session {sessionInfo.Name}, Region {sessionInfo.Region}, Players {sessionInfo.PlayerCount}/{sessionInfo.MaxPlayers}, IsOpen {sessionInfo.IsOpen}";
-               
+                string message =
+                    $"Session {sessionInfo.Name}, Region {sessionInfo.Region}, Players {sessionInfo.PlayerCount}/{sessionInfo.MaxPlayers}, IsOpen {sessionInfo.IsOpen}";
+
                 Debug.Log(message);
                 _debugText.text += message + "\n";
             }
-    
+
             if (sessionList.Count > 0)
             {
                 _inputField.text = sessionList.Last().Name;

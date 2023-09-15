@@ -1,50 +1,40 @@
-using System;
 using Dev.Infrastructure;
-using Dev.Utils;
+using Dev.Levels.Interactions;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.CartLogic
 {
     public class Cart : NetworkContext
     {
-        [SerializeField] private PlayerTriggerBox _interactionZone;
+        [SerializeField] private PlayerInteractionZone _interactionZone;
 
         public Subject<PlayerRef> CartZoneEntered { get; } = new Subject<PlayerRef>();
         public Subject<PlayerRef> CartZoneExit { get; } = new Subject<PlayerRef>();
 
-        public override void Spawned()
-        {   
-            if(Runner.IsServer == false) return;
 
-            _interactionZone.TriggerEntered.TakeUntilDestroy(this).Subscribe((OnPlayerEnteredCartZone));
-            _interactionZone.TriggerExit.TakeUntilDestroy(this).Subscribe((OnPlayerExitCartZone));
+        protected override void ServerSubscriptions()
+        {
+            base.ServerSubscriptions();
+
+            _interactionZone.PlayerEntered.TakeUntilDestroy(this).Subscribe((OnPlayerEnteredCartZone));
+            _interactionZone.PlayerExit.TakeUntilDestroy(this).Subscribe((OnPlayerExitCartZone));
         }
 
-        private void OnPlayerExitCartZone(Collider2D other)
+        private void OnPlayerEnteredCartZone(Player player)
         {
-            var tryGetComponent = other.TryGetComponent<Player>(out var player);
+            PlayerRef playerRef = player.Object.InputAuthority;
 
-            if (tryGetComponent)
-            {
-                PlayerRef playerRef = player.Object.InputAuthority;
-                
-                CartZoneExit.OnNext(playerRef);
-            }
+            CartZoneEntered.OnNext(playerRef);
         }
 
-        private void OnPlayerEnteredCartZone(Collider2D other)
+        private void OnPlayerExitCartZone(Player player)
         {
-            var tryGetComponent = other.TryGetComponent<Player>(out var player);
+            PlayerRef playerRef = player.Object.InputAuthority;
 
-            if (tryGetComponent)
-            {
-                PlayerRef playerRef = player.Object.InputAuthority;
-                
-                CartZoneEntered.OnNext(playerRef);
-            }
-            
+            CartZoneExit.OnNext(playerRef);
         }
     }
 }

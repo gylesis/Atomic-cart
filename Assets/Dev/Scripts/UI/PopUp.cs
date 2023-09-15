@@ -11,7 +11,7 @@ namespace Dev.UI
         [SerializeField] protected CanvasGroup _canvasGroup;
         [SerializeField] protected DefaultReactiveButton _procceedButton;
 
-        [SerializeField] private float _smoothFadeInOutDuration = 1f;
+        [SerializeField] protected float _smoothFadeInOutDuration = 1f;
 
         public Subject<bool> OnHide { get; } = new Subject<bool>();
 
@@ -28,7 +28,7 @@ namespace Dev.UI
         {
             PopUpService = popUpService;
         }
-        
+
         public void OnSucceedButtonClicked(Action action)
         {
             _disposable?.Dispose();
@@ -81,6 +81,24 @@ namespace Dev.UI
         {
             DisableCanvasGroup();
             _canvasGroup.DOFade(0, _smoothFadeInOutDuration);
+        }
+
+        protected void EnableScaled()
+        {
+            _canvasGroup.alpha = 1;
+            _canvasGroup.transform.localScale = Vector3.zero;
+            EnableCanvasGroup();
+            _canvasGroup.transform.DOScale(1, _smoothFadeInOutDuration).SetEase(Ease.OutBounce);
+        }
+
+        protected void DisableScaled()
+        {
+            _canvasGroup.transform.localScale = Vector3.one;
+            DisableCanvasGroup();
+            _canvasGroup.transform.DOScale(0, _smoothFadeInOutDuration).SetEase(Ease.OutBounce).OnComplete((() =>
+            {
+                _canvasGroup.alpha = 0;
+            }));
         }
 
         protected virtual void OnDestroy()

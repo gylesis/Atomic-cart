@@ -1,5 +1,6 @@
 using System;
 using Dev.Effects;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace Dev.Weapons.Guns
     {
         [SerializeField] private float _explosionRadius = 2;
         [SerializeField] private float _firePushPower = 5;
-        
+
         public override void Shoot(Vector2 direction, float power = 1)
         {
             PushForcePlayer(direction);
@@ -20,7 +21,7 @@ namespace Dev.Weapons.Guns
                 {
                     BazookaProjectile projectile = o.GetComponent<BazookaProjectile>();
 
-                    projectile.Init(direction, _projectileSpeed, _damage, Object.InputAuthority, _explosionRadius);
+                    projectile.Init(direction, _projectileSpeed, Damage, Object.InputAuthority, _explosionRadius);
 
                     OnProjectileBeforeSpawned(projectile);
                 });
@@ -32,9 +33,10 @@ namespace Dev.Weapons.Guns
             Player player = networkObject.GetComponent<Player>();
 
             player.Rigidbody.velocity = -direction * _firePushPower;
-           // player.Rigidbody.AddForce(-direction * _firePushPower, ForceMode2D.Impulse);
+            // player.Rigidbody.AddForce(-direction * _firePushPower, ForceMode2D.Impulse);
             player.PlayerController.AllowToMove = false;
-            Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe((l => { player.PlayerController.AllowToMove = true; }));
+            Observable.Timer(TimeSpan.FromSeconds(0.5f))
+                .Subscribe((l => { player.PlayerController.AllowToMove = true; }));
         }
 
         protected override void SpawnVFXOnDestroyProjectile(Projectile projectile)

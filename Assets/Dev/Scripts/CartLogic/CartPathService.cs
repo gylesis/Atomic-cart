@@ -1,13 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
+using Zenject;
 
-namespace Dev
+namespace Dev.CartLogic
 {
     public class CartPathService : NetworkContext
     {
@@ -23,16 +23,18 @@ namespace Dev
         [SerializeField] private PathDrawer _pathDrawer;
 
         public TeamSide TeamToCapturePoints => _teamToCapturePoints;
-        
+
         private CartPathPoint _currentPoint;
         private CartPathPoint _nextPoint;
+        private CartPathPoint _prevPoint;
 
         private int _currentPointIndex = 0;
 
         [Networked] private NetworkBool AllowToMove { get; set; }
 
-        public Subject<Unit> PointReached { get; } = new Subject<Unit>();
+        public bool IsOnLastPoint => _currentPointIndex >= _pathPoints.Count - 1;
 
+        public Subject<Unit> PointReached { get; } = new Subject<Unit>();
 
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
         private TeamsService _teamsService;
@@ -49,7 +51,7 @@ namespace Dev
             {
                 if (pathPoint.IsControlPoint)
                 {
-                    pathPoint.transform.localScale = Vector3.one * 3f; 
+                    pathPoint.transform.localScale = Vector3.one * 3f;
                 }
                 else
                 {
@@ -58,12 +60,16 @@ namespace Dev
             }
         }
 
-        public override void Spawned()
+        [Inject]
+        private void Init(TeamsService teamsService)
         {
-            if (HasStateAuthority == false) return;
-
-            _teamsService = FindObjectOfType<TeamsService>();
-
+            _teamsService = teamsService;
+        }
+        
+        protected override void ServerSubscriptions()
+        {
+            base.ServerSubscriptions();
+            
             PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
             playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
 
@@ -107,18 +113,20 @@ namespace Dev
         public void ResetCart()
         {
             _currentPointIndex = 0;
-            
+
             _currentPoint = _pathPoints[_currentPointIndex];
             _nextPoint = _pathPoints[_currentPointIndex + 1];
 
             InitCart();
         }
-        
+
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
 
             if (_nextPoint == null) return;
+
+            if (_currentPoint == null) return;
 
             if (AllowToMove == false) return;
 
@@ -160,6 +168,7 @@ namespace Dev
         private void SetNewPoints(int currentPointIndex)
         {
             currentPointIndex++;
+            _prevPoint = _currentPoint;
             _currentPoint = _nextPoint;
 
             if (currentPointIndex > _pathPoints.Count - 1)
@@ -173,7 +182,10 @@ namespace Dev
 
             _currentPointIndex = currentPointIndex;
 
-            if (_currentPoint.IsControlPoint) PointReached.OnNext(Unit.Default);
+            if (_currentPoint.IsControlPoint)
+            {
+                PointReached.OnNext(Unit.Default);
+            }
         }
 
         private bool IsCartBlocked()
@@ -198,9 +210,9 @@ namespace Dev
         private void OnCartZoneExit(PlayerRef playerRef)
         {
             _playersInsideCartZone.Remove(playerRef);
-            
+
             AllowToMove = !IsCartBlocked();
-            
+
             if (_playersInsideCartZone.Count == 0)
             {
                 AllowToMove = false;

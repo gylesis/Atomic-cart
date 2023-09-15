@@ -1,9 +1,10 @@
-﻿using Dev.Infrastructure;
+﻿using System;
+using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using Zenject;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayersDataService : NetworkContext
     {
@@ -27,10 +28,8 @@ namespace Dev
             _playersSpawner = playersSpawner;
         }
 
-        public override void Spawned()
+        private void Start()
         {
-            if (HasStateAuthority == false) return;
-
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
 

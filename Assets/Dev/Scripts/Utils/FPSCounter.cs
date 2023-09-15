@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -8,7 +9,14 @@ namespace Dev.Utils
     {
         [SerializeField] private TMP_Text _fpsText;
 
+        [SerializeField] private int _targetFPS = -1;
+            
         private readonly Queue<float> _fpsValues = new Queue<float>();
+        
+        private void Awake()
+        {
+            Application.targetFrameRate = _targetFPS;
+        }
 
         private void Update()
         {

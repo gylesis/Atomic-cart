@@ -176,7 +176,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2241983049680755065, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
       propertyPath: m_Name
-      value: DefaultReactiveButton
+      value: DefaultSucceedButton
       objectReference: {fileID: 0}
     - target: {fileID: 8865565740828521906, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
       propertyPath: m_Pivot.x

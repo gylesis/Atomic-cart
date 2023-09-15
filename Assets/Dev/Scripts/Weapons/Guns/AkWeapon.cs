@@ -11,12 +11,10 @@ namespace Dev.Weapons.Guns
                 {
                     Projectile projectile = o.GetComponent<Projectile>();
 
-                    projectile.Init(direction, _projectileSpeed, _damage, Object.InputAuthority);
+                    projectile.Init(direction, _projectileSpeed, Damage, Object.InputAuthority);
 
                     OnProjectileBeforeSpawned(projectile);
                 });
-
         }
-       
     }
 }

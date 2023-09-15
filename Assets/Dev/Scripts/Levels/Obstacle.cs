@@ -1,11 +1,10 @@
 ﻿using Dev.Infrastructure;
-using Dev.Weapons.Guns;
-using Fusion;
 
-namespace Dev
+namespace Dev.Levels
 {
     public class Obstacle : NetworkContext, IObstacleDamageable
     {
-        public PlayerRef PlayerRef => PlayerRef.None;
+   
+        public virtual int Id => -1;
     }
 }

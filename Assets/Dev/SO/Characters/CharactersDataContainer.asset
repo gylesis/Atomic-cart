@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30bcdac8f8d343ed925207d50e602d73, type: 3}
+  m_Script: {fileID: 11500000, guid: bbe6eb8acdd72fb48b5256a672d9a061, type: 3}
   m_Name: CharactersDataContainer
   m_EditorClassIdentifier: 
   _datas:
-  - {fileID: 11400000, guid: cc80dbc39c81231448f2be4da14a93cd, type: 2}
-  - {fileID: 11400000, guid: 77dd5cd917a50f546b1942e76ef18ced, type: 2}
+  - {fileID: 11400000, guid: a05190a2bb84db343912b38026e82516, type: 2}
+  - {fileID: 11400000, guid: 2470cd17134e3b3459c1f85ecdc61707, type: 2}

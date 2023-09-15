@@ -1,9 +1,11 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Dev.Infrastructure;
 using DG.Tweening;
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -70,6 +72,16 @@ namespace Dev.Utils
             return nums.First();
         }
 
+        public static bool OverlapSphere(NetworkRunner runner, Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
+        {       
+            hits = new List<LagCompensatedHit>();
+
+            runner.LagCompensation.OverlapSphere(pos, radius, runner.LocalPlayer,
+                hits, layerMask);
+
+            return hits.Count > 0;
+        }
+        
         public static void SetAlpha(this Image image, float alpha)
         {
             Color color = image.color;

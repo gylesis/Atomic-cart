@@ -1,6 +1,6 @@
 ﻿using Dev.Infrastructure;
 
-namespace Dev
+namespace Dev.Levels
 {
     public class LevelService : NetworkContext
     {
@@ -9,16 +9,15 @@ namespace Dev
         public Level CurrentLevel => _currentLevel;
 
         public static LevelService Instance { get; private set; }
-            
+
         private void Awake()
         {
             _currentLevel = FindObjectOfType<Level>();
-            
+
             if (Instance == null)
             {
                 Instance = this;
             }
         }
-        
     }
 }

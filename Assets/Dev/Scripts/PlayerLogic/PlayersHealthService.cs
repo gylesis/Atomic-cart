@@ -1,23 +1,24 @@
 ﻿using System;
 using Dev.Infrastructure;
+using Dev.Levels;
+using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayersHealthService : NetworkContext
     {
         private PlayersSpawner _playersSpawner;
 
-        [Networked, Capacity(20)]
-        private NetworkDictionary<PlayerRef, int> PlayersHealth { get; }
+        [SerializeField] [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, int> PlayersHealth { get; }
 
         public static PlayersHealthService Instance { get; private set; }
 
         [SerializeField] private bool _isFriendlyOn;
-        
+
         public Subject<PlayerDieEventContext> PlayerKilled { get; } = new Subject<PlayerDieEventContext>();
 
         private bool _init;
@@ -27,31 +28,31 @@ namespace Dev
 
         private void OnGUI()
         {
-            if(_init == false) return;
-            
+            if (_init == false) return;
+
             float height = 0;
-            
+
             foreach (var pair in PlayersHealth)
             {
-                var rect = new Rect(0,height,100, 20);
+                var rect = new Rect(0, height, 100, 20);
 
                 string nickname = PlayersDataService.Instance.GetNickname(pair.Key);
                 int health = pair.Value;
 
                 var guiStyle = new GUIStyle();
                 guiStyle.fontSize = 40;
-                
+
                 Color color = Color.white;
 
                 if (health == 0)
                 {
                     color = Color.red;
                 }
-                
+
                 guiStyle.normal.textColor = color;
-                
-                GUI.Label(rect, $"{nickname}: {health} HP" , guiStyle);
-                
+
+                GUI.Label(rect, $"{nickname}: {health} HP", guiStyle);
+
                 height += 55;
             }
         }
@@ -65,7 +66,8 @@ namespace Dev
         }
 
         [Inject]
-        public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider, CharactersDataContainer charactersDataContainer)
+        public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider,
+            CharactersDataContainer charactersDataContainer)
         {
             _charactersDataContainer = charactersDataContainer;
             _playersSpawner = playersSpawner;
@@ -77,8 +79,8 @@ namespace Dev
         {
             _init = true;
 
-            if(HasStateAuthority == false) return;
-            
+            //if (Runner.IsSharedModeMasterClient == false) return;
+
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
@@ -87,7 +89,10 @@ namespace Dev
         {
             PlayerRef playerRef = spawnEventContext.PlayerRef;
 
-            int startHealth = _charactersDataContainer.GetCharacterDataByClass(spawnEventContext.CharacterClass).CharacterStats.Health;
+            if(PlayersHealth.ContainsKey(playerRef)) return;
+            
+            int startHealth = _charactersDataContainer.GetCharacterDataByClass(spawnEventContext.CharacterClass)
+                .CharacterStats.Health;
 
             PlayersHealth.Add(playerRef, startHealth);
         }
@@ -96,31 +101,31 @@ namespace Dev
         {
             PlayersHealth.Remove(playerRef);
         }
-        
+
         public void ApplyDamage(PlayerRef victim, PlayerRef shooter, int damage)
         {
-            if (HasStateAuthority == false) return;
-            
+            //if (Runner.IsSharedModeMasterClient == false) return;
+
             if (_isFriendlyOn)
             {
                 TeamSide victimTeamSide = _teamsService.GetPlayerTeamSide(victim);
                 TeamSide shooterTeamSide = _teamsService.GetPlayerTeamSide(shooter);
-                
-                if(victimTeamSide == shooterTeamSide) return;
+
+                if (victimTeamSide == shooterTeamSide) return;
             }
 
             int playerCurrentHealth = PlayersHealth[victim];
 
-            if(playerCurrentHealth == 0) return;
-            
+            if (playerCurrentHealth == 0) return;
+
             var nickname = PlayersDataService.Instance.GetNickname(victim);
-            
+
             Debug.Log($"Damage {damage} applied to player {nickname}");
 
             Vector3 playerPos = _playersSpawner.GetPlayerPos(victim);
             RPC_SpawnDamageHint(shooter, playerPos, damage);
             RPC_SpawnDamageHint(victim, playerPos, damage);
-            
+
             playerCurrentHealth -= damage;
 
             if (playerCurrentHealth <= 0)
@@ -133,26 +138,54 @@ namespace Dev
 
             PlayersHealth.Set(victim, playerCurrentHealth);
         }
+        
+        
+        public void ApplyDamageFromServer(PlayerRef victim, int damage)
+        {   
+            //if (HasStateAuthority == false) return;
+
+            int playerCurrentHealth = PlayersHealth[victim];
+
+            if (playerCurrentHealth == 0) return;
+
+            var nickname = PlayersDataService.Instance.GetNickname(victim);
+
+            Debug.Log($"Damage {damage} applied to player {nickname} from server");
+
+            Vector3 playerPos = _playersSpawner.GetPlayerPos(victim);
+            RPC_SpawnDamageHint(victim, playerPos, damage);
+
+            playerCurrentHealth -= damage;
+
+            if (playerCurrentHealth <= 0)
+            {
+                playerCurrentHealth = 0;
+                OnPlayerHealthZero(victim, PlayerRef.None);
+            }
+
+            Debug.Log($"Player {nickname} has {playerCurrentHealth} health");
+
+            PlayersHealth.Set(victim, playerCurrentHealth);
+        }
+        
 
         public void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
-        {   
+        {
             Debug.Log($"Damage {damage} applied to dummy target {dummyTarget.name}");
 
             Vector3 playerPos = dummyTarget.transform.position;
             RPC_SpawnDamageHint(shooter, playerPos, damage);
         }
-        
+
         [Rpc]
-        private void RPC_SpawnDamageHint([RpcTarget] PlayerRef playerRef ,Vector3 pos, int damage)
+        private void RPC_SpawnDamageHint([RpcTarget] PlayerRef playerRef, Vector3 pos, int damage)
         {
             _worldTextProvider.SpawnDamageText(pos, damage);
         }
-            
+
         private void OnPlayerHealthZero(PlayerRef playerRef, PlayerRef owner)
         {
-            NetworkObject playerObject = Runner.GetPlayerObject(playerRef);
-
-            Player player = playerObject.GetComponent<Player>();
+            Player player = _playersSpawner.GetPlayer(playerRef);
             player.RPC_DoScale(0.5f, 0f);
 
             player.PlayerController.AllowToMove = false;
@@ -162,29 +195,25 @@ namespace Dev
             var playerDieEventContext = new PlayerDieEventContext();
             playerDieEventContext.Killer = owner;
             playerDieEventContext.Killed = playerRef;
-            
+
             PlayerKilled.OnNext(playerDieEventContext);
-            
+
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe((l =>
             {
                 _playersSpawner.RespawnPlayer(playerRef);
 
-                RestorePlayerHealth(playerRef);
-
-                player.RPC_DoScale(0, 1);
+                player.RPC_DoScale(0);
             }));
-        }   
-        
+        }
+
         public void RestorePlayerHealth(PlayerRef playerRef)
         {
-            NetworkObject playerObject = Runner.GetPlayerObject(playerRef);
+            Player player = _playersSpawner.GetPlayer(playerRef);
 
-            Player player = playerObject.GetComponent<Player>();
-            
             CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(player.CharacterClass);
 
             Debug.Log($"Restoring health for player {playerRef} - {characterData.CharacterStats.Health}");
-            
+
             PlayersHealth.Set(playerRef, characterData.CharacterStats.Health);
         }
     }

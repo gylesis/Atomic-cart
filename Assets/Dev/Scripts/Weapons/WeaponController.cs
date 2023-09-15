@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Dev.Weapons.Guns;
 using Fusion;
 using JetBrains.Annotations;
@@ -13,8 +13,7 @@ namespace Dev.Weapons
     {
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
 
-        [Networked, Capacity(4)]
-        private NetworkLinkedList<Weapon> Weapons { get; }
+        [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
 
         [SerializeField] private Transform _weaponParent;
 
@@ -26,7 +25,11 @@ namespace Dev.Weapons
         private WeaponProvider _weaponProvider;
 
         public bool AllowToShoot { get; private set; } = true;
-        [HideInInspector] [Networked] [CanBeNull] public Weapon CurrentWeapon { get; set; }
+
+        [HideInInspector]
+        [Networked]
+        [CanBeNull]
+        public Weapon CurrentWeapon { get; set; }
 
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();
 
@@ -34,7 +37,12 @@ namespace Dev.Weapons
         {
             if (HasInputAuthority)
             {
-                RPC_AddWeapon(WeaponParent.GetComponentInChildren<Weapon>(), true);
+                Weapon weapon = WeaponParent.GetComponentInChildren<Weapon>();
+
+                if (weapon != null)
+                {
+                    RPC_AddWeapon(weapon, true);
+                }
             }
 
             if (HasStateAuthority == false) return;
@@ -43,7 +51,7 @@ namespace Dev.Weapons
             {
                 weapon.transform.parent = WeaponParent;
             }
-            
+
             _weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
 
@@ -120,6 +128,8 @@ namespace Dev.Weapons
 
         private void Shoot(Vector2 direction, float power = 1)
         {
+            if(HasStateAuthority == false) return;
+            
             var cooldown = CurrentWeapon.Cooldown;
 
             //Debug.Log($"Power {power}");
@@ -133,6 +143,8 @@ namespace Dev.Weapons
 
         private void Shoot()
         {
+            if(HasStateAuthority == false) return;
+            
             var cooldown = CurrentWeapon.Cooldown;
 
             //Debug.Log($"Power {power}");
@@ -148,7 +160,7 @@ namespace Dev.Weapons
         {
             if (HasStateAuthority)
             {
-                var hasInput = GetInput<PlayerInput>(out var input);
+                /*var hasInput = GetInput<PlayerInput>(out var input);
 
                 if (hasInput)
                 {
@@ -163,11 +175,11 @@ namespace Dev.Weapons
                             _weaponProvider.ProvideWeaponToPlayer<BazookaWeapon>(Object.InputAuthority, true);
                         }
                     }
-                }
+                }*/
             }
 
 
-            if (Object.HasInputAuthority == false) return;
+            if (HasInputAuthority == false) return;
 
             if (CurrentWeapon == null) return;
 
@@ -232,7 +244,7 @@ namespace Dev.Weapons
         {
             if (Weapons.Count == 0)
             {
-                return; 
+                return;
             }
 
             Weapon weapon = Weapons.First(x => x.WeaponData.Name == weaponName);
@@ -252,9 +264,7 @@ namespace Dev.Weapons
             RPC_SelectViewWeapon();
         }
 
-        
-        
-        
+
         [Rpc]
         private void RPC_SelectViewWeapon()
         {

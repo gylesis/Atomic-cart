@@ -1,10 +1,11 @@
-﻿using Dev.Infrastructure;
+﻿using Dev.CartLogic;
+using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.Levels
 {
     public class TimeService : NetworkContext
     {
@@ -24,6 +25,7 @@ namespace Dev
 
         public Subject<Unit> GameTimeRanOut { get; } = new Subject<Unit>();
 
+        [Networked] public NetworkBool IsPaused { get; private set; }
 
         [Inject]
         private void Init(CartPathService cartPathService, PlayersSpawner playersSpawner)
@@ -31,13 +33,18 @@ namespace Dev
             _playersSpawner = playersSpawner;
             _cartPathService = cartPathService;
         }
-        
+
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;
 
             _cartPathService.PointReached.Subscribe(OnControlPoint);
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+        }
+
+        public void SetPauseState(bool isPause)
+        {
+            IsPaused = isPause;
         }
 
         public void ResetTimer()
@@ -48,7 +55,7 @@ namespace Dev
 
             LeftTime = TickTimer.CreateFromSeconds(Runner, overallSeconds);
         }
-        
+
         private void OnControlPoint(Unit obj)
         {
             AddTime();
@@ -57,7 +64,8 @@ namespace Dev
         [ContextMenu(nameof(AddTime))]
         private void AddTime()
         {
-            LeftTime = TickTimer.CreateFromSeconds(Runner, LeftTime.RemainingTime(Runner).Value + _timeRewardForCapturingPoint.OverallSeconds);
+            LeftTime = TickTimer.CreateFromSeconds(Runner,
+                LeftTime.RemainingTime(Runner).Value + _timeRewardForCapturingPoint.OverallSeconds);
         }
 
         private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
@@ -74,6 +82,8 @@ namespace Dev
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
+
+            if (IsPaused) return;
 
             if (LeftTime.ExpiredOrNotRunning(Runner) == false)
             {
@@ -98,7 +108,6 @@ namespace Dev
                 {
                     GameTimeRanOut.OnNext(Unit.Default);
                 }
-                
             }
         }
     }

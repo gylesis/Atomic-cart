@@ -20,7 +20,7 @@ namespace Dev.Infrastructure
 
             _networkRunner.AddCallbacks(gameSessionBrowser);
 
-            var joinSessionLobby = _networkRunner.JoinSessionLobby(SessionLobby.ClientServer);
+            var joinSessionLobby = _networkRunner.JoinSessionLobby(SessionLobby.Shared);
 
             await joinSessionLobby;
 

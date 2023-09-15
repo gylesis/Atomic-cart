@@ -8,11 +8,11 @@ namespace Dev.UI
     public class PopUpService : MonoBehaviour
     {
         [SerializeField] private Transform _popUpsParent;
-        
+
         private Dictionary<Type, PopUp> _popUpsPrefabs;
         private Dictionary<Type, PopUp> _spawnedPrefabs = new Dictionary<Type, PopUp>();
 
-       // public Subject<Unit> PopUpClosed { get; } = new Subject<Unit>();
+        // public Subject<Unit> PopUpClosed { get; } = new Subject<Unit>();
 
         private void Awake()
         {
@@ -64,9 +64,8 @@ namespace Dev.UI
             {
                 popUp.Show();
             }
-            
         }
-        
+
         public void HidePopUp<TPopUp>() where TPopUp : PopUp
         {
             var tryGetPopUp = TryGetPopUp<TPopUp>(out var popUp);
@@ -75,7 +74,15 @@ namespace Dev.UI
             {
                 popUp.Hide();
             }
-            
         }
+
+        public void HideAllPopUps()
+        {
+            foreach (var popUp in _spawnedPrefabs)
+            {
+                popUp.Value.Hide();
+            }
+        }
+        
     }
 }

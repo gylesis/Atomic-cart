@@ -1,4 +1,9 @@
-﻿using Dev.Infrastructure;
+﻿using System;
+using System.Threading.Tasks;
+using Dev.Infrastructure;
+using Dev.PlayerLogic;
+using Dev.Utils;
+using Fusion;
 using UnityEngine;
 
 namespace Dev
@@ -9,19 +14,25 @@ namespace Dev
         [SerializeField] private Camera _camera;
 
         private Transform _target;
+        private GameSettings _gameSettings;
 
         public void SetupTarget(Transform target)
         {
             _target = target;
         }
 
+        private void Start()
+        {
+            _gameSettings = DependenciesContainer.Instance.GetDependency<GameSettings>();
+        }
+
         public override void Spawned()
         {
-            if (HasInputAuthority)
+            if (HasStateAuthority)
             {
-                FindObjectOfType<CameraService>().RPC_SetMainCameraState(false);
+                DependenciesContainer.Instance.GetDependency<CameraService>().SetMainCameraState(false);
 
-                SetupTarget(Runner.GetPlayerObject(Runner.LocalPlayer).transform);
+                SetupTarget(Player.LocalPlayer.transform);
             }
             else
             {
@@ -33,6 +44,8 @@ namespace Dev
         {
             if (HasInputAuthority == false) return;
 
+            _camera.orthographicSize = _gameSettings.CameraZoomModifier;
+            
             FollowTarget();
         }
 

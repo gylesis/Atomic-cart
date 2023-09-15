@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using Dev.Infrastructure;
+using Dev.Levels;
+using Dev.PlayerLogic;
+using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -31,7 +34,7 @@ namespace Dev.Weapons.Guns
 
             transform.up = _moveDirection;
         }
-    
+
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
@@ -45,19 +48,34 @@ namespace Dev.Weapons.Guns
                 PlayerRef shooter = Object.InputAuthority;
 
                 bool needToDestroy = false;
-                
+
                 foreach (LagCompensatedHit hit in hits)
                 {
                     var isDamageable = hit.GameObject.TryGetComponent<IDamageable>(out var damagable);
 
                     if (isDamageable == false || damagable is IObstacleDamageable obstacleDamageable)
                     {
-                        OnObstacleHit(hit);
+                        bool isStaticObstacle = damagable.Id == -1;
+
+                        bool isObstacleWithHealth = damagable.Id == 0;
+
+                        if (isStaticObstacle)
+                        {
+                            OnObstacleHit(damagable as Obstacle);
+                        }
+
+                        if (isObstacleWithHealth)
+                        {
+                            OnObstacleHit(damagable as Obstacle);
+
+                            ApplyDamageToObstacle(damagable as ObstacleWithHealth, shooter, _damage);
+                        }
+
                         needToDestroy = true;
                         break;
                     }
 
-                    bool isDummyTarget = damagable.PlayerRef == PlayerRef.None;
+                    bool isDummyTarget = damagable.Id == PlayerRef.None;
 
                     if (isDummyTarget)
                     {
@@ -82,7 +100,6 @@ namespace Dev.Weapons.Guns
 
                         break;
                     }
-                    
                 }
 
                 if (needToDestroy)
@@ -92,16 +109,21 @@ namespace Dev.Weapons.Guns
             }
         }
 
-        protected virtual void OnObstacleHit(LagCompensatedHit obstacleHit) { }
-
-        protected virtual void ApplyHitToPlayer(Player player)
-        {
-            ApplyDamage(player, _owner, _damage);
-        }
+        protected virtual void OnObstacleHit(Obstacle obstacle) { }
 
         protected void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
         {
             PlayersHealthService.Instance.ApplyDamageToDummyTarget(dummyTarget, shooter, damage);
+        }
+
+        protected void ApplyDamageToObstacle(ObstacleWithHealth obstacleWithHealth, PlayerRef shooter, int damage)
+        {
+            ObstaclesManager.Instance.ApplyDamageToObstacle(shooter, obstacleWithHealth, damage);
+        }
+
+        protected virtual void ApplyHitToPlayer(Player player)
+        {
+            ApplyDamage(player, _owner, _damage);
         }
 
         protected void ApplyDamage(Player target, PlayerRef shooter, int damage)
@@ -116,11 +138,8 @@ namespace Dev.Weapons.Guns
 
         protected bool OverlapSphere(Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
         {
-            hits = new List<LagCompensatedHit>();
-
-            Runner.LagCompensation.OverlapSphere(pos, radius, Object.InputAuthority,
-                hits, layerMask);
-
+            Extensions.OverlapSphere(Runner, pos, radius, layerMask, out hits);
+            
             return hits.Count > 0;
         }
 
@@ -139,8 +158,6 @@ namespace Dev.Weapons.Guns
 
     public interface IDamageable
     {
-        PlayerRef PlayerRef { get; }
+        int Id { get; }
     }
-
-    public interface IObstacleDamageable : IDamageable { }
 }
