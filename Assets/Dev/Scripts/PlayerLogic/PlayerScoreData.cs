@@ -1,15 +1,14 @@
-using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Fusion;
 
 namespace Dev
 {
-    public class PlayerScoreData : INetworkStruct
+    public struct PlayerScoreData : INetworkStruct
     {
-        public PlayerRef PlayerId;
-        public string Nickname;
-        public TeamSide PlayerTeamSide;
-        public int PlayerFragCount;
-        public int PlayerDeathCount;
+        [Networked] public PlayerRef PlayerId { get; set; }
+        [Networked] public NetworkString<_16> Nickname { get; set; }
+        [Networked] public TeamSide PlayerTeamSide { get; set; }
+        [Networked] public int PlayerFragCount { get; set; }
+        [Networked] public int PlayerDeathCount { get; set; }
     }
 }

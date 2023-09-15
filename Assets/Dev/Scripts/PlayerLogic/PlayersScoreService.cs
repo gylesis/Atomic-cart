@@ -13,7 +13,8 @@ namespace Dev.PlayerLogic
     {
         [SerializeField] private PlayersScoreUI _playersScoreUI;
 
-        private List<PlayerScoreData> _playerScoreList = new List<PlayerScoreData>();
+        [Networked, Capacity(10)] private NetworkLinkedList<PlayerScoreData> PlayerScoreList { get; }
+       
         private TeamsService _teamsService;
         private PlayersDataService _playersDataService;
         private PlayersSpawner _playersSpawner;
@@ -41,6 +42,8 @@ namespace Dev.PlayerLogic
         {
             await Task.Delay(500);
             
+            if(Runner.IsSharedModeMasterClient == false) return;
+            
             var playerScoreData = new PlayerScoreData();
 
             PlayerRef playerId = playerSpawnData.PlayerRef;
@@ -51,16 +54,16 @@ namespace Dev.PlayerLogic
             playerScoreData.PlayerDeathCount = 0;
             playerScoreData.PlayerFragCount = 0;
 
-            _playerScoreList.Add(playerScoreData);
+            PlayerScoreList.Add(playerScoreData);
 
-            _playersScoreUI.UpdateScores(_playerScoreList.ToArray());
+            _playersScoreUI.UpdateScores(PlayerScoreList.ToArray());
         }
 
         private void OnPlayerDespawned(PlayerRef playerRef)
         {
-            PlayerScoreData playerScoreData = _playerScoreList.FirstOrDefault(x => x.PlayerId == playerRef);
+            PlayerScoreData playerScoreData = PlayerScoreList.FirstOrDefault(x => x.PlayerId == playerRef);
 
-            _playerScoreList.Remove(playerScoreData);
+            PlayerScoreList.Remove(playerScoreData);
         }
 
         private void UpdateTableScore(PlayerDieEventContext context)
@@ -83,23 +86,33 @@ namespace Dev.PlayerLogic
             
             string deadName = _playersDataService.GetNickname(deadPlayer);
 
-            foreach (var player in _playerScoreList)
+            for (var index = 0; index < PlayerScoreList.Count; index++)
             {
-                if (player.PlayerId == deadPlayer)
+                PlayerScoreData playerScoreData = PlayerScoreList[index];
+                
+                if (playerScoreData.PlayerId == deadPlayer)
                 {
-                    player.PlayerDeathCount++;
+                    var playerDeathCount = playerScoreData.PlayerDeathCount;
+                    playerDeathCount++;
+
+                    playerScoreData.PlayerDeathCount = playerDeathCount;
                 }
 
                 if (isKilledByServer == false)
                 {
-                    if (player.PlayerId == killerPlayer)
+                    if (playerScoreData.PlayerId == killerPlayer)
                     {
-                        player.PlayerFragCount++;
+                        var playerFragCount = playerScoreData.PlayerFragCount;
+                        playerFragCount++;
+                        
+                        playerScoreData.PlayerFragCount = playerFragCount;
                     }
                 }
+                
+                PlayerScoreList.Set(index, playerScoreData);
             }
 
-            _playersScoreUI.UpdateScores(_playerScoreList.ToArray());
+            _playersScoreUI.UpdateScores(PlayerScoreList.ToArray());
 
             Debug.Log($"{killerName} killed {deadName}");
         }

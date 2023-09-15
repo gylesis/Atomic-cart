@@ -70,7 +70,7 @@ namespace Dev.PlayerLogic
                     PlayerScoreUI playerScoreUI = ScoreUis.Get(index);
 
                     playerScoreUI.RPC_UpdateData(scoreData.PlayerFragCount, scoreData.PlayerDeathCount);
-                    playerScoreUI.RPC_InitNickname(scoreData.Nickname);
+                    playerScoreUI.RPC_InitNickname(scoreData.Nickname.Value);
 
                     continue;
                 }
@@ -80,7 +80,7 @@ namespace Dev.PlayerLogic
                     (runner, o) =>
                     {
                         PlayerScoreUI playerScoreUI = o.GetComponent<PlayerScoreUI>();
-                        playerScoreUI.RPC_Init(scoreData.Nickname, scoreData.PlayerFragCount,
+                        playerScoreUI.RPC_Init(scoreData.Nickname.Value, scoreData.PlayerFragCount,
                             scoreData.PlayerDeathCount,
                             playerId);
                     });
