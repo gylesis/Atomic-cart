@@ -82,13 +82,21 @@ namespace Dev.Utils
             return hits.Count > 0;
         }
         
-        public static void SetAlpha(this Image image, float alpha)
+        public static void SetAlpha(this Image image, float targetAlpha)
         {
             Color color = image.color;
-            color.a = alpha;
+            color.a = targetAlpha;
             image.color = color;
         }
 
+        public static void SetAlpha(this CanvasGroup canvasGroup, float targetAlpha)
+        {
+            float alpha = canvasGroup.alpha;
+            alpha = targetAlpha;
+            canvasGroup.alpha = alpha;
+        }
+
+        
         public static int RandomBetween(params int[] nums)
         {
             return nums[Random.Range(0, nums.Length)];

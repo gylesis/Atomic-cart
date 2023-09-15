@@ -60,6 +60,7 @@ namespace Dev.Infrastructure
                 Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe((l =>
                 {
                     _popUpService.HidePopUp<CharacterChooseMenu>();
+                    _popUpService.ShowPopUp<HUDMenu>();
                 }));
 
                 SpawnPlayerByCharacter(characterClass, playerRef, networkRunner);

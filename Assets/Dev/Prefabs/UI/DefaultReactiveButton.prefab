@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6071789350046447470}
   - component: {fileID: 1679801471281021271}
   - component: {fileID: 3824935813862126138}
+  - component: {fileID: 2500935162186869471}
   m_Layer: 0
   m_Name: DefaultReactiveButton
   m_TagString: Untagged
@@ -134,4 +135,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5bcdcec443e56745b7702a8a1276330, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _canvasGroup: {fileID: 2500935162186869471}
   _button: {fileID: 1679801471281021271}
+--- !u!225 &2500935162186869471
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2241983049680755065}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

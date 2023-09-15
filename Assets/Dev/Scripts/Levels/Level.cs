@@ -12,13 +12,16 @@ namespace Dev.Levels
         [SerializeField] private SpawnPoint[] _blueTeamSpawnPoints;
 
         private List<Obstacle> _obstacles;
+        private List<InteractionObject> _interactionObjects;
+
+        public List<InteractionObject> InteractionObjects => _interactionObjects;
+        public List<Obstacle> Obstacles => _obstacles;
 
         private void Awake()
         {
             _obstacles = GetComponentsInChildren<Obstacle>(true).ToList();
+            _interactionObjects = GetComponentsInChildren<InteractionObject>(true).ToList();
         }
-
-        public List<Obstacle> Obstacles => _obstacles;
 
         public SpawnPoint[] GetSpawnPointsByTeam(TeamSide teamSide)
         {

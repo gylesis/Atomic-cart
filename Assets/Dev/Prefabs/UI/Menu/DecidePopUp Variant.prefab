@@ -425,15 +425,15 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
   m_PrefabInstance: {fileID: 9222290888621533660}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7397820391121590947 stripped
+--- !u!114 &4305559949316033983 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825786065322652543, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4916878860130853987, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
   m_PrefabInstance: {fileID: 9222290888621533660}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5bcdcec443e56745b7702a8a1276330, type: 3}
+  m_Script: {fileID: 11500000, guid: 3619c3b94ccb453696d0b3c256b92f2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &9222290889896718962
@@ -570,15 +570,15 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
   m_PrefabInstance: {fileID: 9222290889896718962}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7397820390249545997 stripped
+--- !u!114 &4305559948578215441 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825786065322652543, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4916878860130853987, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
   m_PrefabInstance: {fileID: 9222290889896718962}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5bcdcec443e56745b7702a8a1276330, type: 3}
+  m_Script: {fileID: 11500000, guid: 3619c3b94ccb453696d0b3c256b92f2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &9222290889976381297
@@ -748,8 +748,8 @@ MonoBehaviour:
   _smoothFadeInOutDuration: 0.5
   _backgroundImage: {fileID: 4482227030711987979}
   _titleText: {fileID: 1535814034}
-  _yesButton: {fileID: 7397820390249545997}
-  _noButton: {fileID: 7397820391121590947}
+  _yesButton: {fileID: 4305559948578215441}
+  _noButton: {fileID: 4305559949316033983}
   _centerTransform: {fileID: 959700324}
 --- !u!224 &653531295160636106 stripped
 RectTransform:

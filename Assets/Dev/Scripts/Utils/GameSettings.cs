@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev.Utils
 {
@@ -8,10 +9,13 @@ namespace Dev.Utils
         [Header("Game")]
         [SerializeField] private int _timeAfterWinGame = 5;
 
+        [FormerlySerializedAs("_friendlyFireOn")] [SerializeField] private bool _isFriendlyFireOn;
+        
         [Header("Player")] 
         [SerializeField] private float _cameraZoomModifier = 15f;
 
 
+        public bool IsFriendlyFireOn => _isFriendlyFireOn;
         public float CameraZoomModifier => _cameraZoomModifier;
 
         public int TimeAfterWinGame => _timeAfterWinGame;

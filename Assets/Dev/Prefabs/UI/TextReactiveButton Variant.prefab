@@ -144,7 +144,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2241983049680755065, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
       propertyPath: m_Name
-      value: TextReactiveButton
+      value: TextReactiveButton Variant
       objectReference: {fileID: 0}
     - target: {fileID: 6071789350046447470, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
       propertyPath: m_Color.a
@@ -236,7 +236,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3110580685464959545, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
+    - {fileID: 3824935813862126138, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
+--- !u!225 &1078475067860413338 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 2500935162186869471, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
+  m_PrefabInstance: {fileID: 3189278730992337221}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3701826605453858876 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2241983049680755065, guid: 0636e9257b955c849bdb120fa07aceb1, type: 3}
@@ -254,6 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3619c3b94ccb453696d0b3c256b92f2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _canvasGroup: {fileID: 1078475067860413338}
   _button: {fileID: 4255130419888095250}
   _text: {fileID: 2111925836}
 --- !u!114 &4255130419888095250 stripped

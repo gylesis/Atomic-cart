@@ -131,9 +131,8 @@ GameObject:
   - component: {fileID: 5754232529788641235}
   - component: {fileID: 6761506429897328366}
   - component: {fileID: 7933024088133413084}
-  - component: {fileID: 5935352493661802243}
   m_Layer: 6
-  m_Name: Wall
+  m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -310,33 +309,3 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _IsActive:
     _value: 1
---- !u!114 &5935352493661802243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9194313940579053384}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShadowGroup: 0
-  m_ComponentVersion: 1
-  m_HasRenderer: 1
-  m_UseRendererSilhouette: 1
-  m_CastsShadows: 1
-  m_SelfShadows: 0
-  m_ApplyToSortingLayers: 00000000d31827bbbf2f9442
-  m_ShapePath:
-  - {x: -0.50000024, y: -0.5001238, z: 0}
-  - {x: -0.50000024, y: 0.50012386, z: 0}
-  - {x: 0.50000024, y: 0.50012386, z: 0}
-  - {x: 0.50000024, y: -0.5001238, z: 0}
-  m_ShapePathHash: 0
-  m_Mesh: {fileID: 0}
-  m_InstanceId: 121124
-  m_LocalBounds:
-    m_Center: {x: 0, y: 0.000000059604645, z: 0}
-    m_Extent: {x: 0.50000024, y: 0.50012386, z: 0}

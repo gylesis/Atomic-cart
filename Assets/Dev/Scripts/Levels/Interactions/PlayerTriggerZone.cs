@@ -6,9 +6,9 @@ using UnityEngine.Serialization;
 
 namespace Dev.Levels.Interactions
 {
-    public class PlayerInteractionZone : InteractionZone
+    public class PlayerTriggerZone : TriggerZone
     {
-        [FormerlySerializedAs("_triggerZone")] [SerializeField] private InteractionZone _interactionZone;
+        [SerializeField] private TriggerZone _triggerZone;
 
         public Subject<Player> PlayerEntered { get; } = new Subject<Player>();
         public Subject<Player> PlayerExit { get; } = new Subject<Player>();
@@ -17,8 +17,8 @@ namespace Dev.Levels.Interactions
         {
             base.ServerSubscriptions();
 
-            _interactionZone.TriggerEntered.TakeUntilDestroy(this).Subscribe((OnZoneEntered));
-            _interactionZone.TriggerExit.TakeUntilDestroy(this).Subscribe((OnZoneExit));
+            _triggerZone.TriggerEntered.TakeUntilDestroy(this).Subscribe((OnZoneEntered));
+            _triggerZone.TriggerExit.TakeUntilDestroy(this).Subscribe((OnZoneExit));
         }
 
         private void OnZoneEntered(Collider2D obj)

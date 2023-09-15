@@ -1,19 +1,24 @@
 ﻿using System;
+using Dev.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Dev.UI
 {
+    [RequireComponent(typeof(CanvasGroup))]
     public class DefaultReactiveButton : MonoBehaviour
     {
+        [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Button _button;
-        public Image Image => _button.image;
 
         private IDisposable _disposable;
 
-        private void Reset() =>
+        private void Reset()
+        {
+            _canvasGroup = GetComponent<CanvasGroup>();
             _button = GetComponent<Button>();
+        }
 
         public Subject<Unit> Clicked { get; } =
             new Subject<Unit>();
@@ -28,18 +33,16 @@ namespace Dev.UI
 
         public virtual void Enable()
         {
-            _button.enabled = true;
-            Color imageColor = Image.color;
-            imageColor.a = 1;
-            Image.color = imageColor;
+            _canvasGroup.interactable = true;
+            _canvasGroup.blocksRaycasts = true;
+            _canvasGroup.SetAlpha(1);
         }
 
         public virtual void Disable()
         {
-            _button.enabled = false;
-            Color imageColor = Image.color;
-            imageColor.a = 0.6f;
-            Image.color = imageColor;
+            _canvasGroup.interactable = false;
+            _canvasGroup.blocksRaycasts = false;
+            _canvasGroup.SetAlpha(0.6f);
         }
 
         private void OnDestroy()

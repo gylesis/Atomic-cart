@@ -5,6 +5,7 @@ using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.PlayerLogic
@@ -13,18 +14,16 @@ namespace Dev.PlayerLogic
     {
         private PlayersSpawner _playersSpawner;
 
-        [SerializeField] [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, int> PlayersHealth { get; }
+        [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, int> PlayersHealth { get; }
 
         public static PlayersHealthService Instance { get; private set; }
-
-        [SerializeField] private bool _isFriendlyOn;
-
         public Subject<PlayerDieEventContext> PlayerKilled { get; } = new Subject<PlayerDieEventContext>();
 
         private bool _init;
         private TeamsService _teamsService;
         private WorldTextProvider _worldTextProvider;
         private CharactersDataContainer _charactersDataContainer;
+        private GameSettings _gameSettings;
 
         private void OnGUI()
         {
@@ -67,8 +66,9 @@ namespace Dev.PlayerLogic
 
         [Inject]
         public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider,
-            CharactersDataContainer charactersDataContainer)
+            CharactersDataContainer charactersDataContainer, GameSettings gameSettings)
         {
+            _gameSettings = gameSettings;
             _charactersDataContainer = charactersDataContainer;
             _playersSpawner = playersSpawner;
             _teamsService = teamsService;
@@ -106,7 +106,7 @@ namespace Dev.PlayerLogic
         {
             //if (Runner.IsSharedModeMasterClient == false) return;
 
-            if (_isFriendlyOn)
+            if (_gameSettings.IsFriendlyFireOn)
             {
                 TeamSide victimTeamSide = _teamsService.GetPlayerTeamSide(victim);
                 TeamSide shooterTeamSide = _teamsService.GetPlayerTeamSide(shooter);

@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7110294600396571137, guid: abaa9476cb0692a419b7426eec9e81c2, type: 3}
       propertyPath: m_Name
-      value: PlayerTriggerZone
+      value: PlayerInteractionZone
       objectReference: {fileID: 0}
     - target: {fileID: 7110294600396571164, guid: abaa9476cb0692a419b7426eec9e81c2, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
@@ -102,7 +102,7 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _IsActive:
     _value: 1
-  _interactionZone: {fileID: 7215312113836805826}
+  _triggerZone: {fileID: 7215312113836805826}
 --- !u!114 &7215312113836805826 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3295916960534633552, guid: abaa9476cb0692a419b7426eec9e81c2, type: 3}
