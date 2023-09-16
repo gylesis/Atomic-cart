@@ -106,7 +106,7 @@ namespace Dev.PlayerLogic
         {
             //if (Runner.IsSharedModeMasterClient == false) return;
 
-            if (_gameSettings.IsFriendlyFireOn)
+            if (_gameSettings.IsFriendlyFireOn == false)
             {
                 TeamSide victimTeamSide = _teamsService.GetPlayerTeamSide(victim);
                 TeamSide shooterTeamSide = _teamsService.GetPlayerTeamSide(shooter);

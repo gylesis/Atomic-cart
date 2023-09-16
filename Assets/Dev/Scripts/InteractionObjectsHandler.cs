@@ -14,10 +14,12 @@ namespace Dev
     {
         private LevelService _levelService;
         private PopUpService _popUpService;
+        private PlayersHealthService _playersHealthService;
 
         [Inject]
-        private void Init(LevelService levelService, PopUpService popUpService)
+        private void Init(LevelService levelService, PopUpService popUpService, PlayersHealthService playersHealthService)
         {
+            _playersHealthService = playersHealthService;
             _popUpService = popUpService;
             _levelService = levelService;
         }
@@ -25,6 +27,8 @@ namespace Dev
         protected override void ServerSubscriptions()
         {
             base.ServerSubscriptions();
+
+            _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe((OnPlayerDied));
             
             foreach (InteractionObject interactionObject in _levelService.CurrentLevel.InteractionObjects)
             {
@@ -34,6 +38,13 @@ namespace Dev
                 interactionObject.PlayerTriggerZone.PlayerExit.TakeUntilDestroy(this)
                     .Subscribe((player => OnPlayerZoneExit(player, interactionObject)));
             }
+        }
+
+        private void OnPlayerDied(PlayerDieEventContext context)
+        {
+            PlayerRef playerRef = context.Killed;
+
+            RPC_SetInteractionViewState(playerRef,false, null);
         }
 
         private void OnPlayerZoneEntered(Player player, InteractionObject interactionObject)
@@ -56,10 +67,19 @@ namespace Dev
             _popUpService.TryGetPopUp<HUDMenu>(out var hudMenu);
 
             Action onInteraction;
-                
+
+            if (interactionObject == null)
+            {
+                isOn = false;
+            }
+            
             if (isOn)
             {
-                onInteraction = () => { Debug.Log($"Interaction with {interactionObject.name}!!", interactionObject);};
+                onInteraction = () =>
+                {
+                    interactionObject.RPC_Interact();
+                    Debug.Log($"Interaction with {interactionObject.name}!!", interactionObject);
+                };
             }
             else
             {

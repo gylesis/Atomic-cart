@@ -26,7 +26,7 @@ namespace Dev.Levels
 
             DOVirtual.DelayedCall(0.5f, (() =>
             {
-                IsActive = false;
+               RPC_SetActive(false);
             }));
         }
 
@@ -36,7 +36,7 @@ namespace Dev.Levels
             
             DOVirtual.DelayedCall(0.5f, (() =>
             {
-                IsActive = true;
+                RPC_SetActive(true);
                 RPC_SetHitboxState(true);
             }));
         }

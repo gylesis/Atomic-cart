@@ -28,6 +28,7 @@ namespace Dev.Infrastructure
             new Dictionary<PlayerRef, List<NetworkObject>>();
 
   
+
         [Networked, Capacity(10)] public NetworkLinkedList<Player> Players { get; }
 
 //        public IReadOnlyCollection<Player> Players => _players.Values;
@@ -213,27 +214,18 @@ namespace Dev.Infrastructure
 
         public void PlayerLeft(PlayerRef playerRef)
         {
-            DeSpawned.OnNext(playerRef);
-
             Player player = GetPlayer(playerRef);
-
-            PlayerManager.RemovePlayer(player);
             
             Runner.Despawn(player.Object);
-
-            foreach (NetworkObject networkObject in _playerServices[playerRef])
-            {
-                Runner.Despawn(networkObject);
-            }
-
-            _teamsService.RemoveFromTeam(playerRef);
-
+            
+            DeSpawned.OnNext(playerRef);
+            
+            PlayerManager.RemovePlayer(player);
+            
             _playerServices.Remove(playerRef);
-
+            
+            _teamsService.RemoveFromTeam(playerRef);
             Players.Remove(player);
-
-            
-            
             PlayersCount--;
         }
 
@@ -268,7 +260,6 @@ namespace Dev.Infrastructure
             return spawnPoint.transform.position;
         }
 
-
         [Rpc]
         private void RPC_OnPlayerSpawnedInvoke(Player player)
         {
@@ -281,9 +272,7 @@ namespace Dev.Infrastructure
             Spawned.OnNext(spawnEventContext);
         }
 
-      
     }
-
 
     public struct PlayerSpawnEventContext
     {
@@ -291,4 +280,5 @@ namespace Dev.Infrastructure
         public PlayerRef PlayerRef;
         public Transform Transform;
     }
+    
 }

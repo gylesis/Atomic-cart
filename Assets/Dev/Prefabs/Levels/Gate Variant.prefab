@@ -98,6 +98,10 @@ MonoBehaviour:
   _IsActive:
     _value: 1
   _playerTriggerZone: {fileID: 7193221599176694824}
+  _IsInteracted:
+    _value: 0
+  _obstacles:
+  - {fileID: 0}
 --- !u!114 &7193221599176694824 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3942261603616416345, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}

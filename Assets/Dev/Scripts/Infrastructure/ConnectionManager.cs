@@ -126,6 +126,7 @@ namespace Dev.Infrastructure
 
         public void OnDisconnectedFromServer(NetworkRunner runner)
         {
+            Debug.Log($"On disconnect from server");
             Application.Quit();
         }
 
@@ -140,7 +141,10 @@ namespace Dev.Infrastructure
 
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
 
-        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+        {
+            Debug.Log($"On Host migration");
+        }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 

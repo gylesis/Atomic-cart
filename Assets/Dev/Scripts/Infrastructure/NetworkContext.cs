@@ -7,8 +7,8 @@ namespace Dev.Infrastructure
     [RequireComponent(typeof(NetworkObject))]
     public abstract class NetworkContext : NetworkBehaviour
     {
-        [Networked(OnChanged = nameof(OnActiveStateChanged))]
-        public NetworkBool IsActive { get; set; } = true;
+        [Networked]
+        public NetworkBool IsActive { get; private set; } = true;
 
         public override void Spawned()
         {
@@ -22,6 +22,12 @@ namespace Dev.Infrastructure
             if (HasStateAuthority == false) return;
         }
 
+        [Rpc]
+        public void RPC_SetActive(bool isActive)
+        {
+            IsActive = isActive;
+            gameObject.SetActive(isActive);
+        }
         
         /// <summary>
         /// Method for restoring state for new clients who connected after changing state happened
@@ -29,11 +35,6 @@ namespace Dev.Infrastructure
         protected virtual void CorrectState()
         {
             gameObject.SetActive(IsActive);
-        }
-
-        private static void OnActiveStateChanged(Changed<NetworkContext> changed)
-        {
-            changed.Behaviour.gameObject.SetActive(changed.Behaviour.IsActive);
         }
 
         [Rpc]

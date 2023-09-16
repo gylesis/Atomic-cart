@@ -185,6 +185,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7933024088133413084, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
+    - {fileID: 6936069010950499973, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
 --- !u!1 &483671901943567914 stripped
 GameObject:

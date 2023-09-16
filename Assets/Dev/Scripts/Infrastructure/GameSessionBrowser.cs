@@ -32,14 +32,14 @@ namespace Dev.Infrastructure
             string label = String.Empty;
             Color color = Color.white;
 
-            if (_runner.IsCloudReady)
+            if (_runner.LobbyInfo.IsValid)
             {
-                label = "Connected to Photon";
+                label = "Connected";
                 color = Color.green;
             }
             else
             {
-                label = "Not connected to Photon";
+                label = "Connecting...";
                 color = Color.red;
             }
 
@@ -104,10 +104,10 @@ namespace Dev.Infrastructure
 
         private void CheckForBrowserState()
         {
-            _inputField.gameObject.SetActive(_runner.IsCloudReady);
-            _joinButton.gameObject.SetActive(_runner.IsCloudReady);
-            _hostButton.gameObject.SetActive(_runner.IsCloudReady);
-            _debugText.gameObject.SetActive(_runner.IsCloudReady);
+            _inputField.gameObject.SetActive(_runner.LobbyInfo.IsValid);
+            _joinButton.gameObject.SetActive(_runner.LobbyInfo.IsValid);
+            _hostButton.gameObject.SetActive(_runner.LobbyInfo.IsValid);
+             _debugText.gameObject.SetActive(_runner.LobbyInfo.IsValid);
         }
 
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
