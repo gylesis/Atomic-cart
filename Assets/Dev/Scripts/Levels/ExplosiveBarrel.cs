@@ -18,8 +18,6 @@ namespace Dev.Levels
         {
             base.OnZeroHealth();
 
-            Debug.Log($"barrel on zero health");
-            
             FxController.Instance.SpawnEffectAt("barrel_explosion", transform.position);
 
             ExplodeAtAndHitPlayers(transform.position);

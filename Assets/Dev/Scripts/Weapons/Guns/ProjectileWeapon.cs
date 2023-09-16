@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Dev.Effects;
 using Fusion;
 using UniRx;
@@ -10,11 +11,10 @@ namespace Dev.Weapons.Guns
     public abstract class ProjectileWeapon : Weapon
     {
         [SerializeField] protected float _projectileSpeed = 15f;
-        [SerializeField] protected float _projectileAliveTime = 1;
-
+    
         [SerializeField] protected Projectile _projectilePrefab;
 
-        protected List<Projectile> _aliveProjectiles = new List<Projectile>();
+        protected List<SpawnedProjectileContext> _aliveProjectiles = new List<SpawnedProjectileContext>();
 
         public override void FixedUpdateNetwork()
         {
@@ -27,25 +27,40 @@ namespace Dev.Weapons.Guns
         {
             for (var index = _aliveProjectiles.Count - 1; index >= 0; index--)
             {
-                Projectile projectile = _aliveProjectiles[index];
+                SpawnedProjectileContext projectileContext = _aliveProjectiles[index];
+                
+                Projectile projectile = projectileContext.Projectile;
+
+                Vector3 origin = projectileContext.Origin;
+
+                float distanceFromOrigin = (projectile.transform.position - origin).sqrMagnitude;
 
                 TickTimer destroyTimer = projectile.DestroyTimer;
 
                 var expired = destroyTimer.ExpiredOrNotRunning(Runner);
-
-                if (expired)
+                
+                if (distanceFromOrigin > _bulletMaxDistance * _bulletMaxDistance)
+                {
+                    OnProjectileMaxDistanceReached(projectile);
+                }
+                else if(expired)
                 {
                     OnProjectileExpired(projectile);
                 }
+                
             }
         }
 
         protected virtual void OnProjectileBeforeSpawned(Projectile projectile)
         {
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
-            projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, _projectileAliveTime);
-            
-            _aliveProjectiles.Add(projectile);
+            projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 10);
+
+            var projectileContext = new SpawnedProjectileContext();
+            projectileContext.Projectile = projectile;
+            projectileContext.Origin = projectile.transform.position;
+
+            _aliveProjectiles.Add(projectileContext);
         }
 
         private void OnProjectileDestroy(Projectile projectile)
@@ -55,20 +70,41 @@ namespace Dev.Weapons.Guns
 
         protected virtual void OnProjectileExpired(Projectile projectile)
         {
+            Debug.Log($"Projectile {projectile} expired, destroying");
             DestroyProjectile(projectile);
         }
 
+        protected virtual void OnProjectileMaxDistanceReached(Projectile projectile)
+        {
+            DestroyProjectile(projectile);
+        }
+        
         private void DestroyProjectile(Projectile projectile)
         {
-            _aliveProjectiles.Remove(projectile);
-            SpawnVFXOnDestroyProjectile(projectile);
-            Runner.Despawn(projectile.Object);
+            var exists = _aliveProjectiles.Exists(x => x.Projectile == projectile);
+
+            if (exists)
+            {
+                SpawnedProjectileContext context = _aliveProjectiles.First(x => x.Projectile == projectile);
+
+                _aliveProjectiles.Remove(context);
+                SpawnVFXOnDestroyProjectile(projectile);
+                Runner.Despawn(projectile.Object);
+            }
         }
 
         protected virtual void SpawnVFXOnDestroyProjectile(Projectile projectile)
         {
             FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);
-            
         }
     }
+
+    public struct SpawnedProjectileContext
+    {
+        public Projectile Projectile;
+        public Vector3 Origin;
+    }
+    
 }
+
+

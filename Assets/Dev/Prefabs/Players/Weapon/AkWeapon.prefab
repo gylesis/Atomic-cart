@@ -191,13 +191,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  _IsActive:
+    _value: 1
   _shootPoint: {fileID: 8329106418942572176}
   _view: {fileID: 5643736420937599800}
+  _bulletMaxDistance: 10
   _cooldown: 0.2
-  _damage: 10
+  _minDamage: 8
+  _maxDamage: 12
   _shootDelay: 0
-  _projectileSpeed: 1400
-  _projectileAliveTime: 1
+  _projectileSpeed: 1600
   _projectilePrefab: {fileID: 2255149966835474389, guid: bb21c81cb5816ba42b04833d9c9aeaec, type: 3}
 --- !u!4 &5643736420937599800 stripped
 Transform:

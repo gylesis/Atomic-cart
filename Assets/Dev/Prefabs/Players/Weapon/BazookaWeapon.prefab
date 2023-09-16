@@ -195,12 +195,12 @@ MonoBehaviour:
     _value: 1
   _shootPoint: {fileID: 8329106418942572176}
   _view: {fileID: 5643736420937599800}
+  _bulletMaxDistance: 12
   _cooldown: 1.5
   _minDamage: 35
   _maxDamage: 45
   _shootDelay: 0
   _projectileSpeed: 1500
-  _projectileAliveTime: 2
   _projectilePrefab: {fileID: -964699253970526838, guid: 0bf2e56b164e34b4d8c61cf72e5beb7c, type: 3}
   _explosionRadius: 2
   _firePushPower: 5

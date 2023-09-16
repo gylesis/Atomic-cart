@@ -1,6 +1,7 @@
 ﻿using Dev.Infrastructure;
 using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev.Weapons.Guns
 {
@@ -9,19 +10,19 @@ namespace Dev.Weapons.Guns
         [SerializeField] protected Transform _shootPoint;
         [SerializeField] protected Transform _view;
 
+        [SerializeField] protected float _bulletMaxDistance = 10f;
         [SerializeField] protected float _cooldown = 1f;
         [SerializeField] private int _minDamage = 8;
         [SerializeField] private int _maxDamage = 12;
-        [SerializeField] protected float _shootDelay = 0;
-        [Networked] public TickTimer CooldownTimer { get; set; }
-        [Networked] public TickTimer ShootDelayTimer { get; set; }
+        [Networked] public TickTimer CooldownTimer { get; set; }    
 
 
         public virtual bool AllowToShoot => CooldownTimer.ExpiredOrNotRunning(Runner);
 
+        public float BulletMaxDistance => _bulletMaxDistance;
+
         public float Cooldown => _cooldown;
         public int Damage => Random.Range(_minDamage, _maxDamage + 1);
-        public float ShootDelay => _shootDelay;
 
         public Vector2 ShootPos => _shootPoint.position;
         public Transform ShootPoint => _shootPoint;

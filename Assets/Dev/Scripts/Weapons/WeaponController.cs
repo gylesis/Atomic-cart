@@ -88,12 +88,7 @@ namespace Dev.Weapons
 
             if (AllowToShoot)
             {
-                var shootDelay = CurrentWeapon.ShootDelay;
-
-                if (shootDelay == 0)
-                {
-                    Shoot(direction);
-                }
+                Shoot(direction);
             }
         }
 
@@ -103,12 +98,7 @@ namespace Dev.Weapons
 
             if (AllowToShoot)
             {
-                var shootDelay = CurrentWeapon.ShootDelay;
-
-                if (shootDelay == 0)
-                {
-                    Shoot();
-                }
+                Shoot();
             }
         }
 
@@ -128,30 +118,28 @@ namespace Dev.Weapons
 
         private void Shoot(Vector2 direction, float power = 1)
         {
-            if(HasStateAuthority == false) return;
-            
+            if (HasStateAuthority == false) return;
+
             var cooldown = CurrentWeapon.Cooldown;
 
             //Debug.Log($"Power {power}");
 
             CurrentWeapon.Shoot(direction, power);
             CurrentWeapon.CooldownTimer = TickTimer.CreateFromSeconds(Runner, cooldown);
-            CurrentWeapon.ShootDelayTimer = TickTimer.None;
 
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
 
         private void Shoot()
         {
-            if(HasStateAuthority == false) return;
-            
+            if (HasStateAuthority == false) return;
+
             var cooldown = CurrentWeapon.Cooldown;
 
             //Debug.Log($"Power {power}");
 
             CurrentWeapon.Shoot(CurrentWeapon.ShootDirection, 1);
             CurrentWeapon.CooldownTimer = TickTimer.CreateFromSeconds(Runner, cooldown);
-            CurrentWeapon.ShootDelayTimer = TickTimer.None;
 
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
@@ -176,19 +164,6 @@ namespace Dev.Weapons
                         }
                     }
                 }*/
-            }
-
-
-            if (HasInputAuthority == false) return;
-
-            if (CurrentWeapon == null) return;
-
-            if (CurrentWeapon.ShootDelayTimer.IsRunning)
-            {
-                var power = CurrentWeapon.ShootDelayTimer.RemainingTime(Runner) / CurrentWeapon.ShootDelay;
-
-                var powerValue = 1 - power.Value;
-                CurrentWeapon.StartShoot(powerValue);
             }
         }
 

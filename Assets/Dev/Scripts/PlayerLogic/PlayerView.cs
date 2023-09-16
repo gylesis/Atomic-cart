@@ -12,7 +12,6 @@ namespace Dev.PlayerLogic
         [SerializeField] private SpriteRenderer _playerSprite;
 
         [SerializeField] private Transform _groundAimTransform;
-        [SerializeField] private float _aimDistance = 5;
         [SerializeField] private float _aimLerpSpeed = 1;
 
         [SerializeField] private SpriteRenderer _crosshairSpriteRenderer;
@@ -66,8 +65,10 @@ namespace Dev.PlayerLogic
 
             Vector3 lookDirection = _player.PlayerController.LastLookDirection;
 
+            float aimDistance = _player.WeaponController.CurrentWeapon.BulletMaxDistance + 1;
+            
             _groundAimTransform.localPosition = Vector3.Lerp(_groundAimTransform.localPosition,
-                Vector3.zero + lookDirection * _aimDistance, _aimLerpSpeed * Runner.DeltaTime);
+                Vector3.zero + lookDirection * aimDistance, _aimLerpSpeed * Runner.DeltaTime);
         }
     }
 }
