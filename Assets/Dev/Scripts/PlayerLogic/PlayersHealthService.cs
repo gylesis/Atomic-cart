@@ -136,9 +136,8 @@ namespace Dev.PlayerLogic
 
             Debug.Log($"Player {nickname} has {playerCurrentHealth} health");
 
-            PlayersHealth.Set(victim, playerCurrentHealth);
+            RPC_UpdatePlayerHealth(victim, playerCurrentHealth);
         }
-        
         
         public void ApplyDamageFromServer(PlayerRef victim, int damage)
         {   
@@ -165,10 +164,9 @@ namespace Dev.PlayerLogic
 
             Debug.Log($"Player {nickname} has {playerCurrentHealth} health");
 
-            PlayersHealth.Set(victim, playerCurrentHealth);
+            RPC_UpdatePlayerHealth(victim, playerCurrentHealth);
         }
         
-
         public void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
         {
             Debug.Log($"Damage {damage} applied to dummy target {dummyTarget.name}");
@@ -228,8 +226,14 @@ namespace Dev.PlayerLogic
             int currentHealth = PlayersHealth[playerRef];
             currentHealth += health;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-            
-            PlayersHealth.Set(playerRef, currentHealth);
+
+            RPC_UpdatePlayerHealth(playerRef, currentHealth);
+        }
+
+        [Rpc]
+        private void RPC_UpdatePlayerHealth(PlayerRef playerRef, int health)
+        {
+            PlayersHealth.Set(playerRef, health);    
         }
         
     }

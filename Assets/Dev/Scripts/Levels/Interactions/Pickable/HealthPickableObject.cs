@@ -9,13 +9,15 @@ namespace Dev
     public class HealthPickableObject : PickableObject
     {
         [SerializeField] private int _healthRestoreAmount;
+        
         private PlayersSpawner _playersSpawner;
 
         public void Init()
         {
             
         }
-        
+
+
         protected override void OnAutoInteraction(PlayerRef interactedPlayer)
         {
             base.OnAutoInteraction(interactedPlayer);
@@ -29,6 +31,8 @@ namespace Dev
             Vector3 playerPos = _playersSpawner.GetPlayerPos(interactedPlayer);
 
             FxController.Instance.SpawnEffectAt("picked_health", playerPos);
+
+            Debug.Log($"Player picked health for {_healthRestoreAmount}", gameObject);
         }
     }
 }

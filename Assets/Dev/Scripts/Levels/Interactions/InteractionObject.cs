@@ -8,7 +8,7 @@ namespace Dev
     public abstract class InteractionObject : NetworkContext
     {
         [SerializeField] private bool _isAutoActive;
-        [SerializeField] private PlayerTriggerZone _playerTriggerZone;
+        [SerializeField] protected PlayerTriggerZone _playerTriggerZone;
 
         public PlayerTriggerZone PlayerTriggerZone => _playerTriggerZone;
 
