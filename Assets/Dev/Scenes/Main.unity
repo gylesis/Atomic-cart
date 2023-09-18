@@ -16988,10 +16988,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: HUDMenu
       objectReference: {fileID: 0}
-    - target: {fileID: 6037543882450198235, guid: 770ffa84bfde73e4d9b08bbb0cf6e87a, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 770ffa84bfde73e4d9b08bbb0cf6e87a, type: 3}
 --- !u!1001 &4060028552756506389
@@ -17741,6 +17737,10 @@ PrefabInstance:
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: 682101528297392572
       objectReference: {fileID: 0}
+    - target: {fileID: 3997730763947715163, guid: 47dddddc846f71c4fa694f29ad9b872f, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 319ee4483b9d39b48bbd40a636deab6e, type: 3}
     - target: {fileID: 4064846628091188336, guid: 47dddddc846f71c4fa694f29ad9b872f, type: 3}
       propertyPath: Flags
       value: 2561
@@ -18499,11 +18499,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1068517966, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
-      value: -2427448425355742748
+      value: 6000929904919463881
       objectReference: {fileID: 0}
     - target: {fileID: 1068517966, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
-      value: 5869280559968855428
+      value: -4180717050517688441
       objectReference: {fileID: 0}
     - target: {fileID: 24591243461246021, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: Flags
@@ -18511,11 +18511,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 24591243461246021, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
-      value: -413511756608592802
+      value: 5138368273144411401
       objectReference: {fileID: 0}
     - target: {fileID: 24591243461246021, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
-      value: 5568750280413525431
+      value: 1888489986862895263
       objectReference: {fileID: 0}
     - target: {fileID: 176364412944069345, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: m_Pivot.x
@@ -18605,73 +18605,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayersScoreMenu
       objectReference: {fileID: 0}
-    - target: {fileID: 176364412944069359, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_Alpha
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 176364412944069359, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_Interactable
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 176364412944069359, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_BlocksRaycasts
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 812953784658991844, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_Type
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 812953784658991844, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: ad43d5cadadb57544ba940c1f32f37ff, type: 3}
-    - target: {fileID: 812953784658991844, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_PreserveAspect
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2595115755592276024, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2595115755592276024, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2595115755592276024, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 143.19995
-      objectReference: {fileID: 0}
-    - target: {fileID: 2595115755592276024, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -122.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2595115755592276024, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -85.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2768421703779869602, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4618013308233397491, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_Name
-      value: CloseButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4618013308233397491, guid: b7edace9aa985284183895bad1632a2d, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7369406235520552885, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: Flags
       value: 2561
       objectReference: {fileID: 0}
     - target: {fileID: 7369406235520552885, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
-      value: -7328325707521687756
+      value: 6648442965840636756
       objectReference: {fileID: 0}
     - target: {fileID: 7369406235520552885, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
-      value: -8345743812546567287
+      value: 5676774547887184060
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b7edace9aa985284183895bad1632a2d, type: 3}
