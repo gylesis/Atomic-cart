@@ -212,10 +212,26 @@ namespace Dev.PlayerLogic
 
             CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(player.CharacterClass);
 
-            Debug.Log($"Restoring health for player {playerRef} - {characterData.CharacterStats.Health}");
-
-            PlayersHealth.Set(playerRef, characterData.CharacterStats.Health);
+            GainHealthToPlayer(playerRef, characterData.CharacterStats.Health);
         }
+
+        public void GainHealthToPlayer(PlayerRef playerRef, int health)
+        {
+            Debug.Log($"Gained {health} HP for player {playerRef}");
+
+            Player player = _playersSpawner.GetPlayer(playerRef);
+
+            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(player.CharacterClass);
+
+            int maxHealth = characterData.CharacterStats.Health;
+            
+            int currentHealth = PlayersHealth[playerRef];
+            currentHealth += health;
+            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+            
+            PlayersHealth.Set(playerRef, currentHealth);
+        }
+        
     }
 
     public struct PlayerDieEventContext

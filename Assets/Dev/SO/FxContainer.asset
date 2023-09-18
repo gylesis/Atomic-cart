@@ -19,3 +19,5 @@ MonoBehaviour:
     Prefab: {fileID: 7856808388828264647, guid: 8d38aca004a391d4b874c18c04d4a8e9, type: 3}
   - Name: barrel_explosion
     Prefab: {fileID: 7856808388828264647, guid: 8d38aca004a391d4b874c18c04d4a8e9, type: 3}
+  - Name: picked_health
+    Prefab: {fileID: 115409960412582468, guid: 141a31d9d69aa23409d993e549f2e367, type: 3}

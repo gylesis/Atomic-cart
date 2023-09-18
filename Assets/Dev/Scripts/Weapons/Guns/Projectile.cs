@@ -75,7 +75,7 @@ namespace Dev.Weapons.Guns
                         break;
                     }
 
-                    bool isDummyTarget = damagable.Id == PlayerRef.None;
+                    bool isDummyTarget = damagable.Id == -2;
 
                     if (isDummyTarget)
                     {

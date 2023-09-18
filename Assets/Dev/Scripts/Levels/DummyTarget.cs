@@ -6,6 +6,6 @@ namespace Dev
 {
     public class DummyTarget : NetworkContext, IDamageable
     {
-        public int Id => PlayerRef.None;
+        public int Id => -2;
     }
 }

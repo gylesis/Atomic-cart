@@ -75,11 +75,21 @@ namespace Dev
             
             if (isOn)
             {
-                onInteraction = () =>
+
+                if (interactionObject.IsAutoActive)
                 {
-                    interactionObject.RPC_Interact();
-                    Debug.Log($"Interaction with {interactionObject.name}!!", interactionObject);
-                };
+                    onInteraction = null;
+                    
+                    interactionObject.RPC_AutoInteract(target);
+                }
+                else
+                {
+                    onInteraction = () =>
+                    {
+                        interactionObject.RPC_Interact(target);
+                        Debug.Log($"Interaction with {interactionObject.name}!!", interactionObject);
+                    };
+                }
             }
             else
             {

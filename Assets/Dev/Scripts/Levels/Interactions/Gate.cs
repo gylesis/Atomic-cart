@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Dev.Levels;
+using Fusion;
 using UnityEngine;
 
 namespace Dev
@@ -8,7 +9,7 @@ namespace Dev
     {
         [SerializeField] private List<Obstacle> _obstacles;
         
-        protected override void OnInteraction(bool interaction)
+        protected override void OnInteraction(bool interaction, PlayerRef interactedPlayer)
         {
             _obstacles.ForEach(x =>
             {

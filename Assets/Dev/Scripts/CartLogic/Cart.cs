@@ -1,6 +1,7 @@
 using Dev.Infrastructure;
 using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
+using Dev.Weapons.Guns;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -8,8 +9,10 @@ using UnityEngine.Serialization;
 
 namespace Dev.CartLogic
 {
-    public class Cart : NetworkContext
+    public class Cart : NetworkContext, IDamageable
     {
+        public int Id => -1;
+        
         [FormerlySerializedAs("_interactionZone")] [SerializeField] private PlayerTriggerZone _triggerZone;
 
         public Subject<PlayerRef> CartZoneEntered { get; } = new Subject<PlayerRef>();
