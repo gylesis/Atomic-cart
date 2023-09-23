@@ -157,7 +157,7 @@ namespace Dev.Infrastructure
         {
             Debug.Log($"OnSceneLoadDone");
 
-            LevelService.Instance.LoadLevel(1);
+            LevelService.Instance.LoadLevel(GameStaticData.LevelName);
             
             await Task.Delay(3000); // TODO 
 

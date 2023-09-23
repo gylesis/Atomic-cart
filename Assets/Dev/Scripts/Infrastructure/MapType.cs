@@ -2,7 +2,7 @@
 {
     public enum MapType
     {
-        Payload,
-        Capture
+        Payload = 0,
+        Capture = 1
     }
 }

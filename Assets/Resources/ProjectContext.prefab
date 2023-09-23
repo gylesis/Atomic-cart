@@ -76,3 +76,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _charactersDataContainer: {fileID: 11400000, guid: b9885e7b526be5943b1cbcee28b272eb, type: 2}
   _gameSettings: {fileID: 11400000, guid: 4371710b3d9eff4409ca009681390d62, type: 2}
+  _mapsContainer: {fileID: 11400000, guid: 3ed23742090337849a77629f2f319577, type: 2}

@@ -1,4 +1,5 @@
-﻿using Dev.Infrastructure;
+﻿using System.Linq;
+using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using Zenject;
@@ -7,8 +8,8 @@ namespace Dev.Levels
 {
     public class LevelService : NetworkContext
     {
+        private MapsContainer _mapsContainer;
         [Networked] public Level CurrentLevel { get; private set; }
-        private LevelsContainer _levelsContainer;
 
         public static LevelService Instance { get; private set; }
 
@@ -26,16 +27,16 @@ namespace Dev.Levels
         }
 
         [Inject]
-        private void Init(LevelsContainer levelsContainer)
+        private void Init(MapsContainer mapsContainer)
         {
-            _levelsContainer = levelsContainer;
+            _mapsContainer = mapsContainer;
         }
 
-        public void LoadLevel(int lvl)
+        public void LoadLevel(string levelName)
         {
-            LevelStaticData levelStaticData = _levelsContainer.LevelStaticDatas[lvl - 1];
-
-            var networkRunner = FindObjectOfType<NetworkRunner>();  
+            MapData levelStaticData = _mapsContainer.MapDatas.First(x =>x.Name == levelName);
+    
+            var networkRunner = FindObjectOfType<NetworkRunner>();      
 
             Level level = networkRunner.Spawn(levelStaticData.Prefab);
 

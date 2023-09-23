@@ -21,8 +21,6 @@ namespace Dev.Infrastructure
         [SerializeField] private TimeService _timeService;
         [SerializeField] private GameService _gameService;
 
-        [SerializeField] private LevelsContainer _levelsContainer;
-        
         [SerializeField] private CameraService _cameraService;
         
         [SerializeField] private LevelService _levelService;
@@ -37,7 +35,6 @@ namespace Dev.Infrastructure
 
             Container.Bind<GameService>().FromInstance(_gameService).AsSingle();
 
-            Container.Bind<LevelsContainer>().FromInstance(_levelsContainer).AsSingle();
             Container.Bind<LevelService>().FromInstance(_levelService).AsSingle();
 
             Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();

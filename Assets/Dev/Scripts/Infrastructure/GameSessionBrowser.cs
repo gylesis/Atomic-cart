@@ -10,6 +10,7 @@ using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 using Random = UnityEngine.Random;
 
 namespace Dev.Infrastructure
@@ -26,6 +27,7 @@ namespace Dev.Infrastructure
         private List<SessionInfo> _sessionInfos;
 
         private NetworkRunner _runner;
+        private PopUpService _popUpService;
 
         private void OnGUI()
         {
@@ -60,6 +62,12 @@ namespace Dev.Infrastructure
             _joinButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnJoinButtonClicked()));
         }
 
+        [Inject]
+        private void Init(PopUpService popUpService)
+        {
+            _popUpService = popUpService;
+        }
+        
         private void OnHostButtonClicked()
         {
             CreateSession();
@@ -81,10 +89,11 @@ namespace Dev.Infrastructure
             startGameArgs.SessionName = _inputField.text;
             startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
             startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
+            
             startGameArgs.SessionProperties = new Dictionary<string, SessionProperty>()
             {
-                ["map"] = "level1",
-                ["mode"] = "payload"
+                ["map"] = $"{GameStaticData.LevelName}",
+                ["mode"] = (int) GameStaticData.MapType
             };
 
             StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
@@ -168,7 +177,7 @@ namespace Dev.Infrastructure
                                     
                 foreach (var sessionInfoProperty in sessionInfo.Properties)
                 {
-                    message += $"{sessionInfoProperty.Key} {sessionInfoProperty.Value.PropertyValue.ToString()}";
+                    message += $"{sessionInfoProperty.Key} {sessionInfoProperty.Value.PropertyValue.ToString()}\n";
                 }
                 
                 Debug.Log(message);

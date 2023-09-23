@@ -9,6 +9,7 @@ namespace Dev.Infrastructure
         [SerializeField] private List<MapData> _mapDatas;
 
         public List<MapData> MapDatas => _mapDatas;
+        
     }
 
 }

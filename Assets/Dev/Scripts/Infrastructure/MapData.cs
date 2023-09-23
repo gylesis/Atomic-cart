@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Dev.Levels;
+using UnityEngine;
 
 namespace Dev.Infrastructure
 {
@@ -7,7 +8,7 @@ namespace Dev.Infrastructure
     {
         public string Name;
         public MapType MapType;
-
         public Sprite MapIcon;
+        public Level Prefab;
     }
 }
