@@ -19,7 +19,6 @@ namespace Dev.Levels
 
 
         private int _lastIntTime = 0;
-        private CartPathService _cartPathService;
 
         //public Subject<TimeTickEventContext> TimeTick { get; } = new Subject<TimeTickEventContext>();
 
@@ -28,18 +27,22 @@ namespace Dev.Levels
         [Networked] public NetworkBool IsPaused { get; private set; }
 
         [Inject]
-        private void Init(CartPathService cartPathService, PlayersSpawner playersSpawner)
+        private void Init(PlayersSpawner playersSpawner)
         {
             _playersSpawner = playersSpawner;
-            _cartPathService = cartPathService;
         }
 
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;
 
-            _cartPathService.PointReached.Subscribe(OnControlPoint);
+            LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
             _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+        }
+
+        private void OnLevelLoaded(Level level)
+        {
+            level.CartPathService.PointReached.TakeUntilDestroy(this).Subscribe(OnControlPoint);
         }
 
         public void SetPauseState(bool isPause)

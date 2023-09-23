@@ -17,11 +17,12 @@ namespace Dev.Infrastructure
         [SerializeField] private TeamsScoreService _teamsScoreService;
 
         [SerializeField] private WorldTextProvider _worldTextProvider;
-        [SerializeField] private CartPathService _cartPathService;
         [SerializeField] private PopUpService _popUpService;
         [SerializeField] private TimeService _timeService;
         [SerializeField] private GameService _gameService;
 
+        [SerializeField] private LevelsContainer _levelsContainer;
+        
         [SerializeField] private CameraService _cameraService;
         
         [SerializeField] private LevelService _levelService;
@@ -35,7 +36,8 @@ namespace Dev.Infrastructure
             Container.Bind<JoysticksContainer>().FromInstance(_joysticksContainer).AsSingle();
 
             Container.Bind<GameService>().FromInstance(_gameService).AsSingle();
-            
+
+            Container.Bind<LevelsContainer>().FromInstance(_levelsContainer).AsSingle();
             Container.Bind<LevelService>().FromInstance(_levelService).AsSingle();
 
             Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
@@ -45,8 +47,6 @@ namespace Dev.Infrastructure
             Container.Bind<PlayersDataService>().FromInstance(_playersDataService).AsSingle();
 
             Container.Bind<WorldTextProvider>().FromInstance(_worldTextProvider).AsSingle();
-
-            Container.Bind<CartPathService>().FromInstance(_cartPathService).AsSingle();
 
             Container.Bind<PopUpService>().FromInstance(_popUpService).AsSingle();
             Container.Bind<TimeService>().FromInstance(_timeService).AsSingle();

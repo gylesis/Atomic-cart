@@ -15,18 +15,19 @@ namespace Dev.Infrastructure
     {
         private TimeService _timeService;
         private PlayersSpawner _playersSpawner;
-        private CartPathService _cartPathService;
         private PopUpService _popUpService;
         private GameSettings _gameSettings;
         private TeamsScoreService _teamsScoreService;
         private TeamsService _teamsService;
 
         private bool _teamsSwapHappened;
+        
+        private CartPathService _cartPathService;
 
         public Subject<Unit> GameRestarted { get; } = new Subject<Unit>();
 
         [Inject]
-        private void Init(TimeService timeService, PlayersSpawner playersSpawner, CartPathService cartPathService,
+        private void Init(TimeService timeService, PlayersSpawner playersSpawner,
             PopUpService popUpService, GameSettings gameSettings, TeamsScoreService teamsScoreService,
             TeamsService teamsService)
         {
@@ -36,15 +37,21 @@ namespace Dev.Infrastructure
             _popUpService = popUpService;
             _timeService = timeService;
             _playersSpawner = playersSpawner;
-            _cartPathService = cartPathService;
         }
 
         protected override void ServerSubscriptions()
         {
+            LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
+
             base.ServerSubscriptions();
             
             _timeService.GameTimeRanOut.TakeUntilDestroy(this).Subscribe((unit => OnGameTimeRanOut()));
-            _cartPathService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
+        }
+
+        private void OnLevelLoaded(Level level)
+        {
+            level.CartPathService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
+            _cartPathService = level.CartPathService;
         }
 
         private void OnPointReached()

@@ -81,6 +81,11 @@ namespace Dev.Infrastructure
             startGameArgs.SessionName = _inputField.text;
             startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
             startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
+            startGameArgs.SessionProperties = new Dictionary<string, SessionProperty>()
+            {
+                ["map"] = "level1",
+                ["mode"] = "payload"
+            };
 
             StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
         }
@@ -159,6 +164,13 @@ namespace Dev.Infrastructure
                 string message =
                     $"Session {sessionInfo.Name}, Region {sessionInfo.Region}, Players {sessionInfo.PlayerCount}/{sessionInfo.MaxPlayers}, IsOpen {sessionInfo.IsOpen}";
 
+                message += "\nProperties\n";
+                                    
+                foreach (var sessionInfoProperty in sessionInfo.Properties)
+                {
+                    message += $"{sessionInfoProperty.Key} {sessionInfoProperty.Value.PropertyValue.ToString()}";
+                }
+                
                 Debug.Log(message);
                 _debugText.text += message + "\n";
             }

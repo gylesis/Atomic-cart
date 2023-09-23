@@ -26,10 +26,14 @@ namespace Dev
 
         protected override void ServerSubscriptions()
         {
-            base.ServerSubscriptions();
-
+            _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
             _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe((OnPlayerDied));
-            
+
+            base.ServerSubscriptions();
+        }
+
+        private void OnLevelLoaded(Level level)
+        {
             foreach (InteractionObject interactionObject in _levelService.CurrentLevel.InteractionObjects)
             {
                 interactionObject.PlayerTriggerZone.PlayerEntered.TakeUntilDestroy(this)

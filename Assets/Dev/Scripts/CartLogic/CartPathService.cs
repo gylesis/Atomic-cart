@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -20,7 +21,6 @@ namespace Dev.CartLogic
         [SerializeField] private List<CartPathPoint> _pathPoints;
 
         [SerializeField] private TeamSide _teamToCapturePoints = TeamSide.Red;
-        [SerializeField] private PathDrawer _pathDrawer;
 
         public TeamSide TeamToCapturePoints => _teamToCapturePoints;
 
@@ -58,13 +58,11 @@ namespace Dev.CartLogic
                     pathPoint.View.gameObject.SetActive(false);
                 }
             }
+
+            _teamsService = DependenciesContainer.Instance.GetDependency<TeamsService>();
+
         }
 
-        [Inject]
-        private void Init(TeamsService teamsService)
-        {
-            _teamsService = teamsService;
-        }
         
         protected override void ServerSubscriptions()
         {
@@ -77,10 +75,6 @@ namespace Dev.CartLogic
             _cart.CartZoneExit.TakeUntilDestroy(this).Subscribe((OnCartZoneExit));
 
             ResetCart();
-
-            var points = _pathPoints.Select(x => x.transform.position).ToArray();
-
-            RPC_DrawCartPath(points);
         }
 
         private void OnPlayerLeft(PlayerRef playerRef)
@@ -94,20 +88,7 @@ namespace Dev.CartLogic
         private void InitCart()
         {
             _cart.transform.position = _currentPoint.transform.position;
-
-            Vector3 direction = _nextPoint.transform.position - _currentPoint.transform.position;
-            direction.Normalize();
-
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-            if (angle < 0)
-            {
-                angle += 360;
-            }
-
-            Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
-
-            _cart.transform.rotation = targetRotation;
+            _cart.transform.Rotate2D(_nextPoint.transform.position);
         }
 
         public void ResetCart()
@@ -140,11 +121,6 @@ namespace Dev.CartLogic
             }
         }
 
-        [Rpc]
-        private void RPC_DrawCartPath(Vector3[] points)
-        {
-            _pathDrawer.DrawPath(points);
-        }
 
         private void MoveCartAlongPoints()
         {

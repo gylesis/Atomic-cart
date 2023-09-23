@@ -1,5 +1,6 @@
 ﻿using Dev.CartLogic;
 using Dev.Infrastructure;
+using Dev.Levels;
 using Fusion;
 using TMPro;
 using UniRx;
@@ -21,14 +22,15 @@ namespace Dev.PlayerLogic
 
 
         [Inject]
-        private void Init(TeamsService teamsService, CartPathService cartPathService)
+        private void Init(TeamsService teamsService)
         {
             _teamsService = teamsService;
-            _cartPathService = cartPathService;
         }
 
         public override void Spawned()
         {
+            LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
+            
             if (HasStateAuthority == false)
             {
                 RPC_UpdateTeamsScores();
@@ -38,13 +40,19 @@ namespace Dev.PlayerLogic
             BlueTeamScoreData = new TeamScoreData(TeamSide.Blue, 0);
             RedTeamScoreData = new TeamScoreData(TeamSide.Red, 0);
 
-            _cartPathService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
-
             RPC_UpdateTeamsScores();
+        }
+
+        private void OnLevelLoaded(Level level)
+        {
+            Debug.Log($"Level loaded");
+            _cartPathService = level.CartPathService;
+            level.CartPathService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
         }
 
         private void OnPointReached()
         {
+            Debug.Log($"On point reached");
             TeamSide teamToCapturePoints = _cartPathService.TeamToCapturePoints;
 
             EvaluateTeamScore(teamToCapturePoints);

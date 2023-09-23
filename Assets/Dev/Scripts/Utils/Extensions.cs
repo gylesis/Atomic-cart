@@ -24,6 +24,22 @@ namespace Dev.Utils
             return resultProperty.GetValue(task);
         }
 
+        public static void Rotate2D(this Transform transform, Vector2 targetPos)
+        {
+            Vector2 direction = ((Vector3) targetPos - transform.position).normalized;
+    
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            if (angle < 0)
+            {
+                angle += 360;
+            }
+
+            Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+
+            transform.rotation = targetRotation;
+        }
+        
         public static int GetRandom(int maxNum, params int[] expectNums)
         {
             List<int> nums = new List<int>();

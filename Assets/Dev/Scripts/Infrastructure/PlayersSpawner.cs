@@ -49,10 +49,11 @@ namespace Dev.Infrastructure
 
         public void SpawnPlayerByCharacterClass(NetworkRunner runner, PlayerRef playerRef)
         {
-            GetCharacterClassAndSpawn(playerRef, runner);
+            RPC_GetCharacterClassAndSpawn(playerRef);
         }
 
-        private void GetCharacterClassAndSpawn(PlayerRef playerRef, NetworkRunner networkRunner)
+        [Rpc]
+        private void RPC_GetCharacterClassAndSpawn([RpcTarget] PlayerRef playerRef)
         {   
             _popUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
 
@@ -64,7 +65,7 @@ namespace Dev.Infrastructure
                     _popUpService.ShowPopUp<HUDMenu>();
                 }));
 
-                SpawnPlayerByCharacter(characterClass, playerRef, networkRunner);
+                SpawnPlayerByCharacter(characterClass, playerRef, Runner);
             }));
         }
 

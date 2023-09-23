@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Dev.CartLogic;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using UnityEngine;
@@ -11,11 +12,15 @@ namespace Dev.Levels
         [SerializeField] private SpawnPoint[] _redTeamSpawnPoints;
         [SerializeField] private SpawnPoint[] _blueTeamSpawnPoints;
 
+        [SerializeField] private CartPathService _cartPathService;
+        
         private List<Obstacle> _obstacles;
         private List<InteractionObject> _interactionObjects;
 
         public List<InteractionObject> InteractionObjects => _interactionObjects;
         public List<Obstacle> Obstacles => _obstacles;
+
+        public CartPathService CartPathService => _cartPathService;
 
         private void Awake()
         {
