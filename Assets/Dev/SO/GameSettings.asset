@@ -15,3 +15,4 @@ MonoBehaviour:
   _timeAfterWinGame: 5
   _isFriendlyFireOn: 0
   _cameraZoomModifier: 25
+  _firstLevelName: 1

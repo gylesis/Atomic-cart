@@ -66,6 +66,8 @@ namespace Dev.Infrastructure
 
         private void OnHostButtonClicked()
         {
+            Hide();
+            
             _hostButton.Disable();
             _gameSessionBrowser.CreateSession(_selectedMap.MapName, _selectedMap.MapType);
         }

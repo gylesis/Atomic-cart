@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 833b8533ca274aa580bc02ceb0efea9b, type: 3}
   m_Name: Level1
   m_EditorClassIdentifier: 
-  Name: Level1
+  Name: SunCity
   MapType: 0
   MapIcon: {fileID: 21300000, guid: 363df524768d35b4d997d983d51bcf3b, type: 3}
   Prefab: {fileID: 3257645878844647860, guid: 34fd3a038138b334cb1ce24fc00f718c, type: 3}

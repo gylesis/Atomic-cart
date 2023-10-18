@@ -5,6 +5,7 @@ using Dev.UI;
 using Fusion;
 using Fusion.Sockets;
 using UniRx;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
@@ -57,8 +58,6 @@ namespace Dev.Infrastructure
 
         private void Awake()
         {
-            _runner = FindObjectOfType<NetworkRunner>();
-
             _sessionUIViewPool =
                 new ObjectPool<SessionUIView>(CreateFunc, ActionOnGet, ActionOnRelease);
         }
@@ -90,8 +89,9 @@ namespace Dev.Infrastructure
         }
 
         [Inject]
-        private void Init(PopUpService popUpService)
+        private void Init(PopUpService popUpService, NetworkRunner runner)
         {
+            _runner = runner;
             _popUpService = popUpService;
         }
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
+using Dev.Utils;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace Dev.Infrastructure
 
         private PlayersSpawner _playersSpawner;
         private PopUpService _popUpService;
+        private GameSettings _gameSettings;
 
         public static ConnectionManager Instance { get; private set; }
 
@@ -54,8 +56,9 @@ namespace Dev.Infrastructure
         }
 
         [Inject]
-        private void Init(PlayersSpawner playersSpawner, PopUpService popUpService)
+        private void Init(PlayersSpawner playersSpawner, PopUpService popUpService, GameSettings gameSettings)
         {
+            _gameSettings = gameSettings;
             _popUpService = popUpService;
             _playersSpawner = playersSpawner;
         }
@@ -159,7 +162,7 @@ namespace Dev.Infrastructure
 
             if (runner.IsSharedModeMasterClient)
             {
-                LevelService.Instance.LoadLevel(GameStaticData.LevelName);
+                LevelService.Instance.LoadLevel(_gameSettings.FirstLevelName.ToString());
 
                 await Task.Delay(3000); // TODO 
 
