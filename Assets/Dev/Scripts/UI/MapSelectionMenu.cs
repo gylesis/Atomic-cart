@@ -8,20 +8,28 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class GameSelectionMenu : PopUp
+    public class MapSelectionMenu : PopUp
     {
         [SerializeField] private MapUIView _mapUIViewPrefab;
         [SerializeField] private Transform _mapParent;
 
         [SerializeField] private UIElementsGroup _uiElementsGroup;
+
+        [SerializeField] private DefaultReactiveButton _hostButton;
+
+        [SerializeField] private GameSessionBrowser _gameSessionBrowser;
         
         private MapsContainer _mapsContainer;
 
         private List<MapUIView> _mapUIViews = new List<MapUIView>(4);
 
+        private MapUIView _selectedMap;
+        
         protected override void Awake()
         {
-            
+            base.Awake();
+
+            _hostButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnHostButtonClicked()));
         }
 
         [Inject]
@@ -51,11 +59,20 @@ namespace Dev.Infrastructure
             }
             
             _uiElementsGroup.Init(_mapUIViews.Select(x => x as UIElementBase).ToList());
-            _uiElementsGroup.Select(_mapUIViews.First());
+            MapUIView mapUi = _mapUIViews.First();
+            _selectedMap = mapUi;
+            _uiElementsGroup.Select(mapUi);
+        }
+
+        private void OnHostButtonClicked()
+        {
+            _hostButton.Disable();
+            _gameSessionBrowser.CreateSession(_selectedMap.MapName, _selectedMap.MapType);
         }
 
         private void OnMapUIClicked(MapUIView mapUIView)
-        {   
+        {
+            _selectedMap = mapUIView;
             _uiElementsGroup.Select(mapUIView);
             GameStaticData.LevelName = mapUIView.MapName;
         }

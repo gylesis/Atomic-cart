@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 
 namespace Dev.UI
@@ -14,6 +15,8 @@ namespace Dev.UI
 
         // public Subject<Unit> PopUpClosed { get; } = new Subject<Unit>();
 
+        public Subject<PopUpStateContext> PopUpStateChanged { get; } = new Subject<PopUpStateContext>();
+
         private void Awake()
         {
             var popUps = _popUpsParent.GetComponentsInChildren<PopUp>();
@@ -25,8 +28,18 @@ namespace Dev.UI
                 popUp.InitPopUpService(this);
                 Type type = popUp.GetType();
 
+                popUp.OnHide.TakeUntilDestroy(this).Subscribe((b => OnPopUpStateChanged(type, b)));
                 _spawnedPrefabs.Add(type, popUp);
             }
+        }
+
+        private void OnPopUpStateChanged(Type type, bool isOn)
+        {
+            var stateContext = new PopUpStateContext();
+            stateContext.IsOn = isOn;
+            stateContext.PopUpType = type;
+            
+            PopUpStateChanged.OnNext(stateContext);
         }
 
 
@@ -85,4 +98,11 @@ namespace Dev.UI
         }
         
     }
+
+    public struct PopUpStateContext
+    {
+        public Type PopUpType;
+        public bool IsOn;
+    }
+    
 }

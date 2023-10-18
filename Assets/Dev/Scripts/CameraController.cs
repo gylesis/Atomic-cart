@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Dev
 {
-    public class CameraController : NetworkContext
+    public class CameraController : PlayerService
     {
         [SerializeField] private float _followSpeed = 1.5f;
         [SerializeField] private Camera _camera;

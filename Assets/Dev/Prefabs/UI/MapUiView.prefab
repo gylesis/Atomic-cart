@@ -218,9 +218,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2312633323932409229, guid: 9179907c6375fc0489c04b4e642e29be, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2988054733045080489, guid: 9179907c6375fc0489c04b4e642e29be, type: 3}
+      propertyPath: m_Color.b
+      value: 0.5582192
+      objectReference: {fileID: 0}
+    - target: {fileID: 2988054733045080489, guid: 9179907c6375fc0489c04b4e642e29be, type: 3}
+      propertyPath: m_Color.g
+      value: 0.6132076
+      objectReference: {fileID: 0}
+    - target: {fileID: 2988054733045080489, guid: 9179907c6375fc0489c04b4e642e29be, type: 3}
+      propertyPath: m_Color.r
+      value: 0.2805714
+      objectReference: {fileID: 0}
     - target: {fileID: 4042495977160587431, guid: 9179907c6375fc0489c04b4e642e29be, type: 3}
       propertyPath: m_Name
-      value: MapUiView Variant
+      value: MapUiView
       objectReference: {fileID: 0}
     - target: {fileID: 6926521957083647487, guid: 9179907c6375fc0489c04b4e642e29be, type: 3}
       propertyPath: m_RootOrder

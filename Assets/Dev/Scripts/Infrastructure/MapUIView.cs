@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Dev.Infrastructure
@@ -9,13 +10,13 @@ namespace Dev.Infrastructure
         [SerializeField] private Image _mapIcon;
         [SerializeField] private TMP_Text _mapName;
 
-        private MapType _mapType;
+        public MapType MapType { get; private set; }
         
         public string MapName { get; private set; }
 
         public void Init(MapUIViewSetupContext setupContext)
         {
-            _mapType = setupContext.MapType;
+            MapType = setupContext.MapType;
             _mapIcon.sprite = setupContext.MapIcon;
             MapName = setupContext.MapName;
             _mapName.text = MapName;

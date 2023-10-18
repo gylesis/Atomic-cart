@@ -27,8 +27,6 @@ namespace Dev.Infrastructure
         private Dictionary<PlayerRef, List<NetworkObject>> _playerServices =
             new Dictionary<PlayerRef, List<NetworkObject>>();
 
-  
-
         [Networked, Capacity(10)] public NetworkLinkedList<Player> Players { get; }
 
 //        public IReadOnlyCollection<Player> Players => _players.Values;
@@ -186,12 +184,15 @@ namespace Dev.Infrastructure
                 Quaternion.identity,
                 playerRef);
 
+            cameraController.Object.RequestStateAuthority();
             _playerServices[playerRef].Add(cameraController.Object);
         }
 
         private void SetInputService(PlayerRef playerRef, NetworkRunner networkRunner)
         {
             InputService inputService = networkRunner.Spawn(_inputServicePrefab, Vector3.zero, Quaternion.identity, playerRef);
+
+            inputService.Object.RequestStateAuthority();
 
             _playerServices[playerRef].Add(inputService.Object);
         }
@@ -218,12 +219,23 @@ namespace Dev.Infrastructure
             Player player = GetPlayer(playerRef);
             
             Runner.Despawn(player.Object);
-            
+
             DeSpawned.OnNext(playerRef);
-            
+
+            var playerServices = FindObjectsOfType<PlayerService>(true);
+
+            for (var index = playerServices.Length - 1; index >= 0; index--)
+            {
+                PlayerService service = playerServices[index];
+                if (service.Object.InputAuthority == playerRef)
+                {
+                    Runner.Despawn(service.Object);
+                    Destroy(service.gameObject);
+                    Debug.Log($"Despawned service {service.name}", service);
+                }   
+            }
+
             PlayerManager.RemovePlayer(player);
-            
-            _playerServices.Remove(playerRef);
             
             _teamsService.RemoveFromTeam(playerRef);
             Players.Remove(player);
@@ -274,12 +286,4 @@ namespace Dev.Infrastructure
         }
 
     }
-
-    public struct PlayerSpawnEventContext
-    {
-        public CharacterClass CharacterClass;
-        public PlayerRef PlayerRef;
-        public Transform Transform;
-    }
-    
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Dev.Infrastructure
@@ -9,6 +7,16 @@ namespace Dev.Infrastructure
     public class UIElementsGroup : MonoBehaviour
     {
         [SerializeField] private List<UIElementBase> _uiElements;
+        [SerializeField] private Transform _parent;
+
+        public List<UIElementBase> UIElements => _uiElements;
+
+        public Transform Parent => _parent;
+
+        private void Reset()
+        {
+            _parent = transform;
+        }
 
         private void Awake()
         {
@@ -27,6 +35,16 @@ namespace Dev.Infrastructure
             _uiElements = uiElementBases;
         }
 
+        public void RemoveElement(UIElementBase elementBase)
+        {
+            _uiElements.Remove(elementBase);
+        }
+
+        public void AddElement(UIElementBase elementBase)
+        {
+            _uiElements.Add(elementBase);
+        }
+
         public void Select(UIElementBase targetUIElement)
         {
             var exists = _uiElements.Exists(x => targetUIElement == x);
@@ -43,5 +61,7 @@ namespace Dev.Infrastructure
                 Debug.LogError($"Such element not included in list, update UIElements list", targetUIElement);
             }
         }
+        
+        
     }
 }

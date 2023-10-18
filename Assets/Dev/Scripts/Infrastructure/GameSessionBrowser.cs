@@ -1,33 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Dev.UI;
 using Fusion;
 using Fusion.Sockets;
-using TMPro;
 using UniRx;
-using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
 using Zenject;
-using Random = UnityEngine.Random;
 
 namespace Dev.Infrastructure
 {
     public class GameSessionBrowser : NetworkContext, INetworkRunnerCallbacks
     {
-        [SerializeField] private NetworkObject _playerPrefab;
+        [SerializeField] private SessionUIView _sessionUIViewPrefab;
 
-        [SerializeField] private TMP_InputField _inputField;
-        [SerializeField] private DefaultReactiveButton _joinButton;
-        [SerializeField] private DefaultReactiveButton _hostButton;
-        [SerializeField] private TMP_Text _debugText;
-
-        private List<SessionInfo> _sessionInfos;
+        [SerializeField] private UIElementsGroup _uiElementsGroup;
 
         private NetworkRunner _runner;
         private PopUpService _popUpService;
+        private ObjectPool<SessionUIView> _sessionUIViewPool;
+        
+        public int PickedSessionId { get; private set; }
+
+        private List<SessionGameInfo> _sessionGameInfos = new List<SessionGameInfo>(8);
+
+        public Subject<int> SessionCountChanged { get; } = new Subject<int>();
+
+        private List<SessionUIView> _sessionUIViews = new List<SessionUIView>(8);
 
         private void OnGUI()
         {
@@ -58,8 +59,34 @@ namespace Dev.Infrastructure
         {
             _runner = FindObjectOfType<NetworkRunner>();
 
-            _hostButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnHostButtonClicked()));
-            _joinButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnJoinButtonClicked()));
+            _sessionUIViewPool =
+                new ObjectPool<SessionUIView>(CreateFunc, ActionOnGet, ActionOnRelease);
+        }
+
+        private void ActionOnRelease(SessionUIView sessionUIView)
+        {
+            sessionUIView.transform.parent = null;
+            sessionUIView.SetEnableState(false);
+        }
+
+        private void ActionOnGet(SessionUIView sessionUIView)
+        {
+            sessionUIView.transform.parent = _uiElementsGroup.Parent;
+            sessionUIView.SetEnableState(true);
+        }
+
+        private SessionUIView CreateFunc()
+        {
+            SessionUIView sessionUIView = Instantiate(_sessionUIViewPrefab, _uiElementsGroup.Parent);
+
+            sessionUIView.Clicked.TakeUntilDestroy(this).Subscribe((OnSessionUIClicked));
+
+            return sessionUIView;
+        }
+
+        private void OnSessionUIClicked(SessionUIView sessionUIView)
+        {
+            _uiElementsGroup.Select(sessionUIView);
         }
 
         [Inject]
@@ -67,71 +94,69 @@ namespace Dev.Infrastructure
         {
             _popUpService = popUpService;
         }
-        
-        private void OnHostButtonClicked()
+
+        public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
         {
-            CreateSession();
-        }
-
-        private void OnJoinButtonClicked()
-        {
-            JoinSession();
-        }
-
-        [ContextMenu(nameof(CreateSession))]
-        public async void CreateSession()
-        {
-            var startGameArgs = new StartGameArgs();
-
-            _runner.AddCallbacks(this);
-
-            startGameArgs.GameMode = GameMode.Shared;
-            startGameArgs.SessionName = _inputField.text;
-            startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
-            startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
+            int sessionsCount = sessionList.Count;   
             
-            startGameArgs.SessionProperties = new Dictionary<string, SessionProperty>()
+            if (sessionsCount == 0)
             {
-                ["map"] = $"{GameStaticData.LevelName}",
-                ["mode"] = (int) GameStaticData.MapType
-            };
+                PickedSessionId = -1;
+            }
+           
+            SessionCountChanged.OnNext(sessionsCount);
+         
+            for (var index = _uiElementsGroup.UIElements.Count - 1; index >= 0; index--)
+            {
+                UIElementBase uiElementBase = _uiElementsGroup.UIElements[index];
 
-            StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
+                _sessionUIViewPool.Release(uiElementBase as SessionUIView);
+                _uiElementsGroup.RemoveElement(uiElementBase);
+            }
+
+            _sessionGameInfos.Clear();
+            _sessionUIViews.Clear();
+            
+            for (var index = 0; index < sessionsCount; index++)
+            {
+                SessionInfo sessionInfo = sessionList[index];
+                var sessionGameInfo = new SessionGameInfo();
+
+                sessionGameInfo.SessionName = sessionInfo.Name;
+                sessionGameInfo.CurrentPlayers = sessionInfo.PlayerCount;
+                sessionGameInfo.MaxPlayers = sessionInfo.MaxPlayers;
+                sessionGameInfo.MapType = (MapType)sessionInfo.Properties["mode"].PropertyValue;
+                sessionGameInfo.MapName = sessionInfo.Properties["map"].PropertyValue.ToString();
+                sessionGameInfo.Id = index;
+
+                _sessionGameInfos.Add(sessionGameInfo);
+                
+                SessionUIView sessionUIView = _sessionUIViewPool.Get();
+                _uiElementsGroup.AddElement(sessionUIView);
+
+                sessionUIView.Clicked.TakeUntilDestroy(this).Subscribe((OnSessionClicked));
+                sessionUIView.UpdateInfo(sessionGameInfo);
+
+                _sessionUIViews.Add(sessionUIView);
+            }
+
+            PickedSessionId = 0;
+            _uiElementsGroup.Select(_sessionUIViews[PickedSessionId]);
         }
 
-        [ContextMenu(nameof(JoinSession))]
-        public void JoinSession()
+        private void OnSessionClicked(SessionUIView obj)
         {
-            var startGameArgs = new StartGameArgs();
-
-            startGameArgs.GameMode = GameMode.Shared;
-            startGameArgs.SessionName = _inputField.text;
-            startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
-
-            _runner.StartGame(startGameArgs);
-        }
-
-        private void Update()
-        {
-            CheckForBrowserState();
-        }
-
-        private void CheckForBrowserState()
-        {
-            _inputField.gameObject.SetActive(_runner.LobbyInfo.IsValid);
-            _joinButton.gameObject.SetActive(_runner.LobbyInfo.IsValid);
-            _hostButton.gameObject.SetActive(_runner.LobbyInfo.IsValid);
-             _debugText.gameObject.SetActive(_runner.LobbyInfo.IsValid);
+            PickedSessionId = obj.Id;
         }
 
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
         {
             Debug.Log($"Player joined {playerRef}");
-            
+
             if (runner.IsSharedModeMasterClient)
             {
                 runner.RemoveCallbacks(this);
-                
+
                 PlayerManager.AddPlayerForQueue(playerRef);
 
                 if (PlayerManager.PlayerQueue.Count == 1)
@@ -141,6 +166,51 @@ namespace Dev.Infrastructure
                     FindObjectOfType<SceneLoader>().LoadScene("Main");
                 }
             }
+        }
+
+        public async void CreateSession(string levelName, MapType mapType)
+        {
+            var startGameArgs = new StartGameArgs();
+
+            _runner.AddCallbacks(this);
+
+            startGameArgs.GameMode = GameMode.Shared;
+            startGameArgs.SessionName = $"{levelName} : {mapType},{Guid.NewGuid()}";
+            startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
+            startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
+
+            startGameArgs.SessionProperties = new Dictionary<string, SessionProperty>()
+            {
+                ["map"] = $"{levelName}",
+                ["mode"] = (int)mapType
+            };
+
+            StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
+        }
+
+        public void JoinSession(string sessionName)
+        {
+            var startGameArgs = new StartGameArgs();
+
+            startGameArgs.GameMode = GameMode.Shared;
+            startGameArgs.SessionName = sessionName;
+            startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
+
+            _runner.StartGame(startGameArgs);
+        }
+
+        public void JoinPickedSession()
+        {
+            if(PickedSessionId == -1) return;
+            
+            SessionGameInfo sessionGameInfo = GetSessionInfoById(PickedSessionId);
+
+            JoinSession(sessionGameInfo.SessionName);
+        }
+
+        public SessionGameInfo GetSessionInfoById(int sessionId)
+        {
+            return _sessionGameInfos[sessionId];
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
@@ -161,34 +231,6 @@ namespace Dev.Infrastructure
         public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
 
         public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
-
-        public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
-        {
-            _sessionInfos = sessionList;
-
-            _debugText.text = String.Empty;
-
-            foreach (SessionInfo sessionInfo in sessionList)
-            {
-                string message =
-                    $"Session {sessionInfo.Name}, Region {sessionInfo.Region}, Players {sessionInfo.PlayerCount}/{sessionInfo.MaxPlayers}, IsOpen {sessionInfo.IsOpen}";
-
-                message += "\nProperties\n";
-                                    
-                foreach (var sessionInfoProperty in sessionInfo.Properties)
-                {
-                    message += $"{sessionInfoProperty.Key} {sessionInfoProperty.Value.PropertyValue.ToString()}\n";
-                }
-                
-                Debug.Log(message);
-                _debugText.text += message + "\n";
-            }
-
-            if (sessionList.Count > 0)
-            {
-                _inputField.text = sessionList.Last().Name;
-            }
-        }
 
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
 

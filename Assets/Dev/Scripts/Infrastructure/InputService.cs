@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using Dev.UI;
 using Fusion;
@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Dev.Infrastructure
 {
-    public class InputService : NetworkContext, INetworkRunnerCallbacks
+    public class InputService : PlayerService, INetworkRunnerCallbacks
     {
         private Joystick _aimJoystick;
         private Joystick _movementJoystick;
