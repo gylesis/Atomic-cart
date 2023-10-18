@@ -471,7 +471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929976, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Name
-      value: NotificatiionPopUp Variant
+      value: NotificatiionPopUp
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929979, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Pivot.x
@@ -583,7 +583,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 2010215281467400731}
   _procceedButton: {fileID: 8325090377692860228}
-  _smoothFadeInOutDuration: 1
+  _smoothFadeInOutDuration: 0.6
   _title: {fileID: 1555952005}
   _description: {fileID: 861588808}
 --- !u!225 &2010215281467400731 stripped

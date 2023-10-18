@@ -141,7 +141,10 @@ namespace Dev.Infrastructure
             }
 
             PickedSessionId = 0;
-            _uiElementsGroup.Select(_sessionUIViews[PickedSessionId]);
+            if (_sessionUIViews.Count > 0)
+            {
+                _uiElementsGroup.Select(_sessionUIViews[PickedSessionId]);
+            }
         }
 
         private void OnSessionClicked(SessionUIView obj)

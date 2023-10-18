@@ -249,7 +249,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929976, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Name
-      value: MapSelectionMenu Variant
+      value: MapSelectionMenu
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929979, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Pivot.x

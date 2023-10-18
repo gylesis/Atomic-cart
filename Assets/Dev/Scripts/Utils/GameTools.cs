@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿#if UNITY_EDITOR
+using System.Linq;
 using Dev.Infrastructure;
 using UnityEditor;
 using UnityEngine;
@@ -36,3 +37,4 @@ namespace Dev.Utils
         
     }
 }
+#endif
