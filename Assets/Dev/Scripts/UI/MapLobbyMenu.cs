@@ -1,4 +1,5 @@
-﻿using Dev.Infrastructure;
+﻿using System.Collections.Generic;
+using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -44,11 +45,9 @@ namespace Dev.UI
         
         private void OnReadyButtonClicked()
         {
-            _lobbyUI.RPC_SetReady(_networkRunner.LocalPlayer);
+            _lobbyUI.SetReady(_networkRunner.LocalPlayer);
 
             var isPlayerReady = _lobbyUI.IsPlayerReady(_networkRunner.LocalPlayer);
-
-           
         }
 
         private void CheckIfAllPlayersReady()
@@ -68,6 +67,21 @@ namespace Dev.UI
         
         private void OnPlayButtonClicked()
         {
+            StartGame();
+        }
+
+        private void StartGame()
+        {
+            var oldProperties = _networkRunner.SessionInfo.Properties;
+            
+            var sessionProperties = new Dictionary<string, SessionProperty>()
+            {
+                ["map"] = oldProperties["map"],
+                ["mode"] = oldProperties["mode"],
+                ["status"] = (int)SessionStatus.InGame
+            };
+            
+            _networkRunner.SessionInfo.UpdateCustomProperties(sessionProperties);
             _sceneLoader.LoadScene("Main");
         }
 

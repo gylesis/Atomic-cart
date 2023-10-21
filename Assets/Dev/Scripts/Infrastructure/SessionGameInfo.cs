@@ -8,5 +8,6 @@
         public int MaxPlayers;
         public string MapName;
         public MapType MapType;
+        public SessionStatus SessionStatus;
     }
 }

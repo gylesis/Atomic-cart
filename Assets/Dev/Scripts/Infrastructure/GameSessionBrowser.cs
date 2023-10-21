@@ -22,7 +22,7 @@ namespace Dev.Infrastructure
         private NetworkRunner _runner;
         private PopUpService _popUpService;
         private ObjectPool<SessionUIView> _sessionUIViewPool;
-        
+
         public int PickedSessionId { get; private set; }
 
         private List<SessionGameInfo> _sessionGameInfos = new List<SessionGameInfo>(8);
@@ -95,58 +95,6 @@ namespace Dev.Infrastructure
             _popUpService = popUpService;
         }
 
-        public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
-        {
-            int sessionsCount = sessionList.Count;   
-            
-            if (sessionsCount == 0)
-            {
-                PickedSessionId = -1;
-            }
-           
-            SessionCountChanged.OnNext(sessionsCount);
-         
-            for (var index = _uiElementsGroup.UIElements.Count - 1; index >= 0; index--)
-            {
-                UIElementBase uiElementBase = _uiElementsGroup.UIElements[index];
-
-                _sessionUIViewPool.Release(uiElementBase as SessionUIView);
-                _uiElementsGroup.RemoveElement(uiElementBase);
-            }
-
-            _sessionGameInfos.Clear();
-            _sessionUIViews.Clear();
-            
-            for (var index = 0; index < sessionsCount; index++)
-            {
-                SessionInfo sessionInfo = sessionList[index];
-                var sessionGameInfo = new SessionGameInfo();
-
-                sessionGameInfo.SessionName = sessionInfo.Name;
-                sessionGameInfo.CurrentPlayers = sessionInfo.PlayerCount;
-                sessionGameInfo.MaxPlayers = sessionInfo.MaxPlayers;
-                sessionGameInfo.MapType = (MapType)sessionInfo.Properties["mode"].PropertyValue;
-                sessionGameInfo.MapName = sessionInfo.Properties["map"].PropertyValue.ToString();
-                sessionGameInfo.Id = index;
-
-                _sessionGameInfos.Add(sessionGameInfo);
-                
-                SessionUIView sessionUIView = _sessionUIViewPool.Get();
-                _uiElementsGroup.AddElement(sessionUIView);
-
-                sessionUIView.Clicked.TakeUntilDestroy(this).Subscribe((OnSessionClicked));
-                sessionUIView.UpdateInfo(sessionGameInfo);
-
-                _sessionUIViews.Add(sessionUIView);
-            }
-
-            PickedSessionId = 0;
-            if (_sessionUIViews.Count > 0)
-            {
-                _uiElementsGroup.Select(_sessionUIViews[PickedSessionId]);
-            }
-        }
-
         private void OnSessionClicked(SessionUIView obj)
         {
             PickedSessionId = obj.Id;
@@ -173,7 +121,7 @@ namespace Dev.Infrastructure
         }
 
         public async Task CreateSession(string levelName, MapType mapType)
-        {   
+        {
             var startGameArgs = new StartGameArgs();
 
             _runner.AddCallbacks(this);
@@ -187,12 +135,13 @@ namespace Dev.Infrastructure
             startGameArgs.SessionProperties = new Dictionary<string, SessionProperty>()
             {
                 ["map"] = $"{levelName}",
-                ["mode"] = (int)mapType
+                ["mode"] = (int)mapType,
+                ["status"] = (int)SessionStatus.Lobby
             };
 
             StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
-
         }
+
 
         public void JoinSession(string sessionName)
         {
@@ -207,11 +156,65 @@ namespace Dev.Infrastructure
 
         public void JoinPickedSession()
         {
-            if(PickedSessionId == -1) return;
-            
+            if (PickedSessionId == -1) return;
+
             SessionGameInfo sessionGameInfo = GetSessionInfoById(PickedSessionId);
 
             JoinSession(sessionGameInfo.SessionName);
+        }
+
+
+        public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
+        {
+            int sessionsCount = sessionList.Count;
+
+            if (sessionsCount == 0)
+            {
+                PickedSessionId = -1;
+            }
+
+            SessionCountChanged.OnNext(sessionsCount);
+
+            for (var index = _uiElementsGroup.UIElements.Count - 1; index >= 0; index--)
+            {
+                UIElementBase uiElementBase = _uiElementsGroup.UIElements[index];
+
+                _sessionUIViewPool.Release(uiElementBase as SessionUIView);
+                _uiElementsGroup.RemoveElement(uiElementBase);
+            }
+
+            _sessionGameInfos.Clear();
+            _sessionUIViews.Clear();
+
+            for (var index = 0; index < sessionsCount; index++)
+            {
+                SessionInfo sessionInfo = sessionList[index];
+                var sessionGameInfo = new SessionGameInfo();
+
+                sessionGameInfo.Id = index;
+                sessionGameInfo.SessionName = sessionInfo.Name;
+                sessionGameInfo.CurrentPlayers = sessionInfo.PlayerCount;
+                sessionGameInfo.MaxPlayers = sessionInfo.MaxPlayers;
+                sessionGameInfo.MapType = (MapType)sessionInfo.Properties["mode"].PropertyValue;
+                sessionGameInfo.SessionStatus = (SessionStatus)sessionInfo.Properties["status"].PropertyValue;
+                sessionGameInfo.MapName = sessionInfo.Properties["map"].PropertyValue.ToString();
+
+                _sessionGameInfos.Add(sessionGameInfo);
+
+                SessionUIView sessionUIView = _sessionUIViewPool.Get();
+                _uiElementsGroup.AddElement(sessionUIView);
+
+                sessionUIView.Clicked.TakeUntilDestroy(this).Subscribe((OnSessionClicked));
+                sessionUIView.UpdateInfo(sessionGameInfo);
+
+                _sessionUIViews.Add(sessionUIView);
+            }
+
+            PickedSessionId = 0;
+            if (_sessionUIViews.Count > 0)
+            {
+                _uiElementsGroup.Select(_sessionUIViews[PickedSessionId]);
+            }
         }
 
         public SessionGameInfo GetSessionInfoById(int sessionId)

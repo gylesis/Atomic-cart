@@ -15,9 +15,6 @@ namespace Dev.UI
     {
         [SerializeField] private ReadyUI[] _readyUis;
 
-        [Networked, Capacity(8)] private NetworkLinkedList<ReadyUI> ReadyUis => default;
-
-        [SerializeField]
         [Networked, Capacity(8)] public NetworkDictionary<PlayerRef, bool> ReadyStatesDictionary => default;
 
         [SerializeField] private LobbyPlayer _lobbyPlayer;
@@ -25,18 +22,19 @@ namespace Dev.UI
 
         public Subject<Unit> ReadyStatusUpdated { get; } = new Subject<Unit>();
 
-        public override void Spawned()
+        protected override void CorrectState()
         {
-            base.Spawned();
+            base.CorrectState();
 
-            if (Runner.IsSharedModeMasterClient)
+            foreach (var valuePair in ReadyStatesDictionary)
             {
-                foreach (ReadyUI readyUi in _readyUis)
-                {
-                    ReadyUis.Add(readyUi);
-                }
+                bool isReady = valuePair.Value;
+                PlayerRef playerRef = valuePair.Key;
+
+                ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == playerRef);
+                
+                readyUI.RPC_SetReadyView(isReady);
             }
-            
         }
 
         [Inject]
@@ -46,16 +44,23 @@ namespace Dev.UI
             runner.AddCallbacks(this);
         }
 
-        [Rpc]
-        public void RPC_SetReady(PlayerRef playerRef)
+        public void SetReady(PlayerRef playerRef)
         {
             NetworkBool wasReady = IsPlayerReady(playerRef);
-            ReadyStatesDictionary.Set(playerRef, !wasReady);
-            ReadyStatusUpdated.OnNext(Unit.Default);
 
-            ReadyUis.First(x => x.PlayerRef == playerRef).RPC_SetReadyView(!wasReady);
+            RPC_ReadyStatusUpdate(!wasReady, playerRef);
+            
+            _readyUis.First(x => x.PlayerRef == playerRef).RPC_SetReadyView(!wasReady);
         }
 
+        [Rpc]
+        private void RPC_ReadyStatusUpdate(bool isReady, PlayerRef playerRef)
+        {
+            ReadyStatesDictionary.Set(playerRef, isReady);
+
+            ReadyStatusUpdated.OnNext(Unit.Default);
+        }   
+        
         public bool IsPlayerReady(PlayerRef playerRef)
         {
             return ReadyStatesDictionary[playerRef];
@@ -74,24 +79,24 @@ namespace Dev.UI
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
         {
             await Task.Delay(500);
-
-            ReadyUI readyUI = ReadyUis.First(x => x.PlayerRef == PlayerRef.None);
-            
-            readyUI.RPC_AssignPlayer(playerRef);
-            
-
-            Debug.Log($"Player {playerRef} joined to lobby", readyUI);
             
             if (runner.IsSharedModeMasterClient)
             {
+                ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == PlayerRef.None);
+            
+                Debug.Log($"Player {playerRef} joined to lobby", readyUI);
+
+                readyUI.RPC_AssignPlayer(playerRef);
                // LobbyPlayer lobbyPlayer = runner.Spawn(_lobbyPlayer, null, null, playerRef);
                // runner.SetPlayerObject(playerRef, lobbyPlayer.Object);
                 
                PlayerManager.AddPlayerForQueue(playerRef);
+               
+               ReadyStatesDictionary.Add(playerRef, false);
             }
             
-            ReadyStatesDictionary.Add(playerRef, false);
-
+            ReadyStatusUpdated.OnNext(Unit.Default);
+            
             return;
             if (runner.IsSharedModeMasterClient)
             {
