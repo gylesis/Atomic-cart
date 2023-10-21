@@ -15,7 +15,7 @@ namespace Dev.PlayerLogic
 
         public override void Spawned()
         {
-            Debug.Log($"SDFs");
+            //Debug.Log($"SDFs");
             
             if (HasStateAuthority == false) return;
 

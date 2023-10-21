@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 
 namespace Dev.Infrastructure
 {
@@ -12,17 +13,22 @@ namespace Dev.Infrastructure
         
         private NetworkRunner _networkRunner;
         private Scene _loadedScene;
+        private NetworkRunner _runner;
 
         private void Awake()
         {
             _loadedScene = SceneManager.GetActiveScene();
         }
 
+        [Inject]
+        private void Init(NetworkRunner runner)
+        {
+            _networkRunner = runner;
+        }
+
         [ContextMenu(nameof(LoadScene))]
         private void LoadScene()
         {
-            _networkRunner = FindObjectOfType<NetworkRunner>();
-
             _networkRunner.SetActiveScene(_sceneName);
         }
 
@@ -30,18 +36,17 @@ namespace Dev.Infrastructure
         {
             if(SceneManager.GetActiveScene().name == sceneName) return;
             
-            _networkRunner = FindObjectOfType<NetworkRunner>();
             _networkRunner.SetActiveScene(sceneName);
         }
         
         protected override IEnumerator SwitchScene(SceneRef prevScene, SceneRef newScene,
             FinishedLoadingDelegate finished)
         {
-            // Debug.Log($"Switching Scene from {prevScene} to {newScene}");
+//             Debug.Log($"Switching Scene from {prevScene} to {newScene}");
 
             if (newScene <= 0)
             {
-                finished(new List<NetworkObject>());
+                finished(FindNetworkObjects(SceneManager.GetActiveScene()));
                 yield break;
             }
 
@@ -80,14 +85,14 @@ namespace Dev.Infrastructure
             {
                 yield return SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Additive);
                 _loadedScene = SceneManager.GetSceneByBuildIndex(newScene);
-                Debug.Log($"Loaded scene {newScene}: {_loadedScene}");
+               // Debug.Log($"Loaded scene {newScene}: {_loadedScene}");
                 sceneObjects = FindNetworkObjects(_loadedScene, disable: false);
             }
 
             // Delay one frame
             yield return null;
 
-            Debug.Log($"Switched Scene from {prevScene} to {newScene} - loaded {sceneObjects.Count} scene objects");
+            //Debug.Log($"Switched Scene from {prevScene} to {newScene} - loaded {sceneObjects.Count} scene objects");
             finished(sceneObjects);
 
 

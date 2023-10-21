@@ -21,7 +21,7 @@ namespace Dev.Infrastructure
 
         public static void AddPlayer(Player player)
         {
-            Debug.Log("Player Added");
+            //Debug.Log("Player Added");
 
             int insertIndex = _allPlayers.Count;
             // Sort the player list when adding players

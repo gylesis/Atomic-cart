@@ -84,12 +84,9 @@ namespace Dev.Infrastructure
             OnPlayerJoined(NetworkRunner runner,
                 PlayerRef player) // for new player after lobby started. invokes if game starts from Lobby
         {
-            Debug.Log($"[ConnectionManager] Player joined {player}");
-
             if (runner.GameMode == GameMode.Shared)
             {
-                Debug.Log($"Someone connected to the game");
-                Debug.Log($"Spawning player... {player}");
+                Debug.Log($"Someone's late connection to the game, spawning {player}");
 
                 await Task.Delay(2000);
 

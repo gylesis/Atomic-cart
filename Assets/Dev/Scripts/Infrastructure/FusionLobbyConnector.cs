@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Dev.Infrastructure
 {
@@ -15,9 +16,8 @@ namespace Dev.Infrastructure
         {
             _networkRunner = GetComponent<NetworkRunner>();
             _networkRunner.ProvideInput = true;
-
+            
             var gameSessionBrowser = FindObjectOfType<GameSessionBrowser>();
-
             _networkRunner.AddCallbacks(gameSessionBrowser);
 
             var joinSessionLobby = _networkRunner.JoinSessionLobby(SessionLobby.Shared);
@@ -70,4 +70,3 @@ namespace Dev.Infrastructure
         public void OnSceneLoadStart(NetworkRunner runner) { }
     }
 }
-

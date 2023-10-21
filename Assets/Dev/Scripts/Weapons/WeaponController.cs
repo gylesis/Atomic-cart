@@ -201,7 +201,7 @@ namespace Dev.Weapons
 
             if (CurrentWeapon == chosenWeapon)
             {
-                Debug.Log($"Weapon already chosen");
+               // Debug.Log($"Weapon already chosen");
                 return;
             }
 

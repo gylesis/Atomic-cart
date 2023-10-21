@@ -154,6 +154,7 @@ namespace Dev.Infrastructure
 
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
         {
+            return;
             Debug.Log($"Player joined {playerRef}");
 
             if (runner.IsSharedModeMasterClient)
@@ -171,8 +172,8 @@ namespace Dev.Infrastructure
             }
         }
 
-        public async void CreateSession(string levelName, MapType mapType)
-        {
+        public async Task CreateSession(string levelName, MapType mapType)
+        {   
             var startGameArgs = new StartGameArgs();
 
             _runner.AddCallbacks(this);
@@ -180,7 +181,8 @@ namespace Dev.Infrastructure
             startGameArgs.GameMode = GameMode.Shared;
             startGameArgs.SessionName = $"{levelName} : {mapType},{Guid.NewGuid()}";
             startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
-            startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
+            Scene activeScene = SceneManager.GetActiveScene();
+            startGameArgs.Scene = activeScene.buildIndex;
 
             startGameArgs.SessionProperties = new Dictionary<string, SessionProperty>()
             {
@@ -189,6 +191,7 @@ namespace Dev.Infrastructure
             };
 
             StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
+
         }
 
         public void JoinSession(string sessionName)

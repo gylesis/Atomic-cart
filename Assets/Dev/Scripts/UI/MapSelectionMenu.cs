@@ -64,12 +64,13 @@ namespace Dev.Infrastructure
             _uiElementsGroup.Select(mapUi);
         }
 
-        private void OnHostButtonClicked()
+        private async void OnHostButtonClicked()
         {
             Hide();
             
-            _hostButton.Disable();
-            _gameSessionBrowser.CreateSession(_selectedMap.MapName, _selectedMap.MapType);
+            await _gameSessionBrowser.CreateSession(_selectedMap.MapName, _selectedMap.MapType);
+            
+            PopUpService.ShowPopUp<MapLobbyMenu>();
         }
 
         private void OnMapUIClicked(MapUIView mapUIView)

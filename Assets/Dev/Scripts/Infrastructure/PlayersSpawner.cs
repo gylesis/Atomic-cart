@@ -281,7 +281,7 @@ namespace Dev.Infrastructure
             spawnEventContext.Transform = player.transform;
             spawnEventContext.CharacterClass = player.CharacterClass;
 
-            Debug.Log($"[RPC] Player spawned");
+           // Debug.Log($"[RPC] Player spawned");
             Spawned.OnNext(spawnEventContext);
         }
 
