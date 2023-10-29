@@ -12,11 +12,19 @@ namespace Dev.Weapons.Guns
     [RequireComponent(typeof(NetworkRigidbody2D))]
     public abstract class Projectile : NetworkContext
     {
-        [SerializeField] private NetworkRigidbody2D _networkRigidbody2D;
+        [SerializeField] private Transform _view;
+        [SerializeField] protected NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] protected float _overlapRadius = 1f;
         [SerializeField] protected LayerMask _hitMask;
 
+        /// <summary>
+        /// Do projectile need to register collision while flying?
+        /// </summary>
+        [SerializeField] private bool _collideWhileMoving;
+        
         [Networked] public TickTimer DestroyTimer { get; set; }
+
+        public Transform View => _view;
 
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
 
@@ -41,6 +49,13 @@ namespace Dev.Weapons.Guns
 
             _networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
 
+            if(_collideWhileMoving == false) return;
+            
+            CheckCollisionsWhileMoving();
+        }
+
+        private void CheckCollisionsWhileMoving()
+        {
             var overlapSphere = OverlapSphere(transform.position, _overlapRadius, _hitMask, out var hits);
 
             if (overlapSphere)

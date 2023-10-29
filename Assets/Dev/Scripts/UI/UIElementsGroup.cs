@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Dev.Infrastructure
+namespace Dev.UI
 {
     public class UIElementsGroup : MonoBehaviour
     {

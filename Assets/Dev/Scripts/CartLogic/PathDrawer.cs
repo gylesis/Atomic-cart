@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dev.Utils;
-using ModestTree;
-using Unity.Mathematics;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-namespace Dev
+namespace Dev.CartLogic
 {
     public class PathDrawer : MonoBehaviour
     {

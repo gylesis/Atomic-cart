@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: BomberCharacterData
   m_EditorClassIdentifier: 
   CharacterClass: 3
-  PlayerPrefab: {fileID: 5544195138823906172, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+  PlayerPrefab: {fileID: 6082864456603980611, guid: 64ff141257ccfcd4983d32854e4f232f, type: 3}
   CharacterIcon: {fileID: 21300000, guid: 1daf96c414d3618449eba601de51a4dd, type: 3}
   CharacterStats:
-    Health: 100
+    Health: 240
     MoveSpeed: 500
     SpeedLowerSpeed: 1.1
     ShootThreshold: 0.75

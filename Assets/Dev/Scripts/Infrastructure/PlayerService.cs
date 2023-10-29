@@ -1,7 +1,4 @@
 ﻿namespace Dev.Infrastructure
 {
-    public abstract class PlayerService : NetworkContext
-    {
-        
-    }
+    public abstract class PlayerService : NetworkContext { }
 }

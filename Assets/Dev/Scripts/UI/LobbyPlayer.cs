@@ -1,6 +1,9 @@
 ﻿using Dev.Infrastructure;
 
-public class LobbyPlayer : NetworkContext
+namespace Dev.UI
 {
+    public class LobbyPlayer : NetworkContext
+    {
     
+    }
 }

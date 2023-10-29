@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using Dev.Utils;
+using Dev.Weapons.StaticData;
+using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Dev.Utils
+namespace Dev.Infrastructure
 {
     [CreateAssetMenu(fileName = "GameSettings", menuName = "StaticData/GameSettings", order = 0)]
     public class GameSettings : ScriptableObject
@@ -13,9 +15,19 @@ namespace Dev.Utils
             
         [Header("Player")] 
         [SerializeField] private float _cameraZoomModifier = 15f;
+
+        [Header("Weapon")]
+        [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
+        [SerializeField] private AnimationCurve _grenadeFlyFunction;
+        [SerializeField] private AnimationCurve _grenadeFlySizeFunction;
         
         [Header("Debug")]
         [SerializeField] private MapName _firstLevelName;
+
+        public WeaponStaticDataContainer WeaponStaticDataContainer => _weaponStaticDataContainer;
+
+        public AnimationCurve GrenadeFlyFunction => _grenadeFlyFunction;
+        public AnimationCurve GrenadeFlySizeFunction => _grenadeFlySizeFunction;
 
         public MapName FirstLevelName => _firstLevelName;
 

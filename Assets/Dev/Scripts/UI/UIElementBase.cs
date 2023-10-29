@@ -1,10 +1,7 @@
-﻿using System;
-using Dev.UI;
-using UniRx;
+﻿using Dev.Infrastructure;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Dev.Infrastructure
+namespace Dev.UI
 {
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class UIElementBase : MonoBehaviour

@@ -1,4 +1,5 @@
 ﻿using Dev.Infrastructure;
+using Dev.Weapons.StaticData;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -7,36 +8,34 @@ namespace Dev.Weapons.Guns
 {
     public abstract class Weapon : NetworkContext
     {
+        [SerializeField] private WeaponType _weaponType;
+        
         [SerializeField] protected Transform _shootPoint;
         [SerializeField] protected Transform _view;
 
-        [SerializeField] protected float _bulletMaxDistance = 10f;
-        [SerializeField] protected float _cooldown = 1f;
-        [SerializeField] private int _minDamage = 8;
-        [SerializeField] private int _maxDamage = 12;
-        [Networked] public TickTimer CooldownTimer { get; set; }    
+        [Networked] public TickTimer CooldownTimer { get; set; }
 
+        public WeaponType WeaponType => _weaponType;
 
         public virtual bool AllowToShoot => CooldownTimer.ExpiredOrNotRunning(Runner);
 
-        public float BulletMaxDistance => _bulletMaxDistance;
+        public float BulletMaxDistance => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).BulletMaxDistance;
 
-        public float Cooldown => _cooldown;
-        public int Damage => Random.Range(_minDamage, _maxDamage + 1);
+        public float Cooldown => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).Cooldown;
+        public int Damage => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).Damage;
 
         public Vector2 ShootPos => _shootPoint.position;
         public Transform ShootPoint => _shootPoint;
 
         public Vector2 ShootDirection => transform.up;
 
-        [Networked] public WeaponData WeaponData { get; private set; }
-
-        public void Init(WeaponData weaponData)
-        {
-            WeaponData = weaponData;
-        }
-
         public virtual void StartShoot(float power) { }
+        
+        /// <summary>
+        /// Called when shoot button pressed
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="power"></param>
         public abstract void Shoot(Vector2 direction, float power = 1);
 
         public virtual void OnChosen() { }

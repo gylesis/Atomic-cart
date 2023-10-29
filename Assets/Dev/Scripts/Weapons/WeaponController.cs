@@ -2,6 +2,7 @@
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Weapons.Guns;
+using Dev.Weapons.StaticData;
 using Fusion;
 using JetBrains.Annotations;
 using UniRx;
@@ -57,14 +58,14 @@ namespace Dev.Weapons
 
         public void Init(WeaponSetupContext weaponSetupContext)
         {
-            _weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.Name.Value, true);
+            _weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.WeaponType, true);
         }
 
         public bool HasAnyWeapon => Weapons.Count > 0 && CurrentWeapon != null;
 
-        public bool HasWeapon(string name)
+        public bool HasWeapon(WeaponType weaponType)
         {
-            Weapon weapon = Weapons.FirstOrDefault(x => x.WeaponData.Name == name);
+            Weapon weapon = Weapons.FirstOrDefault(x => x.WeaponType == weaponType);
 
             return weapon != null;
         }
@@ -215,14 +216,14 @@ namespace Dev.Weapons
         }
 
         [Rpc]
-        public void RPC_ChooseWeapon(string weaponName)
+        public void RPC_ChooseWeapon(WeaponType weaponType)
         {
             if (Weapons.Count == 0)
             {
                 return;
             }
 
-            Weapon weapon = Weapons.First(x => x.WeaponData.Name == weaponName);
+            Weapon weapon = Weapons.First(x => x.WeaponType == weaponType);
 
             if (CurrentWeapon == weapon)
             {

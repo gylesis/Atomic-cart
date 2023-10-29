@@ -1,11 +1,10 @@
 ﻿using System;
 using Dev.Infrastructure;
-using Dev.Levels;
 using Fusion;
 using TMPro;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Levels
 {
     public class GameTimeView : NetworkContext
     {

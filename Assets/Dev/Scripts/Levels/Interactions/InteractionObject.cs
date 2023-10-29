@@ -1,9 +1,8 @@
 ﻿using Dev.Infrastructure;
-using Dev.Levels.Interactions;
 using Fusion;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Levels.Interactions
 {
     public abstract class InteractionObject : NetworkContext
     {

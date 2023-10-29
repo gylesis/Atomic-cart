@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Dev.Levels;
 using Fusion;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Levels.Interactions
 {
     public class Gate : InteractionObject
     {

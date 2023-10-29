@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: WeaponStaticDataContainer
   m_EditorClassIdentifier: 
   _weaponStaticDatas:
-  - WeaponName: AkWeapon
-    Prefab: {fileID: 7814030919455456839, guid: 9b92def86228e264995e6ff644efde54, type: 3}
-  - WeaponName: BazookaWeapon
-    Prefab: {fileID: 6292559310413262657, guid: 789c93015ccd7a74db4f818e69284525, type: 3}
+  - {fileID: 11400000, guid: cfdcb0accea30be4f9227f01fab8dc94, type: 2}
+  - {fileID: 11400000, guid: 625de63613fadff45b4a78ce216b9e9b, type: 2}
+  - {fileID: 11400000, guid: 2964d737dbb7c924fb348e202dece9d2, type: 2}

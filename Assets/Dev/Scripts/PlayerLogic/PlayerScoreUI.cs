@@ -3,7 +3,7 @@ using Fusion;
 using TMPro;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.PlayerLogic
 {
     public class PlayerScoreUI : NetworkContext
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Levels
 {
     [Serializable]
     public class TimeContainer

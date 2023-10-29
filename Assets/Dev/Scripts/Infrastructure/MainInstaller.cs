@@ -27,7 +27,7 @@ namespace Dev.Infrastructure
         
         [SerializeField] private JoysticksContainer _joysticksContainer;
         
-        public override void InstallBindings()  
+        public override void InstallBindings()
         {
             Container.Bind<DependenciesContainer>().AsSingle().NonLazy();
 

@@ -4,7 +4,7 @@ using Fusion;
 using UniRx;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Levels.Interactions.Pickable
 {
     public abstract class PickableObject : InteractionObject
     {

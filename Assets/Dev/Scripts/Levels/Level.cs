@@ -2,6 +2,7 @@
 using System.Linq;
 using Dev.CartLogic;
 using Dev.Infrastructure;
+using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
 using UnityEngine;
 

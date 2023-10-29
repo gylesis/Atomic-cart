@@ -1,14 +1,15 @@
-﻿using Fusion;
+﻿using Dev.Weapons.StaticData;
+using Fusion;
 
 namespace Dev.Weapons
 {
     public struct WeaponSetupContext : INetworkStruct
     {
-        [Networked] public NetworkString<_16> Name { get; private set; }
+        [Networked] public WeaponType WeaponType { get; private set; }
         
-        public WeaponSetupContext(string name)
+        public WeaponSetupContext(WeaponType weaponType)
         {
-            Name = name;
+            WeaponType = weaponType;
         }
     }
 }

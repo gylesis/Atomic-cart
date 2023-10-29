@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.CartLogic
 {
     public class CartPathPoint : MonoBehaviour
     {

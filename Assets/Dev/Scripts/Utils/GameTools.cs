@@ -12,7 +12,7 @@ namespace Dev.Utils
         public static async void RefreshEnumMaps()
         {
             string enumCode = "namespace Dev.Utils\n{\n";
-            enumCode += "    public enum MapName\n{\n";
+            enumCode += "    public enum MapName\n    {\n";
 
             var assets = AssetDatabase.FindAssets("t:MapsContainer", new [] { "Assets/Dev/SO/Maps"});
             string mapsContainerPath = AssetDatabase.GUIDToAssetPath(assets[0]);
@@ -23,7 +23,7 @@ namespace Dev.Utils
 
             foreach (var level in levels)
             {
-                enumCode += "    " + level + ",\n";
+                enumCode += "        " + level + ",\n";
             }
             
             enumCode += "    }\n";

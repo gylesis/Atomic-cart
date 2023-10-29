@@ -15,4 +15,71 @@ MonoBehaviour:
   _timeAfterWinGame: 5
   _isFriendlyFireOn: 0
   _cameraZoomModifier: 25
+  _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
+  _grenadeFlyFunction:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: -0.0000017303973
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.317796
+      value: 0.6870718
+      inSlope: 1.2065954
+      outSlope: 1.2065954
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _grenadeFlySizeFunction:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: -0.058661807
+      outSlope: -0.058661807
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.14820433
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -4.1392603
+      outSlope: -4.1392603
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.10453737
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   _firstLevelName: 1

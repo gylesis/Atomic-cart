@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Dev.Effects;
+using Dev.Infrastructure;
+using Dev.Weapons.StaticData;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -8,12 +10,12 @@ using UnityEngine;
 namespace Dev.Weapons.Guns
 {
     [OrderAfter(typeof(Projectile))]
-    public abstract class ProjectileWeapon : Weapon
+    public abstract class ProjectileWeapon<TProjectileType> : Weapon where TProjectileType : ProjectileStaticData
     {
-        [SerializeField] protected float _projectileSpeed = 15f;
-    
-        [SerializeField] protected Projectile _projectilePrefab;
+        public float ProjectileSpeed => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<TProjectileType>().ProjectileSpeed;
+        public Projectile ProjectilePrefab => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<TProjectileType>().ProjectilePrefab;
 
+        
         protected List<SpawnedProjectileContext> _aliveProjectiles = new List<SpawnedProjectileContext>();
 
         public override void FixedUpdateNetwork()
@@ -23,6 +25,9 @@ namespace Dev.Weapons.Guns
             PollAliveProjectilesForDestroy();
         }
 
+        /// <summary>
+        /// Polling all Projectiles for Max Distance, Alive Time
+        /// </summary>
         private void PollAliveProjectilesForDestroy()
         {
             for (var index = _aliveProjectiles.Count - 1; index >= 0; index--)
@@ -39,7 +44,7 @@ namespace Dev.Weapons.Guns
 
                 var expired = destroyTimer.ExpiredOrNotRunning(Runner);
                 
-                if (distanceFromOrigin > _bulletMaxDistance * _bulletMaxDistance)
+                if (distanceFromOrigin > BulletMaxDistance * BulletMaxDistance)
                 {
                     OnProjectileMaxDistanceReached(projectile);
                 }
@@ -51,7 +56,11 @@ namespace Dev.Weapons.Guns
             }
         }
 
-        protected virtual void OnProjectileBeforeSpawned(Projectile projectile)
+        /// <summary>
+        /// Projectile initialization before spawn
+        /// </summary>
+        /// <param name="projectile"></param>
+        protected virtual void OnProjectileBeforeSpawned(Projectile projectile) // auto destroy logic
         {
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
             projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 10);
@@ -63,22 +72,38 @@ namespace Dev.Weapons.Guns
             _aliveProjectiles.Add(projectileContext);
         }
 
-        private void OnProjectileDestroy(Projectile projectile)
+        /// <summary>
+        /// Event on Projectile destroy
+        /// </summary>
+        /// <param name="projectile"></param>
+        private void OnProjectileDestroy(Projectile projectile) 
         {
             DestroyProjectile(projectile);
         }
 
-        protected virtual void OnProjectileExpired(Projectile projectile)
+        /// <summary>
+        /// Event on Projectile expired
+        /// </summary>
+        /// <param name="projectile"></param>
+        protected virtual void OnProjectileExpired(Projectile projectile) 
         {
             Debug.Log($"Projectile {projectile} expired, destroying");
             DestroyProjectile(projectile);
         }
 
-        protected virtual void OnProjectileMaxDistanceReached(Projectile projectile)
+        /// <summary>
+        /// Event on Projectile reached max distance
+        /// </summary>
+        /// <param name="projectile"></param>
+        protected virtual void OnProjectileMaxDistanceReached(Projectile projectile) 
         {
             DestroyProjectile(projectile);
         }
         
+        /// <summary>
+        /// Called when Max Distance reached, Alive timer expired or hit to obtacle or player
+        /// </summary>
+        /// <param name="projectile"></param>
         private void DestroyProjectile(Projectile projectile)
         {
             var exists = _aliveProjectiles.Exists(x => x.Projectile == projectile);
@@ -93,6 +118,10 @@ namespace Dev.Weapons.Guns
             }
         }
 
+        /// <summary>
+        /// Managing which effect is going to spawn after destroy Projectile
+        /// </summary>
+        /// <param name="projectile"></param>
         protected virtual void SpawnVFXOnDestroyProjectile(Projectile projectile)
         {
             FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Random = UnityEngine.Random;
 
-namespace Dev
+namespace Dev.Utils
 {
     public class WorldTextProvider : MonoBehaviour
     {

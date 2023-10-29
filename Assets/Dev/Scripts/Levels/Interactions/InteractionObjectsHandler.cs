@@ -1,6 +1,5 @@
 ﻿using System;
 using Dev.Infrastructure;
-using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
 using Fusion;
@@ -8,7 +7,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.Levels.Interactions
 {
     public class InteractionObjectsHandler : NetworkContext
     {

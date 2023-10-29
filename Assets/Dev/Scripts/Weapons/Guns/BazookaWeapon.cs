@@ -1,27 +1,29 @@
 using System;
 using Dev.Effects;
+using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Dev.Weapons.StaticData;
 using Fusion;
 using UniRx;
 using UnityEngine;
 
 namespace Dev.Weapons.Guns
 {
-    public class BazookaWeapon : ProjectileWeapon
+    public class BazookaWeapon : ProjectileWeapon<BazookaStaticData>
     {
-        [SerializeField] private float _explosionRadius = 2;
-        [SerializeField] private float _firePushPower = 5;
+        public float ExplosionRadius => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<BazookaStaticData>().ExplosionRadius;
+        public float FirePushPower =>  GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<BazookaStaticData>().FirePushPower;
 
         public override void Shoot(Vector2 direction, float power = 1)
         {
             PushForcePlayer(direction);
 
-            Projectile projectile = Runner.Spawn(_projectilePrefab, ShootPos, Quaternion.identity,
+            Projectile projectile = Runner.Spawn(ProjectilePrefab, ShootPos, Quaternion.identity,
                 Object.InputAuthority, (runner, o) =>
                 {
                     BazookaProjectile projectile = o.GetComponent<BazookaProjectile>();
 
-                    projectile.Init(direction, _projectileSpeed, Damage, Object.InputAuthority, _explosionRadius);
+                    projectile.Init(direction, ProjectileSpeed, Damage, Object.InputAuthority, ExplosionRadius);
 
                     OnProjectileBeforeSpawned(projectile);
                 });
@@ -32,7 +34,7 @@ namespace Dev.Weapons.Guns
             NetworkObject networkObject = Runner.GetPlayerObject(Object.InputAuthority);
             Player player = networkObject.GetComponent<Player>();
 
-            player.Rigidbody.velocity = -direction * _firePushPower;
+            player.Rigidbody.velocity = -direction * FirePushPower;
             // player.Rigidbody.AddForce(-direction * _firePushPower, ForceMode2D.Impulse);
             player.PlayerController.AllowToMove = false;
             Observable.Timer(TimeSpan.FromSeconds(0.5f))

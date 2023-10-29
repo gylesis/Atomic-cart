@@ -13,6 +13,7 @@ namespace Dev.Infrastructure
         
         public override void InstallBindings()
         {
+            Container.Bind<GameSettingProvider>().AsSingle().NonLazy();
             Container.Bind<MapsContainer>().FromInstance(_mapsContainer);
             Container.Bind<GameSettings>().FromInstance(_gameSettings).AsSingle();
             Container.Bind<CharactersDataContainer>().FromInstance(_charactersDataContainer).AsSingle();

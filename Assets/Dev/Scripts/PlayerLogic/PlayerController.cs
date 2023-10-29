@@ -1,8 +1,11 @@
-﻿using Dev.Infrastructure;
+﻿using System.Numerics;
+using System.Threading.Tasks;
+using Dev.Infrastructure;
 using Dev.UI;
 using Dev.Weapons;
 using Fusion;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
 
 namespace Dev.PlayerLogic
 {
@@ -23,15 +26,20 @@ namespace Dev.PlayerLogic
         [Networked(OnChanged = nameof(OnAllowToShootChanged))]
         public NetworkBool AllowToShoot { get; set; } = true;
 
+        [SerializeField] private float _shiftSpeed = 2;
+        [SerializeField] private float _dashTime = 0.5f;
+
         private float _speed;
         private float _shootThreshold;
         private float _speedLowerSpeed;
 
         private PopUpService _popUpService;
         private JoysticksContainer _joysticksContainer;
-        
+
         [Networked] private Vector2 LookDirection { get; set; }
         [Networked] private Vector2 MoveDirection { get; set; }
+
+        private TickTimer _dashTimer;
 
         private void Awake()
         {
@@ -49,25 +57,33 @@ namespace Dev.PlayerLogic
 
         public override void FixedUpdateNetwork()
         {
-            if (GetInput<PlayerInput>(out var input) )
+            if (GetInput<PlayerInput>(out var input))
             {
                 MoveDirection = input.MoveDirection;
                 LookDirection = input.LookDirection;
             }
 
             Vector2 moveDirection = MoveDirection;
-            
+
             if (AllowToMove)
             {
-                if (moveDirection != Vector2.zero)
+                if (_dashTimer.ExpiredOrNotRunning(Runner))
                 {
-                    Vector2 velocity = moveDirection * (_speed * Runner.DeltaTime);
+                    if (moveDirection != Vector2.zero)
+                    {
+                        Vector2 velocity = moveDirection * (_speed * Runner.DeltaTime);
 
-                    _player.Rigidbody.velocity = velocity;
+                        _player.Rigidbody.velocity = velocity;
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.LeftShift))
+                    {
+                        Dash();
+                    }
                 }
             }
 
-            if (moveDirection == Vector2.zero)
+            /*if (moveDirection == Vector2.zero)
             {
                 Vector2 velocity = _player.Rigidbody.velocity;
 
@@ -88,7 +104,7 @@ namespace Dev.PlayerLogic
 
                     _player.Rigidbody.velocity = velocity;
                 }
-            }
+            }*/
 
             HandleAnimation();
 
@@ -96,7 +112,26 @@ namespace Dev.PlayerLogic
             {
                 AimRotation();
             }
-            
+        }
+
+        private async void Dash()
+        {
+            _dashTimer = TickTimer.CreateFromSeconds(Runner, 0.5f);
+
+            float dashTime = 0.5f;
+            float stepPerTick = 0.05f;
+            int stepsCount = (int)(dashTime / stepPerTick);
+
+            for (int i = 0; i < stepsCount; i++)
+            {
+                float force = 1 - (i / stepsCount);
+
+                force *= _shiftSpeed * Runner.DeltaTime;
+
+                _player.Rigidbody.velocity += LastLookDirection * force;
+
+                await Task.Yield();
+            }
         }
 
         public static void OnAllowToMoveChanged(Changed<PlayerController> changed)
@@ -113,7 +148,7 @@ namespace Dev.PlayerLogic
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                    var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
+                var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
                 scoreMenu.Show();
             }
 

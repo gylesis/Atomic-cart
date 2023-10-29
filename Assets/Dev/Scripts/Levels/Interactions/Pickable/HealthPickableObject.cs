@@ -4,7 +4,7 @@ using Dev.PlayerLogic;
 using Fusion;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Levels.Interactions.Pickable
 {
     public class HealthPickableObject : PickableObject
     {

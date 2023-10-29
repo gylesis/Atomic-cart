@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Dev
+namespace Dev.CartLogic
 {
     public class RailPathStraight : MonoBehaviour
     {
