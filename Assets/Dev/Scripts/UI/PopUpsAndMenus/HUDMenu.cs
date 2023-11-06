@@ -2,7 +2,7 @@
 using UniRx;
 using UnityEngine;
 
-namespace Dev.UI
+namespace Dev.UI.PopUpsAndMenus
 {
     public class HUDMenu : PopUp
     {
@@ -46,7 +46,7 @@ namespace Dev.UI
         
         private void OnExitMenuButtonClicked()
         {
-            PopUpService.TryGetPopUp<ExitPopUp>(out var exitPopUp);
+            PopUpService.TryGetPopUp<InGameMenu>(out var exitPopUp);
             
             Hide();
             exitPopUp.Show();

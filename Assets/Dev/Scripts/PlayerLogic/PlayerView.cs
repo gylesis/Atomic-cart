@@ -17,7 +17,7 @@ namespace Dev.PlayerLogic
         [SerializeField] private SpriteRenderer _crosshairSpriteRenderer;
 
         private static readonly int Move = Animator.StringToHash("Move");
-        private Player _player;
+        private PlayerCharacter _playerCharacter;
 
         [Networked(OnChanged = nameof(OnTeamColorChanged))]
         private Color TeamColor { get; set; }
@@ -50,12 +50,12 @@ namespace Dev.PlayerLogic
         {
             if(HasInputAuthority == false) return;
             
-            if (_player == null && Player.LocalPlayer != null)
+            if (_playerCharacter == null && PlayerCharacter.LocalPlayerCharacter != null)
             {
-                _player = Player.LocalPlayer;
+                _playerCharacter = PlayerCharacter.LocalPlayerCharacter;
             }
 
-            float crosshairColorTarget = _player.PlayerController.IsPlayerAiming ? 1 : 0;
+            float crosshairColorTarget = _playerCharacter.PlayerController.IsPlayerAiming ? 1 : 0;
 
             Color color = _crosshairSpriteRenderer.color;
 
@@ -63,9 +63,9 @@ namespace Dev.PlayerLogic
 
             _crosshairSpriteRenderer.color = color;
 
-            Vector3 lookDirection = _player.PlayerController.LastLookDirection;
+            Vector3 lookDirection = _playerCharacter.PlayerController.LastLookDirection;
 
-            float aimDistance = _player.WeaponController.CurrentWeapon.BulletMaxDistance + 1;
+            float aimDistance = _playerCharacter.WeaponController.CurrentWeapon.BulletMaxDistance + 1;
             
             _groundAimTransform.localPosition = Vector3.Lerp(_groundAimTransform.localPosition,
                 Vector3.zero + lookDirection * aimDistance, _aimLerpSpeed * Runner.DeltaTime);

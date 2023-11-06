@@ -27,16 +27,16 @@ namespace Dev.CartLogic
             _triggerZone.PlayerExit.TakeUntilDestroy(this).Subscribe((OnPlayerExitCartZone));
         }
 
-        private void OnPlayerEnteredCartZone(Player player)
+        private void OnPlayerEnteredCartZone(PlayerCharacter playerCharacter)
         {
-            PlayerRef playerRef = player.Object.InputAuthority;
+            PlayerRef playerRef = playerCharacter.Object.InputAuthority;
 
             CartZoneEntered.OnNext(playerRef);
         }
 
-        private void OnPlayerExitCartZone(Player player)
+        private void OnPlayerExitCartZone(PlayerCharacter playerCharacter)
         {
-            PlayerRef playerRef = player.Object.InputAuthority;
+            PlayerRef playerRef = playerCharacter.Object.InputAuthority;
 
             CartZoneExit.OnNext(playerRef);
         }

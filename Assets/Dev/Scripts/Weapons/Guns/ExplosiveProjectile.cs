@@ -16,7 +16,7 @@ namespace Dev.Weapons.Guns
             Init(moveDirection, force, damage, owner);
         }
         
-        protected override void ApplyHitToPlayer(Player player)
+        protected override void ApplyHitToPlayer(PlayerCharacter playerCharacter)
         {
             ExplodeAndHitPlayers(_explosionRadius);
         }
@@ -65,7 +65,7 @@ namespace Dev.Weapons.Guns
                         continue;
                     }
                     
-                    var isPlayer = hit.GameObject.TryGetComponent<Player>(out var player);
+                    var isPlayer = hit.GameObject.TryGetComponent<PlayerCharacter>(out var player);
 
                     if (isPlayer)
                     {

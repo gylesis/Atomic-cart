@@ -2,6 +2,7 @@
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.UI;
+using Dev.UI.PopUpsAndMenus;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -50,16 +51,16 @@ namespace Dev.Levels.Interactions
             RPC_SetInteractionViewState(playerRef,false, null);
         }
 
-        private void OnPlayerZoneEntered(Player player, InteractionObject interactionObject)
+        private void OnPlayerZoneEntered(PlayerCharacter playerCharacter, InteractionObject interactionObject)
         {
-            PlayerRef playerRef = player.Object.InputAuthority;
+            PlayerRef playerRef = playerCharacter.Object.InputAuthority;
 
             RPC_SetInteractionViewState(playerRef,true, interactionObject);
         }
 
-        private void OnPlayerZoneExit(Player player, InteractionObject interactionObject)
+        private void OnPlayerZoneExit(PlayerCharacter playerCharacter, InteractionObject interactionObject)
         {
-            PlayerRef playerRef = player.Object.InputAuthority;
+            PlayerRef playerRef = playerCharacter.Object.InputAuthority;
 
             RPC_SetInteractionViewState(playerRef,false, interactionObject);
         }

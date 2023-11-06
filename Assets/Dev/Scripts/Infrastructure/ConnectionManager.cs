@@ -5,18 +5,20 @@ using System.Threading.Tasks;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.Infrastructure
 {
     public class ConnectionManager : NetworkContext, INetworkRunnerCallbacks
     {
-        [SerializeField] private NetworkRunner _networkRunnerPrefab;
+        [SerializeField] private NetworkRunner _networkRunner;
 
         private PlayersSpawner _playersSpawner;
         private PopUpService _popUpService;
@@ -35,15 +37,16 @@ namespace Dev.Infrastructure
                 Instance = this;
             }
 
-            if (FindObjectOfType<NetworkRunner>() != null)
+            NetworkRunner networkRunner = FindObjectOfType<NetworkRunner>();
+            
+            if (networkRunner.IsConnectedToServer)
             {
+                _networkRunner.gameObject.SetActive(false);
                 return;
             }
             else
             {
-                NetworkRunner runner = Instantiate(_networkRunnerPrefab);
-
-                runner.AddCallbacks(this);
+                _networkRunner.AddCallbacks(this);
 
                 var startGameArgs = new StartGameArgs();
 
@@ -51,7 +54,7 @@ namespace Dev.Infrastructure
                 startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
                 startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
 
-                runner.StartGame(startGameArgs);
+                _networkRunner.StartGame(startGameArgs);
             }
         }
 
@@ -90,7 +93,7 @@ namespace Dev.Infrastructure
 
                 await Task.Delay(2000);
 
-                _playersSpawner.SpawnPlayerByCharacterClass(runner, player);
+                _playersSpawner.ChooseCharacterClass(player);
             }
         }
 
@@ -101,7 +104,7 @@ namespace Dev.Infrastructure
             if (runner.IsSharedModeMasterClient)
             {
                 Debug.Log($"Despawning player");
-                _playersSpawner.DespawnPlayer(player);
+                _playersSpawner.DespawnPlayer(player, true);
             }
         }
 
@@ -125,7 +128,7 @@ namespace Dev.Infrastructure
 
                 await Task.Delay(2000);
 
-                _playersSpawner.SpawnPlayerByCharacterClass(runner, playerRef);
+                _playersSpawner.ChooseCharacterClass(playerRef);
             }
         }
 
@@ -161,14 +164,14 @@ namespace Dev.Infrastructure
             {
                 LevelService.Instance.LoadLevel(_gameSettings.FirstLevelName.ToString());
 
-                await Task.Delay(3000); // TODO 
+                await Task.Delay(3000); // TODO wait until all players load the scene
 
                 foreach (PlayerRef playerRef in PlayerManager.PlayerQueue)
                 {
                     // Debug.Log($"Respawning Player {_playersDataService.GetNickname(playerRef)}");
                     Debug.Log($"Spawning Player {playerRef}");
 
-                    _playersSpawner.SpawnPlayerByCharacterClass(runner, playerRef);
+                    _playersSpawner.ChooseCharacterClass(playerRef);
                 }
 
                 PlayerManager.PlayerQueue.Clear();

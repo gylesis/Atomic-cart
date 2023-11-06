@@ -10,8 +10,8 @@ namespace Dev.Levels.Interactions
     {
         [SerializeField] private TriggerZone _triggerZone;
 
-        public Subject<Player> PlayerEntered { get; } = new Subject<Player>();
-        public Subject<Player> PlayerExit { get; } = new Subject<Player>();
+        public Subject<PlayerCharacter> PlayerEntered { get; } = new Subject<PlayerCharacter>();
+        public Subject<PlayerCharacter> PlayerExit { get; } = new Subject<PlayerCharacter>();
 
         protected override void ServerSubscriptions()
         {
@@ -25,9 +25,9 @@ namespace Dev.Levels.Interactions
         {
             if (obj.CompareTag("Player"))
             {
-                Player player = obj.GetComponent<Player>();
+                PlayerCharacter playerCharacter = obj.GetComponent<PlayerCharacter>();
 
-                PlayerEntered.OnNext(player);
+                PlayerEntered.OnNext(playerCharacter);
             }
         }
 
@@ -35,9 +35,9 @@ namespace Dev.Levels.Interactions
         {
             if (obj.CompareTag("Player"))
             {
-                Player player = obj.GetComponent<Player>();
+                PlayerCharacter playerCharacter = obj.GetComponent<PlayerCharacter>();
 
-                PlayerExit.OnNext(player);
+                PlayerExit.OnNext(playerCharacter);
             }
         }
     }

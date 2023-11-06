@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.UI;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Weapons;
 using Fusion;
 using UnityEngine;
@@ -11,9 +12,9 @@ namespace Dev.PlayerLogic
 {
     public class PlayerController : NetworkContext
     {
-        [SerializeField] private Player _player;
-        private WeaponController _weaponController => _player.WeaponController;
-        private PlayerView PlayerView => _player.PlayerView;
+        [SerializeField] private PlayerCharacter _playerCharacter;
+        private WeaponController _weaponController => _playerCharacter.WeaponController;
+        private PlayerView PlayerView => _playerCharacter.PlayerView;
 
         [Networked] private Vector2 LastMoveDirection { get; set; }
         [Networked] public Vector2 LastLookDirection { get; private set; }
@@ -73,7 +74,7 @@ namespace Dev.PlayerLogic
                     {
                         Vector2 velocity = moveDirection * (_speed * Runner.DeltaTime);
 
-                        _player.Rigidbody.velocity = velocity;
+                        _playerCharacter.Rigidbody.velocity = velocity;
                     }
 
                     if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -83,9 +84,9 @@ namespace Dev.PlayerLogic
                 }
             }
 
-            /*if (moveDirection == Vector2.zero)
+            if (moveDirection == Vector2.zero)
             {
-                Vector2 velocity = _player.Rigidbody.velocity;
+                Vector2 velocity = _playerCharacter.Rigidbody.velocity;
 
                 if (velocity.sqrMagnitude != 0)
                 {
@@ -102,9 +103,9 @@ namespace Dev.PlayerLogic
                     velocity.x = Mathf.Clamp(velocity.x, 0, float.MaxValue);
                     velocity.y = Mathf.Clamp(velocity.y, 0, float.MaxValue);
 
-                    _player.Rigidbody.velocity = velocity;
+                    _playerCharacter.Rigidbody.velocity = velocity;
                 }
-            }*/
+            }
 
             HandleAnimation();
 
@@ -128,7 +129,7 @@ namespace Dev.PlayerLogic
 
                 force *= _shiftSpeed * Runner.DeltaTime;
 
-                _player.Rigidbody.velocity += LastLookDirection * force;
+                _playerCharacter.Rigidbody.velocity += LastLookDirection * force;
 
                 await Task.Yield();
             }

@@ -752,7 +752,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929976, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Name
-      value: ChooseCharacterMenu
+      value: ChooseCharacterMenu Variant
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929979, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Pivot.x
@@ -864,7 +864,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 1628861162960411061}
   _procceedButton: {fileID: 9149046331760030954}
-  _smoothFadeInOutDuration: 1
+  _smoothFadeInOutDuration: 0.5
   _characterPickUIPrefab: {fileID: 7665076260286140359, guid: af57be117ef3fd64e9a327cc17db0264, type: 3}
   _parent: {fileID: 1671157411889738046}
   _blockMask: {fileID: 1671157412385125000}

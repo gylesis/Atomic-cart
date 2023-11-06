@@ -3,17 +3,21 @@ using DG.Tweening;
 using UniRx;
 using UnityEngine;
 
-namespace Dev.UI
+namespace Dev.UI.PopUpsAndMenus
 {
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class PopUp : MonoBehaviour
     {
+        [Header("Sets if pop up or menus is root UI screen")]
+        [SerializeField] private bool _isRoot;
         [SerializeField] protected CanvasGroup _canvasGroup;
         [SerializeField] protected DefaultReactiveButton _procceedButton;
 
         [SerializeField] protected float _smoothFadeInOutDuration = 1f;
 
-        public Subject<bool> OnHide { get; } = new Subject<bool>();
+        public bool IsRoot => _isRoot;
+
+        public Subject<bool> ShowAndHide { get; } = new Subject<bool>();
 
         private IDisposable _disposable;
         protected PopUpService PopUpService;
@@ -59,14 +63,14 @@ namespace Dev.UI
 
         protected void EnableCanvasGroup()
         {
-            OnHide.OnNext(false);
+            ShowAndHide.OnNext(false);
             _canvasGroup.interactable = true;
             _canvasGroup.blocksRaycasts = true;
         }
 
         protected void DisableCanvasGroup()
         {
-            OnHide.OnNext(true);
+            ShowAndHide.OnNext(true);
             _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
         }

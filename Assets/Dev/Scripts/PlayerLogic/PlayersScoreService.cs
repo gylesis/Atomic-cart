@@ -32,8 +32,8 @@ namespace Dev.PlayerLogic
 
         public override void Spawned()
         {
-            _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
-            _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 
             _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
         }
@@ -56,7 +56,7 @@ namespace Dev.PlayerLogic
 
             PlayerScoreList.Add(playerScoreData);
 
-            _playersScoreUI.UpdateScores(PlayerScoreList.ToArray());
+           // _playersScoreUI.UpdateScores(PlayerScoreList.ToArray());
         }
 
         private void OnPlayerDespawned(PlayerRef playerRef)

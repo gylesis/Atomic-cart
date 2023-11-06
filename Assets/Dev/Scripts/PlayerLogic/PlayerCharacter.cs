@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Dev.PlayerLogic
 {
-    public class Player : NetworkContext, IDamageable
+    public class PlayerCharacter : NetworkContext, IDamageable
     {
         [Range(0f, 1f)] [SerializeField] private float _shootThreshold = 0.75f;
         [SerializeField] private PlayerView _playerView;
@@ -27,13 +27,13 @@ namespace Dev.PlayerLogic
 
         [Networked] public CharacterClass CharacterClass { get; private set; }
 
-        public static Player LocalPlayer;
+        public static PlayerCharacter LocalPlayerCharacter;
 
         public override void Spawned()
         {
             if (HasInputAuthority)
             {
-                LocalPlayer = this;
+                LocalPlayerCharacter = this;
             }
             
         }

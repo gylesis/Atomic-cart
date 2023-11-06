@@ -32,7 +32,7 @@ namespace Dev.PlayerLogic
                 return;
             }
 
-            _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
 
         private void OnPlayerDespawned(PlayerRef playerRef)

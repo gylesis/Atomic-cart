@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace Dev.UI
+namespace Dev.UI.PopUpsAndMenus
 {
     public class CharacterChooseMenu : PopUp
     {
@@ -51,10 +51,13 @@ namespace Dev.UI
             _blockMask.enabled = true;
             
             _onCharacterChose?.Invoke(context.Value);
+
+            _onCharacterChose = null;
         }
 
         public void StartChoosingCharacter(Action<CharacterClass> onCharacterChose)
         {
+            ResetSelection();
             _onCharacterChose = onCharacterChose;
             
             Show();
@@ -71,6 +74,14 @@ namespace Dev.UI
             foreach (CharacterPickUI characterPickUi in _characterPickUis)
             {
                 characterPickUi.Highlight(characterPickUi == targetUI);
+            }
+        }
+
+        private void ResetSelection()
+        {
+            foreach (CharacterPickUI characterPickUi in _characterPickUis)
+            {
+                characterPickUi.Highlight(false);
             }
         }
         

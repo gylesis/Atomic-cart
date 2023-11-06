@@ -3,7 +3,7 @@ using Dev.CartLogic;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
-using Dev.Utils;
+using Dev.UI.PopUpsAndMenus;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -154,7 +154,7 @@ namespace Dev.Infrastructure
 
         private void SetEnemiesFreezeState(bool toFreeze)
         {
-            foreach (Player player in _playersSpawner.Players)
+            foreach (PlayerCharacter player in _playersSpawner.Players)
             {
                 player.PlayerController.AllowToMove = !toFreeze;
                 player.PlayerController.AllowToShoot = !toFreeze;
@@ -163,9 +163,9 @@ namespace Dev.Infrastructure
 
         private void RespawnAllPlayers()
         {
-            foreach (Player player in _playersSpawner.Players)
+            foreach (PlayerCharacter player in _playersSpawner.Players)
             {
-                _playersSpawner.RespawnPlayer(player.Object.InputAuthority);
+                _playersSpawner.RespawnPlayerCharacter(player.Object.InputAuthority);
             }
         }
     }

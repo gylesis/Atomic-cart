@@ -15,6 +15,7 @@ namespace Dev
 
         private Transform _target;
         private GameSettings _gameSettings;
+        private bool _toFollow;
 
         public void SetupTarget(Transform target)
         {
@@ -23,7 +24,7 @@ namespace Dev
 
         private void Start()
         {
-            _gameSettings = DependenciesContainer.Instance.GetDependency<GameSettings>();
+            _gameSettings = GameSettingProvider.GameSettings;
         }
 
         public override void Spawned()
@@ -32,7 +33,7 @@ namespace Dev
             {
                 DependenciesContainer.Instance.GetDependency<CameraService>().SetMainCameraState(false);
 
-                SetupTarget(Player.LocalPlayer.transform);
+                SetupTarget(PlayerCharacter.LocalPlayerCharacter.transform);
             }
             else
             {
@@ -40,6 +41,16 @@ namespace Dev
             }
         }
 
+        public void SetFollowState(bool toFollow)
+        {
+            _toFollow = toFollow;
+        }
+
+        public void FastSetOnTarget()
+        {
+            transform.position = _target.position;
+        }
+        
         public override void Render()
         {
             if (HasInputAuthority == false) return;
@@ -49,15 +60,12 @@ namespace Dev
             FollowTarget();
         }
 
-        private void Update()
-        {
-            FollowTarget();
-        }
-
         private void FollowTarget()
         {
+            if(_toFollow == false) return;
+            
             if (_target == null) return;
-
+            
             transform.position = Vector3.Lerp(transform.position, _target.position, Time.deltaTime * _followSpeed);
         }
     }

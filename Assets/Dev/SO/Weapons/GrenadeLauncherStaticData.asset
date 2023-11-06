@@ -15,7 +15,7 @@ MonoBehaviour:
   _weaponType: 2
   _weaponPrefab: {fileID: 500056703753904321, guid: 56e7fc85cb862f04bac76f277fb498e9, type: 3}
   _bulletMaxDistance: 10
-  _cooldown: 2
+  _cooldown: 1
   _minDamage: 60
   _maxDamage: 70
   _projectileSpeed: 1550

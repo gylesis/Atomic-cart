@@ -1,7 +1,7 @@
 ﻿using UniRx;
 using UnityEngine;
 
-namespace Dev.UI
+namespace Dev.UI.PopUpsAndMenus
 {
     public class LobbyMainMenu : PopUp
     {

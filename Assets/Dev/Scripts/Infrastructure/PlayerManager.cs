@@ -7,8 +7,8 @@ namespace Dev.Infrastructure
 {
     public class PlayerManager : MonoBehaviour
     {
-        private static List<Player> _allPlayers = new List<Player>();
-        public static List<Player> AllPlayers => _allPlayers;
+        private static List<PlayerCharacter> _allPlayers = new List<PlayerCharacter>();
+        public static List<PlayerCharacter> AllPlayers => _allPlayers;
 
         //private static Queue<Player> _playerQueue = new Queue<Player>();
         public static Queue<PlayerRef> PlayerQueue = new Queue<PlayerRef>();
@@ -19,36 +19,38 @@ namespace Dev.Infrastructure
             PlayerQueue.Enqueue(playerRef);
         }
 
-        public static void AddPlayer(Player player)
+        public static void AddPlayer(PlayerCharacter playerCharacter)
         {
+            return;
             //Debug.Log("Player Added");
 
             int insertIndex = _allPlayers.Count;
             // Sort the player list when adding players
             for (int i = 0; i < _allPlayers.Count; i++)
             {
-                if (_allPlayers[i].Id > player.Id)
+                if (_allPlayers[i].Id > playerCharacter.Id)
                 {
                     insertIndex = i;
                     break;
                 }
             }
 
-            _allPlayers.Insert(insertIndex, player);
+            _allPlayers.Insert(insertIndex, playerCharacter);
             // _playerQueue.Enqueue(player);
         }
 
-        public static void RemovePlayer(Player player)
+        public static void RemovePlayer(PlayerCharacter playerCharacter)
         {
-            if (player == null || !_allPlayers.Contains(player))
+            return;
+            if (playerCharacter == null || !_allPlayers.Contains(playerCharacter))
                 return;
 
-            Debug.Log("Player Removed " + player.Id);
+            Debug.Log("Player Removed " + playerCharacter.Id);
 
-            _allPlayers.Remove(player);
+            _allPlayers.Remove(playerCharacter);
         }
 
-        public static Player Get(PlayerRef playerRef)
+        public static PlayerCharacter Get(PlayerRef playerRef)
         {
             for (int i = _allPlayers.Count - 1; i >= 0; i--)
             {

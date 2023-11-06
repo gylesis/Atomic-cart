@@ -32,13 +32,13 @@ namespace Dev.Weapons.Guns
         private void PushForcePlayer(Vector2 direction) // TODO temp, need better way to apply this
         {
             NetworkObject networkObject = Runner.GetPlayerObject(Object.InputAuthority);
-            Player player = networkObject.GetComponent<Player>();
+            PlayerCharacter playerCharacter = networkObject.GetComponent<PlayerCharacter>();
 
-            player.Rigidbody.velocity = -direction * FirePushPower;
+            playerCharacter.Rigidbody.velocity = -direction * FirePushPower;
             // player.Rigidbody.AddForce(-direction * _firePushPower, ForceMode2D.Impulse);
-            player.PlayerController.AllowToMove = false;
+            playerCharacter.PlayerController.AllowToMove = false;
             Observable.Timer(TimeSpan.FromSeconds(0.5f))
-                .Subscribe((l => { player.PlayerController.AllowToMove = true; }));
+                .Subscribe((l => { playerCharacter.PlayerController.AllowToMove = true; }));
         }
 
         protected override void SpawnVFXOnDestroyProjectile(Projectile projectile)

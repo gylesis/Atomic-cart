@@ -31,7 +31,7 @@ namespace Dev.Levels
             {
                 foreach (LagCompensatedHit hit in hits)
                 {
-                    var isPlayer = hit.GameObject.TryGetComponent<Player>(out var player);
+                    var isPlayer = hit.GameObject.TryGetComponent<PlayerCharacter>(out var player);
 
                     if (isPlayer)
                     {
@@ -41,9 +41,9 @@ namespace Dev.Levels
             }
         }
 
-        private void OnPlayerHit(Player player)
+        private void OnPlayerHit(PlayerCharacter playerCharacter)
         {
-            PlayerRef target = player.Object.InputAuthority;
+            PlayerRef target = playerCharacter.Object.InputAuthority;
             
             PlayersHealthService.Instance.ApplyDamageFromServer(target, _damage);
         }

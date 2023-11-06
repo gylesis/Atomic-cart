@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev.PlayerLogic
 {
@@ -6,7 +7,7 @@ namespace Dev.PlayerLogic
     public class CharacterData : ScriptableObject
     {
         public CharacterClass CharacterClass;
-        public Player PlayerPrefab;
+        [FormerlySerializedAs("PlayerPrefab")] public PlayerCharacter _playerCharacterPrefab;
 
         public Sprite CharacterIcon;
 

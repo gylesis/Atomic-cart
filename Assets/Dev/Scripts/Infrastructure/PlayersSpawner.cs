@@ -4,7 +4,9 @@ using System.Linq;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Weapons;
+using Dev.Weapons.StaticData;
 using Fusion;
 using UniRx;
 using Unity.Mathematics;
@@ -18,18 +20,22 @@ namespace Dev.Infrastructure
     {
         [SerializeField] private InputService _inputServicePrefab;
         [SerializeField] private CameraController _cameraControllerPrefab;
+        [SerializeField] private PlayerBase _playerBasePrefab;
 
-        [Networked] public int PlayersCount { get; set; }
+        public Subject<PlayerSpawnEventContext> PlayerSpawned { get; } = new Subject<PlayerSpawnEventContext>();
+        public Subject<PlayerSpawnEventContext> CharacterSpawned { get; } = new Subject<PlayerSpawnEventContext>();
+        public Subject<PlayerRef> CharacterDeSpawned { get; } = new Subject<PlayerRef>();
+        public Subject<PlayerRef> PlayerDeSpawned { get; } = new Subject<PlayerRef>();
+        public Dictionary<PlayerRef, List<NetworkObject>> PlayerServices => _playerServices;
+        [Networked] private NetworkDictionary<PlayerRef, PlayerBase> PlayersBase { get; }
 
-        public Subject<PlayerSpawnEventContext> Spawned { get; } = new Subject<PlayerSpawnEventContext>();
-        public Subject<PlayerRef> DeSpawned { get; } = new Subject<PlayerRef>();
+        public List<PlayerCharacter> Players => PlayersBase.Select(x => x.Value.PlayerCharacterInstance).ToList();
+
+        public int PlayersCount => PlayersBase.Count;
 
         private Dictionary<PlayerRef, List<NetworkObject>> _playerServices =
             new Dictionary<PlayerRef, List<NetworkObject>>();
 
-        [Networked, Capacity(10)] public NetworkLinkedList<Player> Players { get; }
-
-//        public IReadOnlyCollection<Player> Players => _players.Values;
         private TeamsService _teamsService;
         private PopUpService _popUpService;
         private CharactersDataContainer _charactersDataContainer;
@@ -45,14 +51,14 @@ namespace Dev.Infrastructure
             _teamsService = teamsService;
         }
 
-        public void SpawnPlayerByCharacterClass(NetworkRunner runner, PlayerRef playerRef)
+        public void ChooseCharacterClass(PlayerRef playerRef)
         {
             RPC_GetCharacterClassAndSpawn(playerRef);
         }
 
         [Rpc]
         private void RPC_GetCharacterClassAndSpawn([RpcTarget] PlayerRef playerRef)
-        {   
+        {
             _popUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
 
             characterChooseMenu.StartChoosingCharacter((characterClass =>
@@ -75,65 +81,126 @@ namespace Dev.Infrastructure
             SpawnPlayer(playerRef, characterClass, networkRunner);
         }
 
-        public Player SpawnPlayer(PlayerRef playerRef, CharacterClass characterClass, NetworkRunner networkRunner)
+        public PlayerCharacter SpawnPlayer(PlayerRef playerRef, CharacterClass characterClass,
+            NetworkRunner networkRunner,
+            bool firstSpawn = true)
         {
-            AssignTeam(playerRef);
+            if (firstSpawn)
+            {
+                AssignTeam(playerRef);
+
+                PlayerBase playerBase = networkRunner.Spawn(_playerBasePrefab, null, null, playerRef);
+                playerBase.Object.AssignInputAuthority(playerRef);
+
+                RPC_AddPlayer(playerRef, playerBase);
+            }
+            else
+            {
+                DespawnPlayer(playerRef, false);
+            }
 
             CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(characterClass);
 
-            Player playerPrefab = characterData.PlayerPrefab;
+            PlayerCharacter playerCharacterPrefab = characterData._playerCharacterPrefab;
 
             TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
-            Vector3 spawnPos = GetSpawnPos(teamSide);
+            Vector3 spawnPos = GetSpawnPosByTeam(teamSide);
 
-            Player player = networkRunner.Spawn(playerPrefab, spawnPos,
+            PlayerCharacter playerCharacter = networkRunner.Spawn(playerCharacterPrefab, spawnPos,
                 quaternion.identity, playerRef);
-            
-            NetworkObject playerNetObj = player.Object;
+
+            NetworkObject playerNetObj = playerCharacter.Object;
+
+            PlayersBase[playerRef].PlayerCharacterInstance = playerCharacter;
 
             playerNetObj.RequestStateAuthority();
             playerNetObj.AssignInputAuthority(playerRef);
             networkRunner.SetPlayerObject(playerRef, playerNetObj);
 
-            RPC_AddPlayer(player);
-                
-            PlayerManager.AddPlayer(player);
-            
-            player.PlayerController.RPC_Init(characterData.CharacterStats.MoveSpeed,
+            PlayerManager.AddPlayer(playerCharacter);
+
+            playerCharacter.PlayerController.RPC_Init(characterData.CharacterStats.MoveSpeed,
                 characterData.CharacterStats.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
 
-            player.PlayerController.AllowToMove = true;
-            player.PlayerController.AllowToShoot = true;
-            
-            player.Init(characterClass);
+            playerCharacter.PlayerController.AllowToMove = true;
+            playerCharacter.PlayerController.AllowToShoot = true;
 
-            _playerServices.Add(playerRef, new List<NetworkObject>());
+            playerCharacter.Init(characterClass);
 
-            SetInputService(playerRef, networkRunner);
-            SetCamera(playerRef, player, networkRunner);
+            if (firstSpawn)
+            {
+                _playerServices.Add(playerRef, new List<NetworkObject>());
+
+                SetInputService(playerRef, networkRunner);
+                SetCamera(playerRef, playerCharacter, networkRunner);
+            }
+            else
+            {
+                UpdatePlayerCharacter(playerCharacter, playerRef);
+                CameraController cameraController = GetPlayerCameraController(playerRef);
+                cameraController.FastSetOnTarget();
+                cameraController.SetFollowState(true);
+            }
 
             var playerName = $"Player №{playerNetObj.InputAuthority.PlayerId}";
-            player.RPC_SetName(playerName);
-
-            PlayersCount++;
+            playerCharacter.RPC_SetName(playerName);
 
             //RespawnPlayer(playerRef);
 
-            RPC_OnPlayerSpawnedInvoke(player);
+            RPC_OnPlayerSpawnedInvoke(playerCharacter);
 
-            LoadWeapon(player);
+            //LoadWeapon(player);
 
             ColorTeamBanner(playerRef);
 
-            return player;
+            return playerCharacter;
+        }
+
+        public void DespawnPlayer(PlayerRef playerRef, bool isLeftFromSession)
+        {
+            PlayerCharacter playerCharacter = GetPlayer(playerRef);
+
+            Runner.Despawn(playerCharacter.Object);
+
+            CharacterDeSpawned.OnNext(playerRef);
+
+            GetPlayerCameraController(playerRef).SetFollowState(false);
+
+            if (isLeftFromSession)
+            {
+                var playerServices = FindObjectsOfType<PlayerService>(true);
+                for (var index = playerServices.Length - 1; index >= 0; index--)
+                {
+                    PlayerService service = playerServices[index];
+                    if (service.Object.InputAuthority == playerRef)
+                    {
+                        Runner.Despawn(service.Object);
+                        Destroy(service.gameObject);
+                        Debug.Log($"Despawned service {service.name}", service);
+                    }
+                }
+
+                _teamsService.RemoveFromTeam(playerRef);
+
+                PlayersBase.Remove(playerRef);
+            }
+
+            PlayerManager.RemovePlayer(playerCharacter);
+        }
+
+        private void UpdatePlayerCharacter(PlayerCharacter character, PlayerRef playerRef)
+        {
+            CameraController cameraController = GetPlayerCameraController(playerRef);
+
+            cameraController.SetupTarget(character.transform);
         }
 
         [Rpc]
-        private void RPC_AddPlayer(Player player)
+        private void RPC_AddPlayer(PlayerRef playerRef, PlayerBase playerBase)
         {
-            Players.Add(player);
+            PlayersBase.Add(playerRef, playerBase);
         }
-        
+
         private void ColorTeamBanner(PlayerRef playerRef)
         {
             TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
@@ -154,20 +221,12 @@ namespace Dev.Infrastructure
             GetPlayer(playerRef).PlayerView.RPC_SetTeamColor(color);
         }
 
-        public Player GetPlayer(PlayerRef playerRef)
-        {
-            return Players.First(x => x.Id == playerRef);
-        }
-        
-        
-        private void LoadWeapon(Player player)
-        {
-            //  var weaponSetupContext = new WeaponSetupContext("AkWeapon");
-            //  player.WeaponController.Init(weaponSetupContext);
-        }
-
         private void AssignTeam(PlayerRef playerRef)
         {
+            bool doPlayerHasTeam = _teamsService.DoPlayerHasTeam(playerRef);
+
+            if (doPlayerHasTeam) return;
+
             TeamSide teamSide = TeamSide.Blue;
 
             if (PlayersCount % 2 == 0)
@@ -178,71 +237,39 @@ namespace Dev.Infrastructure
             _teamsService.AssignForTeam(playerRef, teamSide);
         }
 
-        private void SetCamera(PlayerRef playerRef, Player player, NetworkRunner networkRunner)
+        private void SetCamera(PlayerRef playerRef, PlayerCharacter playerCharacter, NetworkRunner networkRunner)
         {
-            CameraController cameraController = networkRunner.Spawn(_cameraControllerPrefab, player.transform.position,
+            CameraController cameraController = networkRunner.Spawn(_cameraControllerPrefab,
+                playerCharacter.transform.position,
                 Quaternion.identity,
                 playerRef);
 
+            cameraController.SetFollowState(true);
             cameraController.Object.RequestStateAuthority();
             _playerServices[playerRef].Add(cameraController.Object);
         }
 
         private void SetInputService(PlayerRef playerRef, NetworkRunner networkRunner)
         {
-            InputService inputService = networkRunner.Spawn(_inputServicePrefab, Vector3.zero, Quaternion.identity, playerRef);
+            InputService inputService =
+                networkRunner.Spawn(_inputServicePrefab, Vector3.zero, Quaternion.identity, playerRef);
 
             inputService.Object.RequestStateAuthority();
 
             _playerServices[playerRef].Add(inputService.Object);
         }
 
-        public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;
-
-        public void DespawnPlayer(PlayerRef playerRef)
-        {
-            PlayerLeft(playerRef);
-        }
-
         public void SetPlayerActiveState(PlayerRef playerRef, bool isOn)
         {
-            Player player = GetPlayer(playerRef);
+            PlayerCharacter playerCharacter = GetPlayer(playerRef);
 
-            player.gameObject.SetActive(isOn);
+            playerCharacter.gameObject.SetActive(isOn);
 
-            player.PlayerController.AllowToMove = isOn;
-            player.PlayerController.AllowToShoot = isOn;
+            playerCharacter.PlayerController.AllowToMove = isOn;
+            playerCharacter.PlayerController.AllowToShoot = isOn;
         }
 
-        public void PlayerLeft(PlayerRef playerRef)
-        {
-            Player player = GetPlayer(playerRef);
-            
-            Runner.Despawn(player.Object);
-
-            DeSpawned.OnNext(playerRef);
-
-            var playerServices = FindObjectsOfType<PlayerService>(true);
-
-            for (var index = playerServices.Length - 1; index >= 0; index--)
-            {
-                PlayerService service = playerServices[index];
-                if (service.Object.InputAuthority == playerRef)
-                {
-                    Runner.Despawn(service.Object);
-                    Destroy(service.gameObject);
-                    Debug.Log($"Despawned service {service.name}", service);
-                }   
-            }
-
-            PlayerManager.RemovePlayer(player);
-            
-            _teamsService.RemoveFromTeam(playerRef);
-            Players.Remove(player);
-            PlayersCount--;
-        }
-
-        public void RespawnPlayer(PlayerRef playerRef)
+        public void RespawnPlayerCharacter(PlayerRef playerRef)
         {
             _playersHealthService.RestorePlayerHealth(playerRef);
 
@@ -252,19 +279,42 @@ namespace Dev.Infrastructure
 
             SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
-            Player player = GetPlayer(playerRef);
+            PlayerCharacter playerCharacter = GetPlayer(playerRef);
 
-            player.RPC_SetPos(spawnPoint.transform.position);
+            playerCharacter.RPC_SetPos(spawnPoint.transform.position);
 
-            player.PlayerController.AllowToMove = true;
-            player.PlayerController.AllowToShoot = true;
+            playerCharacter.PlayerController.AllowToMove = true;
+            playerCharacter.PlayerController.AllowToShoot = true;
 
-            player.HitboxRoot.HitboxRootActive = true;
+            playerCharacter.HitboxRoot.HitboxRootActive = true;
 
             ColorTeamBanner(playerRef);
         }
 
-        public Vector3 GetSpawnPos(TeamSide teamSide)
+        private void LoadWeapon(PlayerCharacter playerCharacter)
+        {
+            var weaponSetupContext = new WeaponSetupContext(WeaponType.Rifle);
+            playerCharacter.WeaponController.Init(weaponSetupContext);
+        }
+
+        public PlayerCharacter GetPlayer(PlayerRef playerRef)
+        {
+            return PlayersBase[playerRef].PlayerCharacterInstance;
+        }
+
+        public CameraController GetPlayerCameraController(PlayerRef playerRef)
+        {
+            List<NetworkObject> playerService = _playerServices[playerRef];
+
+            CameraController cameraController = playerService.First(x => x.GetComponent<CameraController>() != null)
+                .GetComponent<CameraController>();
+
+            return cameraController;
+        }
+
+        public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;
+
+        public Vector3 GetSpawnPosByTeam(TeamSide teamSide)
         {
             var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(teamSide);
 
@@ -274,16 +324,15 @@ namespace Dev.Infrastructure
         }
 
         [Rpc]
-        private void RPC_OnPlayerSpawnedInvoke(Player player)
+        private void RPC_OnPlayerSpawnedInvoke(PlayerCharacter playerCharacter)
         {
             var spawnEventContext = new PlayerSpawnEventContext();
-            spawnEventContext.PlayerRef = player.Object.InputAuthority;
-            spawnEventContext.Transform = player.transform;
-            spawnEventContext.CharacterClass = player.CharacterClass;
+            spawnEventContext.PlayerRef = playerCharacter.Object.InputAuthority;
+            spawnEventContext.Transform = playerCharacter.transform;
+            spawnEventContext.CharacterClass = playerCharacter.CharacterClass;
 
-           // Debug.Log($"[RPC] Player spawned");
-            Spawned.OnNext(spawnEventContext);
+            // Debug.Log($"[RPC] Player spawned");
+            PlayerSpawned.OnNext(spawnEventContext);
         }
-
     }
 }

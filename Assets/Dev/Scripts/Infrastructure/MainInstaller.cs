@@ -2,7 +2,9 @@
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
+using Fusion;
 using UnityEngine;
 using Zenject;
 
@@ -29,6 +31,8 @@ namespace Dev.Infrastructure
         
         public override void InstallBindings()
         {
+            Container.Bind<NetworkRunner>().FromInstance(FindObjectOfType<NetworkRunner>()).AsSingle();
+            
             Container.Bind<DependenciesContainer>().AsSingle().NonLazy();
 
             Container.Bind<JoysticksContainer>().FromInstance(_joysticksContainer).AsSingle();
@@ -38,7 +42,8 @@ namespace Dev.Infrastructure
             Container.Bind<LevelService>().FromInstance(_levelService).AsSingle();
 
             Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
-            
+
+            Container.Bind<PlayerCharacterClassChangeService>().AsSingle().NonLazy();
             Container.Bind<PlayersSpawner>().FromInstance(_playersSpawner).AsSingle();
             Container.Bind<PlayersHealthService>().FromInstance(_playersHealthService).AsSingle();
             Container.Bind<PlayersDataService>().FromInstance(_playersDataService).AsSingle();

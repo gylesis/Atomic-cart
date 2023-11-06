@@ -22,7 +22,7 @@ namespace Dev.Weapons
 
         public int WeaponsAmount => Weapons.Count;
 
-        private Player _player;
+        private PlayerCharacter _playerCharacter;
         private WeaponProvider _weaponProvider;
 
         public bool AllowToShoot { get; private set; } = true;

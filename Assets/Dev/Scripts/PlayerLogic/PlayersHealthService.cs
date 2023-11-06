@@ -81,8 +81,8 @@ namespace Dev.PlayerLogic
 
             //if (Runner.IsSharedModeMasterClient == false) return;
 
-            _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
-            _playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
 
         private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
@@ -183,12 +183,12 @@ namespace Dev.PlayerLogic
 
         private void OnPlayerHealthZero(PlayerRef playerRef, PlayerRef owner)
         {
-            Player player = _playersSpawner.GetPlayer(playerRef);
-            player.RPC_DoScale(0.5f, 0f);
+            PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
+            playerCharacter.RPC_DoScale(0.5f, 0f);
 
-            player.PlayerController.AllowToMove = false;
-            player.PlayerController.AllowToShoot = false;
-            player.HitboxRoot.HitboxRootActive = false;
+            playerCharacter.PlayerController.AllowToMove = false;
+            playerCharacter.PlayerController.AllowToShoot = false;
+            playerCharacter.HitboxRoot.HitboxRootActive = false;
 
             var playerDieEventContext = new PlayerDieEventContext();
             playerDieEventContext.Killer = owner;
@@ -198,17 +198,17 @@ namespace Dev.PlayerLogic
 
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe((l =>
             {
-                _playersSpawner.RespawnPlayer(playerRef);
+                _playersSpawner.RespawnPlayerCharacter(playerRef);
 
-                player.RPC_DoScale(0);
+                playerCharacter.RPC_DoScale(0);
             }));
         }
 
         public void RestorePlayerHealth(PlayerRef playerRef)
         {
-            Player player = _playersSpawner.GetPlayer(playerRef);
+            PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
 
-            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(player.CharacterClass);
+            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(playerCharacter.CharacterClass);
 
             GainHealthToPlayer(playerRef, characterData.CharacterStats.Health);
         }
@@ -217,9 +217,9 @@ namespace Dev.PlayerLogic
         {
             Debug.Log($"Gained {health} HP for player {playerRef}");
 
-            Player player = _playersSpawner.GetPlayer(playerRef);
+            PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
 
-            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(player.CharacterClass);
+            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(playerCharacter.CharacterClass);
 
             int maxHealth = characterData.CharacterStats.Health;
             

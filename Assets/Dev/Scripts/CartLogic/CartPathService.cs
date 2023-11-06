@@ -60,16 +60,14 @@ namespace Dev.CartLogic
             }
 
             _teamsService = DependenciesContainer.Instance.GetDependency<TeamsService>();
-
         }
-
         
         protected override void ServerSubscriptions()
         {
             base.ServerSubscriptions();
             
             PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
-            playersSpawner.DeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
+            playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
 
             _cart.CartZoneEntered.TakeUntilDestroy(this).Subscribe((OnCartZoneEntered));
             _cart.CartZoneExit.TakeUntilDestroy(this).Subscribe((OnCartZoneExit));

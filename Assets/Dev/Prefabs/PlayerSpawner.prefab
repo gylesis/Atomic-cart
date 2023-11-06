@@ -46,12 +46,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  _movementJoystick: {fileID: 0}
-  _aimJoystick: {fileID: 0}
+  _IsActive:
+    _value: 1
   _inputServicePrefab: {fileID: 1635452602249562799, guid: f7a4c767232407047baaa9b171c8cc8e, type: 3}
-  _playerPrefab: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
   _cameraControllerPrefab: {fileID: 9126124020303095820, guid: 94201544f6927c34aa5c7eb3f9ebb959, type: 3}
-  _PlayersCount: 0
+  _playerBasePrefab: {fileID: 4065643546084726696, guid: 3355f15df617eae42a11bfc06e3c3653, type: 3}
 --- !u!114 &1161691534502274921
 MonoBehaviour:
   m_ObjectHideFlags: 0

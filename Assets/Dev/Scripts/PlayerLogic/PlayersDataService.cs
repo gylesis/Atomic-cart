@@ -30,7 +30,7 @@ namespace Dev.PlayerLogic
 
         private void Start()
         {
-            _playersSpawner.Spawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
 
         public string GetNickname(PlayerRef playerRef)

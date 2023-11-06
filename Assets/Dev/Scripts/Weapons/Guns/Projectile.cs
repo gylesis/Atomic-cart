@@ -102,7 +102,7 @@ namespace Dev.Weapons.Guns
                         break;
                     }
 
-                    var isPlayer = hit.GameObject.TryGetComponent<Player>(out var player);
+                    var isPlayer = hit.GameObject.TryGetComponent<PlayerCharacter>(out var player);
 
                     if (isPlayer)
                     {
@@ -136,12 +136,12 @@ namespace Dev.Weapons.Guns
             ObstaclesManager.Instance.ApplyDamageToObstacle(shooter, obstacleWithHealth, damage);
         }
 
-        protected virtual void ApplyHitToPlayer(Player player)
+        protected virtual void ApplyHitToPlayer(PlayerCharacter playerCharacter)
         {
-            ApplyDamage(player, _owner, _damage);
+            ApplyDamage(playerCharacter, _owner, _damage);
         }
 
-        protected void ApplyDamage(Player target, PlayerRef shooter, int damage)
+        protected void ApplyDamage(PlayerCharacter target, PlayerRef shooter, int damage)
         {
             PlayersHealthService.Instance.ApplyDamage(target.Object.InputAuthority, shooter, damage);
         }
@@ -158,11 +158,11 @@ namespace Dev.Weapons.Guns
             return hits.Count > 0;
         }
 
-        protected void ApplyForceToPlayer(Player player, Vector2 forceDirection, float forcePower)
+        protected void ApplyForceToPlayer(PlayerCharacter playerCharacter, Vector2 forceDirection, float forcePower)
         {
-            Debug.DrawRay(player.transform.position, forceDirection * forcePower, Color.blue, 5f);
+            Debug.DrawRay(playerCharacter.transform.position, forceDirection * forcePower, Color.blue, 5f);
 
-            player.Rigidbody.AddForce(forceDirection * forcePower, ForceMode2D.Impulse);
+            playerCharacter.Rigidbody.AddForce(forceDirection * forcePower, ForceMode2D.Impulse);
         }
 
         protected virtual void OnDrawGizmos()

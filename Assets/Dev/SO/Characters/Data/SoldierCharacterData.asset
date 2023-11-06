@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SoldierCharacterData
   m_EditorClassIdentifier: 
   CharacterClass: 0
-  PlayerPrefab: {fileID: 4231941929527526258, guid: ff947a5d341c10544b6374ad8de58a4c, type: 3}
+  _playerCharacterPrefab: {fileID: 4526861717596210487, guid: ff947a5d341c10544b6374ad8de58a4c, type: 3}
   CharacterIcon: {fileID: 21300000, guid: 954ac8e49cbaab748ac81705fefa86d6, type: 3}
   CharacterStats:
     Health: 200

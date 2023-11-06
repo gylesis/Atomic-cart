@@ -7,27 +7,31 @@ namespace Dev.Weapons.Guns
 {
     public class GrenadeProjectile : ExplosiveProjectile
     {
+        [Networked] private float FlyTargetTime { get; set; }
+        
         private Vector2 _originPos;
         private Vector2 _targetPos;
-        private float _flyTargetTime;
 
-        private TickTimer _flyTimer;
+        [Networked] private TickTimer FlyTimer { get; set; }
 
         private bool _hasFlied;
-        private Vector3 _targetSize;
-        private Vector3 _originSize;
+      
+        
+        [Networked] private Vector3 TargetSize {get; set;}
+        [Networked] private Vector3 OriginSize {get; set;}
 
         private TickTimer DetonateTimer;
             
         public void Init(Vector3 moveDirection, float force, int damage, PlayerRef owner, float explosionRadius, Vector2 targetPos, float flyTime)
         {
-            _flyTargetTime = flyTime;
+            FlyTargetTime = flyTime;
             _originPos = transform.position;
             _targetPos = targetPos;
             
-            _flyTimer = TickTimer.CreateFromSeconds(Runner, _flyTargetTime);
-            _targetSize = View.localScale * 2;
-            _originSize = View.localScale;
+            FlyTimer = TickTimer.CreateFromSeconds(Runner, FlyTargetTime);
+            
+            TargetSize = View.localScale * 2;
+            OriginSize = View.localScale;
             
             Init(moveDirection, force, damage, owner, explosionRadius);
         }
@@ -43,11 +47,11 @@ namespace Dev.Weapons.Guns
                 return;
             }
             
-            if(_flyTimer.IsRunning == false) return;
+            if(FlyTimer.IsRunning == false) return;
             
             if(_hasFlied) return;
 
-            if (_flyTimer.Expired(Runner))
+            if (FlyTimer.Expired(Runner))
             {
                 _hasFlied = true;
                 DetonateTimer = TickTimer.CreateFromSeconds(Runner, 1.5f);
@@ -59,20 +63,29 @@ namespace Dev.Weapons.Guns
 
         private void MoveAlongDirection()
         {
-            if(_flyTimer.IsRunning == false) return;
+            if(FlyTimer.IsRunning == false) return;
             
-            float remainingTime = _flyTimer.RemainingTime(Runner).Value;
+            float remainingTime = FlyTimer.RemainingTime(Runner).Value;
 
-            float t = 1 - (remainingTime / _flyTargetTime);
+            float t = 1 - (remainingTime / FlyTargetTime);
             float value = GameSettingProvider.GameSettings.GrenadeFlyFunction.Evaluate(t);
-
-            float sizeValue = GameSettingProvider.GameSettings.GrenadeFlySizeFunction.Evaluate(t);
-
-            View.localScale = Vector3.Lerp(_originSize, _targetSize, sizeValue);
 
             Vector2 pos = Vector2.Lerp(_originPos, _targetPos, value);
 
             _networkRigidbody2D.Rigidbody.MovePosition(pos);
+        }
+
+        public override void Render()
+        {
+            if(FlyTimer.IsRunning == false) return;
+            
+            float remainingTime = FlyTimer.RemainingTime(Runner).Value;
+
+            float t = 1 - (remainingTime / FlyTargetTime);
+            
+            float sizeValue = GameSettingProvider.GameSettings.GrenadeFlySizeFunction.Evaluate(t);
+
+            View.localScale = Vector3.Lerp(OriginSize, TargetSize, sizeValue);
         }
     }
 }

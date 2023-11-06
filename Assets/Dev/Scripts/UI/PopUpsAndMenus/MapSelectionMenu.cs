@@ -5,7 +5,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev.UI
+namespace Dev.UI.PopUpsAndMenus
 {
     public class MapSelectionMenu : PopUp
     {

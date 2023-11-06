@@ -41,6 +41,11 @@ namespace Dev.PlayerLogic
             return Teams.First();
         }
 
+        public bool DoPlayerHasTeam(PlayerRef playerRef)
+        {
+            return Teams.Any(x => x.HasPlayer(playerRef));
+        }
+        
         public TeamSide GetPlayerTeamSide(PlayerRef playerRef)
         {
             return GetTeamByMember(playerRef).TeamSide;
