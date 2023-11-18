@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77842c219541f5a10014515e3130ea, type: 3}
+  m_Name: PistolStaticData
+  m_EditorClassIdentifier: 
+  _weaponType: 3
+  _weaponPrefab: {fileID: 5401552539073650256, guid: 72807d6fe6787ab4292cad478db34cb7, type: 3}
+  _bulletMaxDistance: 15
+  _cooldown: 0.3
+  _minDamage: 8
+  _maxDamage: 12
+  _projectileSpeed: 1500
+  _projectilePrefab: {fileID: -4585705015197709361, guid: 71867f885506fd340a6759292de3fdb4, type: 3}

@@ -1,6 +1,6 @@
 ﻿namespace Dev.Weapons.Guns
 {
-    public class BulletProjectile : Projectile
+    public class AkBulletProjectile : Projectile
     {
         
     }

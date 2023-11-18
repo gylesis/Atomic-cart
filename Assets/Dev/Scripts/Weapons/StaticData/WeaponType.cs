@@ -4,6 +4,7 @@
     {
         Bazooka = 0,
         Rifle,
-        GrenadeLauncher
+        GrenadeLauncher,
+        Pistol
     }
 }

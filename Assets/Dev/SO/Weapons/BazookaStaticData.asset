@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22b325fca1594d8092755b81020b2d9e, type: 3}
   m_Name: BazookaStaticData
   m_EditorClassIdentifier: 
-  _weaponName: Bazooka
   _weaponType: 0
   _weaponPrefab: {fileID: 6292559310413262657, guid: 789c93015ccd7a74db4f818e69284525, type: 3}
-  _bulletMaxDistance: 12
+  _bulletMaxDistance: 15
   _cooldown: 1.5
   _minDamage: 35
   _maxDamage: 45

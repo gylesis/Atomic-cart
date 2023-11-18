@@ -7,6 +7,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 734887948963446194, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 734887948963446194, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.81
+      objectReference: {fileID: 0}
     - target: {fileID: 1466458761704203568, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: m_Name
       value: AkBulletProjectile
@@ -75,6 +83,22 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: a9b160fe2295a024cb420b629b64d664, type: 3}
+    - target: {fileID: 7829392419607858346, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7829392419607858346, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[1].time
+      value: 0.83216786
+      objectReference: {fileID: 0}
+    - target: {fileID: 7829392419607858346, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.11856079
+      objectReference: {fileID: 0}
+    - target: {fileID: 7829392419607858346, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[1].value
+      value: 0.025763597
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
 --- !u!4 &6733854969783652827 stripped
