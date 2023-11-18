@@ -157,6 +157,7 @@ namespace Dev.PlayerLogic
 
         public override void Render()
         {
+            return;
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);

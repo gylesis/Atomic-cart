@@ -26,4 +26,7 @@ namespace Dev.Weapons.StaticData
 
         public int Damage => Random.Range(_minDamage, _maxDamage + 1);
     }
+    
+    
+    
 }

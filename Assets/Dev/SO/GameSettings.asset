@@ -15,6 +15,10 @@ MonoBehaviour:
   _timeAfterWinGame: 5
   _isFriendlyFireOn: 0
   _cameraZoomModifier: 25
+  _weaponObstaclesDetectLayers:
+    serializedVersion: 2
+    m_Bits: 192
+  _weaponHitDetectionOffset: 1.5
   _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
   _grenadeFlyFunction:
     serializedVersion: 2
