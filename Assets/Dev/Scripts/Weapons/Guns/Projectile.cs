@@ -28,6 +28,8 @@ namespace Dev.Weapons.Guns
 
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
 
+        public float OverlapRadius => _overlapRadius;
+
         private Vector2 _moveDirection;
         private float _force;
         protected int _damage;

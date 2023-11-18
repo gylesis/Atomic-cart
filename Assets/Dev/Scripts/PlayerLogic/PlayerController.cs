@@ -7,6 +7,7 @@ using Dev.Weapons;
 using Fusion;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace Dev.PlayerLogic
 {
@@ -117,9 +118,18 @@ namespace Dev.PlayerLogic
 
         private async void Dash()
         {
-            _dashTimer = TickTimer.CreateFromSeconds(Runner, 0.5f);
-
             float dashTime = 0.5f;
+
+            float dashDistance = 2;
+            
+            _dashTimer = TickTimer.CreateFromSeconds(Runner, dashTime);
+
+            Vector3 targetPos = _playerCharacter.transform.position + (Vector3) LastMoveDirection.normalized * dashDistance;
+
+            
+            
+            
+            
             float stepPerTick = 0.05f;
             int stepsCount = (int)(dashTime / stepPerTick);
 

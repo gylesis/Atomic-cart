@@ -23,6 +23,8 @@ namespace Dev.Weapons.Guns
                 {
                     BazookaProjectile projectile = o.GetComponent<BazookaProjectile>();
 
+                    BulletHitOverlapRadius = projectile.OverlapRadius;
+                    
                     projectile.Init(direction, ProjectileSpeed, Damage, Object.InputAuthority, ExplosionRadius);
 
                     OnProjectileBeforeSpawned(projectile);

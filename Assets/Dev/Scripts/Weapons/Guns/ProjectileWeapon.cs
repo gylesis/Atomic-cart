@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dev.Effects;
 using Dev.Infrastructure;
+using Dev.Utils;
 using Dev.Weapons.StaticData;
 using Fusion;
 using UniRx;
@@ -14,7 +16,6 @@ namespace Dev.Weapons.Guns
     {
         public float ProjectileSpeed => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<TProjectileType>().ProjectileSpeed;
         public Projectile ProjectilePrefab => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<TProjectileType>().ProjectilePrefab;
-
         
         protected List<SpawnedProjectileContext> _aliveProjectiles = new List<SpawnedProjectileContext>();
 
@@ -44,7 +45,7 @@ namespace Dev.Weapons.Guns
 
                 var expired = destroyTimer.ExpiredOrNotRunning(Runner);
                 
-                if (distanceFromOrigin > BulletMaxDistance * BulletMaxDistance)
+                if (distanceFromOrigin > projectileContext.MaxDistance * projectileContext.MaxDistance)
                 {
                     OnProjectileMaxDistanceReached(projectile);
                 }
@@ -68,9 +69,11 @@ namespace Dev.Weapons.Guns
             var projectileContext = new SpawnedProjectileContext();
             projectileContext.Projectile = projectile;
             projectileContext.Origin = projectile.transform.position;
+            projectileContext.MaxDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(ShootPos, ShootDirection, BulletMaxDistance, projectile.OverlapRadius);
 
             _aliveProjectiles.Add(projectileContext);
         }
+        
 
         /// <summary>
         /// Event on Projectile destroy
@@ -132,6 +135,7 @@ namespace Dev.Weapons.Guns
     {
         public Projectile Projectile;
         public Vector3 Origin;
+        public float MaxDistance;
     }
     
 }

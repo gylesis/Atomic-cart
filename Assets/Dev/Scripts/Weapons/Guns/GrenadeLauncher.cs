@@ -1,5 +1,7 @@
-﻿using Dev.Effects;
+﻿using System;
+using Dev.Effects;
 using Dev.Infrastructure;
+using Dev.Utils;
 using Dev.Weapons.StaticData;
 using UnityEngine;
 
@@ -9,7 +11,7 @@ namespace Dev.Weapons.Guns
     {
         public float GrenadeExplosionRadius => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeExplosionRadius;
         public float GrenadeFlyTime => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeFlyTime;
-
+        
         public override void Shoot(Vector2 direction, float power = 1)
         {
             Projectile projectile = Runner.Spawn(ProjectilePrefab, ShootPos, Quaternion.identity,
@@ -17,8 +19,12 @@ namespace Dev.Weapons.Guns
                 {
                     GrenadeProjectile projectile = o.GetComponent<GrenadeProjectile>();
 
-                    Vector2 targetPos = (Vector2) transform.position + (direction * BulletMaxDistance);
+                    BulletHitOverlapRadius = projectile.OverlapRadius;
                     
+                    float maxDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(transform.position, ShootDirection, BulletMaxDistance, projectile.OverlapRadius);
+                    
+                    Vector2 targetPos = (Vector2) transform.position + (direction * maxDistance);
+
                     projectile.Init(direction, ProjectileSpeed, Damage, Object.InputAuthority, GrenadeExplosionRadius,
                           targetPos, GrenadeFlyTime);
 

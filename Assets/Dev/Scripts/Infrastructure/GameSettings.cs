@@ -15,7 +15,9 @@ namespace Dev.Infrastructure
             
         [Header("Player")] 
         [SerializeField] private float _cameraZoomModifier = 15f;
-
+        [SerializeField] private LayerMask _weaponObstaclesDetectLayers;
+        [SerializeField] private float _weaponHitDetectionOffset = 1;
+        
         [Header("Weapon")]
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
         [SerializeField] private AnimationCurve _grenadeFlyFunction;
@@ -33,6 +35,10 @@ namespace Dev.Infrastructure
 
         public bool IsFriendlyFireOn => _isFriendlyFireOn;
         public float CameraZoomModifier => _cameraZoomModifier;
+
+        public LayerMask WeaponObstaclesDetectLayers => _weaponObstaclesDetectLayers;
+
+        public float WeaponHitDetectionOffset => _weaponHitDetectionOffset;
 
         public int TimeAfterWinGame => _timeAfterWinGame;
     }

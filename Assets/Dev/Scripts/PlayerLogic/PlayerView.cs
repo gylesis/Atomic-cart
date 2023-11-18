@@ -1,4 +1,6 @@
 ﻿using Dev.Infrastructure;
+using Dev.Utils;
+using Dev.Weapons.Guns;
 using Fusion;
 using UnityEngine;
 
@@ -58,17 +60,19 @@ namespace Dev.PlayerLogic
             float crosshairColorTarget = _playerCharacter.PlayerController.IsPlayerAiming ? 1 : 0;
 
             Color color = _crosshairSpriteRenderer.color;
-
             color.a = Mathf.Lerp(color.a, crosshairColorTarget, Runner.DeltaTime * 20);
-
             _crosshairSpriteRenderer.color = color;
 
-            Vector3 lookDirection = _playerCharacter.PlayerController.LastLookDirection;
+            Vector3 lookDirection = _playerCharacter.PlayerController.LastLookDirection.normalized;
 
-            float aimDistance = _playerCharacter.WeaponController.CurrentWeapon.BulletMaxDistance + 1;
+            Weapon weapon = _playerCharacter.WeaponController.CurrentWeapon;
+            float aimDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(_playerCharacter.transform.position, weapon.ShootDirection, 
+                weapon.BulletMaxDistance, weapon.BulletHitOverlapRadius + 0.05f);
+
+            Vector3 targetPos = Vector3.zero + lookDirection * aimDistance;
             
             _groundAimTransform.localPosition = Vector3.Lerp(_groundAimTransform.localPosition,
-                Vector3.zero + lookDirection * aimDistance, _aimLerpSpeed * Runner.DeltaTime);
+                targetPos, _aimLerpSpeed * Runner.DeltaTime);
         }
     }
 }

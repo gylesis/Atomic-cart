@@ -29,6 +29,8 @@ namespace Dev.Weapons.Guns
 
         public Vector2 ShootDirection => transform.up;
 
+        public float BulletHitOverlapRadius { get; protected set; } = 0.5f;
+        
         public virtual void StartShoot(float power) { }
         
         /// <summary>
