@@ -19,9 +19,9 @@ namespace Dev.CartLogic
         public Subject<PlayerRef> CartZoneExit { get; } = new Subject<PlayerRef>();
 
 
-        protected override void ServerSubscriptions()
+        protected override void OnSubscriptions()
         {
-            base.ServerSubscriptions();
+            base.OnSubscriptions();
 
             _triggerZone.PlayerEntered.TakeUntilDestroy(this).Subscribe((OnPlayerEnteredCartZone));
             _triggerZone.PlayerExit.TakeUntilDestroy(this).Subscribe((OnPlayerExitCartZone));

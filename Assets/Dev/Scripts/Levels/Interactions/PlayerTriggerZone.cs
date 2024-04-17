@@ -13,9 +13,9 @@ namespace Dev.Levels.Interactions
         public Subject<PlayerCharacter> PlayerEntered { get; } = new Subject<PlayerCharacter>();
         public Subject<PlayerCharacter> PlayerExit { get; } = new Subject<PlayerCharacter>();
 
-        protected override void ServerSubscriptions()
+        protected override void OnSubscriptions()
         {
-            base.ServerSubscriptions();
+            base.OnSubscriptions();
 
             _triggerZone.TriggerEntered.TakeUntilDestroy(this).Subscribe((OnZoneEntered));
             _triggerZone.TriggerExit.TakeUntilDestroy(this).Subscribe((OnZoneExit));

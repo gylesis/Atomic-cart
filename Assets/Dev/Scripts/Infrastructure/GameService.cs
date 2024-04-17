@@ -39,11 +39,11 @@ namespace Dev.Infrastructure
             _playersSpawner = playersSpawner;
         }
 
-        protected override void ServerSubscriptions()
+        protected override void OnSubscriptions()
         {
             LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
 
-            base.ServerSubscriptions();
+            base.OnSubscriptions();
             
             _timeService.GameTimeRanOut.TakeUntilDestroy(this).Subscribe((unit => OnGameTimeRanOut()));
         }

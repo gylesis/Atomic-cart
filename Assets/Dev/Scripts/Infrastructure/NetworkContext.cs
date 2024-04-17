@@ -7,19 +7,17 @@ namespace Dev.Infrastructure
     [RequireComponent(typeof(NetworkObject))]
     public abstract class NetworkContext : NetworkBehaviour
     {
-        [Networked]
-        public NetworkBool IsActive { get; private set; } = true;
+        [Networked] public NetworkBool IsActive { get; private set; } = true;
 
-        public override void Spawned()
+        public override async void Spawned()
         {
             IsActive = true;
             CorrectState();
-            ServerSubscriptions();
+            OnSubscriptions();
         }
 
-        protected virtual void ServerSubscriptions()
+        protected virtual void OnSubscriptions() // TODO rethink
         {
-            if (HasStateAuthority == false) return;
         }
 
         [Rpc]
@@ -28,7 +26,7 @@ namespace Dev.Infrastructure
             IsActive = isActive;
             gameObject.SetActive(isActive);
         }
-        
+
         /// <summary>
         /// Method for restoring state for new clients who connected after changing state happened
         /// </summary>
@@ -126,6 +124,21 @@ namespace Dev.Infrastructure
             else
             {
                 transform.parent = newParent.transform;
+            }
+        }
+
+        [Rpc]
+        public void RPC_SetParentAndSetZero(NetworkObject newParent)
+        {
+            if (newParent == null)
+            {
+                transform.parent = null;
+            }
+            else
+            {
+                transform.parent = newParent.transform;
+                transform.localPosition = Vector3.zero;
+                transform.localRotation = Quaternion.identity;
             }
         }
     }

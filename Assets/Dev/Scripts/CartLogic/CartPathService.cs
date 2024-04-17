@@ -62,9 +62,9 @@ namespace Dev.CartLogic
             _teamsService = DependenciesContainer.Instance.GetDependency<TeamsService>();
         }
         
-        protected override void ServerSubscriptions()
+        protected override void OnSubscriptions()
         {
-            base.ServerSubscriptions();
+            base.OnSubscriptions();
             
             PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
             playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
@@ -101,8 +101,6 @@ namespace Dev.CartLogic
 
         public override void FixedUpdateNetwork()
         {
-            if (HasStateAuthority == false) return;
-
             if (_nextPoint == null) return;
 
             if (_currentPoint == null) return;
