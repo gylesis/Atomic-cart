@@ -53,23 +53,22 @@ namespace Dev.Infrastructure
 
         public void ChooseCharacterClass(PlayerRef playerRef)
         {
-            RPC_GetCharacterClassAndSpawn(playerRef);
+            GetCharacterClassAndSpawn(playerRef);
         }
 
-        [Rpc]
-        private void RPC_GetCharacterClassAndSpawn([RpcTarget] PlayerRef playerRef)
+        private void GetCharacterClassAndSpawn(PlayerRef playerRef)
         {
             _popUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
 
             characterChooseMenu.StartChoosingCharacter((characterClass =>
             {
+                SpawnPlayerByCharacter(characterClass, playerRef, Runner);
+                
                 Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe((l =>
                 {
                     _popUpService.HidePopUp<CharacterChooseMenu>();
                     _popUpService.ShowPopUp<HUDMenu>();
                 }));
-
-                SpawnPlayerByCharacter(characterClass, playerRef, Runner);
             }));
         }
 

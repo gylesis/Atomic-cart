@@ -33,7 +33,7 @@ namespace Dev.Infrastructure
             }
 
             NetworkRunner networkRunner = FindObjectOfType<NetworkRunner>();
-            
+
             if (networkRunner.IsConnectedToServer)
             {
                 _networkRunner.gameObject.SetActive(false);
@@ -47,8 +47,9 @@ namespace Dev.Infrastructure
 
                 startGameArgs.GameMode = GameMode.Shared;
                 startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
-                startGameArgs.Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);;
-                
+                startGameArgs.Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
+                startGameArgs.SessionName = "Test1";
+
                 _networkRunner.StartGame(startGameArgs);
             }
         }
@@ -69,7 +70,7 @@ namespace Dev.Infrastructure
         public void Disconnect()
         {
             Runner.Shutdown();
-            
+
             PlayerManager.AllPlayers.Clear();
             PlayerManager.PlayerQueue.Clear();
 
@@ -78,27 +79,18 @@ namespace Dev.Infrastructure
             SceneManager.LoadScene(0);
         }
 
-        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-            
-        }
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
 
-        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-        }
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
 
         public async void
             OnPlayerJoined(NetworkRunner runner,
-                PlayerRef player) // for new player after lobby started. invokes if game starts from Lobby
+                           PlayerRef player) // for new player after lobby started. invokes if game starts from Lobby
         {
-            if (runner.GameMode == GameMode.Shared)
-            {
-                Debug.Log($"Someone's late connection to the game, spawning {player}");
+            Debug.Log($"Someone's late connection to the game {player}");
 
-                await Task.Delay(2000);
-
-                _playersSpawner.ChooseCharacterClass(player);
-            }
+            // await Task.Delay(2000);
+            // _playersSpawner.ChooseCharacterClass(player);
         }
 
         public async void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -123,22 +115,16 @@ namespace Dev.Infrastructure
 
         public async void OnConnectedToServer(NetworkRunner runner) // invokes if game starts from Main scene
         {
-            if (runner.GameMode == GameMode.Shared)
-            {
-                PlayerRef playerRef = runner.LocalPlayer;
+            PlayerRef playerRef = runner.LocalPlayer;
 
-                Debug.Log($"Someone connected to the game");
-                Debug.Log($"Spawning player... {playerRef}");
+            Debug.Log($"Someone connected to the game, Spawning player... {playerRef}");
 
-                await Task.Delay(2000);
+            await Task.Delay(2000);
 
-                _playersSpawner.ChooseCharacterClass(playerRef);
-            }
+            _playersSpawner.ChooseCharacterClass(playerRef);
         }
 
-        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
-        {
-        }
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
 
         public void OnDisconnectedFromServer(NetworkRunner runner)
         {
@@ -147,7 +133,7 @@ namespace Dev.Infrastructure
         }
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
-            byte[] token) { }
+                                     byte[] token) { }
 
         public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
 
@@ -162,13 +148,10 @@ namespace Dev.Infrastructure
             Debug.Log($"On Host migration");
         }
 
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
-        {
-        }
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key,
+                                           ArraySegment<byte> data) { }
 
-        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-        {
-        }
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 

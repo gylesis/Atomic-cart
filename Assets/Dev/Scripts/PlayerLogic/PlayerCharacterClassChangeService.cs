@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using Fusion;
 
 namespace Dev.PlayerLogic

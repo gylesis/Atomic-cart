@@ -1886,7 +1886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _IsActive:
-    _value: 0
+    _value: 1
   _gameTimeView: {fileID: 101580044}
   _startTime:
     Minutes: 8
@@ -2725,7 +2725,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1234252703
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 264705
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 388949244}
@@ -5716,7 +5716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _IsActive:
-    _value: 0
+    _value: 1
   _playersScoreUI: {fileID: 8403564674100434208}
 --- !u!1 &793678755
 GameObject:
@@ -8543,7 +8543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _IsActive:
-    _value: 0
+    _value: 1
   _CurrentLevel: {fileID: 0}
 --- !u!114 &1139585699
 MonoBehaviour:
@@ -13463,7 +13463,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _IsActive:
-    _value: 0
+    _value: 1
 --- !u!114 &1901119634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14851,7 +14851,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _IsActive:
-    _value: 0
+    _value: 1
 --- !u!114 &2082067709
 MonoBehaviour:
   m_ObjectHideFlags: 0

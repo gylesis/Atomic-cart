@@ -12,15 +12,15 @@ namespace Dev
 
         private bool _init;
 
-        /*private void Awake()
+        private void Awake()
         {
             var startGameArgs = new StartGameArgs();
             startGameArgs.GameMode = GameMode.Shared;
-            startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
+            startGameArgs.Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
             startGameArgs.SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>();
             
             FindObjectOfType<NetworkRunner>().StartGame(startGameArgs);
-        }*/
+        }
 
         public override void Spawned()
         {

@@ -9,6 +9,7 @@ namespace Dev.PlayerLogic
     public class PlayerView : NetworkContext
     {
         [SerializeField] private NetworkMecanimAnimator _networkAnimator;
+        [SerializeField] private Animator _animator;
         [SerializeField] private SpriteRenderer _teamBanner;
 
         [SerializeField] private SpriteRenderer _playerSprite;
@@ -21,18 +22,24 @@ namespace Dev.PlayerLogic
         private static readonly int Move = Animator.StringToHash("Move");
         private PlayerCharacter _playerCharacter;
 
-        [Networked, OnChangedRender(nameof(OnTeamColorChanged))]
+        [Networked]
         private Color TeamColor { get; set; }
+
+        protected override void CorrectState()
+        {
+            base.CorrectState();
+            
+            OnTeamColorChanged();
+        }
 
         public void OnMove(float velocity, bool isRight)
         {
-            _networkAnimator.Animator.SetFloat(Move, velocity);
+            _animator.SetFloat(Move, velocity);
 
-            RPC_SetFlipSide(isRight);
+            SetFlipSide(isRight);
         }
 
-        [Rpc]
-        private void RPC_SetFlipSide(bool isRight)
+        private void SetFlipSide(bool isRight)
         {
             _playerSprite.flipX = isRight;
         }
@@ -46,11 +53,12 @@ namespace Dev.PlayerLogic
         public void RPC_SetTeamColor(Color color)
         {
             TeamColor = color;
+            OnTeamColorChanged();
         }
 
         public override void Render()
         {
-            if(HasInputAuthority == false) return;
+            if(HasStateAuthority == false) return;
             
             if (_playerCharacter == null && PlayerCharacter.LocalPlayerCharacter != null)
             {

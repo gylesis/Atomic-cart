@@ -63,9 +63,14 @@ namespace Dev.PlayerLogic
             _shootThreshold = shootThreshold;
             _speedLowerSpeed = speedLowerVelocity;
         }
-
+        private void Shoot()
+        {
+            _weaponController.TryToFire();
+        }
         public override void FixedUpdateNetwork()
         {
+            if(HasStateAuthority == false) return;
+            
             if (GetInput<PlayerInput>(out var input))
             {
                 MoveDirection = input.MoveDirection;
@@ -115,8 +120,6 @@ namespace Dev.PlayerLogic
                 }
             }
 
-            HandleAnimation();
-
             if (AllowToShoot)
             {
                 AimRotation();
@@ -162,18 +165,7 @@ namespace Dev.PlayerLogic
 
         public override void Render()
         {
-            return;
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
-                scoreMenu.Show();
-            }
-
-            if (Input.GetKeyUp(KeyCode.Tab))
-            {
-                var tryGetPopUp = _popUpService.TryGetPopUp<PlayersScoreMenu>(out var scoreMenu);
-                scoreMenu.Hide();
-            }
+            HandleAnimation();
         }
 
         private void HandleAnimation()
@@ -226,9 +218,5 @@ namespace Dev.PlayerLogic
             _weaponController.AimWeaponTowards(lookDirection);
         }
 
-        private void Shoot()
-        {
-            _weaponController.TryToFire();
-        }
     }
 }

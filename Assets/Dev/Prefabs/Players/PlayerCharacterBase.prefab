@@ -286,7 +286,6 @@ GameObject:
   - component: {fileID: 5544195138406101501}
   - component: {fileID: 898484371}
   - component: {fileID: 898484370}
-  - component: {fileID: 3022034192352184608}
   - component: {fileID: 1681818469465762018}
   m_Layer: 3
   m_Name: View
@@ -326,11 +325,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2041856123
   ObjectInterest: 1
-  Flags: 3073
+  Flags: 265217
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 898484370}
-  - {fileID: 3022034192352184608}
 --- !u!114 &898484370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,30 +343,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
-  _networkAnimator: {fileID: 3022034192352184608}
+  _networkAnimator: {fileID: 0}
+  _animator: {fileID: 1681818469465762018}
   _teamBanner: {fileID: 602764693}
   _playerSprite: {fileID: 522116193}
   _groundAimTransform: {fileID: 8593003832514305729}
   _aimLerpSpeed: 20
   _crosshairSpriteRenderer: {fileID: 1101490638096478652}
---- !u!114 &3022034192352184608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5544195138406101503}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 506319458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Animator: {fileID: 1681818469465762018}
-  TotalWords: 1
-  ApplyTiming: 2
-  SyncSettings: 79
-  StateHashes: 00000000958341e27e40c91f8a18fce4b9abd9d3
-  TriggerHashes: 00000000
 --- !u!95 &1681818469465762018
 Animator:
   serializedVersion: 5
@@ -472,7 +453,7 @@ MonoBehaviour:
     _value: 1
   _shootThreshold: 0.75
   _playerView: {fileID: 898484370}
-  _hitboxRoot: {fileID: 0}
+  _collider2D: {fileID: 7142691939699321184}
   _weaponController: {fileID: 5999655236562569822}
   _playerController: {fileID: 5429065874298734006}
   _rigidbody2D: {fileID: 5544195138823906170}
