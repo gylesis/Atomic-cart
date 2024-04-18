@@ -151,6 +151,10 @@ PrefabInstance:
       value: 3073
       objectReference: {fileID: 0}
     - target: {fileID: 1358422845380553158, guid: 3d52145caad81f54e9779c29cff58bc5, type: 3}
+      propertyPath: SortKey
+      value: 217954992
+      objectReference: {fileID: 0}
+    - target: {fileID: 1358422845380553158, guid: 3d52145caad81f54e9779c29cff58bc5, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
       value: 0
       objectReference: {fileID: 0}
@@ -530,6 +534,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f502fce7268480781436096560c7ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isRoot: 0
   _canvasGroup: {fileID: 176364412944069359}
   _procceedButton: {fileID: 7646975608924659632}
   _smoothFadeInOutDuration: 0.1
@@ -545,20 +550,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 2325983551
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: b7edace9aa985284183895bad1632a2d
   NestedObjects:
   - {fileID: 7369406235520552885}
   - {fileID: 24591243461246021}
   NetworkedBehaviours:
   - {fileID: 5905228270142069005}
-  SimulationBehaviours: []
 --- !u!114 &5905228270142069005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,7 +570,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772f75866005c1b4e8bdd04e1b6588dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _blueTeamScores: {fileID: 2378200464079920554}
@@ -608,6 +606,10 @@ PrefabInstance:
     - target: {fileID: 1358422845380553158, guid: 3d52145caad81f54e9779c29cff58bc5, type: 3}
       propertyPath: Flags
       value: 3073
+      objectReference: {fileID: 0}
+    - target: {fileID: 1358422845380553158, guid: 3d52145caad81f54e9779c29cff58bc5, type: 3}
+      propertyPath: SortKey
+      value: 3384260098
       objectReference: {fileID: 0}
     - target: {fileID: 1358422845380553158, guid: 3d52145caad81f54e9779c29cff58bc5, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]

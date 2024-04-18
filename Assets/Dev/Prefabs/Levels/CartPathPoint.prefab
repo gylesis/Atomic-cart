@@ -130,17 +130,11 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 1844479207
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 329507aaf2403b54fae23deaba2da523
   NestedObjects: []
   NetworkedBehaviours: []
-  SimulationBehaviours: []
 --- !u!114 &848631681657948465
 MonoBehaviour:
   m_ObjectHideFlags: 0

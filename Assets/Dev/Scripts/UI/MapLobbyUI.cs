@@ -76,7 +76,16 @@ namespace Dev.UI
             
             return readyPlayerCount == requiredPlayersCountToStart;
         }
-        
+
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+            
+        }
+
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+        }
+
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
         {
             await Task.Delay(500);
@@ -120,8 +129,13 @@ namespace Dev.UI
             _popUpService.HidePopUp<LobbyPlayMenu>();
             _popUpService.ShowPopUp<MapLobbyMenu>();
             Debug.Log($"{runner.LocalPlayer} Connected to server");
-        }   
-        
+        }
+
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
 
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
@@ -145,6 +159,13 @@ namespace Dev.UI
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
 
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+        {
+        }
+
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
+        {
+        }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 

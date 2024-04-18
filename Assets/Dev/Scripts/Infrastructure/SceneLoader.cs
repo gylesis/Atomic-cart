@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Fusion;
+﻿using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class SceneLoader : NetworkSceneManagerBase
+    public class SceneLoader : NetworkSceneManagerDefault
     {
         [SerializeField] private string _sceneName = "Main";
         
@@ -29,17 +27,17 @@ namespace Dev.Infrastructure
         [ContextMenu(nameof(LoadScene))]
         private void LoadScene()
         {
-            _networkRunner.SetActiveScene(_sceneName);
+            _networkRunner.LoadScene(_sceneName);
         }
 
         public void LoadScene(string sceneName)
         {
             if(SceneManager.GetActiveScene().name == sceneName) return;
             
-            _networkRunner.SetActiveScene(sceneName);
+            _networkRunner.LoadScene(sceneName);
         }
         
-        protected override IEnumerator SwitchScene(SceneRef prevScene, SceneRef newScene,
+        /*protected override IEnumerator SwitchScene(SceneRef prevScene, SceneRef newScene,
             FinishedLoadingDelegate finished)
         {
 //             Debug.Log($"Switching Scene from {prevScene} to {newScene}");
@@ -66,7 +64,7 @@ namespace Dev.Infrastructure
                     _playersSpawner.SetPlayerActiveState(playerRef, false);
                     
                     yield return new WaitForSeconds(0.1f);
-                }*/
+                }#1#
 
                 // yield return new WaitForSeconds(1.5f - PlayerManager.allPlayers.Count * 0.1f);
 
@@ -98,6 +96,6 @@ namespace Dev.Infrastructure
 
             // Debug.Log($"Unloading Scene {0}");
             SceneManager.UnloadSceneAsync(0);
-        }
+        }*/
     }
 }

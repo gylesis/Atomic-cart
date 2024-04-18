@@ -145,6 +145,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4450854567294436220, guid: 18665c1a0a8999546be42c208972dd87, type: 3}
+      propertyPath: Flags
+      value: 264449
+      objectReference: {fileID: 0}
+    - target: {fileID: 4450854567294436220, guid: 18665c1a0a8999546be42c208972dd87, type: 3}
+      propertyPath: SortKey
+      value: 3173261322
+      objectReference: {fileID: 0}
+    - target: {fileID: 4450854567294436220, guid: 18665c1a0a8999546be42c208972dd87, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
       value: 3792764083756931604
       objectReference: {fileID: 0}

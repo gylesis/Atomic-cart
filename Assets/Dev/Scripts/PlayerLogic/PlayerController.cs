@@ -22,11 +22,9 @@ namespace Dev.PlayerLogic
 
         [Networked] public NetworkBool IsPlayerAiming { get; private set; }
 
-        [Networked(OnChanged = nameof(OnAllowToMoveChanged))]
-        public NetworkBool AllowToMove { get; set; } = true;
+        public bool AllowToMove { get; private set; } = true;
 
-        [Networked(OnChanged = nameof(OnAllowToShootChanged))]
-        public NetworkBool AllowToShoot { get; set; } = true;
+        public bool AllowToShoot { get; private set; } = true;
 
         [SerializeField] private float _shiftSpeed = 2;
         [SerializeField] private float _dashTime = 0.5f;
@@ -42,11 +40,20 @@ namespace Dev.PlayerLogic
         [Networked] private Vector2 MoveDirection { get; set; }
 
         private TickTimer _dashTimer;
+        private ChangeDetector _changeDetector;
 
         private void Awake()
         {
             _popUpService = DependenciesContainer.Instance.GetDependency<PopUpService>();
             _joysticksContainer = DependenciesContainer.Instance.GetDependency<JoysticksContainer>();
+        }
+
+
+        public override void Spawned()
+        {
+            _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+
+            base.Spawned();
         }
 
         [Rpc]
@@ -125,10 +132,6 @@ namespace Dev.PlayerLogic
             _dashTimer = TickTimer.CreateFromSeconds(Runner, dashTime);
 
             Vector3 targetPos = _playerCharacter.transform.position + (Vector3) LastMoveDirection.normalized * dashDistance;
-
-            
-            
-            
             
             float stepPerTick = 0.05f;
             int stepsCount = (int)(dashTime / stepPerTick);
@@ -145,14 +148,16 @@ namespace Dev.PlayerLogic
             }
         }
 
-        public static void OnAllowToMoveChanged(Changed<PlayerController> changed)
+        public void SetAllowToMove(bool allowToMove)
         {
-            changed.Behaviour._joysticksContainer.MovementJoystick.gameObject.SetActive(changed.Behaviour.AllowToMove);
+            AllowToMove = allowToMove;
+            _joysticksContainer.MovementJoystick.gameObject.SetActive(AllowToMove);
         }
-
-        public static void OnAllowToShootChanged(Changed<PlayerController> changed)
+        
+        public void SetAllowToShoot(bool allowToShoot)
         {
-            changed.Behaviour._joysticksContainer.AimJoystick.gameObject.SetActive(changed.Behaviour.AllowToShoot);
+            AllowToShoot = allowToShoot;
+            _joysticksContainer.AimJoystick.gameObject.SetActive(AllowToShoot);
         }
 
         public override void Render()

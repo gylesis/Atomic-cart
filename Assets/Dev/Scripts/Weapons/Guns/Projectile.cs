@@ -4,6 +4,7 @@ using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.Utils;
 using Fusion;
+using Fusion.Addons.Physics;
 using UniRx;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace Dev.Weapons.Guns
         /// Do projectile need to register collision while flying?
         /// </summary>
         [SerializeField] private bool _collideWhileMoving;
-        
+
         [Networked] public TickTimer DestroyTimer { get; set; }
 
         public Transform View => _view;
@@ -51,14 +52,14 @@ namespace Dev.Weapons.Guns
 
             _networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
 
-            if(_collideWhileMoving == false) return;
-            
+            if (_collideWhileMoving == false) return;
+
             CheckCollisionsWhileMoving();
         }
 
         private void CheckCollisionsWhileMoving()
         {
-            var overlapSphere = OverlapSphere(transform.position, _overlapRadius, _hitMask, out var hits);
+            var overlapSphere = OverlapCircle(transform.position, _overlapRadius, _hitMask, out var colliders);
 
             if (overlapSphere)
             {
@@ -66,55 +67,61 @@ namespace Dev.Weapons.Guns
 
                 bool needToDestroy = false;
 
-                foreach (LagCompensatedHit hit in hits)
+                foreach (Collider2D collider in colliders)
                 {
-                    var isDamageable = hit.GameObject.TryGetComponent<IDamageable>(out var damagable);
+                    var isDamageable = collider.TryGetComponent<IDamageable>(out var damagable);
 
-                    if (isDamageable == false || damagable is IObstacleDamageable obstacleDamageable)
+                    if (isDamageable)
                     {
-                        bool isStaticObstacle = damagable.Id == -1;
+                        var isPlayer = collider.TryGetComponent<PlayerCharacter>(out var player);
 
-                        bool isObstacleWithHealth = damagable.Id == 0;
-
-                        if (isStaticObstacle)
+                        if (isPlayer)
                         {
-                            OnObstacleHit(damagable as Obstacle);
+                            PlayerRef target = player.Object.InputAuthority;
+
+                            if (target == shooter) continue;
+
+                            ApplyHitToPlayer(player);
+                            needToDestroy = true;
+
+                            break;
+                        }
+                        
+                        if (damagable is IObstacleDamageable obstacleDamageable)
+                        {
+                            bool isStaticObstacle = damagable.Id == -1;
+
+                            if (isStaticObstacle)
+                            {
+                                OnObstacleHit(damagable as Obstacle);
+                            }
+
+                            bool isObstacleWithHealth = damagable.Id == 0;
+
+                            if (isObstacleWithHealth)
+                            {
+                                OnObstacleHit(damagable as Obstacle);
+
+                                ApplyDamageToObstacle(damagable as ObstacleWithHealth, shooter, _damage);
+                            }
+
+                            needToDestroy = true;
+                            break;
                         }
 
-                        if (isObstacleWithHealth)
+                        bool isDummyTarget = damagable.Id == -2;
+
+                        if (isDummyTarget)
                         {
-                            OnObstacleHit(damagable as Obstacle);
+                            DummyTarget dummyTarget = damagable as DummyTarget;
 
-                            ApplyDamageToObstacle(damagable as ObstacleWithHealth, shooter, _damage);
+                            ApplyDamageToDummyTarget(dummyTarget, shooter, _damage);
+                            needToDestroy = true;
+
+                            break;
                         }
-
+                        
                         needToDestroy = true;
-                        break;
-                    }
-
-                    bool isDummyTarget = damagable.Id == -2;
-
-                    if (isDummyTarget)
-                    {
-                        DummyTarget dummyTarget = damagable as DummyTarget;
-
-                        ApplyDamageToDummyTarget(dummyTarget, shooter, _damage);
-                        needToDestroy = true;
-
-                        break;
-                    }
-
-                    var isPlayer = hit.GameObject.TryGetComponent<PlayerCharacter>(out var player);
-
-                    if (isPlayer)
-                    {
-                        PlayerRef target = player.Object.InputAuthority;
-
-                        if (target == shooter) continue;
-
-                        ApplyHitToPlayer(player);
-                        needToDestroy = true;
-
                         break;
                     }
                 }
@@ -153,11 +160,11 @@ namespace Dev.Weapons.Guns
             PlayersHealthService.Instance.ApplyDamage(target, shooter, damage);
         }
 
-        protected bool OverlapSphere(Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
+        protected bool OverlapCircle(Vector3 pos, float radius, LayerMask layerMask, out List<Collider2D> colliders)
         {
-            Extensions.OverlapSphere(Runner, pos, radius, layerMask, out hits);
-            
-            return hits.Count > 0;
+            Extensions.OverlapSphere(Runner, pos, radius, layerMask, out colliders);
+
+            return colliders.Count > 0;
         }
 
         protected void ApplyForceToPlayer(PlayerCharacter playerCharacter, Vector2 forceDirection, float forcePower)

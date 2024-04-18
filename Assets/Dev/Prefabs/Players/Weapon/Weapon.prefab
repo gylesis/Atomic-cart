@@ -77,17 +77,11 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 498746322
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 31b9cc25fad6ed6499bb9090dba1b0d4
   NestedObjects: []
   NetworkedBehaviours: []
-  SimulationBehaviours: []
 --- !u!1 &7452673981185458986
 GameObject:
   m_ObjectHideFlags: 0

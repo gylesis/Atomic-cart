@@ -36,6 +36,15 @@ namespace Dev.Infrastructure
             }
         }
 
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+            
+        }
+
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+        }
+
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
@@ -47,6 +56,9 @@ namespace Dev.Infrastructure
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
 
         public void OnConnectedToServer(NetworkRunner runner) { }
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
+        {
+        }
 
         public void OnDisconnectedFromServer(NetworkRunner runner) { }
 
@@ -62,6 +74,13 @@ namespace Dev.Infrastructure
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
 
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+        {
+        }
+
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
+        {
+        }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 

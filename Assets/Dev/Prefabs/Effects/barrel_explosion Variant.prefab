@@ -56,6 +56,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4450854567294436220, guid: 18665c1a0a8999546be42c208972dd87, type: 3}
+      propertyPath: SortKey
+      value: 1224441702
+      objectReference: {fileID: 0}
+    - target: {fileID: 4450854567294436220, guid: 18665c1a0a8999546be42c208972dd87, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
       value: -6597515725811175427
       objectReference: {fileID: 0}

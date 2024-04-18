@@ -30,7 +30,7 @@ namespace Dev.Weapons.Guns
         {
             Vector3 pos = transform.position;
 
-            var overlapSphere = OverlapSphere(pos, explosionRadius, _hitMask, out var hits);
+            var overlapSphere = OverlapCircle(pos, explosionRadius, _hitMask, out var hits);
 
             if (overlapSphere)
             {
@@ -38,9 +38,9 @@ namespace Dev.Weapons.Guns
 
                 PlayerRef shooter = Object.InputAuthority;
 
-                foreach (LagCompensatedHit hit in hits)
+                foreach (Collider2D collider in hits)
                 {
-                    var isDamageable = hit.GameObject.TryGetComponent<IDamageable>(out var damagable);
+                    var isDamageable = collider.TryGetComponent<IDamageable>(out var damagable);
 
                     if (isDamageable == false || damagable is IObstacleDamageable obstacleDamageable)
                     {
@@ -65,7 +65,7 @@ namespace Dev.Weapons.Guns
                         continue;
                     }
                     
-                    var isPlayer = hit.GameObject.TryGetComponent<PlayerCharacter>(out var player);
+                    var isPlayer = collider.TryGetComponent<PlayerCharacter>(out var player);
 
                     if (isPlayer)
                     {
@@ -73,7 +73,7 @@ namespace Dev.Weapons.Guns
 
                         if (target == shooter) continue;
 
-                        float distance = (hit.GameObject.transform.position - pos).sqrMagnitude;
+                        float distance = (collider.transform.position - pos).sqrMagnitude;
 
                         float damagePower = 1 - distance / maxDistance;
 

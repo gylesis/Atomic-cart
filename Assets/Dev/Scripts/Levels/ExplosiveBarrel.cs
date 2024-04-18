@@ -29,9 +29,9 @@ namespace Dev.Levels
 
             if (overlapSphere)
             {
-                foreach (LagCompensatedHit hit in hits)
+                foreach (Collider2D collider in hits)
                 {
-                    var isPlayer = hit.GameObject.TryGetComponent<PlayerCharacter>(out var player);
+                    var isPlayer = collider.gameObject.TryGetComponent<PlayerCharacter>(out var player);
 
                     if (isPlayer)
                     {

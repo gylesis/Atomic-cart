@@ -88,7 +88,7 @@ namespace Dev.Utils
             return nums.First();
         }
 
-        public static bool OverlapSphere(NetworkRunner runner, Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
+        public static bool OverlapSphereLagCompensate(NetworkRunner runner, Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
         {       
             hits = new List<LagCompensatedHit>();
 
@@ -98,6 +98,19 @@ namespace Dev.Utils
             return hits.Count > 0;
         }
         
+        public static bool OverlapSphere(NetworkRunner runner, Vector3 pos, float radius, LayerMask layerMask, out List<Collider2D> colliders)
+        {       
+            colliders = new List<Collider2D>();
+
+            var contactFilter2D = new ContactFilter2D();
+           // contactFilter2D.layerMask = layerMask;
+           contactFilter2D.useTriggers = true;
+
+            runner.GetPhysicsScene2D().OverlapCircle(pos, radius,contactFilter2D, colliders);
+            
+            return colliders.Count > 0;
+        }
+            
         public static void SetAlpha(this Image image, float targetAlpha)
         {
             Color color = image.color;

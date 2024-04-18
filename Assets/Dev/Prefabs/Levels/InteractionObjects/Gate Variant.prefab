@@ -243,6 +243,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4187852356575476732, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
+      propertyPath: SortKey
+      value: 3479356355
+      objectReference: {fileID: 0}
     - target: {fileID: 6561142299189406347, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
       propertyPath: m_Name
       value: Gate Variant
@@ -292,6 +296,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6561142299826631278, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
+      propertyPath: SortKey
+      value: 506269130
+      objectReference: {fileID: 0}
+    - target: {fileID: 6561142299826631278, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -330,15 +338,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb99710ebd7042aebd8e5bbd60d82d84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _isAutoActive: 0
   _playerTriggerZone: {fileID: 7193221599176694824}
   _IsInteracted:
     _value: 0
-  _obstacles:
-  - {fileID: 0}
+  _obstacles: []
 --- !u!4 &2891441011513739104 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9027105516331612433, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}

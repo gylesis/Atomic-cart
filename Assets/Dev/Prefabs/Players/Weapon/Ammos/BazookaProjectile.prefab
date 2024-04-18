@@ -12,6 +12,10 @@ PrefabInstance:
       value: BazookaProjectile
       objectReference: {fileID: 0}
     - target: {fileID: 1466458761704203570, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: SortKey
+      value: 318698466
+      objectReference: {fileID: 0}
+    - target: {fileID: 1466458761704203570, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -106,25 +110,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c1ce09fc86244df8da41f2306b987af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _view: {fileID: 2963522553916275686}
-  _networkRigidbody2D: {fileID: 615637876952811164}
+  _networkRigidbody2D: {fileID: 1218803072293081345}
   _overlapRadius: 1
   _hitMask:
     serializedVersion: 2
     m_Bits: 200
   _collideWhileMoving: 1
---- !u!114 &615637876952811164 stripped
+--- !u!114 &1218803072293081345 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1466458761704203573, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 880675783536816808, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
   m_PrefabInstance: {fileID: 2076941293848568745}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 615637876952811161}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1779252708, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &2963522553916275686 stripped

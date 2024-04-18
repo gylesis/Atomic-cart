@@ -186,9 +186,9 @@ namespace Dev.PlayerLogic
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
             playerCharacter.RPC_DoScale(0.5f, 0f);
 
-            playerCharacter.PlayerController.AllowToMove = false;
-            playerCharacter.PlayerController.AllowToShoot = false;
-            playerCharacter.HitboxRoot.HitboxRootActive = false;
+            playerCharacter.PlayerController.SetAllowToMove(false);
+            playerCharacter.PlayerController.SetAllowToShoot(false);
+            playerCharacter.Collider2D.enabled = false;
 
             var playerDieEventContext = new PlayerDieEventContext();
             playerDieEventContext.Killer = owner;

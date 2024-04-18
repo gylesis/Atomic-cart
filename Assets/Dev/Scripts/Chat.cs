@@ -1,7 +1,7 @@
 ﻿using System;
 using Dev.Infrastructure;
 using ExitGames.Client.Photon;
-using Photon.Chat;
+//using Photon.Chat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -9,9 +9,9 @@ using Random = UnityEngine.Random;
 
 namespace Dev
 {
-    public class Chat : NetworkContext, IChatClientListener
+    public class Chat : NetworkContext//, IChatClientListener
     {
-        [SerializeField] private string _mainChannelKey;
+        /*[SerializeField] private string _mainChannelKey;
 
         [SerializeField] private ChatAppSettings _chatAppSettings;
         [SerializeField] private TMP_InputField _chatInputField;
@@ -141,6 +141,6 @@ namespace Dev
                 _chatClient.Disconnect();
                 Debug.Log($"OnApplicationQuit disconnect from chat");
             }
-        }
+        }*/
     }
 }

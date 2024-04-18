@@ -122,8 +122,8 @@ namespace Dev.Infrastructure
             playerCharacter.PlayerController.RPC_Init(characterData.CharacterStats.MoveSpeed,
                 characterData.CharacterStats.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
 
-            playerCharacter.PlayerController.AllowToMove = true;
-            playerCharacter.PlayerController.AllowToShoot = true;
+            playerCharacter.PlayerController.SetAllowToMove(true);
+            playerCharacter.PlayerController.SetAllowToShoot(true);
 
             playerCharacter.Init(characterClass);
 
@@ -265,8 +265,8 @@ namespace Dev.Infrastructure
 
             playerCharacter.gameObject.SetActive(isOn);
 
-            playerCharacter.PlayerController.AllowToMove = isOn;
-            playerCharacter.PlayerController.AllowToShoot = isOn;
+            playerCharacter.PlayerController.SetAllowToMove(isOn);
+            playerCharacter.PlayerController.SetAllowToShoot(isOn);
         }
 
         public void RespawnPlayerCharacter(PlayerRef playerRef)
@@ -283,10 +283,10 @@ namespace Dev.Infrastructure
 
             playerCharacter.RPC_SetPos(spawnPoint.transform.position);
 
-            playerCharacter.PlayerController.AllowToMove = true;
-            playerCharacter.PlayerController.AllowToShoot = true;
+            playerCharacter.PlayerController.SetAllowToMove(true);
+            playerCharacter.PlayerController.SetAllowToShoot(true);
 
-            playerCharacter.HitboxRoot.HitboxRootActive = true;
+            playerCharacter.Collider2D.enabled = true;
 
             ColorTeamBanner(playerRef);
         }

@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4187852356575476732, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
+      propertyPath: SortKey
+      value: 131864228
+      objectReference: {fileID: 0}
     - target: {fileID: 6561142299189406347, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
       propertyPath: m_Name
       value: PickableObject Variant
@@ -54,6 +58,10 @@ PrefabInstance:
     - target: {fileID: 6561142299189406349, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6561142299826631278, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
+      propertyPath: SortKey
+      value: 1453744299
       objectReference: {fileID: 0}
     - target: {fileID: 6561142299826631278, guid: 24959678b9470c3478dd60a5b17fe668, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]

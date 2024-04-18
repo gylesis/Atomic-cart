@@ -4932,7 +4932,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4450854567294436220, guid: 18665c1a0a8999546be42c208972dd87, type: 3}
       propertyPath: Flags
-      value: 2305
+      value: 264449
+      objectReference: {fileID: 0}
+    - target: {fileID: 4450854567294436220, guid: 18665c1a0a8999546be42c208972dd87, type: 3}
+      propertyPath: SortKey
+      value: 2963695461
       objectReference: {fileID: 0}
     - target: {fileID: 4450854567294436220, guid: 18665c1a0a8999546be42c208972dd87, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]

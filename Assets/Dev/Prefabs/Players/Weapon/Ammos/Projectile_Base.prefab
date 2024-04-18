@@ -150,8 +150,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1466458761704203575}
   - component: {fileID: 1466458761704203572}
-  - component: {fileID: 1466458761704203573}
   - component: {fileID: 1466458761704203570}
+  - component: {fileID: 880675783536816808}
   m_Layer: 0
   m_Name: Projectile_Base
   m_TagString: Untagged
@@ -197,34 +197,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &1466458761704203573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1466458761704203568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1779252708, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _interpolationDataSource: 2
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 3887251985986394191}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
-  UseLegacySharedModeInterpolation: 0
-  TargetInterpolationDelay: 0.03
 --- !u!114 &1466458761704203570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,18 +209,34 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 2979341606
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 1c2ac174be51edc4ba2baaf38c19509a
+  Flags: 264449
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 1466458761704203573}
-  SimulationBehaviours: []
+  - {fileID: 880675783536816808}
+--- !u!114 &880675783536816808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466458761704203568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 3887251985986394191}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
 --- !u!1 &3887251985986394188
 GameObject:
   m_ObjectHideFlags: 0

@@ -108,6 +108,10 @@ PrefabInstance:
       value: Grenade Variant
       objectReference: {fileID: 0}
     - target: {fileID: 1466458761704203570, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: SortKey
+      value: 1634030058
+      objectReference: {fileID: 0}
+    - target: {fileID: 1466458761704203570, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -197,17 +201,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
---- !u!114 &5380902386175723610 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1466458761704203573, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
-  m_PrefabInstance: {fileID: 6842417331250736495}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5380902386175723615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1779252708, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5380902386175723615 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1466458761704203568, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
@@ -225,16 +218,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb86cc7951144818b3a147c89a1542cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _view: {fileID: 7712253122676765984}
-  _networkRigidbody2D: {fileID: 5380902386175723610}
+  _networkRigidbody2D: {fileID: 5966688667407556551}
   _overlapRadius: 1
   _hitMask:
     serializedVersion: 2
     m_Bits: 200
   _collideWhileMoving: 0
+--- !u!114 &5966688667407556551 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 880675783536816808, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+  m_PrefabInstance: {fileID: 6842417331250736495}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5380902386175723615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &7712253122676765984 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3887251985986394191, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}

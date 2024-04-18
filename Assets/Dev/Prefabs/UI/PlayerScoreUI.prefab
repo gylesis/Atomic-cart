@@ -363,18 +363,12 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 1938586644
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: d7fc59ff2ea34e34e899285065dedb81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3479234215287147719}
-  SimulationBehaviours: []
 --- !u!114 &3479234215287147719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -387,7 +381,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180f235d82ef46cda1516425262f7808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
+  _IsActive:
+    _value: 1
   _playerName: {fileID: 3479234215742716929}
   _killsCountText: {fileID: 3479234215169184264}
   _deathsCountText: {fileID: 3479234214331879383}

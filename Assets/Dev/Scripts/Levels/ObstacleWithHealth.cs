@@ -1,12 +1,13 @@
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev.Levels
 {
     public class ObstacleWithHealth : Obstacle
     {
-        [SerializeField] private HitboxRoot _hitboxRoot;
+        [SerializeField] private Collider2D _collider;
         [SerializeField] protected int _health = 50;
         public int Health => _health;
         public override int Id => 0;
@@ -15,7 +16,7 @@ namespace Dev.Levels
         {
             base.CorrectState();
 
-            _hitboxRoot.HitboxRootActive = IsActive;
+            _collider.enabled = IsActive;
         }
 
         public virtual void OnZeroHealth()
@@ -44,7 +45,7 @@ namespace Dev.Levels
         [Rpc]
         private void RPC_SetHitboxState(bool isOn)
         {
-            _hitboxRoot.HitboxRootActive = isOn;
+            _collider.enabled = isOn;
         }
         
     }

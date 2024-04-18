@@ -69,12 +69,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 483671902580297423, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
       propertyPath: Flags
-      value: 2305
+      value: 264449
+      objectReference: {fileID: 0}
+    - target: {fileID: 483671902580297423, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
+      propertyPath: SortKey
+      value: 2233749357
       objectReference: {fileID: 0}
     - target: {fileID: 483671902580297423, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 483671902580297423, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
+      propertyPath: NetworkedBehaviours.Array.data[0]
+      value: 
+      objectReference: {fileID: 1558150225112642661}
     - target: {fileID: 483671902580297423, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
       propertyPath: NetworkedBehaviours.Array.data[1]
       value: 
@@ -230,22 +238,27 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 1725658069821985419, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
---- !u!114 &1416726577010881375 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3960275025159874225, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
-  m_PrefabInstance: {fileID: 2692167929760830958}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2588120078955889604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1039544458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2588120078955889604 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 483671901943567914, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
   m_PrefabInstance: {fileID: 2692167929760830958}
   m_PrefabAsset: {fileID: 0}
+--- !u!70 &1616766294462659112
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2588120078955889604}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 2.38, y: 3.41}
+  m_Direction: 0
 --- !u!114 &1558150225112642661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,10 +271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691a4cc7daf4a3f4d8cd81bfd34a6ed0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
-  _hitboxRoot: {fileID: 1416726577010881375}
+  _collider: {fileID: 1616766294462659112}
   _health: 50
   _explosionRadius: 6
   _hitMask:

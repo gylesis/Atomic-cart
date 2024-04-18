@@ -28,6 +28,10 @@ PrefabInstance:
       value: 3073
       objectReference: {fileID: 0}
     - target: {fileID: 2321221129427239574, guid: 5d3c107d8b81cb14ab39f9b2159d9ac5, type: 3}
+      propertyPath: SortKey
+      value: 1315240488
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321221129427239574, guid: 5d3c107d8b81cb14ab39f9b2159d9ac5, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
       value: 0
       objectReference: {fileID: 0}
@@ -89,7 +93,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4694232948296534788, guid: 5d3c107d8b81cb14ab39f9b2159d9ac5, type: 3}
       propertyPath: Flags
-      value: 2305
+      value: 264449
+      objectReference: {fileID: 0}
+    - target: {fileID: 4694232948296534788, guid: 5d3c107d8b81cb14ab39f9b2159d9ac5, type: 3}
+      propertyPath: SortKey
+      value: 896753879
       objectReference: {fileID: 0}
     - target: {fileID: 4694232948296534788, guid: 5d3c107d8b81cb14ab39f9b2159d9ac5, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
@@ -149,7 +157,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcc4f690609a49b68e0330b89a4d0f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _isAutoActive: 1

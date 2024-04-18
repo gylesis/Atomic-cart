@@ -21,7 +21,7 @@ namespace Dev.PlayerLogic
         private static readonly int Move = Animator.StringToHash("Move");
         private PlayerCharacter _playerCharacter;
 
-        [Networked(OnChanged = nameof(OnTeamColorChanged))]
+        [Networked, OnChangedRender(nameof(OnTeamColorChanged))]
         private Color TeamColor { get; set; }
 
         public void OnMove(float velocity, bool isRight)
@@ -37,9 +37,9 @@ namespace Dev.PlayerLogic
             _playerSprite.flipX = isRight;
         }
 
-        private static void OnTeamColorChanged(Changed<PlayerView> changed)
+        private void OnTeamColorChanged()
         {
-            changed.Behaviour._teamBanner.color = changed.Behaviour.TeamColor;
+            _teamBanner.color = TeamColor;
         }
 
         [Rpc]

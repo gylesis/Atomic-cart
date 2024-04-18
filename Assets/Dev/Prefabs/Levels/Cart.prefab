@@ -100,7 +100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9142850544834376148
 Transform:
   m_ObjectHideFlags: 0
@@ -355,9 +355,8 @@ GameObject:
   - component: {fileID: 5228863249494156778}
   - component: {fileID: 5554615816237043920}
   - component: {fileID: 8355606218816091895}
-  - component: {fileID: 7586739011590834886}
-  - component: {fileID: 1642276042401575228}
   - component: {fileID: 2810621541859984698}
+  - component: {fileID: 1434391499781424851}
   m_Layer: 7
   m_Name: Cart
   m_TagString: Untagged
@@ -394,21 +393,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 2578840110
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 0}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: a426d03828b6aed469b674420d1be101
   NestedObjects:
   - {fileID: 1898445922781554442}
   NetworkedBehaviours:
   - {fileID: 8355606218816091895}
-  - {fileID: 7586739011590834886}
   - {fileID: 2810621541859984698}
-  SimulationBehaviours: []
 --- !u!114 &8355606218816091895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -421,47 +413,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c85dcbae115471c93e19e595ddd253a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _triggerZone: {fileID: 1653706234780434095}
---- !u!114 &7586739011590834886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8415427501277948316}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1039544458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  Config: 1
-  BroadRadius: 3.0459154
-  Offset: {x: 0, y: 0, z: 0}
-  GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  Hitboxes:
-  - {fileID: 1642276042401575228}
---- !u!114 &1642276042401575228
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8415427501277948316}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1014831617, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Type: 1
-  SphereRadius: 0
-  BoxExtents: {x: 3.61, y: 2.43, z: 0}
-  Offset: {x: 0, y: 0, z: 0}
-  Root: {fileID: 7586739011590834886}
-  GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &2810621541859984698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,22 +428,36 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 1316122639267430454}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
-  UseLegacySharedModeInterpolation: 0
-  TargetInterpolationDelay: 0.03
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!61 &1434391499781424851
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8415427501277948316}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 7.26, y: 4.8}
+  m_EdgeRadius: 0
 --- !u!1001 &3560366976303904644
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -500,6 +468,10 @@ PrefabInstance:
     - target: {fileID: 3112080133537583246, guid: e9d000d6095643247a21eb0b34083bc7, type: 3}
       propertyPath: Flags
       value: 3073
+      objectReference: {fileID: 0}
+    - target: {fileID: 3112080133537583246, guid: e9d000d6095643247a21eb0b34083bc7, type: 3}
+      propertyPath: SortKey
+      value: 349660924
       objectReference: {fileID: 0}
     - target: {fileID: 3112080133537583246, guid: e9d000d6095643247a21eb0b34083bc7, type: 3}
       propertyPath: NetworkedBehaviours.Array.size

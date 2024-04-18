@@ -93,7 +93,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: Flags
-      value: 2305
+      value: 264449
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
+      propertyPath: SortKey
+      value: 3124569734
       objectReference: {fileID: 0}
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
@@ -200,7 +204,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f1a1a34fb54be89f2f79c87a972012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _weaponType: 3

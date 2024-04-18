@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 3282270796135108723}
   - component: {fileID: 3282270796135108722}
   - component: {fileID: 3282270796135108721}
-  - component: {fileID: 3282270796135108725}
-  - component: {fileID: 3282270796135108724}
+  - component: {fileID: 2372932094148299828}
   m_Layer: 6
   m_Name: DummyTarget
   m_TagString: Untagged
@@ -48,19 +47,12 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 2445456018
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 66f482abad2a4954dbbccfd15382a81c
+  Flags: 264449
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3282270796135108721}
-  - {fileID: 3282270796135108725}
-  SimulationBehaviours: []
 --- !u!114 &3282270796135108721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,43 +65,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1b478d27fbd4e559992db605d83e40a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
---- !u!114 &3282270796135108725
-MonoBehaviour:
+  _IsActive:
+    _value: 1
+--- !u!58 &2372932094148299828
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3282270796135108720}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1039544458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  Config: 1
-  BroadRadius: 0
-  Offset: {x: 0, y: 0, z: 0}
-  GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  Hitboxes: []
---- !u!114 &3282270796135108724
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3282270796135108720}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1014831617, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Type: 1
-  SphereRadius: 0
-  BoxExtents: {x: 2.22, y: 2.4, z: 0}
-  Offset: {x: 0.16, y: 1.93, z: 0}
-  Root: {fileID: 0}
-  GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 1.99}
+  serializedVersion: 2
+  m_Radius: 2.15
 --- !u!1 &3282270796423875799
 GameObject:
   m_ObjectHideFlags: 0

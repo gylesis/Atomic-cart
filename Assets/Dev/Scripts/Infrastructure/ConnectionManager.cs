@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Dev.Levels;
-using Dev.PlayerLogic;
-using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
-using Dev.Utils;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.Infrastructure
@@ -52,8 +47,8 @@ namespace Dev.Infrastructure
 
                 startGameArgs.GameMode = GameMode.Shared;
                 startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
-                startGameArgs.Scene = SceneManager.GetActiveScene().buildIndex;
-
+                startGameArgs.Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);;
+                
                 _networkRunner.StartGame(startGameArgs);
             }
         }
@@ -81,6 +76,15 @@ namespace Dev.Infrastructure
             _popUpService.HideAllPopUps();
 
             SceneManager.LoadScene(0);
+        }
+
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+            
+        }
+
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
         }
 
         public async void
@@ -132,6 +136,10 @@ namespace Dev.Infrastructure
             }
         }
 
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
+        {
+        }
+
         public void OnDisconnectedFromServer(NetworkRunner runner)
         {
             Debug.Log($"On disconnect from server");
@@ -152,6 +160,14 @@ namespace Dev.Infrastructure
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
         {
             Debug.Log($"On Host migration");
+        }
+
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+        {
+        }
+
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
+        {
         }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }

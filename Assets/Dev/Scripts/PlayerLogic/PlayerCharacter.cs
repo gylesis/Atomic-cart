@@ -10,7 +10,7 @@ namespace Dev.PlayerLogic
     {
         [Range(0f, 1f)] [SerializeField] private float _shootThreshold = 0.75f;
         [SerializeField] private PlayerView _playerView;
-        [SerializeField] private HitboxRoot _hitboxRoot;
+        [SerializeField] private Collider2D _collider2D;
         [SerializeField] private WeaponController _weaponController;
 
         [SerializeField] private PlayerController _playerController;
@@ -19,7 +19,7 @@ namespace Dev.PlayerLogic
         
         public PlayerController PlayerController => _playerController;
         public PlayerView PlayerView => _playerView;
-        public HitboxRoot HitboxRoot => _hitboxRoot;
+        public Collider2D Collider2D => _collider2D;
         public Rigidbody2D Rigidbody => _rigidbody2D;
         public WeaponController WeaponController => _weaponController;
 
@@ -43,6 +43,6 @@ namespace Dev.PlayerLogic
             CharacterClass = characterClass;
         }
 
-        public int Id => Object.InputAuthority;
+        public int Id => Object.InputAuthority.PlayerId;
     }
 }

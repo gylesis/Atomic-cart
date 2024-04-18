@@ -271,22 +271,10 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  InterpolationSpace: 1
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
-  UseLegacySharedModeInterpolation: 0
-  TargetInterpolationDelay: 0.03
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &5544195138406101503
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,19 +324,13 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 2041856123
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
   Flags: 3073
-  NetworkGuid:
-    RawGuidValue: 00000000000000000000000000000000
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 898484370}
   - {fileID: 3022034192352184608}
-  SimulationBehaviours: []
 --- !u!114 &898484370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,7 +343,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d7a3a93461c4d149ab69585df449ae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _networkAnimator: {fileID: 3022034192352184608}
@@ -382,22 +363,10 @@ MonoBehaviour:
   m_Script: {fileID: 506319458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   Animator: {fileID: 1681818469465762018}
   TotalWords: 1
+  ApplyTiming: 2
   SyncSettings: 79
-  FloatAccuracy:
-    _value: 0
-    _inverse: 0
-    _hash: -814817977
-  TimeAccuracy:
-    _value: 0
-    _inverse: 0
-    _hash: 1061325578
-  WeightAccuracy:
-    _value: 0
-    _inverse: 0
-    _hash: -814817977
   StateHashes: 00000000958341e27e40c91f8a18fce4b9abd9d3
   TriggerHashes: 00000000
 --- !u!95 &1681818469465762018
@@ -436,9 +405,7 @@ GameObject:
   - component: {fileID: 5999655236562569822}
   - component: {fileID: 5544195138823906170}
   - component: {fileID: 7142691939699321184}
-  - component: {fileID: 3459795353489080509}
-  - component: {fileID: 86314474022417395}
-  - component: {fileID: 6005303050273986149}
+  - component: {fileID: 4837053613947184219}
   m_Layer: 3
   m_Name: PlayerCharacterBase
   m_TagString: Player
@@ -477,25 +444,18 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 3733862758
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: b70550f1e6f52484585e66f02133010c
+  Flags: 264449
   NestedObjects:
   - {fileID: 898484371}
   NetworkedBehaviours:
   - {fileID: 5231129319991485753}
   - {fileID: 5429065874298734006}
   - {fileID: 5999655236562569822}
-  - {fileID: 3459795353489080509}
-  - {fileID: 6005303050273986149}
+  - {fileID: 4837053613947184219}
   - {fileID: 7671677920196908379}
   - {fileID: 805192663281508345}
-  SimulationBehaviours: []
 --- !u!114 &5231129319991485753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -508,12 +468,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0105ac86a73440deb1925d820a6c04b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _shootThreshold: 0.75
   _playerView: {fileID: 898484370}
-  _hitboxRoot: {fileID: 3459795353489080509}
+  _hitboxRoot: {fileID: 0}
   _weaponController: {fileID: 5999655236562569822}
   _playerController: {fileID: 5429065874298734006}
   _rigidbody2D: {fileID: 5544195138823906170}
@@ -530,17 +489,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afe19be252cb4874bf099a34c6108f5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _playerCharacter: {fileID: 5231129319991485753}
   _LastLookDirection: {x: 0, y: 0}
   _IsPlayerAiming:
     _value: 0
-  _AllowToMove:
-    _value: 1
-  _AllowToShoot:
-    _value: 1
   _shiftSpeed: 2
   _dashTime: 0.5
 --- !u!114 &5999655236562569822
@@ -555,7 +509,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee053e2f94e43efb2a4d2971f9fb2cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
@@ -598,7 +551,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 1.22}
   serializedVersion: 2
   m_Radius: 1.69
---- !u!114 &3459795353489080509
+--- !u!114 &4837053613947184219
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -607,62 +560,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 5544195138823906174}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1039544458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  Config: 1
-  BroadRadius: 3.864408
-  Offset: {x: 0, y: 0, z: 0}
-  GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  Hitboxes:
-  - {fileID: 86314474022417395}
---- !u!114 &86314474022417395
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5544195138823906174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1014831617, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Type: 1
-  SphereRadius: 2.03
-  BoxExtents: {x: 1.41, y: 2.13, z: 0}
-  Offset: {x: 0, y: 1.31, z: 0}
-  Root: {fileID: 3459795353489080509}
-  GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
---- !u!114 &6005303050273986149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5544195138823906174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1779252708, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 5544195138406101501}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
-  UseLegacySharedModeInterpolation: 0
-  TargetInterpolationDelay: 0.03
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 5544195138406101501}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
 --- !u!1 &6258946657195857654
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,22 +617,10 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  InterpolationSpace: 1
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
-  UseLegacySharedModeInterpolation: 0
-  TargetInterpolationDelay: 0.03
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &8941323519743036949
 GameObject:
   m_ObjectHideFlags: 0

@@ -169,8 +169,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9194313941284501421, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
       propertyPath: Flags
-      value: 2305
+      value: 264449
       objectReference: {fileID: 0}
+    - target: {fileID: 9194313941284501421, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
+      propertyPath: SortKey
+      value: 3767913668
+      objectReference: {fileID: 0}
+    - target: {fileID: 9194313941284501421, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
+      propertyPath: NetworkedBehaviours.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9194313941284501421, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
+      propertyPath: NetworkedBehaviours.Array.data[0]
+      value: 
+      objectReference: {fileID: 1725658069821985419}
     - target: {fileID: 9194313941284501421, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
       propertyPath: NetworkedBehaviours.Array.data[1]
       value: 
@@ -204,24 +216,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea88cdbccc413744b3873bb011a59cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
-  _hitboxRoot: {fileID: 3960275025159874225}
+  _collider: {fileID: 0}
   _health: 50
 --- !u!4 &2377123811477439920 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6472701101172964562, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
   m_PrefabInstance: {fileID: 8732086982211926370}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3960275025159874225 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5754232529788641235, guid: 23894197f885a2449a7b6f8298fb1683, type: 3}
-  m_PrefabInstance: {fileID: 8732086982211926370}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 483671901943567914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1039544458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

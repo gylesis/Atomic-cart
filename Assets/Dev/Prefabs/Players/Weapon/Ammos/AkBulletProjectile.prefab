@@ -20,6 +20,10 @@ PrefabInstance:
       value: AkBulletProjectile
       objectReference: {fileID: 0}
     - target: {fileID: 1466458761704203570, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: SortKey
+      value: 2224217685
+      objectReference: {fileID: 0}
+    - target: {fileID: 1466458761704203570, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -106,15 +110,15 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3887251985986394191, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
   m_PrefabInstance: {fileID: 7530368767454513556}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8996175578859170977 stripped
+--- !u!114 &7258104449176091452 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1466458761704203573, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 880675783536816808, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
   m_PrefabInstance: {fileID: 7530368767454513556}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8996175578859170980}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1779252708, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8996175578859170980 stripped
@@ -134,11 +138,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c942627de7c49859dd7b042b939dc2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
   _view: {fileID: 6733854969783652827}
-  _networkRigidbody2D: {fileID: 8996175578859170977}
+  _networkRigidbody2D: {fileID: 7258104449176091452}
   _overlapRadius: 0.5
   _hitMask:
     serializedVersion: 2

@@ -101,6 +101,15 @@ namespace Dev.Infrastructure
             PickedSessionId = obj.Id;
         }
 
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+            
+        }
+
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+        }
+
         public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
         {
             return;
@@ -131,7 +140,7 @@ namespace Dev.Infrastructure
             startGameArgs.SessionName = $"{levelName} : {mapType},{Guid.NewGuid()}";
             startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
             Scene activeScene = SceneManager.GetActiveScene();
-            startGameArgs.Scene = activeScene.buildIndex;
+            startGameArgs.Scene = SceneRef.FromIndex(activeScene.buildIndex);
 
             startGameArgs.SessionProperties = new Dictionary<string, SessionProperty>()
             {
@@ -232,6 +241,9 @@ namespace Dev.Infrastructure
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
 
         public void OnConnectedToServer(NetworkRunner runner) { }
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
+        {
+        }
 
         public void OnDisconnectedFromServer(NetworkRunner runner) { }
 
@@ -245,6 +257,13 @@ namespace Dev.Infrastructure
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
 
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+        {
+        }
+
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
+        {
+        }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 

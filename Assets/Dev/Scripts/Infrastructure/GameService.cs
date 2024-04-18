@@ -156,8 +156,8 @@ namespace Dev.Infrastructure
         {
             foreach (PlayerCharacter player in _playersSpawner.Players)
             {
-                player.PlayerController.AllowToMove = !toFreeze;
-                player.PlayerController.AllowToShoot = !toFreeze;
+                player.PlayerController.SetAllowToMove(!toFreeze);
+                player.PlayerController.SetAllowToShoot(!toFreeze);
             }
         }
 

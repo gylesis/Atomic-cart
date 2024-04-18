@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Dev.Weapons.Guns
 {
-    [OrderAfter(typeof(Projectile))]
+    //[OrderAfter(typeof(Projectile))]
     public abstract class ProjectileWeapon<TProjectileType> : Weapon where TProjectileType : ProjectileStaticData
     {
         public float ProjectileSpeed => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<TProjectileType>().ProjectileSpeed;
@@ -47,7 +47,7 @@ namespace Dev.Weapons.Guns
                 
                 if (distanceFromOrigin > projectileContext.MaxDistance * projectileContext.MaxDistance)
                 {
-                    OnProjectileMaxDistanceReached(projectile);
+                   // OnProjectileMaxDistanceReached(projectile);
                 }
                 else if(expired)
                 {

@@ -38,9 +38,9 @@ namespace Dev.Weapons.Guns
 
             playerCharacter.Rigidbody.velocity = -direction * FirePushPower;
             // player.Rigidbody.AddForce(-direction * _firePushPower, ForceMode2D.Impulse);
-            playerCharacter.PlayerController.AllowToMove = false;
+            playerCharacter.PlayerController.SetAllowToMove(false);
             Observable.Timer(TimeSpan.FromSeconds(0.5f))
-                .Subscribe((l => { playerCharacter.PlayerController.AllowToMove = true; }));
+                .Subscribe((l => { playerCharacter.PlayerController.SetAllowToMove(true); }));
         }
 
         protected override void SpawnVFXOnDestroyProjectile(Projectile projectile)

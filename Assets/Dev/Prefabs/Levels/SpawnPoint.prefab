@@ -45,18 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 1913701710
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 22607c624896c4b45acb074c848968dc
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2494206458940154628}
-  SimulationBehaviours: []
 --- !u!114 &2494206458940154628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,4 +63,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 715c68b5811649419e0178ccd71b9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
+  _IsActive:
+    _value: 1

@@ -93,7 +93,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: Flags
-      value: 2305
+      value: 264449
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
+      propertyPath: SortKey
+      value: 2230197617
       objectReference: {fileID: 0}
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
@@ -190,19 +194,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac20e608bfa4cdf8b4fd434158d8432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 1
+  _weaponType: 0
   _shootPoint: {fileID: 8329106418942572176}
   _view: {fileID: 5643736420937599800}
-  _bulletMaxDistance: 12
-  _cooldown: 1.5
-  _minDamage: 35
-  _maxDamage: 45
-  _projectileSpeed: 1500
-  _projectilePrefab: {fileID: 7001214283104243862, guid: a1f906040a118324e851d514da024c6a, type: 3}
-  _explosionRadius: 2
-  _firePushPower: 5
 --- !u!4 &5643736420937599800 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6010108543459295257, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}

@@ -227,7 +227,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b49c1598eef748a9959f40cd48e99385, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _IsActive:
     _value: 0
   _playerNicknameText: {fileID: 4393316690747915918}
@@ -245,18 +244,12 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 748807733
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: f4f6fb8a5f5c2c44c92e3551f2a614fc
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 4393316691124452187}
-  SimulationBehaviours: []
 --- !u!225 &4393316691124452185
 CanvasGroup:
   m_ObjectHideFlags: 0

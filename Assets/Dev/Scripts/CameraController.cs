@@ -22,13 +22,10 @@ namespace Dev
             _target = target;
         }
 
-        private void Start()
-        {
-            _gameSettings = GameSettingProvider.GameSettings;
-        }
-
         public override void Spawned()
         {
+            _gameSettings = GameSettingProvider.GameSettings;
+            
             if (HasStateAuthority)
             {
                 DependenciesContainer.Instance.GetDependency<CameraService>().SetMainCameraState(false);
@@ -55,7 +52,8 @@ namespace Dev
         {
             if (HasInputAuthority == false) return;
 
-            _camera.orthographicSize = _gameSettings.CameraZoomModifier;
+            _camera.orthographicSize = 
+                _gameSettings.CameraZoomModifier;
             
             FollowTarget();
         }
@@ -66,7 +64,7 @@ namespace Dev
             
             if (_target == null) return;
             
-            transform.position = Vector3.Lerp(transform.position, _target.position, Time.deltaTime * _followSpeed);
+            transform.position = Vector3.Lerp(transform.position, _target.position, Runner.DeltaTime * _followSpeed);
         }
     }
 }

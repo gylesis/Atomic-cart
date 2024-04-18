@@ -130,18 +130,12 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 2921898724
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 24959678b9470c3478dd60a5b17fe668
+  Flags: 264449
   NestedObjects:
   - {fileID: 4187852356575476732}
   NetworkedBehaviours: []
-  SimulationBehaviours: []
 --- !u!1 &7042737360589677979
 GameObject:
   m_ObjectHideFlags: 0
@@ -184,6 +178,10 @@ PrefabInstance:
     - target: {fileID: 3112080133537583246, guid: e9d000d6095643247a21eb0b34083bc7, type: 3}
       propertyPath: Flags
       value: 3073
+      objectReference: {fileID: 0}
+    - target: {fileID: 3112080133537583246, guid: e9d000d6095643247a21eb0b34083bc7, type: 3}
+      propertyPath: SortKey
+      value: 156378971
       objectReference: {fileID: 0}
     - target: {fileID: 3112080133537583246, guid: e9d000d6095643247a21eb0b34083bc7, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]

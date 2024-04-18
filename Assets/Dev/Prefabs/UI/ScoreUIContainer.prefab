@@ -597,18 +597,12 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 2758181671
   ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 3d52145caad81f54e9779c29cff58bc5
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 6169479816011168729}
-  SimulationBehaviours: []
 --- !u!114 &6169479816011168729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,7 +615,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a9888a631dc4d80aae01fa39d3cd3b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
+  _IsActive:
+    _value: 1
   _scoresUIParent: {fileID: 2405028649163960353}
 --- !u!1 &4751159527286261108
 GameObject:
