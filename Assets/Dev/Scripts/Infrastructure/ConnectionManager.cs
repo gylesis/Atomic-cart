@@ -32,12 +32,16 @@ namespace Dev.Infrastructure
                 Instance = this;
             }
 
-            NetworkRunner networkRunner = FindObjectOfType<NetworkRunner>();
-
-            if (networkRunner.IsConnectedToServer)
+            if (FusionLobbyConnector.IsConnected)
             {
-                _networkRunner.gameObject.SetActive(false);
-                return;
+                NetworkRunner networkRunner = FindObjectOfType<FusionLobbyConnector>().NetworkRunner;
+                
+                networkRunner.AddCallbacks(this);
+
+                if (networkRunner.IsConnectedToServer)
+                {
+                    _networkRunner.gameObject.SetActive(false);
+                }
             }
             else
             {
@@ -60,11 +64,6 @@ namespace Dev.Infrastructure
             _gameSettings = gameSettings;
             _popUpService = popUpService;
             _playersSpawner = playersSpawner;
-        }
-
-        public override void Spawned()
-        {
-            Runner.AddCallbacks(this);
         }
 
         public void Disconnect()

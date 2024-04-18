@@ -23,8 +23,7 @@ namespace Dev.Levels.Interactions
             OnInteraction(IsInteracted, PlayerRef.None); // bad. need another state recover
         }
 
-        [Rpc]
-        public void RPC_Interact(PlayerRef interactedPlayer)
+        public void Interact(PlayerRef interactedPlayer)
         {
             bool newValue = !IsInteracted;
             IsInteracted = newValue;
@@ -35,13 +34,9 @@ namespace Dev.Levels.Interactions
             }
         }
 
-        [Rpc]
-        public void RPC_AutoInteract(PlayerRef interactedPlayer)
+        public void AutoInteract(PlayerRef interactedPlayer)
         {
-            if (Runner.IsSharedModeMasterClient)
-            {
-                OnAutoInteraction(interactedPlayer);
-            }   
+            OnAutoInteraction(interactedPlayer);
         }
       
         protected virtual void OnAutoInteraction(PlayerRef interactedPlayer) { }

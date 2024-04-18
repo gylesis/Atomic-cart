@@ -2,26 +2,20 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dev.UI;
-using Dev.UI.PopUpsAndMenus;
 using Fusion;
 using Fusion.Sockets;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
-using Zenject;
 
 namespace Dev.Infrastructure
 {
     public class GameSessionBrowser : NetworkContext, INetworkRunnerCallbacks
     {
         [SerializeField] private SessionUIView _sessionUIViewPrefab;
-
         [SerializeField] private UIElementsGroup _uiElementsGroup;
 
-        private NetworkRunner _runner;
-        private PopUpService _popUpService;
         private ObjectPool<SessionUIView> _sessionUIViewPool;
 
         public int PickedSessionId { get; private set; }
@@ -31,34 +25,13 @@ namespace Dev.Infrastructure
         public Subject<int> SessionCountChanged { get; } = new Subject<int>();
 
         private List<SessionUIView> _sessionUIViews = new List<SessionUIView>(8);
-
-        private void OnGUI()
-        {
-            string label = String.Empty;
-            Color color = Color.white;
-
-            if (_runner.LobbyInfo.IsValid)
-            {
-                label = "Connected";
-                color = Color.green;
-            }
-            else
-            {
-                label = "Connecting...";
-                color = Color.red;
-            }
-
-            var guiStyle = new GUIStyle();
-            guiStyle.fontSize = 25;
-            guiStyle.normal.textColor = color;
-
-            var position = new Rect(Screen.width - 300, Screen.height - 150, 10, 10);
-
-            GUI.Label(position, label, guiStyle);
-        }
+        private NetworkRunner _networkRunner;
 
         private void Awake()
         {
+            _networkRunner = FindObjectOfType<NetworkRunner>();
+            _networkRunner.AddCallbacks(this);
+            
             _sessionUIViewPool =
                 new ObjectPool<SessionUIView>(CreateFunc, ActionOnGet, ActionOnRelease);
         }
@@ -89,52 +62,16 @@ namespace Dev.Infrastructure
             _uiElementsGroup.Select(sessionUIView);
         }
 
-        [Inject]
-        private void Init(PopUpService popUpService, NetworkRunner runner)
-        {
-            _runner = runner;
-            _popUpService = popUpService;
-        }
-
         private void OnSessionClicked(SessionUIView obj)
         {
             PickedSessionId = obj.Id;
-        }
-
-        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-            
-        }
-
-        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-        }
-
-        public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
-        {
-            return;
-            Debug.Log($"Player joined {playerRef}");
-
-            if (runner.IsSharedModeMasterClient)
-            {
-                runner.RemoveCallbacks(this);
-
-                PlayerManager.AddPlayerForQueue(playerRef);
-
-                if (PlayerManager.PlayerQueue.Count == 1)
-                {
-                    await Task.Delay(500);
-
-                    FindObjectOfType<SceneLoader>().LoadScene("Main");
-                }
-            }
         }
 
         public async Task CreateSession(string levelName, MapType mapType)
         {
             var startGameArgs = new StartGameArgs();
 
-            _runner.AddCallbacks(this);
+            _networkRunner.AddCallbacks(this);
 
             startGameArgs.GameMode = GameMode.Shared;
             startGameArgs.SessionName = $"{levelName} : {mapType},{Guid.NewGuid()}";
@@ -149,9 +86,8 @@ namespace Dev.Infrastructure
                 ["status"] = (int)SessionStatus.Lobby
             };
 
-            StartGameResult startGameResult = await _runner.StartGame(startGameArgs);
+            StartGameResult startGameResult = await _networkRunner.StartGame(startGameArgs);
         }
-
 
         public void JoinSession(string sessionName)
         {
@@ -161,7 +97,7 @@ namespace Dev.Infrastructure
             startGameArgs.SessionName = sessionName;
             startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
 
-            _runner.StartGame(startGameArgs);
+            _networkRunner.StartGame(startGameArgs);
         }
 
         public void JoinPickedSession()
@@ -172,7 +108,6 @@ namespace Dev.Infrastructure
 
             JoinSession(sessionGameInfo.SessionName);
         }
-
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
         {
@@ -232,6 +167,11 @@ namespace Dev.Infrastructure
             return _sessionGameInfos[sessionId];
         }
 
+        public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
+        {
+            
+        }
+
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
 
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
@@ -240,15 +180,16 @@ namespace Dev.Infrastructure
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
 
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+
         public void OnConnectedToServer(NetworkRunner runner) { }
-        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
-        {
-        }
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
 
         public void OnDisconnectedFromServer(NetworkRunner runner) { }
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
-            byte[] token) { }
+                                     byte[] token) { }
 
         public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
 
@@ -257,13 +198,11 @@ namespace Dev.Infrastructure
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
 
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
-        {
-        }
 
-        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-        {
-        }
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key,
+                                           ArraySegment<byte> data) { }
+
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 

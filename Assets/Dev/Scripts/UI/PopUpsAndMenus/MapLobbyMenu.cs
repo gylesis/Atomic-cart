@@ -3,6 +3,7 @@ using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace Dev.UI.PopUpsAndMenus
@@ -21,6 +22,8 @@ namespace Dev.UI.PopUpsAndMenus
         {
             base.Awake();
 
+            _networkRunner = FindObjectOfType<NetworkRunner>();
+
             _playButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnPlayButtonClicked()));
             _readyButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnReadyButtonClicked()));
             _lobbyUI.ReadyStatusUpdated.TakeUntilDestroy(this).Subscribe((unit => OnReadyStatusChanged()));
@@ -37,9 +40,8 @@ namespace Dev.UI.PopUpsAndMenus
         }
 
         [Inject]
-        private void Init(SceneLoader sceneLoader, NetworkRunner networkRunner)
+        private void Init(SceneLoader sceneLoader)
         {
-            _networkRunner = networkRunner;
             _sceneLoader = sceneLoader;
         }
         
@@ -70,7 +72,7 @@ namespace Dev.UI.PopUpsAndMenus
             StartGame();
         }
 
-        private void StartGame()
+        private async void StartGame()
         {
             var oldProperties = _networkRunner.SessionInfo.Properties;
             
@@ -80,9 +82,12 @@ namespace Dev.UI.PopUpsAndMenus
                 ["mode"] = oldProperties["mode"],
                 ["status"] = (int)SessionStatus.InGame
             };
-            
+
+            Scene activeScene = SceneManager.GetActiveScene();
+
             _networkRunner.SessionInfo.UpdateCustomProperties(sessionProperties);
-            _sceneLoader.LoadScene("Main");
+            await _networkRunner.LoadScene("Main", LoadSceneMode.Additive);
+            //await _networkRunner.UnloadScene(SceneRef.FromIndex(activeScene.buildIndex));
         }
 
         public override void Show()

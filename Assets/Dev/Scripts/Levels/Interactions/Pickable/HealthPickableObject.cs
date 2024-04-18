@@ -12,12 +12,6 @@ namespace Dev.Levels.Interactions.Pickable
         
         private PlayersSpawner _playersSpawner;
 
-        public void Init()
-        {
-            
-        }
-
-
         protected override void OnAutoInteraction(PlayerRef interactedPlayer)
         {
             base.OnAutoInteraction(interactedPlayer);

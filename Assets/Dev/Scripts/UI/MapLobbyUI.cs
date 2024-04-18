@@ -23,6 +23,11 @@ namespace Dev.UI
 
         public Subject<Unit> ReadyStatusUpdated { get; } = new Subject<Unit>();
 
+        private void Awake()
+        {
+            FindObjectOfType<NetworkRunner>().AddCallbacks(this);
+        }
+
         protected override void CorrectState()
         {
             base.CorrectState();
@@ -39,10 +44,9 @@ namespace Dev.UI
         }
 
         [Inject]
-        private void Init(NetworkRunner runner, PopUpService popUpService)
+        private void Init(PopUpService popUpService)
         {
             _popUpService = popUpService;
-            runner.AddCallbacks(this);
         }
 
         public void SetReady(PlayerRef playerRef)

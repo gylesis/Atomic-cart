@@ -48,25 +48,25 @@ namespace Dev.Levels.Interactions
         {
             PlayerRef playerRef = context.Killed;
 
-            RPC_SetInteractionViewState(playerRef,false, null);
+            RPC_OnInteractionObjectInteract(playerRef,false, null);
         }
 
         private void OnPlayerZoneEntered(PlayerCharacter playerCharacter, InteractionObject interactionObject)
         {
             PlayerRef playerRef = playerCharacter.Object.InputAuthority;
 
-            RPC_SetInteractionViewState(playerRef,true, interactionObject);
+            RPC_OnInteractionObjectInteract(playerRef,true, interactionObject);
         }
 
         private void OnPlayerZoneExit(PlayerCharacter playerCharacter, InteractionObject interactionObject)
         {
             PlayerRef playerRef = playerCharacter.Object.InputAuthority;
 
-            RPC_SetInteractionViewState(playerRef,false, interactionObject);
+            RPC_OnInteractionObjectInteract(playerRef,false, interactionObject);
         }
 
         [Rpc]
-        private void RPC_SetInteractionViewState([RpcTarget] PlayerRef target, bool isOn, InteractionObject interactionObject)
+        private void RPC_OnInteractionObjectInteract([RpcTarget] PlayerRef target, bool isOn, InteractionObject interactionObject)
         {
             _popUpService.TryGetPopUp<HUDMenu>(out var hudMenu);
 
@@ -84,13 +84,13 @@ namespace Dev.Levels.Interactions
                 {
                     onInteraction = null;
                     
-                    interactionObject.RPC_AutoInteract(target);
+                    interactionObject.AutoInteract(target);
                 }
                 else
                 {
                     onInteraction = () =>
                     {
-                        interactionObject.RPC_Interact(target);
+                        interactionObject.Interact(target);
                         Debug.Log($"Interaction with {interactionObject.name}!!", interactionObject);
                     };
                 }

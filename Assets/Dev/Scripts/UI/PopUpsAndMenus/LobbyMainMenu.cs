@@ -28,6 +28,7 @@ namespace Dev.UI.PopUpsAndMenus
             PopUpService.TryGetPopUp<LobbySettingsMenu>(out var settingsMenu);
             
             settingsMenu.Show();
+            
             settingsMenu.OnSucceedButtonClicked((() =>
             {
                 settingsMenu.Hide();

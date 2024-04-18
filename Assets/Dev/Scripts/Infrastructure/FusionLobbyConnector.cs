@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
@@ -12,28 +13,80 @@ namespace Dev.Infrastructure
     {
         private NetworkRunner _networkRunner;
 
-        private async void Awake()
+        public NetworkRunner NetworkRunner => _networkRunner;
+
+        public static bool IsConnected;
+
+        private Action _sessionJoined;
+            
+        private void Awake()
+        {
+            if (IsConnected)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
+            IsConnected = true;
+            DontDestroyOnLoad(gameObject);
+
+            if (SceneManager.GetActiveScene().name == "Bootstrap")
+            {
+                LoadFromBootstrap();
+            }
+            else
+            {
+                DefaultJoinToSessionLobby();
+            }
+        }
+
+        private async void DefaultJoinToSessionLobby()
         {
             _networkRunner = GetComponent<NetworkRunner>();
             _networkRunner.ProvideInput = true;
             
-            var gameSessionBrowser = FindObjectOfType<GameSessionBrowser>();
-            _networkRunner.AddCallbacks(gameSessionBrowser);
+            var gameResult = await _networkRunner.JoinSessionLobby(SessionLobby.Shared);
 
-            var joinSessionLobby = _networkRunner.JoinSessionLobby(SessionLobby.Shared);
-
-            await joinSessionLobby;
-
-            StartGameResult result = joinSessionLobby.Result;
-
-            if (result.Ok)
+            OnLobbyJoined(gameResult);
+            
+            if (gameResult.Ok)
             {
                 Debug.Log($"Joined lobby");
             }
             else
             {
-                Debug.LogError($"Failed to Start: {result.ShutdownReason}");
+                Debug.LogError($"Failed to Start: {gameResult.ShutdownReason}");
             }
+        }
+
+        private async void LoadFromBootstrap()
+        {
+            Curtains.Instance.Show();
+            Curtains.Instance.SetText("Joining to servers");
+            
+            Scene activeScene = SceneManager.GetActiveScene();
+
+            DefaultJoinToSessionLobby();
+            
+            await SceneManager.LoadSceneAsync("Lobby", LoadSceneMode.Additive);
+            await SceneManager.UnloadSceneAsync(activeScene);
+            
+            AddLobbyJoinCallback((() =>
+            {
+                Curtains.Instance.SetText("Done!");
+                Curtains.Instance.HideWithDelay(1);
+            }));
+        }
+
+        private void AddLobbyJoinCallback(Action onSessionJoin)
+        {
+            _sessionJoined += onSessionJoin;
+        }
+    
+        private void OnLobbyJoined(StartGameResult gameResult)
+        {
+            _sessionJoined?.Invoke();
+            _sessionJoined = null;
         }
 
         public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)

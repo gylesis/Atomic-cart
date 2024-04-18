@@ -48,7 +48,7 @@ namespace Dev.Weapons.Guns
 
         public override void FixedUpdateNetwork()
         {
-            if (HasStateAuthority == false) return;
+            if (HasInputAuthority == false) return;
 
             _networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
 

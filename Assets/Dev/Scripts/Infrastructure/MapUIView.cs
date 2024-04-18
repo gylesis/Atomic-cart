@@ -1,7 +1,6 @@
 ﻿using Dev.UI;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Dev.Infrastructure

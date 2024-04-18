@@ -25,6 +25,8 @@ namespace Dev.Infrastructure
         
         private void Awake()
         {
+            DontDestroyOnLoad(gameObject);
+            
             Instance = this;
             _defaultTextColor = _text.color;
 
