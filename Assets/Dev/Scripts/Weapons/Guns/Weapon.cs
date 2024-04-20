@@ -12,6 +12,8 @@ namespace Dev.Weapons.Guns
         
         [SerializeField] protected Transform _shootPoint;
         [SerializeField] protected Transform _view;
+        
+        public Transform View => _view;
 
         [Networked] public TickTimer CooldownTimer { get; set; }
 

@@ -112,6 +112,20 @@ namespace Dev.Weapons
             Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
 
             WeaponParent.transform.up = direction;
+            
+            
+            
+            float scaleSign = 1;            
+            
+            if (direction.x < 0)
+            {
+                scaleSign = -1;
+            }
+
+            var localScale = CurrentWeapon.View.localScale;
+            localScale.x = scaleSign;
+            
+            CurrentWeapon.View.localScale = localScale;
         }
 
         private void Shoot(Vector2 direction, float power = 1)
@@ -215,7 +229,6 @@ namespace Dev.Weapons
             RPC_SelectViewWeapon();
         }
 
-
         [Rpc]
         private void RPC_SelectViewWeapon()
         {
@@ -231,4 +244,5 @@ namespace Dev.Weapons
             }
         }
     }
+
 }

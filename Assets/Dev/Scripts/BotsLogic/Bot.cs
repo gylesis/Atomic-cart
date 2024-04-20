@@ -53,8 +53,6 @@ namespace Dev.BotsLogic
 
         public override void Spawned()
         {
-            Debug.Log($"Bot spawn");
-
             base.Spawned();
             
             ChangeMoveDirection();
@@ -77,7 +75,6 @@ namespace Dev.BotsLogic
 
         public override void FixedUpdateNetwork()
         {
-            Debug.Log($"Bot update");
             if(HasStateAuthority == false) return;
             
             if(Alive == false) return;

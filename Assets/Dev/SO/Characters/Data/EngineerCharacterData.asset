@@ -17,6 +17,6 @@ MonoBehaviour:
   CharacterIcon: {fileID: 21300000, guid: e5de43120dcf25543b5daaaae8cd2d32, type: 3}
   CharacterStats:
     Health: 175
-    MoveSpeed: 600
+    MoveSpeed: 450
     SpeedLowerSpeed: 1.1
     ShootThreshold: 0.75
