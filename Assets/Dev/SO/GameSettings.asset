@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _timeAfterWinGame: 5
   _isFriendlyFireOn: 0
-  _cameraZoomModifier: 25
+  _cameraZoomModifier: 20
   _weaponObstaclesDetectLayers:
     serializedVersion: 2
     m_Bits: 192
