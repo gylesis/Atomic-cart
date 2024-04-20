@@ -88,7 +88,7 @@ namespace Dev.Weapons.Guns
             projectile.RPC_SetViewState(false);
             SpawnVFXOnDestroyProjectile(projectile);
             
-            RPC_LOG(Runner.LatestServerTick.Raw);
+            //RPC_LOG(Runner.LatestServerTick.Raw);
 
             DestroyProjectile(projectile);
         }
@@ -106,7 +106,7 @@ namespace Dev.Weapons.Guns
         [Rpc]
         private void RPC_LOG(int tick)
         {
-            LoggerUI.Instance.Log($"Destroying on tick {tick}, current tick {Runner.LatestServerTick.Raw}");
+            //LoggerUI.Instance.Log($"Destroying on tick {tick}, current tick {Runner.LatestServerTick.Raw}");
         }
 
         /// <summary>

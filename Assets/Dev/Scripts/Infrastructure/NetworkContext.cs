@@ -100,6 +100,7 @@ namespace Dev.Infrastructure
         {
             transform.DOScale(targetValue, duration).SetEase(ease);
         }
+        
 
         [Rpc]
         public void RPC_SetParent(NetworkObject networkObject, NetworkObject newParent)

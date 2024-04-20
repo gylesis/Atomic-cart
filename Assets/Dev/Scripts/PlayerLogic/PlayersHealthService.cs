@@ -121,6 +121,7 @@ namespace Dev.PlayerLogic
             var nickname = PlayersDataService.Instance.GetNickname(victim);
 
             Debug.Log($"Damage {damage} applied to player {nickname}");
+            //LoggerUI.Instance.Log($"Damage {damage} applied to player {nickname}");
 
             Vector3 playerPos = _playersSpawner.GetPlayerPos(victim);
             RPC_SpawnDamageHintFor(shooter, playerPos, damage);
@@ -184,23 +185,25 @@ namespace Dev.PlayerLogic
         private void OnPlayerHealthZero(PlayerRef playerRef, PlayerRef owner)
         {
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
-            playerCharacter.RPC_DoScale(0.5f, 0f);
 
+            playerCharacter.RPC_OnDeath();
+            
             playerCharacter.PlayerController.SetAllowToMove(false);
             playerCharacter.PlayerController.SetAllowToShoot(false);
-            playerCharacter.Collider2D.enabled = false;
-
+           
             var playerDieEventContext = new PlayerDieEventContext();
             playerDieEventContext.Killer = owner;
             playerDieEventContext.Killed = playerRef;
 
             PlayerKilled.OnNext(playerDieEventContext);
 
-            Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe((l =>
+            //LoggerUI.Instance.Log($"Player {playerRef} is dead");
+
+            float respawnTime = 2;
+            
+            Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
             {
                 _playersSpawner.RespawnPlayerCharacter(playerRef);
-
-                playerCharacter.RPC_DoScale(0);
             }));
         }
 

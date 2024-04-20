@@ -1,6 +1,7 @@
 ﻿using Dev.Infrastructure;
 using Dev.Weapons;
 using Dev.Weapons.Guns;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -14,7 +15,6 @@ namespace Dev.PlayerLogic
         [SerializeField] private WeaponController _weaponController;
 
         [SerializeField] private PlayerController _playerController;
-
         [SerializeField] private Rigidbody2D _rigidbody2D;
         
         public PlayerController PlayerController => _playerController;
@@ -27,6 +27,8 @@ namespace Dev.PlayerLogic
 
         [Networked] public CharacterClass CharacterClass { get; private set; }
 
+        [Networked] private NetworkBool IsDead { get; set; }
+        
         public static PlayerCharacter LocalPlayerCharacter;
 
         public override void Spawned()
@@ -35,7 +37,6 @@ namespace Dev.PlayerLogic
             {
                 LocalPlayerCharacter = this;
             }
-            
         }
 
         public void Init(CharacterClass characterClass)
@@ -43,6 +44,27 @@ namespace Dev.PlayerLogic
             CharacterClass = characterClass;
         }
 
+        [Rpc]
+        public void RPC_OnDeath()
+        {
+            transform.DOScale(0, 0.5f);
+            
+            IsDead = true;
+            
+            _collider2D.enabled = false;
+        }
+        
+        [Rpc]
+        public void RPC_ResetAfterDeath()
+        {
+            transform.DOScale(1, 0);
+            
+            IsDead = false;
+            
+            _collider2D.enabled = true;
+        }
+        
+        
         public int Id => Object.InputAuthority.PlayerId;
     }
 }

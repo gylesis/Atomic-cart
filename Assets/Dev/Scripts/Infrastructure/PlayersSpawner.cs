@@ -176,15 +176,17 @@ namespace Dev.Infrastructure
                     {
                         Runner.Despawn(service.Object);
                         Destroy(service.gameObject);
-                        Debug.Log($"Despawned service {service.name}", service);
+                        //Debug.Log($"Despawned service {service.name}", service);
                     }
                 }
 
                 _teamsService.RemoveFromTeam(playerRef);
 
                 PlayersBase.Remove(playerRef);
+                
+                PlayerDeSpawned.OnNext(playerRef);
             }
-
+            
             PlayerManager.RemovePlayer(playerCharacter);
         }
 
@@ -280,14 +282,16 @@ namespace Dev.Infrastructure
             SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
             PlayerCharacter playerCharacter = GetPlayer(playerRef);
-
             playerCharacter.RPC_SetPos(spawnPoint.transform.position);
-
-            playerCharacter.PlayerController.SetAllowToMove(true);
-            playerCharacter.PlayerController.SetAllowToShoot(true);
-
-            playerCharacter.Collider2D.enabled = true;
-
+            
+            Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe((l =>
+            {
+                playerCharacter.RPC_ResetAfterDeath();
+                
+                playerCharacter.PlayerController.SetAllowToMove(true);
+                playerCharacter.PlayerController.SetAllowToShoot(true);
+            }));
+            
             ColorTeamBanner(playerRef);
         }
 
