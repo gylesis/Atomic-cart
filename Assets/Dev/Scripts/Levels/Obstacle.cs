@@ -1,10 +1,11 @@
 ﻿using Dev.Infrastructure;
+using Dev.Utils;
 
 namespace Dev.Levels
 {
     public class Obstacle : NetworkContext, IObstacleDamageable
     {
    
-        public virtual int Id => -1;
+        public virtual int DamageId => AtomicConstants.DamageIds.ObstacleDamageId;
     }
 }

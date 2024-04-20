@@ -76,11 +76,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ea7b4e13f804788b529414bc27cd7b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _charactersDataContainer: {fileID: 11400000, guid: b9885e7b526be5943b1cbcee28b272eb, type: 2}
   _gameSettings: {fileID: 11400000, guid: 4371710b3d9eff4409ca009681390d62, type: 2}
   _mapsContainer: {fileID: 11400000, guid: 3ed23742090337849a77629f2f319577, type: 2}
   _curtains: {fileID: 8273177609646514508}
   _loggerUI: {fileID: 5326664978637723435}
+  _gameStaticDataContainer: {fileID: 11400000, guid: 319ebe2e65da7924cbd5039b1d4651af, type: 2}
 --- !u!1001 &6691127792637281872
 PrefabInstance:
   m_ObjectHideFlags: 0

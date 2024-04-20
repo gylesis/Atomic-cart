@@ -1,4 +1,5 @@
-﻿using Dev.CartLogic;
+﻿using Dev.BotsLogic;
+using Dev.CartLogic;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
@@ -10,7 +11,7 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class MainInstaller : MonoInstaller
+    public class MainSceneInstaller : MonoInstaller
     {
         [SerializeField] private PlayersSpawner _playersSpawner;
         [SerializeField] private PlayersHealthService _playersHealthService;
@@ -28,6 +29,8 @@ namespace Dev.Infrastructure
         [SerializeField] private LevelService _levelService;
         
         [SerializeField] private JoysticksContainer _joysticksContainer;
+
+        [SerializeField] private BotsController _botsController;
         
         public override void InstallBindings()
         {
@@ -43,6 +46,7 @@ namespace Dev.Infrastructure
 
             Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
 
+            Container.Bind<BotsController>().FromInstance(_botsController).AsSingle();
             Container.Bind<PlayerCharacterClassChangeService>().AsSingle().NonLazy();
             Container.Bind<PlayersSpawner>().FromInstance(_playersSpawner).AsSingle();
             Container.Bind<PlayersHealthService>().FromInstance(_playersHealthService).AsSingle();

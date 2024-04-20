@@ -44,10 +44,10 @@ namespace Dev.Infrastructure
 
         [Inject]
         private void Init(TeamsService teamsService, PopUpService popUpService,
-            CharactersDataContainer charactersDataContainer, PlayersHealthService playersHealthService)
+            GameStaticDataContainer gameStaticDataContainer, PlayersHealthService playersHealthService)
         {
             _playersHealthService = playersHealthService;
-            _charactersDataContainer = charactersDataContainer;
+            _charactersDataContainer = gameStaticDataContainer.CharactersDataContainer;
             _popUpService = popUpService;
             _teamsService = teamsService;
         }
@@ -103,7 +103,7 @@ namespace Dev.Infrastructure
 
             PlayerCharacter playerCharacterPrefab = characterData._playerCharacterPrefab;
 
-            TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
+            TeamSide teamSide = _teamsService.GetUnitTeamSide(playerRef);
             Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
 
             PlayerCharacter playerCharacter = networkRunner.Spawn(playerCharacterPrefab, spawnPos,
@@ -205,22 +205,9 @@ namespace Dev.Infrastructure
 
         private void ColorTeamBanner(PlayerRef playerRef)
         {
-            TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
+            TeamSide teamSide = _teamsService.GetUnitTeamSide(playerRef);
 
-            Color color = Color.red;
-
-            switch (teamSide)
-            {
-                case TeamSide.Blue:
-                    color = Color.blue;
-
-                    break;
-                case TeamSide.Red:
-                    color = Color.red;
-                    break;
-            }
-
-            GetPlayer(playerRef).PlayerView.RPC_SetTeamColor(color);
+            GetPlayer(playerRef).PlayerView.RPC_SetTeamColor(AtomicConstants.Teams.GetTeamColor(teamSide));
         }
 
         private void AssignTeam(PlayerRef playerRef)
@@ -275,7 +262,7 @@ namespace Dev.Infrastructure
         {
             _playersHealthService.RestorePlayerHealth(playerRef);
 
-            TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerRef);
+            TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerRef);
 
             var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(playerTeamSide);
 

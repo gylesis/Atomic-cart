@@ -1,3 +1,4 @@
+using Dev.Utils;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace Dev.Levels
         [SerializeField] private Collider2D _collider;
         [SerializeField] protected int _health = 50;
         public int Health => _health;
-        public override int Id => 0;
+        public override int DamageId => AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
 
         protected override void CorrectState()
         {

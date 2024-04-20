@@ -5,7 +5,6 @@ using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.PlayerLogic
@@ -25,37 +24,6 @@ namespace Dev.PlayerLogic
         private CharactersDataContainer _charactersDataContainer;
         private GameSettings _gameSettings;
 
-        private void OnGUI()
-        {
-            if (_init == false) return;
-
-            float height = 0;
-
-            foreach (var pair in PlayersHealth)
-            {
-                var rect = new Rect(0, height, 100, 20);
-
-                string nickname = PlayersDataService.Instance.GetNickname(pair.Key);
-                int health = pair.Value;
-
-                var guiStyle = new GUIStyle();
-                guiStyle.fontSize = 40;
-
-                Color color = Color.white;
-
-                if (health == 0)
-                {
-                    color = Color.red;
-                }
-
-                guiStyle.normal.textColor = color;
-
-                GUI.Label(rect, $"{nickname}: {health} HP", guiStyle);
-
-                height += 55;
-            }
-        }
-
         private void Awake()
         {
             if (Instance == null)
@@ -66,10 +34,10 @@ namespace Dev.PlayerLogic
 
         [Inject]
         public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider,
-            CharactersDataContainer charactersDataContainer, GameSettings gameSettings)
+            GameStaticDataContainer gameStaticDataContainer, GameSettings gameSettings)
         {
             _gameSettings = gameSettings;
-            _charactersDataContainer = charactersDataContainer;
+            _charactersDataContainer = gameStaticDataContainer.CharactersDataContainer;
             _playersSpawner = playersSpawner;
             _teamsService = teamsService;
             _worldTextProvider = worldTextProvider;
@@ -108,8 +76,8 @@ namespace Dev.PlayerLogic
 
             if (_gameSettings.IsFriendlyFireOn == false)
             {
-                TeamSide victimTeamSide = _teamsService.GetPlayerTeamSide(victim);
-                TeamSide shooterTeamSide = _teamsService.GetPlayerTeamSide(shooter);
+                TeamSide victimTeamSide = _teamsService.GetUnitTeamSide(victim);
+                TeamSide shooterTeamSide = _teamsService.GetUnitTeamSide(shooter);
 
                 if (victimTeamSide == shooterTeamSide) return;
             }
@@ -176,12 +144,6 @@ namespace Dev.PlayerLogic
             RPC_SpawnDamageHintFor(shooter, playerPos, damage);
         }
 
-        [Rpc]
-        private void RPC_SpawnDamageHintFor([RpcTarget] PlayerRef playerRef, Vector3 pos, int damage)
-        {
-            _worldTextProvider.SpawnDamageText(pos, damage);
-        }
-
         private void OnPlayerHealthZero(PlayerRef playerRef, PlayerRef owner)
         {
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
@@ -234,10 +196,48 @@ namespace Dev.PlayerLogic
         }
 
         [Rpc]
+        private void RPC_SpawnDamageHintFor([RpcTarget] PlayerRef playerRef, Vector3 pos, int damage)
+        {
+            _worldTextProvider.SpawnDamageText(pos, damage);
+        }
+
+        [Rpc]
         private void RPC_UpdatePlayerHealth(PlayerRef playerRef, int health)
         {
             PlayersHealth.Set(playerRef, health);    
         }
+        
+        private void OnGUI()
+        {
+            if (_init == false) return;
+
+            float height = 50;
+
+            foreach (var pair in PlayersHealth)
+            {
+                var rect = new Rect(50, height, 100, 20);
+
+                string nickname = PlayersDataService.Instance.GetNickname(pair.Key);
+                int health = pair.Value;
+
+                var guiStyle = new GUIStyle();
+                guiStyle.fontSize = 40;
+
+                Color color = Color.white;
+
+                if (health == 0)
+                {
+                    color = Color.red;
+                }
+
+                guiStyle.normal.textColor = color;
+
+                GUI.Label(rect, $"{nickname}: {health} HP", guiStyle);
+
+                height += 55;
+            }
+        }
+
         
     }
 

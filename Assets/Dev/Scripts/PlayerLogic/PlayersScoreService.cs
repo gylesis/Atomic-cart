@@ -49,7 +49,7 @@ namespace Dev.PlayerLogic
             PlayerRef playerId = playerSpawnData.PlayerRef;
 
             playerScoreData.PlayerId = playerId;
-            playerScoreData.PlayerTeamSide = _teamsService.GetPlayerTeamSide(playerId);
+            playerScoreData.PlayerTeamSide = _teamsService.GetUnitTeamSide(playerId);
             playerScoreData.Nickname = _playersDataService.GetNickname(playerId);
             playerScoreData.PlayerDeathCount = 0;
             playerScoreData.PlayerFragCount = 0;

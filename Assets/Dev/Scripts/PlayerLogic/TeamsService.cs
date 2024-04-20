@@ -26,11 +26,11 @@ namespace Dev.PlayerLogic
             Teams.Add(redTeam);
         }
 
-        private Team GetTeamByMember(PlayerRef playerRef)
+        private Team GetTeamByMember(TeamMember teamMember)
         {
             foreach (Team team in Teams)
             {
-                var hasPlayer = team.HasPlayer(playerRef);
+                var hasPlayer = team.HasTeamMember(teamMember);
 
                 if (hasPlayer)
                 {
@@ -43,35 +43,30 @@ namespace Dev.PlayerLogic
 
         public bool DoPlayerHasTeam(PlayerRef playerRef)
         {
-            return Teams.Any(x => x.HasPlayer(playerRef));
+            return Teams.Any(x => x.HasTeamMember(playerRef));
         }
         
-        public TeamSide GetPlayerTeamSide(PlayerRef playerRef)
+        public TeamSide GetUnitTeamSide(TeamMember teamMember)
         {
-            return GetTeamByMember(playerRef).TeamSide;
+            return GetTeamByMember(teamMember).TeamSide;
         }
-
-        public void AssignForTeam(PlayerRef playerRef, TeamSide teamSide)
+        
+        public void AssignForTeam(TeamMember teamMember, TeamSide teamSide)
         {
             Team team = Teams.First(x => x.TeamSide == teamSide);
             int indexOf = Teams.IndexOf(team);
 
-            team.AddMember(playerRef);
+            team.AddMember(teamMember);
 
             Teams.Set(indexOf, team);
         }
 
-        public void AssignBotForTeam()
+        public void RemoveFromTeam(TeamMember teamMember)
         {
-            
-        }
-
-        public void RemoveFromTeam(PlayerRef playerRef)
-        {
-            Team team = GetTeamByMember(playerRef);
+            Team team = GetTeamByMember(teamMember);
             int indexOf = Teams.IndexOf(team);
 
-            team.RemoveMember(playerRef);
+            team.RemoveMember(teamMember);
 
             Teams.Set(indexOf, team);
         }
@@ -81,17 +76,19 @@ namespace Dev.PlayerLogic
             Team blueTeam = Teams.FirstOrDefault(x => x.TeamSide == TeamSide.Blue);
             Team redTeam = Teams.FirstOrDefault(x => x.TeamSide == TeamSide.Red);
 
-            foreach (PlayerRef blueTeamPlayer in blueTeam.Players)
-            {
+            foreach (TeamMember blueTeamPlayer in blueTeam.Players)
+            {   
                 RemoveFromTeam(blueTeamPlayer);
                 AssignForTeam(blueTeamPlayer, TeamSide.Red);
             }
 
-            foreach (PlayerRef redTeamPlayer in redTeam.Players)
+            foreach (TeamMember redTeamPlayer in redTeam.Players)
             {
                 RemoveFromTeam(redTeamPlayer);
                 AssignForTeam(redTeamPlayer, TeamSide.Blue);
             }
         }
+
+        
     }
 }

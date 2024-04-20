@@ -3,6 +3,7 @@ using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.Utils;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -15,6 +16,9 @@ namespace Dev.BotsLogic
         
         private TeamsService _teamsService;
 
+        public Subject<Bot> BotSpawned { get; } = new Subject<Bot>();
+        public Subject<Bot> BotDeSpawned { get; } = new Subject<Bot>();
+        
         private void Start()
         {
             LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
@@ -38,23 +42,54 @@ namespace Dev.BotsLogic
             }   
         }
         
-        private void SpawnBots(int botsCount, TeamSide botsSide)
+        private void SpawnBots(int botsCount, TeamSide team)
         {
             for (int i = 0; i < botsCount; i++)
             {
-                Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(botsSide);
-
-                Runner.Spawn(_botPrefab, spawnPos, onBeforeSpawned: (runner, o) =>
-                {
-                    var bot = o.GetComponent<Bot>();
-
-                    var botData = new BotData();
-                    botData.TeamSide = botsSide;
-                
-                    bot.Init(botData);
-                });
-                
+                SpawnBot(team);
             }
         }
+
+        public void SpawnBot(TeamSide team)
+        {
+            Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(team);
+    
+            Bot bot = Runner.Spawn(_botPrefab, spawnPos, onBeforeSpawned: (runner, o) =>
+            {
+                var bot = o.GetComponent<Bot>();
+
+                var botData = new BotData();
+                botData.TeamSide = team;
+                botData.CharacterClass = CharacterClass.Engineer;
+                
+                bot.View.RPC_SetTeamBannerColor(AtomicConstants.Teams.GetTeamColor(team));
+                
+                _teamsService.AssignForTeam(bot, team);
+                bot.Init(botData);
+            });
+                
+            BotSpawned.OnNext(bot);
+        }
+
+        public void DespawnBot(Bot bot, bool spawnAfterDeath = true)
+        {
+            TeamSide teamSide = bot.BotData.TeamSide;
+            
+            BotDeSpawned.OnNext(bot);  
+            
+            _teamsService.RemoveFromTeam(bot);
+
+            Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe((l =>
+            {
+                Runner.Despawn(bot.Object);
+
+                if (spawnAfterDeath)
+                {
+                    SpawnBot(teamSide); // TODO
+                }
+            }));
+
+        }
+        
     }
 }

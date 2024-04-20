@@ -96,7 +96,7 @@ namespace Dev.PlayerLogic
         {
             foreach (PlayerScoreUI playerScoreUI in ScoreUis)
             {
-                TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerScoreUI.PlayerId);
+                TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerScoreUI.PlayerId);
 
                 RPC_SetScoreUIParent(playerScoreUI, playerTeamSide);
             }

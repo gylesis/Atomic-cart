@@ -5,5 +5,6 @@ namespace Dev.BotsLogic
     public class BotData
     {
         public TeamSide TeamSide;
+        public CharacterClass CharacterClass;
     }
 }

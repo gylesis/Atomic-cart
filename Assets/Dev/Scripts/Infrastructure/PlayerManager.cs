@@ -28,7 +28,7 @@ namespace Dev.Infrastructure
             // Sort the player list when adding players
             for (int i = 0; i < _allPlayers.Count; i++)
             {
-                if (_allPlayers[i].Id > playerCharacter.Id)
+                if (_allPlayers[i].DamageId > playerCharacter.DamageId)
                 {
                     insertIndex = i;
                     break;
@@ -45,7 +45,7 @@ namespace Dev.Infrastructure
             if (playerCharacter == null || !_allPlayers.Contains(playerCharacter))
                 return;
 
-            Debug.Log("Player Removed " + playerCharacter.Id);
+            Debug.Log("Player Removed " + playerCharacter.DamageId);
 
             _allPlayers.Remove(playerCharacter);
         }

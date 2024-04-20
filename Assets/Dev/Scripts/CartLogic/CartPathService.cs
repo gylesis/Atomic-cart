@@ -164,7 +164,7 @@ namespace Dev.CartLogic
         {
             foreach (var playerRef in _playersInsideCartZone)
             {
-                TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerRef);
+                TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerRef);
 
                 if (playerTeamSide != _teamToCapturePoints) return true;
             }

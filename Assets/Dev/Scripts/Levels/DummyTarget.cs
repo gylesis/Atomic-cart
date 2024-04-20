@@ -1,10 +1,11 @@
 ﻿using Dev.Infrastructure;
+using Dev.Utils;
 using Dev.Weapons.Guns;
 
 namespace Dev.Levels
 {
     public class DummyTarget : NetworkContext, IDamageable
     {
-        public int Id => -2;
+        public int DamageId => AtomicConstants.DamageIds.ObstacleDamageId;
     }
 }

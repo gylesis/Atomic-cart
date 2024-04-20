@@ -44,7 +44,7 @@ namespace Dev.Weapons.Guns
 
                     if (isDamageable == false || damagable is IObstacleDamageable obstacleDamageable)
                     {
-                        bool isObstacleWithHealth = damagable.Id == 0;
+                        bool isObstacleWithHealth = damagable.DamageId == 0;
 
                         if (isObstacleWithHealth)
                         {
@@ -54,7 +54,7 @@ namespace Dev.Weapons.Guns
                         continue;
                     }
                     
-                    bool isDummyTarget = damagable.Id == -2;
+                    bool isDummyTarget = damagable.DamageId == -2;
 
                     if (isDummyTarget)
                     {

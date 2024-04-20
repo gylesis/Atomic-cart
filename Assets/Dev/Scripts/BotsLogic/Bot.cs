@@ -3,6 +3,7 @@ using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Utils;
 using Dev.Weapons;
+using Dev.Weapons.Guns;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -10,8 +11,10 @@ using Random = UnityEngine.Random;
 
 namespace Dev.BotsLogic
 {
-    public class Bot : NetworkContext
+    public class Bot : NetworkContext, IDamageable
     {
+        public int DamageId => AtomicConstants.DamageIds.BotDamageId;
+        
         [SerializeField] private WeaponController _weaponController;
 
         [SerializeField] private Rigidbody2D _rigidbody;
@@ -22,16 +25,21 @@ namespace Dev.BotsLogic
         [SerializeField] private float _searchRadius = 5;
 
         [SerializeField] private float _moveDistance = 10;
-        
-        private int _currentPointIndex = 0;
+        [SerializeField] private BotView _view;
+
+        public BotView View => _view;
+
+        private PlayerCharacter _targetPlayer;
         private BotData _botData;   
+        private Vector3 _movePos;
+        private int _currentPointIndex = 0;
         
         private TeamsService _teamsService;
+
+        public BotData BotData => _botData;
         [Networked] private PlayerRef TargetPlayerId { get; set; }
-        
-        private PlayerCharacter _targetPlayer;
-        
-        private Vector3 _movePos;
+
+        public bool Alive = true;
         
         public void Init(BotData botData)
         {
@@ -45,6 +53,8 @@ namespace Dev.BotsLogic
 
         public override void Spawned()
         {
+            Debug.Log($"Bot spawn");
+
             base.Spawned();
             
             ChangeMoveDirection();
@@ -67,6 +77,11 @@ namespace Dev.BotsLogic
 
         public override void FixedUpdateNetwork()
         {
+            Debug.Log($"Bot update");
+            if(HasStateAuthority == false) return;
+            
+            if(Alive == false) return;
+            
             if (TargetPlayerId != PlayerRef.None)
             {
                 MoveToTarget();
@@ -91,7 +106,7 @@ namespace Dev.BotsLogic
 
                     if (isPlayer)
                     {
-                        TeamSide playerTeamSide = _teamsService.GetPlayerTeamSide(playerCharacter.Object.InputAuthority);
+                        TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerCharacter.Object.InputAuthority);
 
                         if (playerTeamSide == _botData.TeamSide)
                         {
@@ -145,7 +160,7 @@ namespace Dev.BotsLogic
             Move(movePos);
             
             _weaponController.AimWeaponTowards(direction);
-            _weaponController.TryToFire(direction);
+            //_weaponController.TryToFire(direction);
         }
 
         private void ChangeMoveDirection()
@@ -157,5 +172,12 @@ namespace Dev.BotsLogic
         {
             _rigidbody.position = Vector3.MoveTowards(transform.position, movePos, Runner.DeltaTime * _speed);
         }
+
+
+        public static implicit operator int(Bot bot)
+        {
+            return (int)bot.Object.Id.Raw;
+        }
+        
     }
 }

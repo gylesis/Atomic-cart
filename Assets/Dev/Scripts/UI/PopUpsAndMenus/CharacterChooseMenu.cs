@@ -24,10 +24,10 @@ namespace Dev.UI.PopUpsAndMenus
         private Action<CharacterClass> _onCharacterChose;
 
         [Inject]
-        private void Init(CharactersDataContainer charactersDataContainer, PlayersSpawner playersSpawner)
+        private void Init(GameStaticDataContainer gameStaticDataContainer, PlayersSpawner playersSpawner)
         {
             _playersSpawner = playersSpawner;   
-            _charactersDataContainer = charactersDataContainer;
+            _charactersDataContainer = gameStaticDataContainer.CharactersDataContainer;
         }
 
         private void Start()

@@ -1,6 +1,7 @@
 using Dev.Infrastructure;
 using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Dev.Weapons.Guns;
 using Fusion;
 using UniRx;
@@ -11,7 +12,7 @@ namespace Dev.CartLogic
 {
     public class Cart : NetworkContext, IDamageable
     {
-        public int Id => -1;
+        public int DamageId => AtomicConstants.DamageIds.ObstacleDamageId;
         
         [FormerlySerializedAs("_interactionZone")] [SerializeField] private PlayerTriggerZone _triggerZone;
 

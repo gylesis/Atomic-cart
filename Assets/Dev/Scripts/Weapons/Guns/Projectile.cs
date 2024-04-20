@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Dev.BotsLogic;
 using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.Levels;
@@ -36,6 +38,15 @@ namespace Dev.Weapons.Guns
         private float _force;
         protected int _damage;
         private PlayerRef _owner;
+        
+        private TeamsService _teamsService;
+
+        private bool _isOwnerIsBot => _owner == PlayerRef.None;
+
+        private void Awake()
+        {
+            _teamsService = DependenciesContainer.Instance.GetDependency<TeamsService>();
+        }
 
         public void Init(Vector2 moveDirection, float force, int damage, PlayerRef owner)
         {
@@ -97,14 +108,14 @@ namespace Dev.Weapons.Guns
                         
                         if (damagable is IObstacleDamageable obstacleDamageable)
                         {
-                            bool isStaticObstacle = damagable.Id == -1;
+                            bool isStaticObstacle = damagable.DamageId == AtomicConstants.DamageIds.ObstacleDamageId;
 
                             if (isStaticObstacle)
                             {
                                 OnObstacleHit(damagable as Obstacle);
                             }
 
-                            bool isObstacleWithHealth = damagable.Id == 0;
+                            bool isObstacleWithHealth = damagable.DamageId == AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
 
                             if (isObstacleWithHealth)
                             {
@@ -117,7 +128,7 @@ namespace Dev.Weapons.Guns
                             break;
                         }
 
-                        bool isDummyTarget = damagable.Id == -2;
+                        bool isDummyTarget = damagable.DamageId == AtomicConstants.DamageIds.DummyTargetDamageId;
 
                         if (isDummyTarget)
                         {
@@ -127,6 +138,28 @@ namespace Dev.Weapons.Guns
                             needToDestroy = true;
 
                             break;
+                        }
+
+                        bool isBot = damagable.DamageId == AtomicConstants.DamageIds.BotDamageId;
+
+                        if (isBot)
+                        {
+                            if (_isOwnerIsBot)
+                            {
+                                continue;  // TODO implement damage to other enemies bots
+                            }
+                            else
+                            {
+                                Bot targetBot = damagable as Bot;
+
+                                TeamSide shooterTeam = _teamsService.GetUnitTeamSide(_owner);
+                                TeamSide botTeam = _teamsService.GetUnitTeamSide(targetBot);
+
+                                if (shooterTeam != botTeam)
+                                {
+                                    BotsHealthService.Instance.RPC_ApplyDamageToBotFromClient(targetBot, shooter, _damage);                                    
+                                }
+                            }
                         }
                         
                         needToDestroy = true;
@@ -143,6 +176,11 @@ namespace Dev.Weapons.Guns
 
         protected virtual void OnObstacleHit(Obstacle obstacle) { }
 
+        protected void ApplyDamageToBot(Bot bot, PlayerRef shooter, int damage)
+        {
+            
+        }
+        
         protected void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
         {
             PlayersHealthService.Instance.ApplyDamageToDummyTarget(dummyTarget, shooter, damage);
@@ -186,10 +224,5 @@ namespace Dev.Weapons.Guns
         {
             Gizmos.DrawWireSphere(transform.position, _overlapRadius);
         }
-    }
-
-    public interface IDamageable
-    {
-        int Id { get; }
     }
 }
