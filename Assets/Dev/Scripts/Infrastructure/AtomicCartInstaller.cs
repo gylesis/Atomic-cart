@@ -1,4 +1,5 @@
 using Dev.PlayerLogic;
+using Dev.Utils;
 using UnityEngine;
 using Zenject;
 
@@ -10,9 +11,12 @@ namespace Dev.Infrastructure
         [SerializeField] private GameSettings _gameSettings;
         [SerializeField] private MapsContainer _mapsContainer;
         [SerializeField] private Curtains _curtains;
+        [SerializeField] private LoggerUI _loggerUI;
         
         public override void InstallBindings()
         {
+            Container.Bind<LoggerUI>().FromInstance(_loggerUI).AsSingle();
+            
             Container.Bind<Curtains>().FromInstance(_curtains).AsSingle();
             Container.Bind<GameSettingProvider>().AsSingle().NonLazy();
             Container.Bind<MapsContainer>().FromInstance(_mapsContainer);

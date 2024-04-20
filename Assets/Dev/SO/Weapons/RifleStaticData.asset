@@ -18,5 +18,5 @@ MonoBehaviour:
   _cooldown: 0.15
   _minDamage: 14
   _maxDamage: 18
-  _projectileSpeed: 1600
+  _projectileSpeed: 1200
   _projectilePrefab: {fileID: 7517733375811117740, guid: 84a5f993419651b4a9bafbf7ec59556c, type: 3}

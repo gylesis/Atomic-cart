@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Dev.Effects;
 using Dev.Infrastructure;
@@ -14,14 +13,17 @@ namespace Dev.Weapons.Guns
     //[OrderAfter(typeof(Projectile))]
     public abstract class ProjectileWeapon<TProjectileType> : Weapon where TProjectileType : ProjectileStaticData
     {
-        public float ProjectileSpeed => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<TProjectileType>().ProjectileSpeed;
-        public Projectile ProjectilePrefab => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<TProjectileType>().ProjectilePrefab;
-        
+        public float ProjectileSpeed => GameSettingProvider.GameSettings.WeaponStaticDataContainer
+            .GetData<TProjectileType>().ProjectileSpeed;
+
+        public Projectile ProjectilePrefab => GameSettingProvider.GameSettings.WeaponStaticDataContainer
+            .GetData<TProjectileType>().ProjectilePrefab;
+
         protected List<SpawnedProjectileContext> _aliveProjectiles = new List<SpawnedProjectileContext>();
 
         public override void FixedUpdateNetwork()
         {
-            if (Object.HasStateAuthority == false) return;
+            if (HasStateAuthority == false) return;
 
             PollAliveProjectilesForDestroy();
         }
@@ -34,26 +36,27 @@ namespace Dev.Weapons.Guns
             for (var index = _aliveProjectiles.Count - 1; index >= 0; index--)
             {
                 SpawnedProjectileContext projectileContext = _aliveProjectiles[index];
-                
+
                 Projectile projectile = projectileContext.Projectile;
 
                 Vector3 origin = projectileContext.Origin;
 
-                float distanceFromOrigin = (projectile.transform.position - origin).sqrMagnitude;
+                //float distanceFromOrigin = (projectile.transform.position - origin).sqrMagnitude;
 
                 TickTimer destroyTimer = projectile.DestroyTimer;
 
                 var expired = destroyTimer.ExpiredOrNotRunning(Runner);
-                
-                if (distanceFromOrigin > projectileContext.MaxDistance * projectileContext.MaxDistance)
-                {
-                   // OnProjectileMaxDistanceReached(projectile);
-                }
-                else if(expired)
+
+                if (expired)
                 {
                     OnProjectileExpired(projectile);
                 }
                 
+                
+                /*else if (distanceFromOrigin > projectileContext.MaxDistance * projectileContext.MaxDistance)
+                {
+                    OnProjectileMaxDistanceReached(projectile);
+                }*/
             }
         }
 
@@ -64,23 +67,29 @@ namespace Dev.Weapons.Guns
         protected virtual void OnProjectileBeforeSpawned(Projectile projectile) // auto destroy logic
         {
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
-            projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 10);
+            projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 5);
 
             var projectileContext = new SpawnedProjectileContext();
             projectileContext.Projectile = projectile;
             projectileContext.Origin = projectile.transform.position;
-            projectileContext.MaxDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(ShootPos, ShootDirection, BulletMaxDistance, projectile.OverlapRadius);
+            projectileContext.MaxDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(ShootPos,
+                ShootDirection, BulletMaxDistance, projectile.OverlapRadius);
 
             _aliveProjectiles.Add(projectileContext);
         }
-        
+
 
         /// <summary>
         /// Event on Projectile destroy
         /// </summary>
         /// <param name="projectile"></param>
-        private void OnProjectileDestroy(Projectile projectile) 
+        private void OnProjectileDestroy(Projectile projectile)
         {
+            projectile.RPC_SetViewState(false);
+            SpawnVFXOnDestroyProjectile(projectile);
+            
+            RPC_LOG(Runner.LatestServerTick.Raw);
+
             DestroyProjectile(projectile);
         }
 
@@ -88,21 +97,27 @@ namespace Dev.Weapons.Guns
         /// Event on Projectile expired
         /// </summary>
         /// <param name="projectile"></param>
-        protected virtual void OnProjectileExpired(Projectile projectile) 
+        protected virtual void OnProjectileExpired(Projectile projectile)
         {
-            Debug.Log($"Projectile {projectile} expired, destroying");
+            SpawnVFXOnDestroyProjectile(projectile);
             DestroyProjectile(projectile);
+        }
+
+        [Rpc]
+        private void RPC_LOG(int tick)
+        {
+            LoggerUI.Instance.Log($"Destroying on tick {tick}, current tick {Runner.LatestServerTick.Raw}");
         }
 
         /// <summary>
         /// Event on Projectile reached max distance
         /// </summary>
         /// <param name="projectile"></param>
-        protected virtual void OnProjectileMaxDistanceReached(Projectile projectile) 
+        protected virtual void OnProjectileMaxDistanceReached(Projectile projectile)
         {
             DestroyProjectile(projectile);
         }
-        
+
         /// <summary>
         /// Called when Max Distance reached, Alive timer expired or hit to obtacle or player
         /// </summary>
@@ -116,7 +131,7 @@ namespace Dev.Weapons.Guns
                 SpawnedProjectileContext context = _aliveProjectiles.First(x => x.Projectile == projectile);
 
                 _aliveProjectiles.Remove(context);
-                SpawnVFXOnDestroyProjectile(projectile);
+                
                 Runner.Despawn(projectile.Object);
             }
         }
@@ -137,7 +152,4 @@ namespace Dev.Weapons.Guns
         public Vector3 Origin;
         public float MaxDistance;
     }
-    
 }
-
-

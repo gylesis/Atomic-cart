@@ -29,7 +29,7 @@ namespace Dev.Weapons.Guns
                           targetPos, GrenadeFlyTime);
 
                     OnProjectileBeforeSpawned(projectile);
-                });
+                }); 
         }
 
         protected override void SpawnVFXOnDestroyProjectile(Projectile projectile)

@@ -61,6 +61,11 @@ namespace Dev.PlayerLogic
             Teams.Set(indexOf, team);
         }
 
+        public void AssignBotForTeam()
+        {
+            
+        }
+
         public void RemoveFromTeam(PlayerRef playerRef)
         {
             Team team = GetTeamByMember(playerRef);

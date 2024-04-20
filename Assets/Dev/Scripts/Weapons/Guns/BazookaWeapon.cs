@@ -48,4 +48,4 @@ namespace Dev.Weapons.Guns
             FxController.Instance.SpawnEffectAt("bazooka_projectile_explosion", projectile.transform.position);
         }
     }
-}
+}   

@@ -53,7 +53,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7119570324272307896, guid: 72807d6fe6787ab4292cad478db34cb7, type: 3}
       propertyPath: Flags
-      value: 3073
+      value: 265217
       objectReference: {fileID: 0}
     - target: {fileID: 7119570324272307896, guid: 72807d6fe6787ab4292cad478db34cb7, type: 3}
       propertyPath: SortKey
@@ -121,7 +121,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: Flags
-      value: 2305
+      value: 264449
       objectReference: {fileID: 0}
     - target: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: SortKey

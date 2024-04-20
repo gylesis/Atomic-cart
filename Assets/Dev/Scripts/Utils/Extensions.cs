@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Dev.Infrastructure;
+using Dev.Levels;
+using Dev.PlayerLogic;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
@@ -14,7 +16,40 @@ namespace Dev.Utils
 {
     public static class Extensions
     {
-        private static Dictionary<int, Sequence> Sequences = new Dictionary<int, Sequence>();
+        public static class AtomicCart
+        {
+            /// <summary>
+            /// Getting distance between ShootPos and point in front of the wall with offset
+            /// </summary>
+            /// <returns></returns>
+            public static float GetBulletMaxDistanceClampedByWalls(Vector2 originPos, Vector2 shootDirection, float bulletMaxDistance, float bulletOverlapRadius)
+            {
+                GameSettings gameSettings = GameSettingProvider.GameSettings;   
+                
+                RaycastHit2D raycast = Physics2D.CircleCast(originPos,bulletOverlapRadius ,shootDirection, bulletMaxDistance, gameSettings.WeaponObstaclesDetectLayers);
+
+                if (raycast == false) return bulletMaxDistance;
+                
+                Vector2 hitPoint = raycast.point;
+                
+                hitPoint -= shootDirection * gameSettings.WeaponHitDetectionOffset;
+                float distance = (originPos - hitPoint).magnitude;
+
+                return distance;
+            }
+            
+            public static Vector3 GetSpawnPosByTeam(TeamSide teamSide)
+            {
+                var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(teamSide);
+
+                SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+                return spawnPoint.transform.position;
+            }
+            
+        }
+        
+        
 
         public static async Task<object> InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)
         {
@@ -212,32 +247,7 @@ namespace Dev.Utils
                 })).OnComplete((() => { onMoveComplete?.Invoke(); }));
             }
         }
-
-
-        public static class AtomicCart
-        {
-            
-            /// <summary>
-            /// Getting distance between ShootPos and point in front of the wall with offset
-            /// </summary>
-            /// <returns></returns>
-            public static float GetBulletMaxDistanceClampedByWalls(Vector2 originPos, Vector2 shootDirection, float bulletMaxDistance, float bulletOverlapRadius)
-            {
-                GameSettings gameSettings = GameSettingProvider.GameSettings;   
-                
-                RaycastHit2D raycast = Physics2D.CircleCast(originPos,bulletOverlapRadius ,shootDirection, bulletMaxDistance, gameSettings.WeaponObstaclesDetectLayers);
-
-                if (raycast == false) return bulletMaxDistance;
-                
-                Vector2 hitPoint = raycast.point;
-                
-                hitPoint -= shootDirection * gameSettings.WeaponHitDetectionOffset;
-                float distance = (originPos - hitPoint).magnitude;
-
-                return distance;
-            }
-            
-        }
+        
         
     }
 }

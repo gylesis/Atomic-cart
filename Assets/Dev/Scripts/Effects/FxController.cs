@@ -1,5 +1,6 @@
 using System;
 using Dev.Infrastructure;
+using Fusion;
 using UniRx;
 using UnityEngine;
 
@@ -29,14 +30,12 @@ namespace Dev.Effects
             var hasEffect = _fxContainer.TryGetEffectDataByName(effectName, out var effectPrefab);
 
             if (hasEffect)
-            {
-                Effect effect = Runner.Spawn(effectPrefab, pos, rotation, Object.InputAuthority);
-
-                effect.RPC_SetPos(pos);
+            {   
+                Effect effect = Runner.Spawn(effectPrefab, pos, rotation, Runner.LocalPlayer);
 
                 Observable.Timer(TimeSpan.FromSeconds(4)).Subscribe((l => { Runner.Despawn(effect.Object); }));
             }
-        }
+        }   
 
         /*public Effect SpawnEffectAt(string effectName, Transform parent, Quaternion rotation = default)
         {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
@@ -46,15 +47,22 @@ namespace Dev.Weapons.Guns
             transform.up = _moveDirection;
         }
 
+        [Rpc]
+        public void RPC_SetViewState(bool isEnabled)
+        {
+            _view.gameObject.SetActive(isEnabled);  
+        }
+
         public override void FixedUpdateNetwork()
         {
-            if (HasInputAuthority == false) return;
-
-            _networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
-
             if (_collideWhileMoving == false) return;
 
             CheckCollisionsWhileMoving();
+            
+            if (HasStateAuthority == false) return;
+
+            transform.position = Vector3.MoveTowards(transform.position, transform.position + (Vector3)_moveDirection, Runner.DeltaTime * _force);
+            //_networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
         }
 
         private void CheckCollisionsWhileMoving()

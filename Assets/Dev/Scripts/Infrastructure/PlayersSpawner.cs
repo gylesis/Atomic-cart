@@ -5,6 +5,7 @@ using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
+using Dev.Utils;
 using Dev.Weapons;
 using Dev.Weapons.StaticData;
 using Fusion;
@@ -103,7 +104,7 @@ namespace Dev.Infrastructure
             PlayerCharacter playerCharacterPrefab = characterData._playerCharacterPrefab;
 
             TeamSide teamSide = _teamsService.GetPlayerTeamSide(playerRef);
-            Vector3 spawnPos = GetSpawnPosByTeam(teamSide);
+            Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
 
             PlayerCharacter playerCharacter = networkRunner.Spawn(playerCharacterPrefab, spawnPos,
                 quaternion.identity, playerRef);
@@ -313,14 +314,7 @@ namespace Dev.Infrastructure
 
         public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;
 
-        public Vector3 GetSpawnPosByTeam(TeamSide teamSide)
-        {
-            var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(teamSide);
-
-            SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-
-            return spawnPoint.transform.position;
-        }
+       
 
         [Rpc]
         private void RPC_OnPlayerSpawnedInvoke(PlayerCharacter playerCharacter)

@@ -36,21 +36,18 @@ namespace Dev.Weapons
 
         public override void Spawned()
         {
-            if (HasInputAuthority)
-            {
-                Weapon weapon = WeaponParent.GetComponentInChildren<Weapon>();
-
-                if (weapon != null)
-                {
-                    RPC_AddWeapon(weapon, true);
-                }
-            }
-
             if (HasStateAuthority == false) return;
 
-            foreach (Weapon weapon in Weapons)
+            Weapon weapon = WeaponParent.GetComponentInChildren<Weapon>();
+
+            if (weapon != null)
             {
-                weapon.transform.parent = WeaponParent;
+                RPC_AddWeapon(weapon, true);
+            }
+            
+            foreach (Weapon weap in Weapons)
+            {
+                weap.transform.parent = WeaponParent;
             }
 
             _weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
@@ -119,7 +116,7 @@ namespace Dev.Weapons
 
         private void Shoot(Vector2 direction, float power = 1)
         {
-            if (HasStateAuthority == false) return;
+            //if (HasStateAuthority == false) return;
 
             var cooldown = CurrentWeapon.Cooldown;
 
@@ -145,29 +142,7 @@ namespace Dev.Weapons
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
 
-        public override void FixedUpdateNetwork()
-        {
-            if (HasStateAuthority)
-            {
-                /*var hasInput = GetInput<PlayerInput>(out var input);
-
-                if (hasInput)
-                {
-                    if (input.WeaponNum != 22)
-                    {
-                        if (input.WeaponNum == 1)
-                        {
-                            _weaponProvider.ProvideWeaponToPlayer<AkWeapon>(Object.InputAuthority, true);
-                        }
-                        else if (input.WeaponNum == 2)
-                        {
-                            _weaponProvider.ProvideWeaponToPlayer<BazookaWeapon>(Object.InputAuthority, true);
-                        }
-                    }
-                }*/
-            }
-        }
-
+        
         private void OnWeaponChanged(Weapon weapon)
         {
             return;

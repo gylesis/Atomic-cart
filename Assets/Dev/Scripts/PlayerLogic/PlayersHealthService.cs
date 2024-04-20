@@ -123,8 +123,8 @@ namespace Dev.PlayerLogic
             Debug.Log($"Damage {damage} applied to player {nickname}");
 
             Vector3 playerPos = _playersSpawner.GetPlayerPos(victim);
-            RPC_SpawnDamageHint(shooter, playerPos, damage);
-            RPC_SpawnDamageHint(victim, playerPos, damage);
+            RPC_SpawnDamageHintFor(shooter, playerPos, damage);
+            RPC_SpawnDamageHintFor(victim, playerPos, damage);
 
             playerCurrentHealth -= damage;
 
@@ -152,7 +152,7 @@ namespace Dev.PlayerLogic
             Debug.Log($"Damage {damage} applied to player {nickname} from server");
 
             Vector3 playerPos = _playersSpawner.GetPlayerPos(victim);
-            RPC_SpawnDamageHint(victim, playerPos, damage);
+            RPC_SpawnDamageHintFor(victim, playerPos, damage);
 
             playerCurrentHealth -= damage;
 
@@ -172,11 +172,11 @@ namespace Dev.PlayerLogic
             Debug.Log($"Damage {damage} applied to dummy target {dummyTarget.name}");
 
             Vector3 playerPos = dummyTarget.transform.position;
-            RPC_SpawnDamageHint(shooter, playerPos, damage);
+            RPC_SpawnDamageHintFor(shooter, playerPos, damage);
         }
 
         [Rpc]
-        private void RPC_SpawnDamageHint([RpcTarget] PlayerRef playerRef, Vector3 pos, int damage)
+        private void RPC_SpawnDamageHintFor([RpcTarget] PlayerRef playerRef, Vector3 pos, int damage)
         {
             _worldTextProvider.SpawnDamageText(pos, damage);
         }
