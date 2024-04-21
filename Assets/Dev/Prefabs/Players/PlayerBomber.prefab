@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 898484371, guid: b70550f1e6f52484585e66f02133010c, type: 3}
@@ -53,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 7841997503128309463}
     - target: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: NetworkedBehaviours.Array.data[2]
@@ -66,11 +67,11 @@ PrefabInstance:
     - target: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: NetworkedBehaviours.Array.data[4]
       value: 
-      objectReference: {fileID: 8281304461611787620}
+      objectReference: {fileID: 1127751881778471385}
     - target: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: NetworkedBehaviours.Array.data[5]
       value: 
-      objectReference: {fileID: 1420536664955301830}
+      objectReference: {fileID: 8281304461611787620}
     - target: {fileID: 5544195138823906169, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: NetworkedBehaviours.Array.data[6]
       value: 
@@ -138,7 +139,24 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 86314474022417395, guid: b70550f1e6f52484585e66f02133010c, type: 3}
     - {fileID: 3459795353489080509, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3706869247759106061, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1558678089261071432}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+--- !u!114 &1127751881778471385 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1674433856282694118, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+  m_PrefabInstance: {fileID: 1772831537775063103}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60fb585a00954c0a83a4ae8b898a8f57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1420536664955301830 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 805192663281508345, guid: b70550f1e6f52484585e66f02133010c, type: 3}
@@ -193,6 +211,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3164672730875392050}
     m_Modifications:
     - target: {fileID: 2899938896004198880, guid: 56e7fc85cb862f04bac76f277fb498e9, type: 3}
@@ -260,7 +279,15 @@ PrefabInstance:
       value: GrenadeLauncherWeapon
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56e7fc85cb862f04bac76f277fb498e9, type: 3}
+--- !u!4 &1558678089261071432 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2899938896004198880, guid: 56e7fc85cb862f04bac76f277fb498e9, type: 3}
+  m_PrefabInstance: {fileID: 4440318856769834408}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7841997503128309463 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5857900360349942655, guid: 56e7fc85cb862f04bac76f277fb498e9, type: 3}

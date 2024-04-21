@@ -131,7 +131,6 @@ namespace Dev.Infrastructure
             {
                 _playerServices.Add(playerRef, new List<NetworkObject>());
 
-                SetInputService(playerRef, networkRunner);
                 SetCamera(playerRef, playerCharacter, networkRunner);
             }
             else
@@ -236,16 +235,6 @@ namespace Dev.Infrastructure
             cameraController.SetFollowState(true);
             cameraController.Object.RequestStateAuthority();
             _playerServices[playerRef].Add(cameraController.Object);
-        }
-
-        private void SetInputService(PlayerRef playerRef, NetworkRunner networkRunner)
-        {
-            InputService inputService =
-                networkRunner.Spawn(_inputServicePrefab, Vector3.zero, Quaternion.identity, playerRef);
-
-            inputService.Object.RequestStateAuthority();
-
-            _playerServices[playerRef].Add(inputService.Object);
         }
 
         public void SetPlayerActiveState(PlayerRef playerRef, bool isOn)

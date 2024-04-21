@@ -488,6 +488,7 @@ GameObject:
   - component: {fileID: 5544195138823906170}
   - component: {fileID: 7142691939699321184}
   - component: {fileID: 4837053613947184219}
+  - component: {fileID: 1674433856282694118}
   m_Layer: 3
   m_Name: PlayerCharacterBase
   m_TagString: Player
@@ -537,6 +538,7 @@ MonoBehaviour:
   - {fileID: 5429065874298734006}
   - {fileID: 5999655236562569822}
   - {fileID: 4837053613947184219}
+  - {fileID: 1674433856282694118}
   - {fileID: 7671677920196908379}
   - {fileID: 805192663281508345}
 --- !u!114 &5231129319991485753
@@ -681,6 +683,22 @@ MonoBehaviour:
     Position: 0.01
     Rotation: 0.01
     Scale: 0.01
+--- !u!114 &1674433856282694118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5544195138823906174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60fb585a00954c0a83a4ae8b898a8f57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _IsActive:
+    _value: 1
+  _AllowToCast: 1
+  _turret: {fileID: 2673182492497880130, guid: 318a08ca55ecb59449313743856e11c4, type: 3}
 --- !u!1 &6258946657195857654
 GameObject:
   m_ObjectHideFlags: 0

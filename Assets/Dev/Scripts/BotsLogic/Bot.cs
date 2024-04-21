@@ -57,14 +57,14 @@ namespace Dev.BotsLogic
             
             ChangeMoveDirection();
             
-            Observable.Interval(TimeSpan.FromSeconds(0.5f)).Subscribe((l =>
+            Observable.Interval(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
             {
                 if(HasStateAuthority == false) return;
                 
                 SearchForTargets();
             }));
             
-            Observable.Interval(TimeSpan.FromSeconds(3)).Subscribe((l =>
+            Observable.Interval(TimeSpan.FromSeconds(3)).TakeUntilDestroy(this).Subscribe((l =>
             {
                 if(HasStateAuthority == false) return;
                 

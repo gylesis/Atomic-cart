@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.UI;
@@ -41,13 +42,14 @@ namespace Dev.PlayerLogic
 
         private TickTimer _dashTimer;
         private ChangeDetector _changeDetector;
+        private InputService _inputService;
 
         private void Awake()
         {
             _popUpService = DependenciesContainer.Instance.GetDependency<PopUpService>();
             _joysticksContainer = DependenciesContainer.Instance.GetDependency<JoysticksContainer>();
+            _inputService = DependenciesContainer.Instance.GetDependency<InputService>();
         }
-
 
         public override void Spawned()
         {
@@ -63,67 +65,77 @@ namespace Dev.PlayerLogic
             _shootThreshold = shootThreshold;
             _speedLowerSpeed = speedLowerVelocity;
         }
+
         private void Shoot()
         {
             _weaponController.TryToFire();
         }
+
         public override void FixedUpdateNetwork()
         {
-            if(HasStateAuthority == false) return;
-            
-            if (GetInput<PlayerInput>(out var input))
+            if (HasStateAuthority == false) return;
+
+            foreach (PlayerInput input in _inputService.BufferedInputs)
             {
                 MoveDirection = input.MoveDirection;
                 LookDirection = input.LookDirection;
-            }
 
-            Vector2 moveDirection = MoveDirection;
+                Vector2 moveDirection = MoveDirection;
 
-            if (AllowToMove)
-            {
-                if (_dashTimer.ExpiredOrNotRunning(Runner))
+                if (AllowToMove)
                 {
-                    if (moveDirection != Vector2.zero)
+                    if (_dashTimer.ExpiredOrNotRunning(Runner))
                     {
-                        Vector2 velocity = moveDirection * (_speed * Runner.DeltaTime);
+                        if (moveDirection != Vector2.zero)
+                        {
+                            Vector2 velocity = moveDirection * (_speed * Runner.DeltaTime);
+
+                            _playerCharacter.Rigidbody.velocity = velocity;
+                        }
+
+                        if (Input.GetKeyDown(KeyCode.LeftShift))
+                        {
+                            Dash();
+                        }
+                    }
+                }
+
+                if (moveDirection == Vector2.zero)
+                {
+                    Vector2 velocity = _playerCharacter.Rigidbody.velocity;
+
+                    if (velocity.sqrMagnitude != 0)
+                    {
+                        float lowerModifier = (_speedLowerSpeed * Runner.DeltaTime);
+
+                        float xSign = Mathf.Sign(velocity.x) == 1 ? 1 : -1;
+                        float ySign = Mathf.Sign(velocity.y) == 1 ? 1 : -1;
+
+                        //Debug.Log($"xSign {xSign}, ySign {ySign}, x vel: {velocity.x}, y vel {velocity.y}");
+
+                        velocity.x *= lowerModifier * xSign;
+                        velocity.y *= lowerModifier * ySign;
+
+                        velocity.x = Mathf.Clamp(velocity.x, 0, float.MaxValue);
+                        velocity.y = Mathf.Clamp(velocity.y, 0, float.MaxValue);
 
                         _playerCharacter.Rigidbody.velocity = velocity;
                     }
-
-                    if (Input.GetKeyDown(KeyCode.LeftShift))
-                    {
-                        Dash();
-                    }
                 }
-            }
 
-            if (moveDirection == Vector2.zero)
-            {
-                Vector2 velocity = _playerCharacter.Rigidbody.velocity;
-
-                if (velocity.sqrMagnitude != 0)
+                if (AllowToShoot)
                 {
-                    float lowerModifier = (_speedLowerSpeed * Runner.DeltaTime);
-
-                    float xSign = Mathf.Sign(velocity.x) == 1 ? 1 : -1;
-                    float ySign = Mathf.Sign(velocity.y) == 1 ? 1 : -1;
-
-                    //Debug.Log($"xSign {xSign}, ySign {ySign}, x vel: {velocity.x}, y vel {velocity.y}");
-
-                    velocity.x *= lowerModifier * xSign;
-                    velocity.y *= lowerModifier * ySign;
-
-                    velocity.x = Mathf.Clamp(velocity.x, 0, float.MaxValue);
-                    velocity.y = Mathf.Clamp(velocity.y, 0, float.MaxValue);
-
-                    _playerCharacter.Rigidbody.velocity = velocity;
+                    if (input.CastAbility)
+                    {
+                        _playerCharacter.GetComponent<AbilityCastController>().CastAbility(AbilityType.Turret, transform.position + (Vector3)LookDirection * 3);
+                    }
+                    
+                    AimRotation();
                 }
             }
 
-            if (AllowToShoot)
-            {
-                AimRotation();
-            }
+           // Debug.Log($"Destroyed {_inputService.BufferedInputs.Count} inputs");
+            _inputService.BufferedInputs.Clear();
         }
 
         private async void Dash()
@@ -131,11 +143,12 @@ namespace Dev.PlayerLogic
             float dashTime = 0.5f;
 
             float dashDistance = 2;
-            
+
             _dashTimer = TickTimer.CreateFromSeconds(Runner, dashTime);
 
-            Vector3 targetPos = _playerCharacter.transform.position + (Vector3) LastMoveDirection.normalized * dashDistance;
-            
+            Vector3 targetPos = _playerCharacter.transform.position +
+                                (Vector3)LastMoveDirection.normalized * dashDistance;
+
             float stepPerTick = 0.05f;
             int stepsCount = (int)(dashTime / stepPerTick);
 
@@ -156,7 +169,7 @@ namespace Dev.PlayerLogic
             AllowToMove = allowToMove;
             _joysticksContainer.MovementJoystick.gameObject.SetActive(AllowToMove);
         }
-        
+
         public void SetAllowToShoot(bool allowToShoot)
         {
             AllowToShoot = allowToShoot;
@@ -217,6 +230,5 @@ namespace Dev.PlayerLogic
 
             _weaponController.AimWeaponTowards(lookDirection);
         }
-
     }
 }

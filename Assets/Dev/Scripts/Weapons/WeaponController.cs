@@ -13,25 +13,19 @@ namespace Dev.Weapons
     public class WeaponController : NetworkContext
     {
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
-
-        [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
-
         [SerializeField] private Transform _weaponParent;
-
-        public Transform WeaponParent => _weaponParent;
-
-        public int WeaponsAmount => Weapons.Count;
 
         private PlayerCharacter _playerCharacter;
         private WeaponProvider _weaponProvider;
 
+        public Transform WeaponParent => _weaponParent;
+        public int WeaponsAmount => Weapons.Count;
+        [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
         public bool AllowToShoot { get; private set; } = true;
 
-        [HideInInspector]
-        [Networked]
-        [CanBeNull]
-        public Weapon CurrentWeapon { get; set; }
+        [HideInInspector, CanBeNull, Networked] public Weapon CurrentWeapon { get; set; }
 
+        public Vector3 Direction => WeaponParent.up;
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();
 
         public override void Spawned()
@@ -44,7 +38,7 @@ namespace Dev.Weapons
             {
                 RPC_AddWeapon(weapon, true);
             }
-            
+
             foreach (Weapon weap in Weapons)
             {
                 weap.transform.parent = WeaponParent;
@@ -112,11 +106,10 @@ namespace Dev.Weapons
             Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
 
             WeaponParent.transform.up = direction;
-            
-            
-            
-            float scaleSign = 1;            
-            
+
+
+            float scaleSign = 1;
+
             if (direction.x < 0)
             {
                 scaleSign = -1;
@@ -124,7 +117,7 @@ namespace Dev.Weapons
 
             var localScale = CurrentWeapon.View.localScale;
             localScale.x = scaleSign;
-            
+
             CurrentWeapon.View.localScale = localScale;
         }
 
@@ -156,7 +149,7 @@ namespace Dev.Weapons
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
 
-        
+
         private void OnWeaponChanged(Weapon weapon)
         {
             return;
@@ -191,7 +184,7 @@ namespace Dev.Weapons
 
             if (CurrentWeapon == chosenWeapon)
             {
-               // Debug.Log($"Weapon already chosen");
+                // Debug.Log($"Weapon already chosen");
                 return;
             }
 
@@ -244,5 +237,4 @@ namespace Dev.Weapons
             }
         }
     }
-
 }

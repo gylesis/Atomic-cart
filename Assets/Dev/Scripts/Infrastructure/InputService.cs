@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Dev.UI;
-using Dev.UI.PopUpsAndMenus;
-using Fusion;
-using Fusion.Sockets;
 using UnityEngine;
+using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class InputService : PlayerService, INetworkRunnerCallbacks
+    public class InputService : ITickable, IInitializable
     {
         private Joystick _aimJoystick;
         private Joystick _movementJoystick;
-        private PopUpService _popUpService;
 
         private KeyCode[] _keyCodes =
         {
@@ -27,35 +23,22 @@ namespace Dev.Infrastructure
             KeyCode.Alpha9,
         };
 
-        private void Awake()
+
+        public Queue<PlayerInput> BufferedInputs = new Queue<PlayerInput>(16);
+        private JoysticksContainer _joysticksContainer;
+
+        public InputService(JoysticksContainer joysticksContainer)
         {
-            _popUpService = FindObjectOfType<PopUpService>();
+            _joysticksContainer = joysticksContainer;
         }
 
-        public override void Spawned()
+        public void Initialize()
         {
-            Runner.AddCallbacks(this);
-
-            JoysticksContainer joysticksContainer = DependenciesContainer.Instance.GetDependency<JoysticksContainer>();
-
-            _aimJoystick = joysticksContainer.AimJoystick;
-            _movementJoystick = joysticksContainer.MovementJoystick;
+            _aimJoystick = _joysticksContainer.AimJoystick;
+            _movementJoystick = _joysticksContainer.MovementJoystick;
         }
 
-        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-            
-        }
-
-        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-        }
-
-        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
-
-        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
-
-        public void OnInput(NetworkRunner runner, NetworkInput input)
+        public void Tick()
         {
             Vector2 joystickDirection = _movementJoystick.Direction;
 
@@ -75,10 +58,13 @@ namespace Dev.Infrastructure
             Vector2 aimJoystickDirection = _aimJoystick.Direction;
 
             PlayerInput playerInput = new PlayerInput();
-
+            
             playerInput.MoveDirection = moveDirection;
             playerInput.LookDirection = aimJoystickDirection;
-            playerInput.WeaponNum = 22;
+            //playerInput.WeaponNum = -1;
+
+            playerInput.CastAbility = Input.GetKeyDown(KeyCode.F);
+            
 
             for (int i = 0; i < _keyCodes.Length; i++)
             {
@@ -89,44 +75,12 @@ namespace Dev.Infrastructure
                 }
             }
 
-            input.Set(playerInput);
+            if (moveDirection == Vector2.zero && aimJoystickDirection == Vector2.zero)
+            {
+                //return;
+            }
+
+            BufferedInputs.Enqueue(playerInput);
         }
-
-        public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-
-        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
-
-        public void OnConnectedToServer(NetworkRunner runner) { }
-        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
-        {
-        }
-
-        public void OnDisconnectedFromServer(NetworkRunner runner) { }
-
-        public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
-            byte[] token) { }
-
-        public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
-
-        public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
-
-        public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
-
-        public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-
-        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
-        {
-        }
-
-        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-        {
-        }
-
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
-
-        public void OnSceneLoadDone(NetworkRunner runner) { }
-
-        public void OnSceneLoadStart(NetworkRunner runner) { }
     }
 }
