@@ -1,3 +1,4 @@
+using System;
 using Dev.Infrastructure;
 using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
@@ -19,11 +20,10 @@ namespace Dev.CartLogic
         public Subject<PlayerRef> CartZoneEntered { get; } = new Subject<PlayerRef>();
         public Subject<PlayerRef> CartZoneExit { get; } = new Subject<PlayerRef>();
 
-
-        protected override void OnSubscriptions()
+        protected override void OnInjectCompleted()
         {
-            base.OnSubscriptions();
-
+            base.OnInjectCompleted();
+            
             _triggerZone.PlayerEntered.TakeUntilDestroy(this).Subscribe((OnPlayerEnteredCartZone));
             _triggerZone.PlayerExit.TakeUntilDestroy(this).Subscribe((OnPlayerExitCartZone));
         }

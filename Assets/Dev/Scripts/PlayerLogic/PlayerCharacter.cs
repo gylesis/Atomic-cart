@@ -4,6 +4,7 @@ using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Dev.PlayerLogic
 {
@@ -33,13 +34,14 @@ namespace Dev.PlayerLogic
 
         public override void Spawned()
         {
-            if (HasInputAuthority)
+            if (HasStateAuthority)
             {
                 LocalPlayerCharacter = this;
             }
         }
 
-        public void Init(CharacterClass characterClass)
+        [Rpc]
+        public void RPC_Init(CharacterClass characterClass)
         {
             CharacterClass = characterClass;
         }

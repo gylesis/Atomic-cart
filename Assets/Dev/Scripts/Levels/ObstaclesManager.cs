@@ -37,12 +37,11 @@ namespace Dev.Levels
             _levelService = levelManager;
         }
 
-        protected override void OnSubscriptions()
+        protected override void OnInjectCompleted()
         {
-            LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
-
-            base.OnSubscriptions();
-
+            base.OnInjectCompleted();
+            
+            _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
             _gameService.GameRestarted.TakeUntilDestroy(this).Subscribe((unit => OnGameRestarted()));
         }
 

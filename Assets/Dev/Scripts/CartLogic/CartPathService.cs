@@ -39,13 +39,34 @@ namespace Dev.CartLogic
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
         private TeamsService _teamsService;
 
+        [Inject]
+        private void Construct(TeamsService teamsService)
+        {
+            _teamsService = teamsService;
+        }
+        
         [ContextMenu(nameof(UpdatePath))]
         private void UpdatePath()
         {
             _pathPoints = GetComponentsInChildren<CartPathPoint>().ToList();
         }
 
-        private void Awake()
+        protected override void OnInjectCompleted()
+        {
+            base.OnInjectCompleted();
+            
+            PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
+            playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
+
+            _cart.CartZoneEntered.TakeUntilDestroy(this).Subscribe((OnCartZoneEntered));
+            _cart.CartZoneExit.TakeUntilDestroy(this).Subscribe((OnCartZoneExit));
+
+            HighlightControlPoints();
+            
+            ResetCart();
+        }
+
+        private void HighlightControlPoints()
         {
             foreach (CartPathPoint pathPoint in _pathPoints)
             {
@@ -58,28 +79,8 @@ namespace Dev.CartLogic
                     pathPoint.View.gameObject.SetActive(false);
                 }
             }
-
-        }
-
-        [Inject]
-        private void Construct(TeamsService teamsService)
-        {
-            _teamsService = teamsService;
         }
         
-        protected override void OnSubscriptions()
-        {
-            base.OnSubscriptions();
-            
-            PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
-            playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
-
-            _cart.CartZoneEntered.TakeUntilDestroy(this).Subscribe((OnCartZoneEntered));
-            _cart.CartZoneExit.TakeUntilDestroy(this).Subscribe((OnCartZoneExit));
-
-            ResetCart();
-        }
-
         private void OnPlayerLeft(PlayerRef playerRef)
         {
             if (_playersInsideCartZone.Contains(playerRef))

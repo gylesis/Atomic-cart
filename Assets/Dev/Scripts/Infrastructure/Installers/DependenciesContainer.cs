@@ -21,10 +21,10 @@ namespace Dev.Infrastructure
             _diContainer.InjectGameObject(gameObject);
         }
         
-        public TType GetDependency<TType>()
+        /*public TType GetDependency<TType>()
         {
             return _diContainer.Resolve<TType>();
-        }
+        }*/
 
     }
 }

@@ -107,7 +107,10 @@ namespace Dev.Infrastructure
             Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
 
             PlayerCharacter playerCharacter = networkRunner.Spawn(playerCharacterPrefab, spawnPos,
-                quaternion.identity, playerRef);
+                quaternion.identity, playerRef, onBeforeSpawned: (runner, o) =>
+                {
+                    DependenciesContainer.Instance.Inject(o.gameObject);
+                });
 
             NetworkObject playerNetObj = playerCharacter.Object;
 
@@ -117,15 +120,14 @@ namespace Dev.Infrastructure
             playerNetObj.AssignInputAuthority(playerRef);
             networkRunner.SetPlayerObject(playerRef, playerNetObj);
             
-            DependenciesContainer.Instance.Inject(playerCharacter.gameObject);
-
+            
             playerCharacter.PlayerController.RPC_Init(characterData.CharacterStats.MoveSpeed,
                 characterData.CharacterStats.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
 
             playerCharacter.PlayerController.SetAllowToMove(true);
             playerCharacter.PlayerController.SetAllowToShoot(true);
 
-            playerCharacter.Init(characterClass);
+            playerCharacter.RPC_Init(characterClass);
 
             if (firstSpawn)
             {

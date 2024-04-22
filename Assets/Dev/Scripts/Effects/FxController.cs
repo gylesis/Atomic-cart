@@ -24,7 +24,6 @@ namespace Dev.Effects
             }
         }
 
-
         public void SpawnEffectAt(string effectName, Vector3 pos, Quaternion rotation = default)
         {
             var hasEffect = _fxContainer.TryGetEffectDataByName(effectName, out var effectPrefab);

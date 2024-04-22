@@ -26,12 +26,12 @@ namespace Dev.Levels.Interactions
             _levelService = levelService;
         }
 
-        protected override void OnSubscriptions()
+        protected override void OnInjectCompleted()
         {
+            base.OnInjectCompleted();
+            
             _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
             _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe((OnPlayerDied));
-
-            base.OnSubscriptions();
         }
 
         private void OnLevelLoaded(Level level)

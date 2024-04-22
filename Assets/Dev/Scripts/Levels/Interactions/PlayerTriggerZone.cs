@@ -1,8 +1,6 @@
 using Dev.PlayerLogic;
-using Dev.Utils;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Dev.Levels.Interactions
 {
@@ -13,10 +11,10 @@ namespace Dev.Levels.Interactions
         public Subject<PlayerCharacter> PlayerEntered { get; } = new Subject<PlayerCharacter>();
         public Subject<PlayerCharacter> PlayerExit { get; } = new Subject<PlayerCharacter>();
 
-        protected override void OnSubscriptions()
+        protected override void OnInjectCompleted()
         {
-            base.OnSubscriptions();
-
+            base.OnInjectCompleted();
+            
             _triggerZone.TriggerEntered.TakeUntilDestroy(this).Subscribe((OnZoneEntered));
             _triggerZone.TriggerExit.TakeUntilDestroy(this).Subscribe((OnZoneExit));
         }

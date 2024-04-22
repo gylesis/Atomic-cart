@@ -34,6 +34,8 @@ namespace Dev.Levels
 
         public override void Spawned()
         {
+            base.Spawned();
+            
             if (HasStateAuthority == false) return;
 
             LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));

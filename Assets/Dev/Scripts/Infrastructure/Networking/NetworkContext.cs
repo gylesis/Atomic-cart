@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -9,15 +10,20 @@ namespace Dev.Infrastructure
     {
         [Networked] public NetworkBool IsActive { get; private set; } = true;
 
+        protected virtual void Start()
+        {
+            OnInjectCompleted();
+        }
+
+        /// <summary>
+        /// Invokes right after Zenject completed injection [Inject]
+        /// </summary>
+        protected virtual void OnInjectCompleted() { }
+
         public override async void Spawned()
         {
             IsActive = true;
             CorrectState();
-            OnSubscriptions();
-        }
-
-        protected virtual void OnSubscriptions() // TODO rethink
-        {
         }
 
         [Rpc]
@@ -100,7 +106,7 @@ namespace Dev.Infrastructure
         {
             transform.DOScale(targetValue, duration).SetEase(ease);
         }
-        
+
 
         [Rpc]
         public void RPC_SetParent(NetworkObject networkObject, NetworkObject newParent)
