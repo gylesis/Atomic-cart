@@ -3107,8 +3107,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 2.6034012, y: 21.197, z: 0}
-    m_Extent: {x: 38.5033, y: 28.367601, z: 0}
+    m_Center: {x: 2.5956497, y: 21.1933, z: 0}
+    m_Extent: {x: 38.51055, y: 28.3686, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -3389,6 +3389,7 @@ GameObject:
   - component: {fileID: 1050442628445674917}
   - component: {fileID: 489877475200916969}
   - component: {fileID: 5562738936033902112}
+  - component: {fileID: 771205705009211117}
   m_Layer: 0
   m_Name: Level_Template
   m_TagString: Untagged
@@ -3483,6 +3484,23 @@ MonoBehaviour:
   - {fileID: 3185541950229494589}
   - {fileID: 7374375901923299168}
   _cartPathService: {fileID: 3096882834798291034}
+--- !u!114 &771205705009211117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6783170247131115304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scriptableObjectInstallers: []
+  _monoInstallers: []
+  _installerPrefabs: []
+  _autoRun: 1
+  _kernel: {fileID: 0}
 --- !u!1 &7866587280925291748
 GameObject:
   m_ObjectHideFlags: 0

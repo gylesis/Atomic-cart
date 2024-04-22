@@ -5,6 +5,7 @@ using Dev.PlayerLogic;
 using Dev.Utils;
 using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Dev
 {
@@ -16,19 +17,26 @@ namespace Dev
         private Transform _target;
         private GameSettings _gameSettings;
         private bool _toFollow;
+        private CameraService _cameraService;
 
         public void SetupTarget(Transform target)
         {
             _target = target;
         }
 
+        [Inject]
+        private void Construct(CameraService cameraService)
+        {
+            _cameraService = cameraService;
+        }
+        
         public override void Spawned()
         {
             _gameSettings = GameSettingProvider.GameSettings;
             
             if (HasStateAuthority)
             {
-                DependenciesContainer.Instance.GetDependency<CameraService>().SetMainCameraState(false);
+                _cameraService.SetMainCameraState(false);
 
                 SetupTarget(PlayerCharacter.LocalPlayerCharacter.transform);
             }

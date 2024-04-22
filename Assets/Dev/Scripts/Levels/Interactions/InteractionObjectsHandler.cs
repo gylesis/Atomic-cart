@@ -15,10 +15,12 @@ namespace Dev.Levels.Interactions
         private LevelService _levelService;
         private PopUpService _popUpService;
         private PlayersHealthService _playersHealthService;
+        private PlayersDataService _playersDataService;
 
         [Inject]
-        private void Init(LevelService levelService, PopUpService popUpService, PlayersHealthService playersHealthService)
+        private void Init(LevelService levelService, PopUpService popUpService, PlayersHealthService playersHealthService, PlayersDataService playersDataService)
         {
+            _playersDataService = playersDataService;
             _playersHealthService = playersHealthService;
             _popUpService = popUpService;
             _levelService = levelService;
@@ -68,8 +70,6 @@ namespace Dev.Levels.Interactions
         [Rpc]
         private void RPC_OnInteractionObjectInteract([RpcTarget] PlayerRef target, bool isOn, InteractionObject interactionObject)
         {
-            _popUpService.TryGetPopUp<HUDMenu>(out var hudMenu);
-
             Action onInteraction;
 
             if (interactionObject == null)
@@ -100,7 +100,7 @@ namespace Dev.Levels.Interactions
                 onInteraction = null;
             }
             
-            hudMenu.SetInteractionAction(onInteraction);
+            _playersDataService.GetPlayer(target).PlayerController.SetInteractionAction(onInteraction);
         }
         
     }

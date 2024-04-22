@@ -1,6 +1,7 @@
 ﻿using Dev.Infrastructure;
 using Fusion;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 namespace Dev.PlayerLogic
@@ -9,7 +10,7 @@ namespace Dev.PlayerLogic
     {
         private PlayersSpawner _playersSpawner;
 
-        [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, PlayerData> PlayersHealth { get; }
+        [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, PlayerData> PlayersData { get; }
 
         public static PlayersDataService Instance { get; private set; }
 
@@ -30,11 +31,12 @@ namespace Dev.PlayerLogic
         private void Start()
         {
             _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
 
         public string GetNickname(PlayerRef playerRef)
         {
-            return PlayersHealth[playerRef].Name.Value;
+            return PlayersData[playerRef].Name.Value;
         }
 
         private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
@@ -43,10 +45,22 @@ namespace Dev.PlayerLogic
 
             var playerData = new PlayerData(playerRef, $"Player {playerRef.PlayerId}");
 
-            PlayersHealth.Add(playerRef, playerData);
+            PlayersData.Add(playerRef, playerData);
         }
-    }
+        
+        private void OnPlayerDespawned(PlayerRef playerRef)
+        {
+            PlayersData.Remove(playerRef);
+        }
 
+        public PlayerCharacter GetPlayer(PlayerRef playerRef)
+        {
+            return _playersSpawner.GetPlayer(playerRef);
+        }
+        
+        public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;
+    }
+    
     public struct PlayerData : INetworkStruct
     {
         [Networked] public NetworkString<_16> Name { get; set; }

@@ -1,4 +1,7 @@
 ﻿using System;
+using Dev.PlayerLogic;
+using Dev.Weapons;
+using Fusion;
 using UniRx;
 using UnityEngine;
 
@@ -10,8 +13,10 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private DefaultReactiveButton _exitMenuButton;
 
         [SerializeField] private DefaultReactiveButton _interactionButton;
-        
-        private Action _onActionButtonPressed;
+        [SerializeField] private DefaultReactiveButton _castAbilityButton;
+
+        public Subject<Unit> CastButtonClicked { get; } = new Subject<Unit>();
+        public Subject<Unit> InteractiveButtonClicked { get; } = new Subject<Unit>();
 
         protected override void Awake()
         {
@@ -20,20 +25,25 @@ namespace Dev.UI.PopUpsAndMenus
             _showTab.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnShowTabButtonClicked()));
             _exitMenuButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitMenuButtonClicked()));
             _interactionButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnInteractionButtonClicked()));
-            
-            SetInteractionAction(null);
+            _castAbilityButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnCastButtonClicked()));
         }
 
-        private void OnInteractionButtonClicked()
+        private void OnCastButtonClicked()
         {
-            _onActionButtonPressed?.Invoke();           
+            CastButtonClicked.OnNext(Unit.Default);
+            
+            NetworkRunner runner = FindObjectOfType<NetworkRunner>();
+            NetworkObject playerObj = runner.GetPlayerObject(runner.LocalPlayer);
+
+            PlayerController playerController = playerObj.GetComponent<PlayerController>();
+            AbilityCastController castController = playerObj.GetComponent<AbilityCastController>();
+            
+            castController.CastAbility(AbilityType.Turret, playerObj.transform.position + (Vector3)playerController.LastLookDirection * 6);
         }
 
-        public void SetInteractionAction(Action onActionButtonPressed)
+        public void SetInteractionButtonState(bool enabled)
         {
-            _onActionButtonPressed = onActionButtonPressed;
-            
-            if (onActionButtonPressed == null)
+            if (enabled)
             {
                 _interactionButton.Disable();
             }
@@ -41,9 +51,13 @@ namespace Dev.UI.PopUpsAndMenus
             {
                 _interactionButton.Enable();
             }
-            
         }
-        
+
+        private void OnInteractionButtonClicked()
+        {
+            InteractiveButtonClicked.OnNext(Unit.Default);
+        }
+
         private void OnExitMenuButtonClicked()
         {
             PopUpService.TryGetPopUp<InGameMenu>(out var exitPopUp);

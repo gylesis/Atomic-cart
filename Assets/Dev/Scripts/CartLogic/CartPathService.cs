@@ -59,7 +59,12 @@ namespace Dev.CartLogic
                 }
             }
 
-            _teamsService = DependenciesContainer.Instance.GetDependency<TeamsService>();
+        }
+
+        [Inject]
+        private void Construct(TeamsService teamsService)
+        {
+            _teamsService = teamsService;
         }
         
         protected override void OnSubscriptions()

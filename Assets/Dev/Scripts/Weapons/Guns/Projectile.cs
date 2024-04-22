@@ -10,6 +10,7 @@ using Fusion;
 using Fusion.Addons.Physics;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev.Weapons.Guns
 {
@@ -43,9 +44,10 @@ namespace Dev.Weapons.Guns
 
         private bool _isOwnerIsBot => _owner == PlayerRef.None;
 
-        private void Awake()
+        [Inject]
+        private void Construct(TeamsService teamsService)
         {
-            _teamsService = DependenciesContainer.Instance.GetDependency<TeamsService>();
+            _teamsService = teamsService;
         }
 
         public void Init(Vector2 moveDirection, float force, int damage, PlayerRef owner)

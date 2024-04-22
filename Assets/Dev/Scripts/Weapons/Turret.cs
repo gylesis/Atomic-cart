@@ -5,6 +5,7 @@ using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 namespace Dev.Weapons
@@ -28,12 +29,18 @@ namespace Dev.Weapons
 
         private TickTimer _directionChooseTimer;
         private Vector2 _direction;
-            
+
+        public Subject<Unit> ToDie { get; } = new Subject<Unit>();
+
+        [Inject]
+        private void Construct(TeamsService teamsService)
+        {
+            _teamsService = teamsService;
+        }
+        
         public void Init(PlayerRef owner)
         {
             _owner = owner;
-            _teamsService = DependenciesContainer.Instance.GetDependency<TeamsService>();
-
             _ownerTeamSide = _teamsService.GetUnitTeamSide(owner);
             
             Observable.Interval(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
@@ -137,6 +144,8 @@ namespace Dev.Weapons
             _turretView.transform.up = lerperDirection;
             _weaponController.AimWeaponTowards(lerperDirection);
         }
+        
+        
         
     }
 }

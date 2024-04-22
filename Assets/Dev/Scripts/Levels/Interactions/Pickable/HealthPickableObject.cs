@@ -3,6 +3,7 @@ using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Dev.Levels.Interactions.Pickable
 {
@@ -10,19 +11,20 @@ namespace Dev.Levels.Interactions.Pickable
     {
         [SerializeField] private int _healthRestoreAmount;
         
-        private PlayersSpawner _playersSpawner;
+        private PlayersDataService _playersDataService;
 
+        [Inject]
+        private void Construct(PlayersDataService playersDataService)
+        {
+            _playersDataService = playersDataService;
+        }
+        
         protected override void OnAutoInteraction(PlayerRef interactedPlayer)
         {
             base.OnAutoInteraction(interactedPlayer);
             PlayersHealthService.Instance.GainHealthToPlayer(interactedPlayer, _healthRestoreAmount);
 
-            if (_playersSpawner == null)
-            {
-                _playersSpawner = DependenciesContainer.Instance.GetDependency<PlayersSpawner>();
-            }
-
-            Vector3 playerPos = _playersSpawner.GetPlayerPos(interactedPlayer);
+            Vector3 playerPos = _playersDataService.GetPlayerPos(interactedPlayer);
 
             FxController.Instance.SpawnEffectAt("picked_health", playerPos);
 

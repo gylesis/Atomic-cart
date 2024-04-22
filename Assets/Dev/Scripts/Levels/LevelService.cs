@@ -38,7 +38,10 @@ namespace Dev.Levels
     
             var networkRunner = FindObjectOfType<NetworkRunner>();      
 
-            Level level = networkRunner.Spawn(levelStaticData.Prefab);
+            Level level = networkRunner.Spawn(levelStaticData.Prefab, onBeforeSpawned: (runner, o) =>
+            {
+                DependenciesContainer.Instance.Inject(o.gameObject);
+            });
 
             CurrentLevel = level;
             

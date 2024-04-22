@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Dev.Infrastructure;
@@ -6,7 +7,9 @@ using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Weapons;
 using Fusion;
+using UniRx;
 using UnityEngine;
+using Zenject;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -41,21 +44,29 @@ namespace Dev.PlayerLogic
         [Networked] private Vector2 MoveDirection { get; set; }
 
         private TickTimer _dashTimer;
-        private ChangeDetector _changeDetector;
         private InputService _inputService;
 
-        private void Awake()
+        private Action _onActionButtonPressed;
+
+        [Inject]
+        private void Construct(PopUpService popUpService, JoysticksContainer joysticksContainer, InputService inputService)
         {
-            _popUpService = DependenciesContainer.Instance.GetDependency<PopUpService>();
-            _joysticksContainer = DependenciesContainer.Instance.GetDependency<JoysticksContainer>();
-            _inputService = DependenciesContainer.Instance.GetDependency<InputService>();
+            _popUpService = popUpService;
+            _joysticksContainer = joysticksContainer;
+            _inputService = inputService;
         }
 
-        public override void Spawned()
+        private void Start()
         {
-            _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+            bool tryGetPopUp = _popUpService.TryGetPopUp<HUDMenu>(out var hudMenu);
 
-            base.Spawned();
+            if (tryGetPopUp)
+            {
+                hudMenu.InteractiveButtonClicked.TakeUntilDestroy(this)
+                    .Subscribe((unit => OnInteractionButtonClicked()));
+            }
+
+            SetInteractionAction(null);
         }
 
         [Rpc]
@@ -64,6 +75,26 @@ namespace Dev.PlayerLogic
             _speed = moveSpeed;
             _shootThreshold = shootThreshold;
             _speedLowerSpeed = speedLowerVelocity;
+        }
+
+        private void OnInteractionButtonClicked()
+        {
+            _onActionButtonPressed?.Invoke();
+        }
+
+        public void SetInteractionAction(Action onActionButtonPressed)
+        {
+            _onActionButtonPressed = onActionButtonPressed;
+
+            bool tryGetPopUp = _popUpService.TryGetPopUp<HUDMenu>(out var hudMenu);
+
+            if (tryGetPopUp)
+            {
+                hudMenu.InteractiveButtonClicked.TakeUntilDestroy(this)
+                    .Subscribe((unit => OnInteractionButtonClicked()));
+
+                hudMenu.SetInteractionButtonState(onActionButtonPressed == null);
+            }
         }
 
         private void Shoot()
@@ -95,7 +126,7 @@ namespace Dev.PlayerLogic
 
                         if (Input.GetKeyDown(KeyCode.LeftShift))
                         {
-                            Dash();
+                            //Dash();
                         }
                     }
                 }
@@ -127,14 +158,17 @@ namespace Dev.PlayerLogic
                 {
                     if (input.CastAbility)
                     {
-                        _playerCharacter.GetComponent<AbilityCastController>().CastAbility(AbilityType.Turret, transform.position + (Vector3)LookDirection * 3);
+                        AbilityCastController castController = _playerCharacter.GetComponent<AbilityCastController>();
+
+                        castController.CastAbility(AbilityType.Turret,
+                            transform.position + (Vector3)LookDirection.normalized * 6);
                     }
-                    
+
                     AimRotation();
                 }
             }
 
-           // Debug.Log($"Destroyed {_inputService.BufferedInputs.Count} inputs");
+            // Debug.Log($"Destroyed {_inputService.BufferedInputs.Count} inputs");
             _inputService.BufferedInputs.Clear();
         }
 

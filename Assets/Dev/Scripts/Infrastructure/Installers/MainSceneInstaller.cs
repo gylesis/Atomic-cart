@@ -34,8 +34,6 @@ namespace Dev.Infrastructure
         
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<InputService>().AsSingle().NonLazy();
-            
             Container.Bind<NetworkRunner>().FromInstance(FindObjectOfType<NetworkRunner>()).AsSingle();
             
             Container.Bind<DependenciesContainer>().AsSingle().NonLazy();

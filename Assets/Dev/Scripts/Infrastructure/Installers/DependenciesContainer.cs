@@ -1,4 +1,5 @@
-﻿using Zenject;
+﻿using UnityEngine;
+using Zenject;
 
 namespace Dev.Infrastructure
 {
@@ -15,6 +16,11 @@ namespace Dev.Infrastructure
             Instance = this;
         }
 
+        public void Inject(GameObject gameObject)
+        {
+            _diContainer.InjectGameObject(gameObject);
+        }
+        
         public TType GetDependency<TType>()
         {
             return _diContainer.Resolve<TType>();

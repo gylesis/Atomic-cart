@@ -116,8 +116,8 @@ namespace Dev.Infrastructure
             playerNetObj.RequestStateAuthority();
             playerNetObj.AssignInputAuthority(playerRef);
             networkRunner.SetPlayerObject(playerRef, playerNetObj);
-
-            PlayerManager.AddPlayer(playerCharacter);
+            
+            DependenciesContainer.Instance.Inject(playerCharacter.gameObject);
 
             playerCharacter.PlayerController.RPC_Init(characterData.CharacterStats.MoveSpeed,
                 characterData.CharacterStats.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
@@ -230,7 +230,10 @@ namespace Dev.Infrastructure
             CameraController cameraController = networkRunner.Spawn(_cameraControllerPrefab,
                 playerCharacter.transform.position,
                 Quaternion.identity,
-                playerRef);
+                playerRef, onBeforeSpawned: (runner, o) =>
+                {
+                    DependenciesContainer.Instance.Inject(o.gameObject);
+                });
 
             cameraController.SetFollowState(true);
             cameraController.Object.RequestStateAuthority();
@@ -294,7 +297,6 @@ namespace Dev.Infrastructure
 
         public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;
 
-       
 
         [Rpc]
         private void RPC_OnPlayerSpawnedInvoke(PlayerCharacter playerCharacter)

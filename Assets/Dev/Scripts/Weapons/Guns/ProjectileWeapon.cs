@@ -66,6 +66,8 @@ namespace Dev.Weapons.Guns
         /// <param name="projectile"></param>
         protected virtual void OnProjectileBeforeSpawned(Projectile projectile) // auto destroy logic
         {
+            DependenciesContainer.Instance.Inject(projectile.gameObject);
+            
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
             projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 5);
 

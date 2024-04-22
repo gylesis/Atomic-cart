@@ -58,6 +58,8 @@ namespace Dev.BotsLogic
             {
                 var bot = o.GetComponent<Bot>();
 
+                DependenciesContainer.Instance.Inject(bot.gameObject);
+                
                 var botData = new BotData();
                 botData.TeamSide = team;
                 botData.CharacterClass = CharacterClass.Engineer;

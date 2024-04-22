@@ -7,6 +7,7 @@ using Dev.Weapons.Guns;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 namespace Dev.BotsLogic
@@ -46,9 +47,10 @@ namespace Dev.BotsLogic
             _botData = botData;
         }
 
-        private void Start()
+        [Inject]
+        private void Construct(TeamsService teamsService)
         {
-            _teamsService = DependenciesContainer.Instance.GetDependency<TeamsService>();
+            _teamsService = teamsService;
         }
 
         public override void Spawned()
