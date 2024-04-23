@@ -56,8 +56,10 @@ namespace Dev.PlayerLogic
             _inputService = inputService;
         }
 
-        private void Start()
+        protected override void OnInjectCompleted()
         {
+            base.OnInjectCompleted();
+            
             bool tryGetPopUp = _popUpService.TryGetPopUp<HUDMenu>(out var hudMenu);
 
             if (tryGetPopUp)

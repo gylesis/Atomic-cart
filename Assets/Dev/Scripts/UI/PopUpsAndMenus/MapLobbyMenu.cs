@@ -15,7 +15,6 @@ namespace Dev.UI.PopUpsAndMenus
 
         [SerializeField] private MapLobbyUI _lobbyUI;
         
-        private SceneLoader _sceneLoader;
         private NetworkRunner _networkRunner;
 
         protected override void Awake()
@@ -37,12 +36,6 @@ namespace Dev.UI.PopUpsAndMenus
             {
                 CheckIfAllPlayersReady();
             }
-        }
-
-        [Inject]
-        private void Init(SceneLoader sceneLoader)
-        {
-            _sceneLoader = sceneLoader;
         }
         
         private void OnReadyButtonClicked()
@@ -86,7 +79,7 @@ namespace Dev.UI.PopUpsAndMenus
             Scene activeScene = SceneManager.GetActiveScene();
 
             _networkRunner.SessionInfo.UpdateCustomProperties(sessionProperties);
-            await _networkRunner.LoadScene("Main", LoadSceneMode.Additive);
+            await _networkRunner.LoadScene("Main", setActiveOnLoad: true);
             //await _networkRunner.UnloadScene(SceneRef.FromIndex(activeScene.buildIndex));
         }
 

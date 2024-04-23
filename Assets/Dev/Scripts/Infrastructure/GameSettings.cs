@@ -15,6 +15,7 @@ namespace Dev.Infrastructure
             
         [Header("Player")] 
         [SerializeField] private float _cameraZoomModifier = 15f;
+        [SerializeField] private float _cameraFollowSpeed = 2f;
         [SerializeField] private LayerMask _weaponObstaclesDetectLayers;
         [SerializeField] private float _weaponHitDetectionOffset = 1;
         
@@ -35,6 +36,7 @@ namespace Dev.Infrastructure
 
         public bool IsFriendlyFireOn => _isFriendlyFireOn;
         public float CameraZoomModifier => _cameraZoomModifier;
+        public float CameraFollowSpeed => _cameraFollowSpeed;
 
         public LayerMask WeaponObstaclesDetectLayers => _weaponObstaclesDetectLayers;
 

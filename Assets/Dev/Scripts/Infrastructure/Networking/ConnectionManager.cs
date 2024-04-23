@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dev.Levels;
 using Dev.UI.PopUpsAndMenus;
@@ -32,9 +33,9 @@ namespace Dev.Infrastructure
                 Instance = this;
             }
 
-            if (FusionLobbyConnector.IsConnected)
+            if (LobbyConnector.IsConnected)
             {
-                NetworkRunner networkRunner = FindObjectOfType<FusionLobbyConnector>().NetworkRunner;
+                NetworkRunner networkRunner = FindObjectOfType<LobbyConnector>().NetworkRunner;
                 
                 networkRunner.AddCallbacks(this);
 
@@ -50,7 +51,7 @@ namespace Dev.Infrastructure
                 var startGameArgs = new StartGameArgs();
 
                 startGameArgs.GameMode = GameMode.Shared;
-                startGameArgs.SceneManager = FindObjectOfType<SceneLoader>();
+                startGameArgs.SceneManager = _networkRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
                 startGameArgs.Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
                 startGameArgs.SessionName = "Test1";
 
@@ -70,8 +71,8 @@ namespace Dev.Infrastructure
         {
             Runner.Shutdown();
 
-            PlayerManager.AllPlayers.Clear();
-            PlayerManager.PlayerQueue.Clear();
+            PlayerManager.PlayersOnServer.Clear();
+            PlayerManager.LoadingPlayers.Clear();
 
             _popUpService.HideAllPopUps();
 
@@ -96,6 +97,12 @@ namespace Dev.Infrastructure
         {
             Debug.Log($"On Player Left");
 
+            LevelService levelService = FindObjectOfType<LevelService>();
+            
+            levelService.Object.RequestStateAuthority();
+
+            FindObjectOfType<Level>().Object.RequestStateAuthority();
+            
             if (runner.IsSharedModeMasterClient)
             {
                 Debug.Log($"Despawning player");
@@ -162,18 +169,26 @@ namespace Dev.Infrastructure
             {
                 LevelService.Instance.LoadLevel(_gameSettings.FirstLevelName.ToString());
 
-                await Task.Delay(3000); // TODO wait until all players load the scene
-
-                foreach (PlayerRef playerRef in PlayerManager.PlayerQueue)
-                {
-                    // Debug.Log($"Respawning Player {_playersDataService.GetNickname(playerRef)}");
-                    Debug.Log($"Spawning Player {playerRef}");
-
-                    _playersSpawner.ChooseCharacterClass(playerRef);
-                }
-
-                PlayerManager.PlayerQueue.Clear();
+                //await Task.Delay(2000); // TODO wait until all players load the scene
             }
+            
+            PlayerRef player = runner.LocalPlayer;
+            
+            _playersSpawner.ChooseCharacterClass(player);
+
+            RPC_OnSceneLoaded(player);
+        }
+
+        [Rpc(InvokeLocal = true)]
+        private void RPC_OnSceneLoaded(PlayerRef playerRef)
+        {
+            PlayerManager.LoadingPlayers.Remove(playerRef);
+        }
+
+        private void Update()
+        {
+            if(Time.frameCount % 10 == 0)
+             Debug.Log($"Loading players count: {PlayerManager.LoadingPlayers.Count()}");
         }
 
         public void OnSceneLoadStart(NetworkRunner runner)

@@ -187,8 +187,9 @@ namespace Dev.Infrastructure
                 
                 PlayerDeSpawned.OnNext(playerRef);
             }
-            
-            PlayerManager.RemovePlayer(playerCharacter);
+
+            PlayerManager.PlayersOnServer.Remove(playerRef);
+            PlayerManager.LoadingPlayers.Remove(playerRef);
         }
 
         private void UpdatePlayerCharacter(PlayerCharacter character, PlayerRef playerRef)

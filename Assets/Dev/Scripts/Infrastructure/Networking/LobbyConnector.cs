@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 namespace Dev.Infrastructure
 {
     [RequireComponent(typeof(NetworkRunner))]
-    public class FusionLobbyConnector : MonoBehaviour, INetworkRunnerCallbacks
+    public class LobbyConnector : MonoBehaviour, INetworkRunnerCallbacks
     {
         private NetworkRunner _networkRunner;
 

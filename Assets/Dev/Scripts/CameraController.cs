@@ -1,9 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using Dev.PlayerLogic;
-using Dev.Utils;
-using Fusion;
 using UnityEngine;
 using Zenject;
 
@@ -25,15 +21,14 @@ namespace Dev
         }
 
         [Inject]
-        private void Construct(CameraService cameraService)
+        private void Construct(CameraService cameraService, GameSettings gameSettings)
         {
             _cameraService = cameraService;
+            _gameSettings = gameSettings;
         }
         
         public override void Spawned()
         {
-            _gameSettings = GameSettingProvider.GameSettings;
-            
             if (HasStateAuthority)
             {
                 _cameraService.SetMainCameraState(false);
@@ -58,7 +53,7 @@ namespace Dev
         
         public override void Render()
         {
-            if (HasInputAuthority == false) return;
+            if (HasStateAuthority == false) return;
 
             _camera.orthographicSize = 
                 _gameSettings.CameraZoomModifier;
@@ -72,7 +67,7 @@ namespace Dev
             
             if (_target == null) return;
             
-            transform.position = Vector3.Lerp(transform.position, _target.position, Runner.DeltaTime * _followSpeed);
+            transform.position = Vector3.Lerp(transform.position, _target.position, Runner.DeltaTime * _gameSettings.CameraFollowSpeed);
         }
     }
 }

@@ -10,11 +10,21 @@ namespace Dev.Infrastructure
     {
         [Networked] public NetworkBool IsActive { get; private set; } = true;
 
+        protected virtual void Awake()
+        {
+            LoadLateInjection();
+        }
+
         protected virtual void Start()
         {
             OnInjectCompleted();
         }
 
+        protected virtual void LoadLateInjection()
+        {
+            DependenciesContainer.Instance.Inject(gameObject);
+        }
+        
         /// <summary>
         /// Invokes right after Zenject completed injection [Inject]
         /// </summary>

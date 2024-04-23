@@ -23,7 +23,6 @@ namespace Dev.Levels
             {
                 Instance = this;
             }
-            
         }
 
         [Inject]
@@ -42,6 +41,8 @@ namespace Dev.Levels
             {
                 DependenciesContainer.Instance.Inject(o.gameObject);
             });
+            
+            level.Object.ReleaseStateAuthority();
 
             CurrentLevel = level;
             
