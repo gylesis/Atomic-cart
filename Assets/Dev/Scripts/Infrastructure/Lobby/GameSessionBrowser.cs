@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Dev.UI;
 using Fusion;
 using Fusion.Sockets;
@@ -67,7 +68,7 @@ namespace Dev.Infrastructure
             PickedSessionId = obj.Id;
         }
 
-        public async Task CreateSession(string levelName, MapType mapType)
+        public async UniTask<StartGameResult> CreateSession(string levelName, MapType mapType)
         {
             var startGameArgs = new StartGameArgs();
 
@@ -86,7 +87,7 @@ namespace Dev.Infrastructure
                 ["status"] = (int)SessionStatus.Lobby
             };
 
-            StartGameResult startGameResult = await _networkRunner.StartGame(startGameArgs);
+            return await _networkRunner.StartGame(startGameArgs);
         }
 
         public void JoinSession(string sessionName)

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
+using Dev.Utils;
+using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -67,9 +69,25 @@ namespace Dev.UI.PopUpsAndMenus
         {
             Hide();
             
-            await _gameSessionBrowser.CreateSession(_selectedMap.MapName, _selectedMap.MapType);
+            Curtains.Instance.SetText("Creating lobby...");
+            Curtains.Instance.Show();
+
+            StartGameResult gameResult = await _gameSessionBrowser.CreateSession(_selectedMap.MapName, _selectedMap.MapType);
+
+            if (gameResult.Ok)
+            {
+                Curtains.Instance.SetText("Done!");
+                Curtains.Instance.HideWithDelay(0.5f);
+             
+                PopUpService.ShowPopUp<MapLobbyMenu>();
+            }
+            else
+            {
+                Curtains.Instance.SetText("Something went wrong, returning back to menu!");
+                
+                MyLogger.Instance.LogError(AtomicConstants.LogTags.Networking,$"Failed to host lobby, reason: {gameResult.ErrorMessage}");
+            }
             
-            PopUpService.ShowPopUp<MapLobbyMenu>();
         }
 
         private void OnMapUIClicked(MapUIView mapUIView)

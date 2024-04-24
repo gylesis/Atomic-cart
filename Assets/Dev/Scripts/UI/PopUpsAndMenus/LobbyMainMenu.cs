@@ -20,6 +20,13 @@ namespace Dev.UI.PopUpsAndMenus
         {
             Hide();
             PopUpService.ShowPopUp<LobbyPlayMenu>();
+            PopUpService.TryGetPopUp<LobbyPlayMenu>(out var lobbyPlayMenu);
+        
+            lobbyPlayMenu.OnSucceedButtonClicked((() =>
+            {
+                PopUpService.HidePopUp<LobbyPlayMenu>();
+                PopUpService.ShowPopUp<LobbyMainMenu>();
+            }));
         }
 
         private void OnSettingsButtonClicked()

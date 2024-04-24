@@ -32,7 +32,7 @@ namespace Dev.Effects
             {   
                 Effect effect = Runner.Spawn(effectPrefab, pos, rotation, Runner.LocalPlayer);
 
-                Observable.Timer(TimeSpan.FromSeconds(4)).Subscribe((l => { Runner.Despawn(effect.Object); }));
+                Observable.Timer(TimeSpan.FromSeconds(4)).TakeUntilDestroy(this).Subscribe((l => { Runner.Despawn(effect.Object); }));
             }
         }   
 

@@ -31,7 +31,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2228639193715706178}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -166,7 +165,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4079295828951688091}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -210,8 +208,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4285475624
-  m_fontColor: {r: 0.15761836, g: 0.16947381, b: 0.4339623, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -275,6 +273,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2517265717965689408, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
@@ -313,6 +312,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 130.1
       objectReference: {fileID: 0}
+    - target: {fileID: 7941328356635903063, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
+      propertyPath: m_BlockingMask.m_Bits
+      value: 503
+      objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929973, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Alpha
       value: 0
@@ -327,7 +330,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929976, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Name
-      value: SettingsMenu
+      value: SettingsMenu Variant
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929979, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Pivot.x
@@ -426,6 +429,18 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8569760701012929979, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 398120786}
+    - targetCorrespondingSourceObject: {fileID: 5808730424468277090, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1308113244}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8569760701012929976, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 694299263970841430}
   m_SourcePrefab: {fileID: 100100000, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
 --- !u!1 &2228639193715706177 stripped
 GameObject:

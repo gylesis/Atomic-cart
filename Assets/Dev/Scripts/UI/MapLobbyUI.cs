@@ -18,7 +18,7 @@ namespace Dev.UI
         [SerializeField] private LobbyPlayer _lobbyPlayer;
 
         [Networked, Capacity(8)] public NetworkDictionary<PlayerRef, bool> ReadyStatesDictionary => default;
-        
+
         private PopUpService _popUpService;
         public Subject<Unit> ReadyStatusUpdated { get; } = new Subject<Unit>();
 
@@ -80,13 +80,11 @@ namespace Dev.UI
             return readyPlayerCount == requiredPlayersCountToStart;
         }
 
-        public async void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
+        public void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
         {
-            await Task.Delay(500);
-
             PlayerManager.LoadingPlayers.Add(playerRef);
             PlayerManager.PlayersOnServer.Add(playerRef);
-            
+
             if (runner.IsSharedModeMasterClient)
             {
                 ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == PlayerRef.None);
@@ -94,11 +92,25 @@ namespace Dev.UI
                 Debug.Log($"Player {playerRef} joined to lobby", readyUI);
 
                 readyUI.RPC_AssignPlayer(playerRef);
-                // LobbyPlayer lobbyPlayer = runner.Spawn(_lobbyPlayer, null, null, playerRef);
-                // runner.SetPlayerObject(playerRef, lobbyPlayer.Object);
 
                 ReadyStatesDictionary.Add(playerRef, false);
             }
+
+            ReadyStatusUpdated.OnNext(Unit.Default);
+        }
+
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef playerRef)
+        {
+            PlayerManager.LoadingPlayers.Remove(playerRef);
+            PlayerManager.PlayersOnServer.Remove(playerRef);
+
+            ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == PlayerRef.None);
+
+            Debug.Log($"Player {playerRef} joined to lobby", readyUI);
+
+            readyUI.RPC_RemovePlayerAssigment(playerRef);
+
+            ReadyStatesDictionary.Remove(playerRef);
 
             ReadyStatusUpdated.OnNext(Unit.Default);
         }
@@ -107,6 +119,7 @@ namespace Dev.UI
         {
             _popUpService.HidePopUp<LobbyPlayMenu>();
             _popUpService.ShowPopUp<MapLobbyMenu>();
+
             Debug.Log($"{runner.LocalPlayer} Connected to server");
         }
 
@@ -116,7 +129,6 @@ namespace Dev.UI
 
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
 
-        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
 
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
 

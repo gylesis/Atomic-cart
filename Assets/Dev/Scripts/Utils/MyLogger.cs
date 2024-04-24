@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace Dev.Utils
 {
-    public class LoggerUI : MonoBehaviour, ILogger
+    public class MyLogger : MonoBehaviour, ILogger
     {
         [SerializeField] private TMP_Text _logText;
 
@@ -14,10 +14,16 @@ namespace Dev.Utils
         
         private ILogger loggerImplementation;
 
-        public static LoggerUI Instance;
+        public static MyLogger Instance;
         
         private void Awake()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
             Instance = this;
             loggerImplementation = Debug.unityLogger;
         }

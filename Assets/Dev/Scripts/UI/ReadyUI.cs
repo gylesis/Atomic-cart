@@ -43,11 +43,20 @@ namespace Dev.UI
             _canvasGroup.alpha = 0;
             _canvasGroup.DOFade(1, 0.5f);
             
-            RPC_UpdateNickname();
+            UpdateNickname();
         }
 
         [Rpc]
-        private void RPC_UpdateNickname()
+        public void RPC_RemovePlayerAssigment(PlayerRef playerRef)
+        {
+             PlayerRef = PlayerRef.None;
+             
+             Object.AssignInputAuthority(PlayerRef.None);
+
+             _canvasGroup.alpha = 0;
+        }
+
+        private void UpdateNickname()
         {
             _playerNicknameText.text = $"Player {PlayerRef.PlayerId}";
         }

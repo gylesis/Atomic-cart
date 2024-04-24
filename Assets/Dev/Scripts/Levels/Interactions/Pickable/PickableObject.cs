@@ -42,7 +42,7 @@ namespace Dev.Levels.Interactions.Pickable
             _playerTriggerZone.gameObject.SetActive(false);
             IsPickedUp = true;
             RPC_DoScale(0.5f, 0, Ease.OutBounce);
-            Observable.Timer(TimeSpan.FromSeconds(_respawnCooldown)).Subscribe((l =>
+            Observable.Timer(TimeSpan.FromSeconds(_respawnCooldown)).TakeUntilDestroy(this).Subscribe((l =>
             {
                 if (Runner.IsSharedModeMasterClient)
                 {

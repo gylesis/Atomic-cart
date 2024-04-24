@@ -1,6 +1,7 @@
 using Dev.PlayerLogic;
 using Dev.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.Infrastructure
@@ -10,13 +11,13 @@ namespace Dev.Infrastructure
         [SerializeField] private GameSettings _gameSettings;
         [SerializeField] private MapsContainer _mapsContainer;
         [SerializeField] private Curtains _curtains;
-        [SerializeField] private LoggerUI _loggerUI;
+        [FormerlySerializedAs("_loggerUI")] [SerializeField] private MyLogger myLogger;
 
         [SerializeField] private GameStaticDataContainer _gameStaticDataContainer;
         
         public override void InstallBindings()
         {
-            Container.Bind<LoggerUI>().FromInstance(_loggerUI).AsSingle();
+            Container.Bind<MyLogger>().FromInstance(myLogger).AsSingle();
 
             Container.Bind<GameStaticDataContainer>().FromInstance(_gameStaticDataContainer).AsSingle();
             

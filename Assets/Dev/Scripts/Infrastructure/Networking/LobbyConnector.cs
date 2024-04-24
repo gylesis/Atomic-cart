@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Fusion;
+using Fusion.Photon.Realtime;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,35 +19,78 @@ namespace Dev.Infrastructure
         public static bool IsConnected;
 
         private Action _sessionJoined;
-            
-        private void Awake()
+
+        [SerializeField] private bool _hasInternet;
+        
+        private async void Awake()
         {
             if (IsConnected)
             {
                 Destroy(gameObject);
                 return;
             }
-            
-            IsConnected = true;
+           
             DontDestroyOnLoad(gameObject);
 
-            if (SceneManager.GetActiveScene().name == "Bootstrap")
+            InternetCheckProcedure();
+        }
+
+        private async void InternetCheckProcedure()
+        {   
+            bool hasInternetConnection = await CheckInternetConnection();
+    
+            if (hasInternetConnection)
             {
-                LoadFromBootstrap();
+                IsConnected = true;
+                
+                if (SceneManager.GetActiveScene().name == "Bootstrap")
+                {
+                    LoadFromBootstrap();
+                }
+                else
+                {
+                    DefaultJoinToSessionLobby();
+                }
             }
             else
             {
-                DefaultJoinToSessionLobby();
+                await UniTask.Delay(1000);
+                
+                InternetCheckProcedure();
             }
+            
         }
 
+        private async UniTask<bool> CheckInternetConnection()
+        {
+            Curtains.Instance.Show();
+            Curtains.Instance.SetText("Checking internet connection...");
+
+            await UniTask.Delay(200);
+
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                Curtains.Instance.SetText("No internet connection! Please configure internet connection!");
+                
+                await UniTask.Delay(500);
+                return false;
+            }
+            
+            await UniTask.Delay(500);
+
+            return true;
+        }
+        
         private async void DefaultJoinToSessionLobby()
         {
             _networkRunner = GetComponent<NetworkRunner>();
             _networkRunner.ProvideInput = true;
-            
-            var gameResult = await _networkRunner.JoinSessionLobby(SessionLobby.Shared);
 
+            var authenticationValues = new AuthenticationValues();
+            authenticationValues.AddAuthParameter("hi", "228");
+            
+            var gameResult = await _networkRunner.JoinSessionLobby(SessionLobby.Shared, authentication: authenticationValues );
+            
             OnLobbyJoined(gameResult);
             
             if (gameResult.Ok)
@@ -55,7 +99,8 @@ namespace Dev.Infrastructure
             }
             else
             {
-                Debug.LogError($"Failed to Start: {gameResult.ShutdownReason}");
+                Debug.LogError($"Failed to Start: {gameResult.ShutdownReason}, {gameResult.ErrorMessage}");
+                int a  = 2;
             }
         }
 
@@ -88,6 +133,7 @@ namespace Dev.Infrastructure
             _sessionJoined?.Invoke();
             _sessionJoined = null;
         }
+
 
         public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
         {
@@ -124,7 +170,10 @@ namespace Dev.Infrastructure
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
 
-        public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+        public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
+        {
+            Debug.Log($"Custom auth response");
+        }
 
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
@@ -137,8 +186,16 @@ namespace Dev.Infrastructure
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
 
-        public void OnSceneLoadDone(NetworkRunner runner) { }
+        public void OnSceneLoadStart(NetworkRunner runner)
+        {
+            Curtains.Instance.SetText("Loading world...");
+            Curtains.Instance.Show();
+        }
 
-        public void OnSceneLoadStart(NetworkRunner runner) { }
+        public void OnSceneLoadDone(NetworkRunner runner)
+        {
+            Curtains.Instance.SetText("Finishing");
+            Curtains.Instance.HideWithDelay(1);
+        }
     }
 }

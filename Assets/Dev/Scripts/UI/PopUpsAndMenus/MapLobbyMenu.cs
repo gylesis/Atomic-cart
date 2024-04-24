@@ -3,8 +3,6 @@ using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Zenject;
 
 namespace Dev.UI.PopUpsAndMenus
 {
@@ -12,9 +10,10 @@ namespace Dev.UI.PopUpsAndMenus
     {
         [SerializeField] private TextReactiveButton _readyButton;
         [SerializeField] private TextReactiveButton _playButton;
+        [SerializeField] private TextReactiveButton _exitButton;
 
         [SerializeField] private MapLobbyUI _lobbyUI;
-        
+            
         private NetworkRunner _networkRunner;
 
         protected override void Awake()
@@ -25,9 +24,35 @@ namespace Dev.UI.PopUpsAndMenus
 
             _playButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnPlayButtonClicked()));
             _readyButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnReadyButtonClicked()));
+            _exitButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitButtonClicked()));
+            
             _lobbyUI.ReadyStatusUpdated.TakeUntilDestroy(this).Subscribe((unit => OnReadyStatusChanged()));
             
             _playButton.Disable();
+        }
+
+        private void OnExitButtonClicked()
+        {
+            PopUpService.TryGetPopUp<DecidePopUp>(out var decidePopUp);
+
+            decidePopUp.Show();
+            decidePopUp.Init("Are you sure want to exit?", OnDecide);
+
+            void OnDecide(bool isYes)
+            {
+                PopUpService.HidePopUp<DecidePopUp>();
+
+                if (isYes)
+                {
+                    ConnectionManager.Instance.Disconnect();
+                }
+            }
+
+        }
+
+        private void OnReadyButtonClicked()
+        {
+            _lobbyUI.SetReady(_networkRunner.LocalPlayer);
         }
 
         private void OnReadyStatusChanged()
@@ -36,13 +61,6 @@ namespace Dev.UI.PopUpsAndMenus
             {
                 CheckIfAllPlayersReady();
             }
-        }
-        
-        private void OnReadyButtonClicked()
-        {
-            _lobbyUI.SetReady(_networkRunner.LocalPlayer);
-
-            var isPlayerReady = _lobbyUI.IsPlayerReady(_networkRunner.LocalPlayer);
         }
 
         private void CheckIfAllPlayersReady()
@@ -59,9 +77,11 @@ namespace Dev.UI.PopUpsAndMenus
             }
             
         }
-        
+
         private void OnPlayButtonClicked()
         {
+            _playButton.Disable();
+            
             StartGame();
         }
 
@@ -76,11 +96,8 @@ namespace Dev.UI.PopUpsAndMenus
                 ["status"] = (int)SessionStatus.InGame
             };
 
-            Scene activeScene = SceneManager.GetActiveScene();
-
             _networkRunner.SessionInfo.UpdateCustomProperties(sessionProperties);
             await _networkRunner.LoadScene("Main", setActiveOnLoad: true);
-            //await _networkRunner.UnloadScene(SceneRef.FromIndex(activeScene.buildIndex));
         }
 
         public override void Show()

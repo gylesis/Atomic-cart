@@ -35,6 +35,7 @@ namespace Dev.Infrastructure
 
             if (LobbyConnector.IsConnected)
             {
+                LobbyConnector.IsConnected = false;
                 NetworkRunner networkRunner = FindObjectOfType<LobbyConnector>().NetworkRunner;
                 
                 networkRunner.AddCallbacks(this);
@@ -69,6 +70,11 @@ namespace Dev.Infrastructure
 
         public void Disconnect()
         {
+            Curtains.Instance.Show();
+            Curtains.Instance.SetText("Returning back to menu");
+            
+            LobbyConnector.IsConnected = false;
+            
             Runner.Shutdown();
 
             PlayerManager.PlayersOnServer.Clear();
@@ -88,21 +94,12 @@ namespace Dev.Infrastructure
                            PlayerRef player) // for new player after lobby started. invokes if game starts from Lobby
         {
             Debug.Log($"Someone's late connection to the game {player}");
-
-            // await Task.Delay(2000);
-            // _playersSpawner.ChooseCharacterClass(player);
         }
 
         public async void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
             Debug.Log($"On Player Left");
 
-            LevelService levelService = FindObjectOfType<LevelService>();
-            
-            levelService.Object.RequestStateAuthority();
-
-            FindObjectOfType<Level>().Object.RequestStateAuthority();
-            
             if (runner.IsSharedModeMasterClient)
             {
                 Debug.Log($"Despawning player");
@@ -131,12 +128,6 @@ namespace Dev.Infrastructure
         }
 
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
-
-        public void OnDisconnectedFromServer(NetworkRunner runner)
-        {
-            Debug.Log($"On disconnect from server");
-            Application.Quit();
-        }
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
                                      byte[] token) { }
@@ -183,12 +174,6 @@ namespace Dev.Infrastructure
         private void RPC_OnSceneLoaded(PlayerRef playerRef)
         {
             PlayerManager.LoadingPlayers.Remove(playerRef);
-        }
-
-        private void Update()
-        {
-            if(Time.frameCount % 10 == 0)
-             Debug.Log($"Loading players count: {PlayerManager.LoadingPlayers.Count()}");
         }
 
         public void OnSceneLoadStart(NetworkRunner runner)

@@ -10,6 +10,7 @@ namespace Dev.Utils
         {
             public static Color GetTeamColor(TeamSide teamSide) => teamSide == TeamSide.Blue ? Color.blue : Color.red;
         }
+        
         public static class DamageIds
         {
             public static int BotDamageId = 3;
@@ -17,6 +18,12 @@ namespace Dev.Utils
             public static int ObstacleWithHealthDamageId = 0;
             public static int DummyTargetDamageId = -2;
         }
+
+        public static class LogTags
+        {
+            public static string Networking = "Networking";
+        }
+        
 
     }
 }

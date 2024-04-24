@@ -13,6 +13,7 @@ namespace Dev.UI.PopUpsAndMenus
     {
         [SerializeField] private DefaultReactiveButton _exitButton;
         [SerializeField] private TextReactiveButton _changeCharacterClassButton;
+        
         private PlayerCharacterClassChangeService _playerCharacterClassChangeService;
         private NetworkRunner _networkRunner;
 
@@ -59,15 +60,11 @@ namespace Dev.UI.PopUpsAndMenus
 
             void OnDecide(bool isYes)
             {
-                decidePopUp.Hide();
+                PopUpService.HidePopUp<DecidePopUp>();
 
                 if (isYes)
                 {
                     ConnectionManager.Instance.Disconnect();
-                }
-                else
-                {
-                    
                 }
             }
 

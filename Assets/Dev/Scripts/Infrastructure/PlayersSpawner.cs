@@ -28,7 +28,7 @@ namespace Dev.Infrastructure
         public Subject<PlayerRef> CharacterDeSpawned { get; } = new Subject<PlayerRef>();
         public Subject<PlayerRef> PlayerDeSpawned { get; } = new Subject<PlayerRef>();
         public Dictionary<PlayerRef, List<NetworkObject>> PlayerServices => _playerServices;
-        [Networked] private NetworkDictionary<PlayerRef, PlayerBase> PlayersBase { get; }
+        [Networked, Capacity(10)] private NetworkDictionary<PlayerRef, PlayerBase> PlayersBase { get; }
 
         public List<PlayerCharacter> Players => PlayersBase.Select(x => x.Value.PlayerCharacterInstance).ToList();
 
@@ -159,32 +159,13 @@ namespace Dev.Infrastructure
 
         public void DespawnPlayer(PlayerRef playerRef, bool isLeftFromSession)
         {
-            PlayerCharacter playerCharacter = GetPlayer(playerRef);
-
-            Runner.Despawn(playerCharacter.Object);
-
             CharacterDeSpawned.OnNext(playerRef);
-
-            GetPlayerCameraController(playerRef).SetFollowState(false);
 
             if (isLeftFromSession)
             {
-                var playerServices = FindObjectsOfType<PlayerService>(true);
-                for (var index = playerServices.Length - 1; index >= 0; index--)
-                {
-                    PlayerService service = playerServices[index];
-                    if (service.Object.InputAuthority == playerRef)
-                    {
-                        Runner.Despawn(service.Object);
-                        Destroy(service.gameObject);
-                        //Debug.Log($"Despawned service {service.name}", service);
-                    }
-                }
-
                 _teamsService.RemoveFromTeam(playerRef);
 
                 PlayersBase.Remove(playerRef);
-                
                 PlayerDeSpawned.OnNext(playerRef);
             }
 
