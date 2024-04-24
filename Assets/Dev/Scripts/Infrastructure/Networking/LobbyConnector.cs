@@ -54,7 +54,7 @@ namespace Dev.Infrastructure
             }
             else
             {
-                await UniTask.Delay(1000);
+                await UniTask.Delay(1000, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
                 
                 InternetCheckProcedure();
             }
@@ -66,17 +66,17 @@ namespace Dev.Infrastructure
             Curtains.Instance.Show();
             Curtains.Instance.SetText("Checking internet connection...");
 
-            await UniTask.Delay(200);
+            await UniTask.Delay(200, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
 
             if (Application.internetReachability == NetworkReachability.NotReachable)
             {
                 Curtains.Instance.SetText("No internet connection! Please configure internet connection!");
                 
-                await UniTask.Delay(500);
+                await UniTask.Delay(500, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
                 return false;
             }
             
-            await UniTask.Delay(500);
+            await UniTask.Delay(500, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
 
             return true;
         }

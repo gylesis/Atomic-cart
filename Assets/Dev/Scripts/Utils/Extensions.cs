@@ -47,8 +47,8 @@ namespace Dev.Utils
                 return spawnPoint.transform.position;
             }
             
+            
         }
-        
         
 
         public static async Task<object> InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)

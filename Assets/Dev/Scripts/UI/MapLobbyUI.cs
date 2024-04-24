@@ -118,7 +118,7 @@ namespace Dev.UI
         public void OnConnectedToServer(NetworkRunner runner)
         {
             _popUpService.HidePopUp<LobbyPlayMenu>();
-            _popUpService.ShowPopUp<MapLobbyMenu>();
+            _popUpService.ShowPopUp<SessionMenu>();
 
             Debug.Log($"{runner.LocalPlayer} Connected to server");
         }

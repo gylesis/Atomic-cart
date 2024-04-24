@@ -79,7 +79,7 @@ namespace Dev.UI.PopUpsAndMenus
                 Curtains.Instance.SetText("Done!");
                 Curtains.Instance.HideWithDelay(0.5f);
              
-                PopUpService.ShowPopUp<MapLobbyMenu>();
+                PopUpService.ShowPopUp<SessionMenu>();
             }
             else
             {

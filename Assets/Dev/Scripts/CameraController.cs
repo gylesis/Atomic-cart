@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Dev
 {
-    public class CameraController : PlayerService
+    public class CameraController : NetworkContext
     {
         [SerializeField] private float _followSpeed = 1.5f;
         [SerializeField] private Camera _camera;

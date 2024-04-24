@@ -3,10 +3,11 @@ using Dev.Infrastructure;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Dev.UI.PopUpsAndMenus
 {
-    public class MapLobbyMenu : PopUp
+    public class SessionMenu : PopUp
     {
         [SerializeField] private TextReactiveButton _readyButton;
         [SerializeField] private TextReactiveButton _playButton;
@@ -44,7 +45,19 @@ namespace Dev.UI.PopUpsAndMenus
 
                 if (isYes)
                 {
-                    ConnectionManager.Instance.Disconnect();
+                    // from MainSceneConnectionManager
+                    
+                    Curtains.Instance.Show();
+                    Curtains.Instance.SetText("Returning back to menu");
+            
+                    LobbyConnector.IsConnected = false;
+            
+                    _networkRunner.Shutdown();
+
+                    PlayerManager.PlayersOnServer.Clear();
+                    PlayerManager.LoadingPlayers.Clear();
+
+                    SceneManager.LoadScene(0);
                 }
             }
 

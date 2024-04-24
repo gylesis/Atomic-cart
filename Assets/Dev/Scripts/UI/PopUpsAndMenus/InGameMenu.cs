@@ -64,7 +64,7 @@ namespace Dev.UI.PopUpsAndMenus
 
                 if (isYes)
                 {
-                    ConnectionManager.Instance.Disconnect();
+                    MainSceneConnectionManager.Instance.Disconnect();
                 }
             }
 

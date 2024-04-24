@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Dev.Levels;
 using Dev.UI.PopUpsAndMenus;
@@ -12,7 +11,7 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class ConnectionManager : NetworkContext, INetworkRunnerCallbacks
+    public class MainSceneConnectionManager : NetworkContext, INetworkRunnerCallbacks
     {
         [SerializeField] private NetworkRunner _networkRunner;
 
@@ -20,7 +19,7 @@ namespace Dev.Infrastructure
         private PopUpService _popUpService;
         private GameSettings _gameSettings;
 
-        public static ConnectionManager Instance { get; private set; }
+        public static MainSceneConnectionManager Instance { get; private set; }
 
         private void Awake()
         {
@@ -80,7 +79,10 @@ namespace Dev.Infrastructure
             PlayerManager.PlayersOnServer.Clear();
             PlayerManager.LoadingPlayers.Clear();
 
-            _popUpService.HideAllPopUps();
+            if (_popUpService != null)
+            {
+                _popUpService.HideAllPopUps();
+            }
 
             SceneManager.LoadScene(0);
         }
