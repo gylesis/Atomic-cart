@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
@@ -23,6 +24,7 @@ namespace Dev.BotsLogic
         
         private BotsController _botsController;
         private GameSettings _gameSettings;
+        private HealthObjectsService _healthObjectsService;
 
         public Subject<BotDieContext> BotKilled { get; } = new Subject<BotDieContext>();
 
@@ -35,15 +37,16 @@ namespace Dev.BotsLogic
         }
 
         [Inject]
-        private void Construct(BotsController botsController, GameStaticDataContainer gameStaticDataContainer, GameSettings gameSettings, TeamsService teamsService, WorldTextProvider worldTextProvider)
+        private void Construct(BotsController botsController, GameStaticDataContainer gameStaticDataContainer, GameSettings gameSettings, TeamsService teamsService, WorldTextProvider worldTextProvider, HealthObjectsService healthObjectsService)
         {
+            _healthObjectsService = healthObjectsService;
             _worldTextProvider = worldTextProvider;
             _teamsService = teamsService;
             _gameSettings = gameSettings;
             _charactersDataContainer = gameStaticDataContainer.CharactersDataContainer;
             _botsController = botsController;
         }
-        
+
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;
@@ -57,11 +60,21 @@ namespace Dev.BotsLogic
             int startHealth = _charactersDataContainer.GetCharacterDataByClass(bot.BotData.CharacterClass)
                 .CharacterStats.Health;
             
+            if (Runner.IsSharedModeMasterClient)
+            {
+                _healthObjectsService.RegisterObject(bot.Object, startHealth);
+            }
+            
             BotsHealth.Add(bot.Object.Id.Raw.GetHashCode(), startHealth);
         }
 
         private void OnBotDeSpawned(Bot bot)  
         {
+            if (Runner.IsSharedModeMasterClient)
+            {
+                _healthObjectsService.UnregisterObject(bot.Object);
+            }
+            
             BotsHealth.Remove(bot);
         }
 

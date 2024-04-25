@@ -15,7 +15,6 @@ namespace Dev.PlayerLogic
 
         [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, int> PlayersHealth { get; }
 
-        public static PlayersHealthService Instance { get; private set; }
         public Subject<PlayerDieEventContext> PlayerKilled { get; } = new Subject<PlayerDieEventContext>();
 
         private bool _init;
@@ -23,19 +22,13 @@ namespace Dev.PlayerLogic
         private WorldTextProvider _worldTextProvider;
         private CharactersDataContainer _charactersDataContainer;
         private GameSettings _gameSettings;
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-        }
+        private HealthObjectsService _healthObjectsService;
 
         [Inject]
         public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider,
-            GameStaticDataContainer gameStaticDataContainer, GameSettings gameSettings)
+            GameStaticDataContainer gameStaticDataContainer, GameSettings gameSettings, HealthObjectsService healthObjectsService)
         {
+            _healthObjectsService = healthObjectsService;
             _gameSettings = gameSettings;
             _charactersDataContainer = gameStaticDataContainer.CharactersDataContainer;
             _playersSpawner = playersSpawner;
@@ -47,33 +40,42 @@ namespace Dev.PlayerLogic
         {
             _init = true;
 
-            //if (Runner.IsSharedModeMasterClient == false) return;
-
             _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
 
         private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
         {
-            PlayerRef playerRef = spawnEventContext.PlayerRef;
+            PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(spawnEventContext.PlayerRef);
 
-            if(PlayersHealth.ContainsKey(playerRef)) return;
-            
             int startHealth = _charactersDataContainer.GetCharacterDataByClass(spawnEventContext.CharacterClass)
                 .CharacterStats.Health;
+            
+            _healthObjectsService.RegisterObject(playerCharacter.Object, startHealth);
+            
+            PlayerRef playerRef = spawnEventContext.PlayerRef;
+
+            //
+            if(PlayersHealth.ContainsKey(playerRef)) return;
 
             PlayersHealth.Add(playerRef, startHealth);
         }
 
         private void OnPlayerDespawned(PlayerRef playerRef)
         {
+            PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
+
+            if (Runner.IsSharedModeMasterClient == false)
+            {
+                _healthObjectsService.UnregisterObject(playerCharacter.Object);
+            }
+
+            //
             PlayersHealth.Remove(playerRef);
         }
 
         public void ApplyDamage(PlayerRef victim, PlayerRef shooter, int damage)
         {
-            //if (Runner.IsSharedModeMasterClient == false) return;
-
             if (_gameSettings.IsFriendlyFireOn == false)
             {
                 TeamSide victimTeamSide = _teamsService.GetUnitTeamSide(victim);

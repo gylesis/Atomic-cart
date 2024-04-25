@@ -583,6 +583,72 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5370545764186599683, guid: 8ff6350499351ae4bacbcf6a3f2cfc5b, type: 3}
   m_PrefabInstance: {fileID: 46963495}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &54623239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 54623240}
+  - component: {fileID: 54623242}
+  - component: {fileID: 54623241}
+  m_Layer: 0
+  m_Name: 'HealthService '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &54623240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54623239}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1395464432}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &54623241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54623239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25447c33a9754e78a40ee31f19e6ee9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
+  _IsActive:
+    _value: 1
+--- !u!114 &54623242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54623239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1383684799
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 54623241}
 --- !u!1 &63072967
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,6 +776,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4bbe275d6144cd845b077fbb6579f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 0
   _timeText: {fileID: 488147168}
@@ -1685,6 +1752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 225d153b53b48074e99ebd8f3ab31b7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!1 &274015265
@@ -1895,6 +1963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7e924f3fd242cc8438872dbc1f31e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _gameTimeView: {fileID: 101580044}
@@ -2759,6 +2828,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec52a7f071d0e2f4ea54749917acc1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _networkRunner: {fileID: 1268234257}
@@ -3521,6 +3591,8 @@ MonoBehaviour:
   _levelService: {fileID: 1139585698}
   _joysticksContainer: {fileID: 1334996200}
   _botsController: {fileID: 1332757292}
+  _healthObjectsService: {fileID: 54623241}
+  _hitsProcessor: {fileID: 1690248805}
 --- !u!1 &499663076
 GameObject:
   m_ObjectHideFlags: 0
@@ -5285,6 +5357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10f0aca303e31e54f86e720343798561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _blueScoreText: {fileID: 4060028552756506391}
@@ -5416,6 +5489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c91083868c4db78a75cd70ccbdd6f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!114 &731713281
@@ -5732,6 +5806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c67cae73e5414d2fbab790499d65e2e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _playersScoreUI: {fileID: 8403564674100434208}
@@ -6263,6 +6338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fab73c6a3d018d45aba277702019ae9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!1 &856067263
@@ -6668,6 +6744,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d48ed1b4c0a43b4a6cbe340f38adcf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!114 &927926860
@@ -6718,6 +6795,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc37f83b4da480489050bddbb6e2ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _mainCamera: {fileID: 519420031}
@@ -8533,6 +8611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50177c1a3f244eb7b704fd9a0cd3bd9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _CurrentLevel: {fileID: 0}
@@ -8908,6 +8987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 239b805bd8b871e419ab7884f85b9cd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _barrelsRespawnCooldown: 5
@@ -10123,9 +10203,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 634f587e0cdd4c61a8492a0affc0e29f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _botPrefab: {fileID: 7619175838533121882, guid: c43f212528146734cb9face32caa2409, type: 3}
+  _AliveBots: []
 --- !u!114 &1332757293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10504,6 +10586,8 @@ Transform:
   - {fileID: 731713279}
   - {fileID: 1332757291}
   - {fileID: 927926858}
+  - {fileID: 54623240}
+  - {fileID: 1690248804}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1401659308
@@ -11648,6 +11732,72 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1664480223}
   m_CullTransparentMesh: 1
+--- !u!1 &1690248803
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1690248804}
+  - component: {fileID: 1690248806}
+  - component: {fileID: 1690248805}
+  m_Layer: 0
+  m_Name: HitsProcessor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1690248804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690248803}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1395464432}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1690248805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690248803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a47abf51b344b4384efe5d513bca9bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
+  _IsActive:
+    _value: 1
+--- !u!114 &1690248806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690248803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3187546160
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1690248805}
 --- !u!1 &1693408545
 GameObject:
   m_ObjectHideFlags: 0
@@ -11678,6 +11828,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e86eeb39f27940f896bebf2d95b58444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _fxContainer: {fileID: 11400000, guid: cc4edc5e3b303e14aa794fe792946f45, type: 2}
@@ -13166,6 +13317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca6410d9bc9c4e43984c2269403d3aec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 0
 --- !u!114 &1854909742
@@ -13514,6 +13666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa7210957144bf19fd748ba9ec54dfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!114 &1901119634
@@ -14887,6 +15040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87e7f476660440128abae4dcdf75272c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!114 &2082067709
@@ -15471,6 +15625,10 @@ PrefabInstance:
       propertyPath: _movementJoystick
       value: 
       objectReference: {fileID: 1192389097}
+    - target: {fileID: 1161691534502274922, guid: 98fdcca30e86d4a478edf6bf6cbf6893, type: 3}
+      propertyPath: _setStateAuthorityNeutralOnSpawned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1161691534502274923, guid: 98fdcca30e86d4a478edf6bf6cbf6893, type: 3}
       propertyPath: m_RootOrder
       value: 2

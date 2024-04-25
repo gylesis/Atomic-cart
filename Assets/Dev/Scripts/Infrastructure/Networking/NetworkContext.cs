@@ -8,6 +8,8 @@ namespace Dev.Infrastructure
     [RequireComponent(typeof(NetworkObject))]
     public abstract class NetworkContext : NetworkBehaviour
     {
+        [SerializeField] private bool _setStateAuthorityNeutralOnSpawned;
+        
         [Networked] public NetworkBool IsActive { get; private set; } = true;
 
         protected virtual void Awake()
@@ -33,6 +35,15 @@ namespace Dev.Infrastructure
         public override async void Spawned()
         {
             IsActive = true;
+
+            if (Runner.IsSharedModeMasterClient)
+            {
+                if (_setStateAuthorityNeutralOnSpawned)
+                {
+                    Object.ReleaseStateAuthority();
+                }
+            }
+
             CorrectState();
         }
 

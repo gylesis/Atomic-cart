@@ -2,7 +2,7 @@ using Dev.Utils;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
-using UnityEngine.Serialization;
+using Zenject;
 
 namespace Dev.Levels
 {
@@ -10,8 +10,37 @@ namespace Dev.Levels
     {
         [SerializeField] private Collider2D _collider;
         [SerializeField] protected int _health = 50;
+        
         public int Health => _health;
         public override int DamageId => AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
+
+        private HealthObjectsService _healthObjectsService;
+
+        [Inject]
+        private void Construct(HealthObjectsService healthObjectsService)
+        {
+            _healthObjectsService = healthObjectsService;
+        }
+
+        public override void Spawned()
+        {
+            base.Spawned();
+
+            if (Runner.IsSharedModeMasterClient)
+            {
+                _healthObjectsService.RegisterObject(Object, _health);
+            }
+        }
+
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            base.Despawned(runner, hasState);
+            
+            if (Runner.IsSharedModeMasterClient)
+            {
+                _healthObjectsService.UnregisterObject(Object);
+            }
+        }
 
         protected override void CorrectState()
         {

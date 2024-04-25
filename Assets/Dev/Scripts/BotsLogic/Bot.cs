@@ -41,15 +41,17 @@ namespace Dev.BotsLogic
         [Networked] private PlayerRef TargetPlayerId { get; set; }
 
         public bool Alive = true;
-        
+        private HealthObjectsService _healthObjectsService;
+
         public void Init(BotData botData)
         {
             _botData = botData;
         }
 
         [Inject]
-        private void Construct(TeamsService teamsService)
+        private void Construct(TeamsService teamsService, HealthObjectsService healthObjectsService)
         {
+            _healthObjectsService = healthObjectsService;
             _teamsService = teamsService;
         }
 

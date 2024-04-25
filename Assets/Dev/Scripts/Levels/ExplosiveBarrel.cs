@@ -4,6 +4,7 @@ using Dev.PlayerLogic;
 using Dev.Utils;
 using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Dev.Levels
 {
@@ -13,6 +14,14 @@ namespace Dev.Levels
         [SerializeField] private LayerMask _hitMask;
 
         [SerializeField] private int _damage = 30;
+       
+        private PlayersHealthService _playersHealthService;
+
+        [Inject]
+        private void Construct(PlayersHealthService playersHealthService)
+        {
+            _playersHealthService = playersHealthService;
+        }
         
         public override void OnZeroHealth()
         {
@@ -45,7 +54,7 @@ namespace Dev.Levels
         {
             PlayerRef target = playerCharacter.Object.InputAuthority;
             
-            PlayersHealthService.Instance.ApplyDamageFromServer(target, _damage);
+            _playersHealthService.ApplyDamageFromServer(target, _damage);
         }
 
         private void OnDrawGizmos()

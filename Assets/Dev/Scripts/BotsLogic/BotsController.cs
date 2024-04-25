@@ -4,6 +4,7 @@ using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.Utils;
 using DG.Tweening;
+using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -18,6 +19,8 @@ namespace Dev.BotsLogic
 
         public Subject<Bot> BotSpawned { get; } = new Subject<Bot>();
         public Subject<Bot> BotDeSpawned { get; } = new Subject<Bot>();
+        
+        [Networked, Capacity(8)] public NetworkLinkedList<Bot> AliveBots { get; }
         
         private void Start()
         {
@@ -70,6 +73,7 @@ namespace Dev.BotsLogic
                 bot.Init(botData);
             });
                 
+            AliveBots.Add(bot);
             BotSpawned.OnNext(bot);
         }
 

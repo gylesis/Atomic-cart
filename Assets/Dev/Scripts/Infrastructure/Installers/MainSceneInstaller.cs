@@ -5,6 +5,7 @@ using Dev.PlayerLogic;
 using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
+using Dev.Weapons.Guns;
 using Fusion;
 using UnityEngine;
 using Zenject;
@@ -31,7 +32,10 @@ namespace Dev.Infrastructure
         [SerializeField] private JoysticksContainer _joysticksContainer;
 
         [SerializeField] private BotsController _botsController;
-        
+
+        [SerializeField] private HealthObjectsService _healthObjectsService;
+        [SerializeField] private HitsProcessor _hitsProcessor;
+            
         public override void InstallBindings()
         {
             Container.Bind<NetworkRunner>().FromInstance(FindObjectOfType<NetworkRunner>()).AsSingle();
@@ -45,6 +49,9 @@ namespace Dev.Infrastructure
             Container.Bind<LevelService>().FromInstance(_levelService).AsSingle();
 
             Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
+            
+            Container.Bind<HealthObjectsService>().FromInstance(_healthObjectsService).AsSingle();
+            Container.Bind<HitsProcessor>().FromInstance(_hitsProcessor).AsSingle();
 
             Container.Bind<BotsController>().FromInstance(_botsController).AsSingle();
             Container.Bind<PlayerCharacterClassChangeService>().AsSingle().NonLazy();

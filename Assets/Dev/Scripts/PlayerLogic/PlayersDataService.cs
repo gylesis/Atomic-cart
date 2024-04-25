@@ -14,6 +14,8 @@ namespace Dev.PlayerLogic
 
         public static PlayersDataService Instance { get; private set; }
 
+        public PlayersSpawner PlayersSpawner => _playersSpawner;
+
         private void Awake()
         {
             if (Instance == null)
@@ -28,8 +30,10 @@ namespace Dev.PlayerLogic
             _playersSpawner = playersSpawner;
         }
 
-        private void Start()
+        protected override void OnInjectCompleted()
         {
+            base.OnInjectCompleted();
+            
             _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
@@ -56,6 +60,11 @@ namespace Dev.PlayerLogic
         public PlayerCharacter GetPlayer(PlayerRef playerRef)
         {
             return _playersSpawner.GetPlayer(playerRef);
+        }
+
+        public CharacterClass GetPlayerCharacterClass(PlayerRef playerRef)
+        {
+            return GetPlayer(playerRef).CharacterClass;
         }
         
         public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;

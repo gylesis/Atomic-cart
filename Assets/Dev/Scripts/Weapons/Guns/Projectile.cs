@@ -5,11 +5,11 @@ using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
-using Dev.Utils;
 using Fusion;
 using Fusion.Addons.Physics;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.Weapons.Guns
@@ -25,7 +25,8 @@ namespace Dev.Weapons.Guns
         /// <summary>
         /// Do projectile need to register collision while flying?
         /// </summary>
-        [SerializeField] private bool _collideWhileMoving;
+        [FormerlySerializedAs("_collideWhileMoving")] [SerializeField]
+        private bool _checkOverlapWhileMoving;
 
         [Networked] public TickTimer DestroyTimer { get; set; }
 
@@ -39,15 +40,42 @@ namespace Dev.Weapons.Guns
         private float _force;
         protected int _damage;
         private PlayerRef _owner;
-        
-        private TeamsService _teamsService;
+
+        private HealthObjectsService _healthObjectsService;
+        private HitsProcessor _hitsProcessor;
 
         private bool _isOwnerIsBot => _owner == PlayerRef.None;
 
         [Inject]
-        private void Construct(TeamsService teamsService)
+        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor)
         {
-            _teamsService = teamsService;
+            _hitsProcessor = hitsProcessor;
+            _healthObjectsService = healthObjectsService;
+        }
+
+        protected override void OnInjectCompleted()
+        {
+            base.OnInjectCompleted();
+
+            _hitsProcessor.Hit.TakeUntilDestroy(this).Subscribe((OnHit));
+        }
+
+        private void OnHit(HitContext hitContext)
+        {
+            if (hitContext.HitType == HitType.Obstacle)
+            {
+                OnObstacleHit(hitContext.GameObject.GetComponent<Obstacle>());
+            }
+
+            if (hitContext.HitType == HitType.Player)
+            {
+                OnPlayerHit(hitContext.GameObject.GetComponent<PlayerCharacter>());
+            }
+
+            if (hitContext.HitType == HitType.Bot)
+            {
+                OnBotHit(hitContext.GameObject.GetComponent<Bot>());
+            }
         }
 
         public void Init(Vector2 moveDirection, float force, int damage, PlayerRef owner)
@@ -63,129 +91,28 @@ namespace Dev.Weapons.Guns
         [Rpc]
         public void RPC_SetViewState(bool isEnabled)
         {
-            _view.gameObject.SetActive(isEnabled);  
+            _view.gameObject.SetActive(isEnabled);
         }
 
         public override void FixedUpdateNetwork()
         {
-            if (_collideWhileMoving == false) return;
+            if (_checkOverlapWhileMoving == false) return;
 
-            CheckCollisionsWhileMoving();
-            
+            ProcessCollisionContext collisionContext = new ProcessCollisionContext(Runner, this, transform.position,
+                _overlapRadius, _damage, _hitMask, _isOwnerIsBot);
+
+            _hitsProcessor.ProcessCollision(collisionContext);
+
             if (HasStateAuthority == false) return;
 
-            transform.position = Vector3.MoveTowards(transform.position, transform.position + (Vector3)_moveDirection, Runner.DeltaTime * _force);
+            transform.position = Vector3.MoveTowards(transform.position, transform.position + (Vector3)_moveDirection,
+                Runner.DeltaTime * _force);
             //_networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
         }
 
-        private void CheckCollisionsWhileMoving()
+        protected void ApplyDamage(NetworkObject target, PlayerRef shooter, int damage)
         {
-            var overlapSphere = OverlapCircle(transform.position, _overlapRadius, _hitMask, out var colliders);
-
-            if (overlapSphere)
-            {
-                PlayerRef shooter = Object.InputAuthority;
-
-                bool needToDestroy = false;
-
-                foreach (Collider2D collider in colliders)
-                {
-                    var isDamageable = collider.TryGetComponent<IDamageable>(out var damagable);
-
-                    if (isDamageable)
-                    {
-                        var isPlayer = collider.TryGetComponent<PlayerCharacter>(out var player);
-
-                        if (isPlayer)
-                        {
-                            PlayerRef target = player.Object.InputAuthority;
-
-                            if (target == shooter) continue;
-
-                            ApplyHitToPlayer(player);
-                            needToDestroy = true;
-
-                            break;
-                        }
-                        
-                        if (damagable is IObstacleDamageable obstacleDamageable)
-                        {
-                            bool isStaticObstacle = damagable.DamageId == AtomicConstants.DamageIds.ObstacleDamageId;
-
-                            if (isStaticObstacle)
-                            {
-                                OnObstacleHit(damagable as Obstacle);
-                            }
-
-                            bool isObstacleWithHealth = damagable.DamageId == AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
-
-                            if (isObstacleWithHealth)
-                            {
-                                OnObstacleHit(damagable as Obstacle);
-
-                                ApplyDamageToObstacle(damagable as ObstacleWithHealth, shooter, _damage);
-                            }
-
-                            needToDestroy = true;
-                            break;
-                        }
-
-                        bool isDummyTarget = damagable.DamageId == AtomicConstants.DamageIds.DummyTargetDamageId;
-
-                        if (isDummyTarget)
-                        {
-                            DummyTarget dummyTarget = damagable as DummyTarget;
-
-                            ApplyDamageToDummyTarget(dummyTarget, shooter, _damage);
-                            needToDestroy = true;
-
-                            break;
-                        }
-
-                        bool isBot = damagable.DamageId == AtomicConstants.DamageIds.BotDamageId;
-
-                        if (isBot)
-                        {
-                            if (_isOwnerIsBot)
-                            {
-                                continue;  // TODO implement damage to other enemies bots
-                            }
-                            else
-                            {
-                                Bot targetBot = damagable as Bot;
-
-                                TeamSide shooterTeam = _teamsService.GetUnitTeamSide(_owner);
-                                TeamSide botTeam = _teamsService.GetUnitTeamSide(targetBot);
-
-                                if (shooterTeam != botTeam)
-                                {
-                                    BotsHealthService.Instance.RPC_ApplyDamageToBotFromClient(targetBot, shooter, _damage);                                    
-                                }
-                            }
-                        }
-                        
-                        needToDestroy = true;
-                        break;
-                    }
-                }
-
-                if (needToDestroy)
-                {
-                    ToDestroy.OnNext(this);
-                }
-            }
-        }
-
-        protected virtual void OnObstacleHit(Obstacle obstacle) { }
-
-        protected void ApplyDamageToBot(Bot bot, PlayerRef shooter, int damage)
-        {
-            
-        }
-        
-        protected void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
-        {
-            PlayersHealthService.Instance.ApplyDamageToDummyTarget(dummyTarget, shooter, damage);
+            _healthObjectsService.ApplyDamage(target, shooter, damage);
         }
 
         protected void ApplyDamageToObstacle(ObstacleWithHealth obstacleWithHealth, PlayerRef shooter, int damage)
@@ -193,27 +120,11 @@ namespace Dev.Weapons.Guns
             ObstaclesManager.Instance.ApplyDamageToObstacle(shooter, obstacleWithHealth, damage);
         }
 
-        protected virtual void ApplyHitToPlayer(PlayerCharacter playerCharacter)
-        {
-            ApplyDamage(playerCharacter, _owner, _damage);
-        }
+        protected virtual void OnObstacleHit(Obstacle obstacle) { }
 
-        protected void ApplyDamage(PlayerCharacter target, PlayerRef shooter, int damage)
-        {
-            PlayersHealthService.Instance.ApplyDamage(target.Object.InputAuthority, shooter, damage);
-        }
+        protected virtual void OnPlayerHit(PlayerCharacter playerCharacter) { }
 
-        protected void ApplyDamage(PlayerRef target, PlayerRef shooter, int damage)
-        {
-            PlayersHealthService.Instance.ApplyDamage(target, shooter, damage);
-        }
-
-        protected bool OverlapCircle(Vector3 pos, float radius, LayerMask layerMask, out List<Collider2D> colliders)
-        {
-            Extensions.OverlapSphere(Runner, pos, radius, layerMask, out colliders);
-
-            return colliders.Count > 0;
-        }
+        protected virtual void OnBotHit(Bot bot) { }
 
         protected void ApplyForceToPlayer(PlayerCharacter playerCharacter, Vector2 forceDirection, float forcePower)
         {

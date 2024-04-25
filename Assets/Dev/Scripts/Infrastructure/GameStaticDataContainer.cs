@@ -9,9 +9,7 @@ namespace Dev.Infrastructure
     {
         [SerializeField] private CharactersDataContainer _charactersDataContainer;
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
-
         public CharactersDataContainer CharactersDataContainer => _charactersDataContainer;
-
         public WeaponStaticDataContainer WeaponStaticDataContainer => _weaponStaticDataContainer;
     }
 }

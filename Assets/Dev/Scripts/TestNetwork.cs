@@ -1,15 +1,16 @@
-﻿using System;
+﻿using System.Linq;
 using Dev.Infrastructure;
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 namespace Dev
 {
     public class TestNetwork : NetworkContext
     {
-        [SerializeField] [Networked] private int Num { get; set; }
-
+        [Networked, Capacity(999)] private NetworkLinkedList<int> Numbers { get; }
+        
         private bool _init;
 
         private void Awake()
@@ -25,34 +26,44 @@ namespace Dev
         public override void Spawned()
         {
             _init = true;
+            Object.ReleaseStateAuthority();
         }
 
         private void OnGUI()
         {
             if(_init == false) return;
             
+            GUI.Label(new Rect(300, 100, 100, 100), HasStateAuthority ? "Is owner" : "Not owner");
+            GUI.Label(new Rect(300, 200, 100, 100), Runner.IsSharedModeMasterClient ? "Is master client" : "Isn't master client");
+            
+            
             if (GUI.Button(new Rect(100, 100, 100, 100) ,"Add"))
             {
-                AddNum(true);
+                RPC_AddNum(true);
             }
             
             if (GUI.Button(new Rect(200, 100, 100, 100) ,"Remove"))
             {
-                AddNum(false);
+                RPC_AddNum(false);
             }
 
-            GUI.Label(new Rect(150, 200, 100, 100), $"{Num}");
+            for (int i = 0; i < Numbers.Count; i++)
+            {
+                GUI.Label(new Rect(150, 200 + i * 10, 100, 100), $"{i}");
+            }
+           // GUI.Label(new Rect(150, 200, 100, 100), $"{Num}");
         }
 
-        private void AddNum(bool toAdd)
+        [Rpc]
+        private void RPC_AddNum(bool toAdd)
         {
             if (toAdd)
             {
-                Num++;
+                Numbers.Add(Random.Range(0,5));
             }
             else
             {
-                Num--;
+                Numbers.Remove(Numbers.Last());
             }
         }
         
