@@ -95,7 +95,7 @@ namespace Dev.BotsLogic
 
         private void SearchForTargets()
         {
-            bool overlapSphere = Extensions.OverlapSphere(Runner, transform.position, _searchRadius, _playerLayer, out var colliders);
+            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _searchRadius, _playerLayer, out var colliders);
 
             bool playerFound = false;
             

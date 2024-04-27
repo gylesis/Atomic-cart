@@ -127,7 +127,7 @@ namespace Dev.Infrastructure
             playerCharacter.PlayerController.SetAllowToMove(true);
             playerCharacter.PlayerController.SetAllowToShoot(true);
 
-            playerCharacter.RPC_Init(characterClass);
+            playerCharacter.RPC_Init(characterClass, teamSide);
 
             if (firstSpawn)
             {

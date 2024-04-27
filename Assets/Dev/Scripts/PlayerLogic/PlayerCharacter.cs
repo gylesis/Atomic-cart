@@ -32,6 +32,10 @@ namespace Dev.PlayerLogic
         
         public static PlayerCharacter LocalPlayerCharacter;
 
+        [Networked] public TeamSide TeamSide { get; private set; }
+        
+        public InputService InputService { get; private set; }
+        
         public override void Spawned()
         {
             if (HasStateAuthority)
@@ -40,9 +44,16 @@ namespace Dev.PlayerLogic
             }
         }
 
-        [Rpc]
-        public void RPC_Init(CharacterClass characterClass)
+        [Inject]
+        private void Construct(InputService inputService)
         {
+            InputService = inputService;
+        }
+        
+        [Rpc]
+        public void RPC_Init(CharacterClass characterClass, TeamSide teamSide)
+        {
+            TeamSide = teamSide;
             CharacterClass = characterClass;
         }
 

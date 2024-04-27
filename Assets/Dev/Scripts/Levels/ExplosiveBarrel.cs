@@ -34,7 +34,7 @@ namespace Dev.Levels
 
         private void ExplodeAtAndHitPlayers(Vector3 pos)
         {
-            var overlapSphere = Extensions.OverlapSphere(Runner, pos, _explosionRadius, _hitMask, out var hits);
+            var overlapSphere = Extensions.OverlapCircle(Runner, pos, _explosionRadius, _hitMask, out var hits);
 
             if (overlapSphere)
             {

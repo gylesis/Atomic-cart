@@ -54,7 +54,7 @@ namespace Dev.Weapons
         
         private void SearchForTargets()
         {
-            bool overlapSphere = Extensions.OverlapSphere(Runner, transform.position, _detectionRadius, _playerLayer, out var colliders);
+            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _detectionRadius, _playerLayer, out var colliders);
 
             bool playerFound = false;
             

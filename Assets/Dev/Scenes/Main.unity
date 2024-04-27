@@ -15860,10 +15860,6 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6037543882450198232, guid: 770ffa84bfde73e4d9b08bbb0cf6e87a, type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6037543882450198232, guid: 770ffa84bfde73e4d9b08bbb0cf6e87a, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
       objectReference: {fileID: 0}
@@ -18004,6 +18000,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 829103512}
     m_Modifications:
+    - target: {fileID: 1027457863662973015, guid: 06ca4fac9eafef249b2c1ae70e5b7fdf, type: 3}
+      propertyPath: m_BlockingMask.m_Bits
+      value: 503
+      objectReference: {fileID: 0}
     - target: {fileID: 1628861162960411064, guid: 06ca4fac9eafef249b2c1ae70e5b7fdf, type: 3}
       propertyPath: m_Name
       value: ChooseCharacterMenu

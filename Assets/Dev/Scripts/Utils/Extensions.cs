@@ -1,11 +1,13 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
+using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
@@ -22,22 +24,24 @@ namespace Dev.Utils
             /// Getting distance between ShootPos and point in front of the wall with offset
             /// </summary>
             /// <returns></returns>
-            public static float GetBulletMaxDistanceClampedByWalls(Vector2 originPos, Vector2 shootDirection, float bulletMaxDistance, float bulletOverlapRadius)
+            public static float GetBulletMaxDistanceClampedByWalls(Vector2 originPos, Vector2 shootDirection,
+                                                                   float bulletMaxDistance, float bulletOverlapRadius)
             {
-                GameSettings gameSettings = GameSettingProvider.GameSettings;   
-                
-                RaycastHit2D raycast = Physics2D.CircleCast(originPos,bulletOverlapRadius ,shootDirection, bulletMaxDistance, gameSettings.WeaponObstaclesDetectLayers);
+                GameSettings gameSettings = GameSettingProvider.GameSettings;
+
+                RaycastHit2D raycast = Physics2D.CircleCast(originPos, bulletOverlapRadius, shootDirection,
+                    bulletMaxDistance, gameSettings.WeaponObstaclesDetectLayers);
 
                 if (raycast == false) return bulletMaxDistance;
-                
+
                 Vector2 hitPoint = raycast.point;
-                
+
                 hitPoint -= shootDirection * gameSettings.WeaponHitDetectionOffset;
                 float distance = (originPos - hitPoint).magnitude;
 
                 return distance;
             }
-            
+
             public static Vector3 GetSpawnPosByTeam(TeamSide teamSide)
             {
                 var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(teamSide);
@@ -46,10 +50,109 @@ namespace Dev.Utils
 
                 return spawnPoint.transform.position;
             }
-            
-            
+
+            public static void ExplodeAndHitPlayers(NetworkRunner networkRunner, float explosionRadius, int damage,
+                                                    Vector3 pos, LayerMask hitMask,
+                                                    Action<ObstacleWithHealth, PlayerRef, int> onObstacleWithHealthHit = null,
+                                                    Action<NetworkObject, PlayerRef, int> onDummyHit = null,
+                                                    Action<NetworkObject, PlayerRef, int> onUnitHit = null
+            )   
+            {       
+                var overlapSphere =
+                    OverlapCircle(networkRunner, pos, explosionRadius, hitMask, out var hits);
+
+                if (overlapSphere)
+                {
+                    float maxDistance = (pos - (pos + Vector3.right * explosionRadius)).sqrMagnitude;
+
+                    PlayerRef shooter = networkRunner.LocalPlayer;
+
+                    foreach (Collider2D collider in hits)
+                    {
+                        var isDamageable = collider.TryGetComponent<IDamageable>(out var damagable);
+
+                        if (isDamageable)
+                        {
+                            float distance = (collider.transform.position - pos).sqrMagnitude;
+
+                            float damagePower = 1 - distance / maxDistance;
+
+                            damagePower = 1;
+
+                            //Debug.Log($"DMG power {damagePower}");
+
+                            int totalDamage = (int)(damagePower * damage);
+
+                            if (damagable is IObstacleDamageable obstacleDamageable)
+                            {
+                                bool isStaticObstacle =
+                                    damagable.DamageId == AtomicConstants.DamageIds.ObstacleDamageId;
+
+                                if (isStaticObstacle) { }
+
+                                bool isObstacleWithHealth =
+                                    damagable.DamageId == AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
+
+                                if (isObstacleWithHealth)
+                                {
+                                    onObstacleWithHealthHit?.Invoke(damagable as ObstacleWithHealth, shooter, totalDamage);
+                                    //ApplyDamageToObstacle(damagable as ObstacleWithHealth, shooter, totalDamage);
+                                }
+
+                                continue;
+                            }
+
+                            bool isDummyTarget = damagable.DamageId == -2;
+
+                            if (isDummyTarget)
+                            {
+                                DummyTarget dummyTarget = damagable as DummyTarget;
+
+                                onDummyHit?.Invoke(dummyTarget.Object, shooter, totalDamage);
+                                //ApplyDamage(dummyTarget.Object, shooter, totalDamage);
+
+                                continue;
+                            }
+
+                            var isPlayer = collider.TryGetComponent<PlayerCharacter>(out var player);
+
+                            if (isPlayer)
+                            {
+                                PlayerRef target = player.Object.StateAuthority;
+
+                                if (target == shooter) continue;
+
+                                onUnitHit?.Invoke(player.Object, shooter, totalDamage);
+                                //ApplyDamage(player.Object, shooter, totalDamage);
+                                //ApplyForceToPlayer(player, Vector2.right, damagePower * 50);
+
+                                continue;
+                            }
+
+                            bool isBot = damagable.DamageId == AtomicConstants.DamageIds.BotDamageId;
+
+                            if (isBot)
+                            {
+                                // if (isOwnerBot)
+                                //  {
+                                //     continue;  // TODO implement damage to other enemies bots
+                                //  }
+                                //  else
+                                //   {
+
+                                Bot targetBot = damagable as Bot;
+
+                                onUnitHit?.Invoke(targetBot.Object, shooter, totalDamage);
+                                //ApplyDamage(targetBot.Object, shooter, (int)(damagePower * damage));
+
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
         }
-        
+
 
         public static async Task<object> InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)
         {
@@ -61,8 +164,8 @@ namespace Dev.Utils
 
         public static void Rotate2D(this Transform transform, Vector2 targetPos)
         {
-            Vector2 direction = ((Vector3) targetPos - transform.position).normalized;
-    
+            Vector2 direction = ((Vector3)targetPos - transform.position).normalized;
+
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
             if (angle < 0)
@@ -74,7 +177,7 @@ namespace Dev.Utils
 
             transform.rotation = targetRotation;
         }
-        
+
         public static int GetRandom(int maxNum, params int[] expectNums)
         {
             List<int> nums = new List<int>();
@@ -123,8 +226,9 @@ namespace Dev.Utils
             return nums.First();
         }
 
-        public static bool OverlapSphereLagCompensate(NetworkRunner runner, Vector3 pos, float radius, LayerMask layerMask, out List<LagCompensatedHit> hits)
-        {       
+        public static bool OverlapSphereLagCompensate(NetworkRunner runner, Vector3 pos, float radius,
+                                                      LayerMask layerMask, out List<LagCompensatedHit> hits)
+        {
             hits = new List<LagCompensatedHit>();
 
             runner.LagCompensation.OverlapSphere(pos, radius, runner.LocalPlayer,
@@ -132,20 +236,21 @@ namespace Dev.Utils
 
             return hits.Count > 0;
         }
-        
-        public static bool OverlapSphere(NetworkRunner runner, Vector3 pos, float radius, LayerMask layerMask, out List<Collider2D> colliders)
-        {       
+
+        public static bool OverlapCircle(NetworkRunner runner, Vector3 pos, float radius, LayerMask layerMask,
+                                         out List<Collider2D> colliders)
+        {
             colliders = new List<Collider2D>();
 
             var contactFilter2D = new ContactFilter2D();
-           // contactFilter2D.layerMask = layerMask;
-           contactFilter2D.useTriggers = true;
+            // contactFilter2D.layerMask = layerMask;
+            contactFilter2D.useTriggers = true;
 
-            runner.GetPhysicsScene2D().OverlapCircle(pos, radius,contactFilter2D, colliders);
-            
+            runner.GetPhysicsScene2D().OverlapCircle(pos, radius, contactFilter2D, colliders);
+
             return colliders.Count > 0;
         }
-            
+
         public static void SetAlpha(this Image image, float targetAlpha)
         {
             Color color = image.color;
@@ -219,7 +324,7 @@ namespace Dev.Utils
             /// <param name="onMoveComplete"></param>
             /// <param name="onMoveUpdate"> 0 to 1</param>
             public static void MoveParabolic(Transform transform, Vector3 targetPos, float duration, float height = 3f,
-                Action onMoveComplete = null, Action<float> onMoveUpdate = null)
+                                             Action onMoveComplete = null, Action<float> onMoveUpdate = null)
             {
                 Vector3 startPos = transform.position;
 
@@ -233,7 +338,7 @@ namespace Dev.Utils
             }
 
             public static void MoveParabolic(Transform transform, Transform target, float duration, float height = 3f,
-                Action onMoveComplete = null, Action<float> onMoveUpdate = null)
+                                             Action onMoveComplete = null, Action<float> onMoveUpdate = null)
             {
                 Vector3 startPos = transform.position;
 
@@ -247,7 +352,5 @@ namespace Dev.Utils
                 })).OnComplete((() => { onMoveComplete?.Invoke(); }));
             }
         }
-        
-        
     }
 }

@@ -8,6 +8,7 @@ namespace Dev.Infrastructure
         public Vector2 LookDirection;
         
         public bool CastAbility;
+        public bool ResetAbility;
         
         public int WeaponNum;
     }

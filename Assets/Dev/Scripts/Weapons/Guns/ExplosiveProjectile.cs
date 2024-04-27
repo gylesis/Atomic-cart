@@ -40,92 +40,21 @@ namespace Dev.Weapons.Guns
         {
             Vector3 pos = transform.position;
 
-            var overlapSphere = Extensions.OverlapSphere(Runner, pos, explosionRadius, _hitMask, out var hits);
+            Extensions.AtomicCart.ExplodeAndHitPlayers(Runner, explosionRadius, _damage, pos, _hitMask, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
 
-            if (overlapSphere)
+            void OnUnitHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
             {
-                float maxDistance = (pos - (pos + Vector3.right * explosionRadius)).sqrMagnitude;
+                ApplyDamage(obj, shooter, totalDamage);
+            }
 
-                PlayerRef shooter = Object.StateAuthority;
+            void OnDummyHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
+            {
+                ApplyDamage(obj, shooter, totalDamage);
+            }
 
-                
-                foreach (Collider2D collider in hits)
-                {
-                    var isDamageable = collider.TryGetComponent<IDamageable>(out var damagable);
-
-                    if (isDamageable)
-                    {
-                        float distance = (collider.transform.position - pos).sqrMagnitude;
-
-                        float damagePower = 1 - distance / maxDistance;
-
-                        damagePower = 1;
-
-                        //Debug.Log($"DMG power {damagePower}");
-
-                        int totalDamage = (int)(damagePower * _damage);
-                        
-                        if (damagable is IObstacleDamageable obstacleDamageable)
-                        {
-                            bool isStaticObstacle = damagable.DamageId == AtomicConstants.DamageIds.ObstacleDamageId;
-
-                            if (isStaticObstacle) { }
-
-                            bool isObstacleWithHealth =
-                                damagable.DamageId == AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
-
-                            if (isObstacleWithHealth)
-                            {
-                                ApplyDamageToObstacle(damagable as ObstacleWithHealth, shooter, totalDamage);
-                            }
-
-                            continue;
-                        }
-
-                        bool isDummyTarget = damagable.DamageId == -2;
-
-                        if (isDummyTarget)
-                        {
-                            DummyTarget dummyTarget = damagable as DummyTarget;
-
-                            ApplyDamage(dummyTarget.Object, shooter, totalDamage);
-
-                            continue;
-                        }
-
-                        var isPlayer = collider.TryGetComponent<PlayerCharacter>(out var player);
-
-                        if (isPlayer)
-                        {
-                            PlayerRef target = player.Object.StateAuthority;
-
-                            if (target == shooter) continue;
-
-                            ApplyDamage(player.Object, shooter, totalDamage);
-                            ApplyForceToPlayer(player, Vector2.right, damagePower * 50);
-                            
-                            continue;
-                        }
-                        
-                        bool isBot = damagable.DamageId == AtomicConstants.DamageIds.BotDamageId;
-
-                        if (isBot)
-                        {
-                            // if (isOwnerBot)
-                            //  {
-                            //     continue;  // TODO implement damage to other enemies bots
-                            //  }
-                            //  else
-                            //   {
-
-                            Bot targetBot = damagable as Bot;
-
-                            ApplyDamage(targetBot.Object, shooter, (int)(damagePower * _damage));
-                            
-                            continue;
-                        }
-                    }
-                }
+            void OnObstacleWithHealthHit(ObstacleWithHealth obj, PlayerRef shooter, int totalDamage)
+            {
+                ApplyDamageToObstacle(obj, shooter, totalDamage);
             }
         }
 

@@ -9,8 +9,8 @@ namespace Dev.UI
     [RequireComponent(typeof(CanvasGroup))]
     public class DefaultReactiveButton : MonoBehaviour
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
-        [SerializeField] private Button _button;
+        [SerializeField] protected CanvasGroup _canvasGroup;
+        [SerializeField] protected Button _button;
 
         private IDisposable _disposable;
 
@@ -23,7 +23,7 @@ namespace Dev.UI
         public Subject<Unit> Clicked { get; } =
             new Subject<Unit>();
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _disposable = _button
                 .OnClickAsObservable()

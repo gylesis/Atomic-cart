@@ -126,7 +126,7 @@ namespace Dev.Infrastructure
 
             await Task.Delay(2000);
 
-            _playersSpawner.ChooseCharacterClass(playerRef);
+            //_playersSpawner.ChooseCharacterClass(playerRef);
         }
 
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }

@@ -82,5 +82,11 @@ namespace Dev.Infrastructure
 
             BufferedInputs.Enqueue(playerInput);
         }
+
+        public void SimulateInput(PlayerInput playerInput)
+        {
+            BufferedInputs.Enqueue(playerInput);
+        }
+        
     }
 }

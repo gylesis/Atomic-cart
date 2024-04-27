@@ -1,60 +1,83 @@
-﻿using Dev.Infrastructure;
-using Fusion;
+﻿using System.Linq;
+using Cysharp.Threading.Tasks;
+using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using UniRx;
-using UniRx.Triggers;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Zenject;
 
 namespace Dev.Weapons
 {
     public class AbilityCastController : NetworkContext
     {
-        [Networked, HideInInspector] public bool AllowToCast { get; set; } = true;
-       
-        [SerializeField] private Turret _turret;
-        
-        private PlaceTurretCastCommand _placeTurretCastCommand;
+        public bool AllowToCast => _currentCastCommand == null ? true : _currentCastCommand.AllowToCast; 
 
-        public override void Spawned()
+        [FormerlySerializedAs("_turret")] [SerializeField] private Turret _turretPrefab;
+        [SerializeField] private Landmine _landminePrefab;
+        
+        private AbilityCastCommand[] _castCommands;
+
+        private AbilityCastCommand _currentCastCommand;
+        
+        private TeamsService _teamsService;
+        private PlayerCharacter _playerCharacter;
+
+        public Subject<AbilityType> AbilityRecharged { get; } = new();
+        public Subject<AbilityType> AbilityChanged { get; } = new();
+            
+        [Inject]
+        private void Construct(TeamsService teamsService, PlayerCharacter playerCharacter)
+        {
+            _playerCharacter = playerCharacter;
+            _teamsService = teamsService;
+        }
+
+        public async override void Spawned()
         {
             if(HasStateAuthority == false) return;
 
-            _placeTurretCastCommand = new PlaceTurretCastCommand(Runner, _turret);
+            await UniTask.Delay(100);
+            
+            _castCommands = new AbilityCastCommand[2];
+
+            _castCommands[0] = new PlaceTurretCastCommand(Runner, AbilityType.Turret, _turretPrefab);
+            _castCommands[1] = new CastLandmineCommand(Runner, AbilityType.Landmine, _landminePrefab, _playerCharacter.TeamSide);
+            
+            foreach (AbilityCastCommand castCommand in _castCommands)
+            {
+                castCommand.AbilityRecharged.TakeUntilDestroy(this).Subscribe((OnAbilityRecharged));
+            }
+            
+            //_placeTurretCastCommand = new PlaceTurretCastCommand(Runner, _turret);
         }
 
         public void CastAbility(AbilityType abilityType, Vector3 pos)
         {
             ResetAbility(abilityType);
-            
-            switch (abilityType)
-            {
-                case AbilityType.Landmine:
-                    break;
-                case AbilityType.MiniAirStrike:
-                    break;
-                case AbilityType.Turret:
-                    _placeTurretCastCommand.Proccess(pos);
-                    break;
-                case AbilityType.TearGas:
-                    break;
-            }
+
+            AbilityCastCommand command = GetCommand(abilityType);
+            command.Process(pos);
+
+            _currentCastCommand = command;
         }
 
         public void ResetAbility(AbilityType abilityType)
         {
-            switch (abilityType)
-            {
-                case AbilityType.Landmine:
-                    break;
-                case AbilityType.MiniAirStrike:
-                    break;
-                case AbilityType.Turret:
-                    _placeTurretCastCommand.Reset();
-                    break;
-                case AbilityType.TearGas:
-                    break;
-            }
+            AbilityCastCommand command = GetCommand(abilityType);
+            command.Reset();
         }
-        
+
+        private void OnAbilityRecharged(AbilityType abilityType)
+        {
+            Debug.Log($"Ability {abilityType} recharged!");
+            AbilityRecharged.OnNext(abilityType);
+        }
+
+        private AbilityCastCommand GetCommand(AbilityType abilityType)
+        {
+            return _castCommands.First(x => x.AbilityType == abilityType);
+        }
     }
 
     public enum AbilityType
@@ -63,59 +86,5 @@ namespace Dev.Weapons
         MiniAirStrike,
         Turret,
         TearGas
-    }
-
-    public abstract class AbilityCastCommand
-    {
-        public abstract void Proccess(Vector3 pos);
-        public abstract void Reset();
-    }
-
-
-    public class PlaceTurretCastCommand : AbilityCastCommand
-    {
-        private NetworkRunner _runner;
-        private Turret _turretPrefab;
-        private Turret _spawnedTurret;
-        
-        public bool AllowToCast { get; private set; }
-
-        public PlaceTurretCastCommand(NetworkRunner runner, Turret turretPrefab)
-        {
-            _turretPrefab = turretPrefab;
-            _runner = runner;
-        }
-
-        public override void Proccess(Vector3 pos)
-        {
-            PlayerRef localPlayer = _runner.LocalPlayer;
-            
-            _spawnedTurret = _runner.Spawn(_turretPrefab, pos, inputAuthority: localPlayer, onBeforeSpawned: (runner, o) =>
-            {
-                Turret turret = o.GetComponent<Turret>();
-
-                DependenciesContainer.Instance.Inject(turret.gameObject);
-                turret.OnDestroyAsObservable().Subscribe((unit => OnTurretDestroyed(turret)));
-                
-                turret.Init(localPlayer);
-            });
-
-            AllowToCast = false;
-        }
-
-        private void OnTurretDestroyed(Turret turret)
-        {
-           // _spawnedTurret = null;
-        }
-
-        public override void Reset()
-        {
-            if(_spawnedTurret == null) return;
-            
-            _runner.Despawn(_spawnedTurret.Object);
-            
-            _spawnedTurret = null;
-            AllowToCast = true;
-        }
     }
 }

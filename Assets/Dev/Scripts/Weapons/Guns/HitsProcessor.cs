@@ -38,7 +38,7 @@ namespace Dev.Weapons.Guns
             PlayerRef owner = runner.LocalPlayer;
             Projectile projectile = context.Projectile;
 
-            var overlapSphere = Extensions.OverlapSphere(runner, pos, overlapRadius, hitMask, out var colliders);
+            var overlapSphere = Extensions.OverlapCircle(runner, pos, overlapRadius, hitMask, out var colliders);
 
             if (overlapSphere)
             {

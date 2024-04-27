@@ -44,16 +44,16 @@ namespace Dev.PlayerLogic
         [Networked] private Vector2 MoveDirection { get; set; }
 
         private TickTimer _dashTimer;
-        private InputService _inputService;
 
         private Action _onActionButtonPressed;
+        private InputService _inputService;
 
         [Inject]
         private void Construct(PopUpService popUpService, JoysticksContainer joysticksContainer, InputService inputService)
         {
+            _inputService = inputService;
             _popUpService = popUpService;
             _joysticksContainer = joysticksContainer;
-            _inputService = inputService;
         }
 
         protected override void OnInjectCompleted()
@@ -162,8 +162,15 @@ namespace Dev.PlayerLogic
                     {
                         AbilityCastController castController = _playerCharacter.GetComponent<AbilityCastController>();
 
-                        castController.CastAbility(AbilityType.Turret,
-                            transform.position + (Vector3)LookDirection.normalized * 6);
+                        castController.CastAbility(AbilityType.Landmine,
+                            transform.position + (Vector3)LastLookDirection.normalized * 6);
+                    }
+
+                    if (input.ResetAbility)
+                    {
+                        AbilityCastController castController = _playerCharacter.GetComponent<AbilityCastController>();
+
+                        castController.ResetAbility(AbilityType.Landmine);
                     }
 
                     AimRotation();

@@ -442,6 +442,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d7a3a93461c4d149ab69585df449ae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _networkAnimator: {fileID: 0}
@@ -555,6 +556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0105ac86a73440deb1925d820a6c04b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _shootThreshold: 0.75
@@ -564,6 +566,7 @@ MonoBehaviour:
   _playerController: {fileID: 5429065874298734006}
   _rigidbody2D: {fileID: 5544195138823906170}
   _CharacterClass: 0
+  _TeamSide: 0
 --- !u!114 &5429065874298734006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,6 +579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afe19be252cb4874bf099a34c6108f5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _playerCharacter: {fileID: 5231129319991485753}
@@ -596,6 +600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee053e2f94e43efb2a4d2971f9fb2cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
@@ -697,10 +702,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60fb585a00954c0a83a4ae8b898a8f57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _AllowToCast: 1
-  _turret: {fileID: 2673182492497880130, guid: 318a08ca55ecb59449313743856e11c4, type: 3}
+  _turretPrefab: {fileID: 2673182492497880130, guid: 318a08ca55ecb59449313743856e11c4, type: 3}
+  _landminePrefab: {fileID: 4171667660458924660, guid: fc666f2763e02b740b18208e5b81ebdc, type: 3}
 --- !u!114 &4462124491008006493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -713,6 +720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e837766e38347fbb064abc51db4e0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerCharacter: {fileID: 5231129319991485753}
 --- !u!114 &1220025778561999087
 MonoBehaviour:
   m_ObjectHideFlags: 0
