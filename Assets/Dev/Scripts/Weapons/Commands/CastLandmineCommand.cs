@@ -20,6 +20,8 @@ namespace Dev.Weapons
         
         public override void Process(Vector3 pos)
         {
+            base.Process(pos);
+            
             _spawnedLandmine = Spawn(_landminePrefab, pos, _runner.LocalPlayer, (runner, o) =>
             {
                 Landmine landmine = o.GetComponent<Landmine>();
@@ -42,12 +44,11 @@ namespace Dev.Weapons
         {
             if(_spawnedLandmine == null) return;
 
+            base.Reset();
+            
             _runner.Despawn(_spawnedLandmine.Object);
             
             _spawnedLandmine = null;
-            
-            AllowToCast = true;
-            AbilityRecharged.OnNext(AbilityType);
         }
     }
 }

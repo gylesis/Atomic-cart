@@ -110,8 +110,8 @@ Transform:
   m_GameObject: {fileID: 602764691}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.07, y: 3.14, z: 0}
-  m_LocalScale: {x: 2.775, y: 0.875, z: 1}
+  m_LocalPosition: {x: 1.7, y: 2.95, z: 0}
+  m_LocalScale: {x: 0.9493874, y: 1.8374999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5544195138406101501}
@@ -136,7 +136,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -194,8 +194,8 @@ Transform:
   m_GameObject: {fileID: 1055819660}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.82, z: 0}
-  m_LocalScale: {x: 2.54, y: 3.12, z: 1}
+  m_LocalPosition: {x: 0, y: -0.424, z: 0}
+  m_LocalScale: {x: 1.524, y: 0.61424994, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5544195138823906173}
@@ -705,9 +705,9 @@ MonoBehaviour:
   _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
-  _AllowToCast: 1
   _turretPrefab: {fileID: 2673182492497880130, guid: 318a08ca55ecb59449313743856e11c4, type: 3}
   _landminePrefab: {fileID: 4171667660458924660, guid: fc666f2763e02b740b18208e5b81ebdc, type: 3}
+  _currentAbilityToCast: 1
 --- !u!114 &4462124491008006493
 MonoBehaviour:
   m_ObjectHideFlags: 0

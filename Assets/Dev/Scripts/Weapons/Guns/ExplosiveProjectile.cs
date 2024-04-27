@@ -3,6 +3,9 @@ using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.Utils;
 using Fusion;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace Dev.Weapons.Guns
@@ -58,12 +61,16 @@ namespace Dev.Weapons.Guns
             }
         }
 
-        protected override void OnDrawGizmos()
+#if UNITY_EDITOR
+        protected virtual void OnDrawGizmosSelected()
         {
-            base.OnDrawGizmos();
-
+            var position = transform.position;
+            
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, _explosionRadius);
+            Gizmos.DrawWireSphere(position, _explosionRadius);
+            Handles.Label(position + Vector3.up * _explosionRadius + Vector3.right, "Explosion radius");
         }
+#endif
+        
     }
 }

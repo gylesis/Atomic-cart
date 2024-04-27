@@ -67,7 +67,14 @@ namespace Dev.UI.PopUpsAndMenus
         {
             if(_castController.AllowToCast == false) return;
             
-            _castAbilityButton.SetAllowToLongClick(true);
+            if (_castController.CurrentAbilityToCast == AbilityType.MiniAirStrike)
+            {
+                _castAbilityButton.SetAllowToLongClick(false);
+            }
+            else
+            {
+                _castAbilityButton.SetAllowToLongClick(true);
+            }
             
             CastButtonClicked.OnNext(Unit.Default);
 
@@ -79,14 +86,26 @@ namespace Dev.UI.PopUpsAndMenus
         private void OnCastButtonLongClicked()
         {
             _castAbilityButton.SetAllowToLongClick(false);
+            
+            if (_castController.CurrentAbilityToCast == AbilityType.MiniAirStrike)
+            {
+                return;
+            }
 
             _castAbilityButton.ResetProgressImage();
-            _castController.ResetAbility(AbilityType.Landmine);
+            _castController.ResetAbility();
         }
 
         private void OnAbilityRecharged(AbilityType abilityType)
         {
-            _castAbilityButton.SetAllowToLongClick(false);
+            if (abilityType == AbilityType.MiniAirStrike)
+            {
+                _castAbilityButton.SetAllowToLongClick(false);
+            }
+            else
+            {
+                _castAbilityButton.SetAllowToLongClick(false);
+            }
         }
 
         public void SetInteractionButtonState(bool enabled)

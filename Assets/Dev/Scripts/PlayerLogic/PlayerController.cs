@@ -162,15 +162,14 @@ namespace Dev.PlayerLogic
                     {
                         AbilityCastController castController = _playerCharacter.GetComponent<AbilityCastController>();
 
-                        castController.CastAbility(AbilityType.Landmine,
-                            transform.position + (Vector3)LastLookDirection.normalized * 6);
+                        castController.CastAbility(transform.position + (Vector3)LastLookDirection.normalized * 6);
                     }
 
                     if (input.ResetAbility)
                     {
                         AbilityCastController castController = _playerCharacter.GetComponent<AbilityCastController>();
 
-                        castController.ResetAbility(AbilityType.Landmine);
+                        castController.ResetAbility();
                     }
 
                     AimRotation();

@@ -7,10 +7,12 @@ using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
 using UniRx;
-using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Dev.Weapons
 {
@@ -96,13 +98,12 @@ namespace Dev.Weapons
 
         private void Explode()
         {
-            Debug.Log($"Explode");
             ExplodeAndHitPlayers(_detonateRadius);
             _exploding = true;
 
             _view.DOScale(0, 0.5f);
             
-            FxController.Instance.SpawnEffectAt("landmine_explosive", transform.position);
+            FxController.Instance.SpawnEffectAt("landmine_explosion", transform.position);
 
             Observable.Timer(TimeSpan.FromSeconds(3)).TakeUntilDestroy(this).Subscribe((l =>
             {
@@ -127,21 +128,20 @@ namespace Dev.Weapons
 
             sequence.Play();
             
-            Debug.Log($"Start detonation");
             _detonateTimer = TickTimer.CreateFromSeconds(Runner, _detonateSeconds);
         }
-
-        private void OnDrawGizmosSelected()
+        
+#if UNITY_EDITOR
+        protected override void OnDrawGizmosSelected()
         {
+            base.OnDrawGizmosSelected();
+            
             var position = transform.position;
             
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(position, _searchRadius);
             Handles.Label(position + Vector3.up * _searchRadius, "Search radius");
-            
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(position, _detonateRadius);
-            Handles.Label(position + Vector3.up * _detonateRadius + Vector3.right, "Detonate radius");
         }
+#endif
     }
 }

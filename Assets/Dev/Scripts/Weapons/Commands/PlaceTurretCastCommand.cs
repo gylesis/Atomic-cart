@@ -1,5 +1,4 @@
-﻿using Dev.Infrastructure;
-using Fusion;
+﻿using Fusion;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -21,6 +20,8 @@ namespace Dev.Weapons
 
         public override void Process(Vector3 pos)
         {
+            base.Process(pos);
+            
             PlayerRef localPlayer = _runner.LocalPlayer;
             
             _spawnedTurret = _runner.Spawn(_turretPrefab, pos, inputAuthority: localPlayer, onBeforeSpawned: (runner, o) =>
@@ -44,16 +45,11 @@ namespace Dev.Weapons
         {
             if(_spawnedTurret == null) return;
             
+            base.Reset();
+            
             _runner.Despawn(_spawnedTurret.Object);
             
             _spawnedTurret = null;
-            AllowToCast = true;
-            
-            AbilityRecharged.OnNext(AbilityType);
         }
     }
-    
-    
-    
-    
 }

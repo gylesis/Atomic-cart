@@ -31,8 +31,17 @@ namespace Dev.Weapons
             
             return isntance;
         }
-        
-        public abstract void Process(Vector3 pos);
-        public abstract void Reset();
+
+        public virtual void Process(Vector3 pos)
+        {
+            AllowToCast = false;
+        }
+
+        public virtual void Reset()
+        {
+            AllowToCast = true;
+            
+            AbilityRecharged.OnNext(AbilityType);
+        }
     }
 }

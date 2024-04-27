@@ -21,5 +21,5 @@ MonoBehaviour:
     Prefab: {fileID: 7856808388828264647, guid: 8d38aca004a391d4b874c18c04d4a8e9, type: 3}
   - Name: picked_health
     Prefab: {fileID: 115409960412582468, guid: 141a31d9d69aa23409d993e549f2e367, type: 3}
-  - Name: landmine_explosive
+  - Name: landmine_explosion
     Prefab: {fileID: 9042885199830165286, guid: c359eb4a88ddb444bb4e12ac1b1b7383, type: 3}

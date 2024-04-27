@@ -5,6 +5,7 @@ using Dev.PlayerLogic;
 using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
+using Dev.Weapons;
 using Dev.Weapons.Guns;
 using Fusion;
 using UnityEngine;
@@ -35,7 +36,9 @@ namespace Dev.Infrastructure
 
         [SerializeField] private HealthObjectsService _healthObjectsService;
         [SerializeField] private HitsProcessor _hitsProcessor;
-            
+
+        [SerializeField] private AirStrikeController _airStrikeController;
+        
         public override void InstallBindings()
         {
             Container.Bind<NetworkRunner>().FromInstance(FindObjectOfType<NetworkRunner>()).AsSingle();
@@ -52,6 +55,8 @@ namespace Dev.Infrastructure
             
             Container.Bind<HealthObjectsService>().FromInstance(_healthObjectsService).AsSingle();
             Container.Bind<HitsProcessor>().FromInstance(_hitsProcessor).AsSingle();
+            
+            Container.Bind<AirStrikeController>().FromInstance(_airStrikeController).AsSingle();
 
             Container.Bind<BotsController>().FromInstance(_botsController).AsSingle();
             Container.Bind<PlayerCharacterClassChangeService>().AsSingle().NonLazy();

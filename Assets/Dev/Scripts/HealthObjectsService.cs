@@ -55,17 +55,7 @@ namespace Dev
         {
             if(Runner == null) return;
             
-            if(Runner.IsSharedModeMasterClient)
-            {
-                if (Runner.ActivePlayers.Count() == 1)
-                {
-                    return;
-                }
-            }
-            else
-            {
-                return;
-            }
+            if(Runner.IsSharedModeMasterClient == false) return;
             
             bool hasObject = HealthData.Any(x => x.ObjId == networkObject.Id);
 

@@ -132,10 +132,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerMarine
       objectReference: {fileID: 0}
-    - target: {fileID: 7142691939699321184, guid: b70550f1e6f52484585e66f02133010c, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6005303050273986149, guid: b70550f1e6f52484585e66f02133010c, type: 3}
     m_RemovedGameObjects: []
