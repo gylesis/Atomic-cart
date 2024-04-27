@@ -2858,6 +2858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfeff37e46094077a11390241b7fe9df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _cartVelocity: 2
@@ -3107,8 +3108,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 2.5956497, y: 21.1933, z: 0}
-    m_Extent: {x: 38.51055, y: 28.3686, z: 0}
+    m_Center: {x: 2.6011982, y: 21.19355, z: 0}
+    m_Extent: {x: 38.4993, y: 28.365349, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -3473,6 +3474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13227e818b7c4bfd829b4d0983dbfa54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _redTeamSpawnPoints:
@@ -3635,7 +3637,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 00000000d31827bbbf2f9442a72dc203cd7550b2
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0

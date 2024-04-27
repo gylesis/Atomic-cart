@@ -1,12 +1,16 @@
 ﻿using System;
 using Dev.BotsLogic;
+using Dev.Effects;
 using Dev.PlayerLogic;
 using Dev.Utils;
 using Dev.Weapons.Guns;
+using DG.Tweening;
 using Fusion;
 using UniRx;
+using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev.Weapons
 {
@@ -15,6 +19,8 @@ namespace Dev.Weapons
         [SerializeField] private float _detonateSeconds;
         [SerializeField] private float _searchRadius = 5;
         [SerializeField] private float _detonateRadius = 5;
+
+        [FormerlySerializedAs("_detonateCircle")] [SerializeField] private SpriteRenderer _detonateCircleSprite;
         
         private TeamSide _ownerTeam;
 
@@ -23,7 +29,14 @@ namespace Dev.Weapons
         private TickTimer _detonateTimer;
 
         private bool _exploding;
-        
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _detonateCircleSprite.transform.localScale = new Vector3(_detonateRadius,_detonateRadius,1);
+        }
+
         public void Init(TeamSide teamSide)
         {
             _ownerTeam = teamSide;
@@ -87,6 +100,10 @@ namespace Dev.Weapons
             ExplodeAndHitPlayers(_detonateRadius);
             _exploding = true;
 
+            _view.DOScale(0, 0.5f);
+            
+            FxController.Instance.SpawnEffectAt("landmine_explosive", transform.position);
+
             Observable.Timer(TimeSpan.FromSeconds(3)).TakeUntilDestroy(this).Subscribe((l =>
             {
                 ToDestroy.OnNext(this);
@@ -95,6 +112,21 @@ namespace Dev.Weapons
 
         private void StartDetonation()
         {
+            Sequence sequence = DOTween.Sequence();
+
+            Color originColor = _detonateCircleSprite.color;
+
+            Color targetColor = originColor;
+            targetColor.a = 0.8f;
+
+            float duration = 0.3f;
+            
+            sequence.Append(_detonateCircleSprite.DOColor(targetColor, duration));
+            sequence.Append(_detonateCircleSprite.DOColor(originColor, duration));
+            sequence.SetLoops(4);
+
+            sequence.Play();
+            
             Debug.Log($"Start detonation");
             _detonateTimer = TickTimer.CreateFromSeconds(Runner, _detonateSeconds);
         }

@@ -53,12 +53,18 @@ namespace Dev
 
         public void UnregisterObject(NetworkObject networkObject)
         {
-            if(Runner.IsSharedModeMasterClient == false)
+            if(Runner == null) return;
+            
+            if(Runner.IsSharedModeMasterClient)
             {
                 if (Runner.ActivePlayers.Count() == 1)
                 {
                     return;
                 }
+            }
+            else
+            {
+                return;
             }
             
             bool hasObject = HealthData.Any(x => x.ObjId == networkObject.Id);

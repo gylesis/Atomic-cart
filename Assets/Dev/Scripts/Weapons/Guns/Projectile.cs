@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Dev.BotsLogic;
-using Dev.Effects;
+﻿using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
@@ -17,7 +14,7 @@ namespace Dev.Weapons.Guns
     [RequireComponent(typeof(NetworkRigidbody2D))]
     public abstract class Projectile : NetworkContext
     {
-        [SerializeField] private Transform _view;
+        [SerializeField] protected Transform _view;
         [SerializeField] protected NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] protected float _overlapRadius = 1f;
         [SerializeField] protected LayerMask _hitMask;

@@ -26,7 +26,8 @@ namespace Dev.PlayerLogic
 
         [Inject]
         public void Init(PlayersSpawner playersSpawner, TeamsService teamsService, WorldTextProvider worldTextProvider,
-            GameStaticDataContainer gameStaticDataContainer, GameSettings gameSettings, HealthObjectsService healthObjectsService)
+                         GameStaticDataContainer gameStaticDataContainer, GameSettings gameSettings,
+                         HealthObjectsService healthObjectsService)
         {
             _healthObjectsService = healthObjectsService;
             _gameSettings = gameSettings;
@@ -50,13 +51,13 @@ namespace Dev.PlayerLogic
 
             int startHealth = _charactersDataContainer.GetCharacterDataByClass(spawnEventContext.CharacterClass)
                 .CharacterStats.Health;
-            
+
             _healthObjectsService.RegisterObject(playerCharacter.Object, startHealth);
-            
+
             PlayerRef playerRef = spawnEventContext.PlayerRef;
 
             //
-            if(PlayersHealth.ContainsKey(playerRef)) return;
+            if (PlayersHealth.ContainsKey(playerRef)) return;
 
             PlayersHealth.Add(playerRef, startHealth);
         }
@@ -65,10 +66,8 @@ namespace Dev.PlayerLogic
         {
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
 
-            if (Runner.IsSharedModeMasterClient == false)
-            {
-                _healthObjectsService.UnregisterObject(playerCharacter.Object);
-            }
+
+            _healthObjectsService.UnregisterObject(playerCharacter.Object);
 
             //
             PlayersHealth.Remove(playerRef);
@@ -109,9 +108,9 @@ namespace Dev.PlayerLogic
 
             RPC_UpdatePlayerHealth(victim, playerCurrentHealth);
         }
-        
+
         public void ApplyDamageFromServer(PlayerRef victim, int damage)
-        {   
+        {
             //if (HasStateAuthority == false) return;
 
             int playerCurrentHealth = PlayersHealth[victim];
@@ -137,7 +136,7 @@ namespace Dev.PlayerLogic
 
             RPC_UpdatePlayerHealth(victim, playerCurrentHealth);
         }
-        
+
         public void ApplyDamageToDummyTarget(DummyTarget dummyTarget, PlayerRef shooter, int damage)
         {
             Debug.Log($"Damage {damage} applied to dummy target {dummyTarget.name}");
@@ -151,10 +150,10 @@ namespace Dev.PlayerLogic
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
 
             playerCharacter.RPC_OnDeath();
-            
+
             playerCharacter.PlayerController.SetAllowToMove(false);
             playerCharacter.PlayerController.SetAllowToShoot(false);
-           
+
             var playerDieEventContext = new PlayerDieEventContext();
             playerDieEventContext.Killer = owner;
             playerDieEventContext.Killed = playerRef;
@@ -164,7 +163,7 @@ namespace Dev.PlayerLogic
             //LoggerUI.Instance.Log($"Player {playerRef} is dead");
 
             float respawnTime = 2;
-            
+
             Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
             {
                 _playersSpawner.RespawnPlayerCharacter(playerRef);
@@ -175,7 +174,8 @@ namespace Dev.PlayerLogic
         {
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
 
-            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(playerCharacter.CharacterClass);
+            CharacterData characterData =
+                _charactersDataContainer.GetCharacterDataByClass(playerCharacter.CharacterClass);
 
             GainHealthToPlayer(playerRef, characterData.CharacterStats.Health);
         }
@@ -186,10 +186,11 @@ namespace Dev.PlayerLogic
 
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
 
-            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(playerCharacter.CharacterClass);
+            CharacterData characterData =
+                _charactersDataContainer.GetCharacterDataByClass(playerCharacter.CharacterClass);
 
             int maxHealth = characterData.CharacterStats.Health;
-            
+
             int currentHealth = PlayersHealth[playerRef];
             currentHealth += health;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
@@ -206,9 +207,9 @@ namespace Dev.PlayerLogic
         [Rpc]
         private void RPC_UpdatePlayerHealth(PlayerRef playerRef, int health)
         {
-            PlayersHealth.Set(playerRef, health);    
+            PlayersHealth.Set(playerRef, health);
         }
-        
+
         private void OnGUI()
         {
             if (_init == false) return;
@@ -239,8 +240,6 @@ namespace Dev.PlayerLogic
                 height += 55;
             }
         }
-
-        
     }
 
     public struct PlayerDieEventContext
