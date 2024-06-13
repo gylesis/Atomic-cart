@@ -5,6 +5,7 @@ using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.Utils;
+using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
 using UniRx;
@@ -69,11 +70,19 @@ namespace Dev
 
         public void ApplyDamage(NetworkObject victimObj, PlayerRef shooter, int damage)
         {
-            if (victimObj.TryGetComponent<ObjectWithHealth>(out var objectWithHealth) == false)
+            bool isDamagable = victimObj.TryGetComponent<IDamageable>(out var damagable);
+
+            if (isDamagable == false)
             {
-                Debug.Log($"Object {victimObj.name} not object with health, please add health <ObjectWithHealth> component", victimObj.gameObject);
-                return; 
+                Debug.Log($"Object {victimObj.name} is not damagable, skipping {damage} damage", victimObj);
+                return;
             }
+            
+            bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
+            bool isBot = damagable.DamageId == DamagableType.Bot;
+            bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
+            bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
+            bool isPlayer = damagable.DamageId == DamagableType.Player;
             
             NetworkId victimId = victimObj.Id;
             PlayerRef victimPlayerRef = victimObj.StateAuthority;
@@ -105,10 +114,10 @@ namespace Dev
             
             int currentHealth = ApplyDamageInternal(victimObj, damage);
 
-            bool isPlayer = victimObj.TryGetComponent<PlayerCharacter>(out var playerCharacter);
-            
             if (isPlayer)
             {
+                PlayerCharacter playerCharacter = damagable as PlayerCharacter;
+
                 //Vector3 playerPos = _playersDataService.GetPlayerPos(victimPlayerRef);
                 
                 //RPC_SpawnDamageHintFor(shooter, playerPos, damage);
@@ -124,19 +133,16 @@ namespace Dev
                 Debug.Log($"Player {nickname} got hit for {damage}");
             }
 
-            bool isBot = victimObj.TryGetComponent<Bot>(out var bot);
-
             if (isBot)
             {
+                Bot bot = damagable as Bot; 
+
                 if (currentHealth == 0)
                 {
                     OnBotHealthZero(bot, shooter);
                 }
                 
             }
-
-           
-
             
         }
     

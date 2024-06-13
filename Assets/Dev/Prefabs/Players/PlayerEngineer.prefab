@@ -125,6 +125,10 @@ PrefabInstance:
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1674433856282694118, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: _currentAbilityToCast
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5231129319991485753, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: _CharacterClass
       value: 1

@@ -7,7 +7,7 @@ namespace Dev.PlayerLogic
     public class CharacterData : ScriptableObject
     {
         public CharacterClass CharacterClass;
-        [FormerlySerializedAs("PlayerPrefab")] public PlayerCharacter _playerCharacterPrefab;
+        [FormerlySerializedAs("_playerCharacterPrefab")] [FormerlySerializedAs("PlayerPrefab")] public PlayerCharacter PlayerCharacterPrefab;
 
         public Sprite CharacterIcon;
 

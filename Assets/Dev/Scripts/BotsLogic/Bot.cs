@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Utils;
@@ -14,13 +16,14 @@ namespace Dev.BotsLogic
 {
     public class Bot : NetworkContext, IDamageable
     {
-        public int DamageId => AtomicConstants.DamageIds.BotDamageId;
-        
+        public DamagableType DamageId => DamagableType.Bot;
+
         [SerializeField] private WeaponController _weaponController;
 
         [SerializeField] private Rigidbody2D _rigidbody;
-            
+
         [SerializeField] private float _speed = 1.2f;
+        [SerializeField] private float _chaseSpeed = 3.5f;
 
         [SerializeField] private LayerMask _playerLayer;
         [SerializeField] private float _searchRadius = 5;
@@ -28,150 +31,181 @@ namespace Dev.BotsLogic
         [SerializeField] private float _moveDistance = 10;
         [SerializeField] private BotView _view;
 
-        public BotView View => _view;
-
-        private PlayerCharacter _targetPlayer;
-        private BotData _botData;   
+        private BotData _botData;
         private Vector3 _movePos;
         private int _currentPointIndex = 0;
-        
+        private List<BotMovePoint> _movePoints;
+
         private TeamsService _teamsService;
 
-        public BotData BotData => _botData;
-        [Networked] private PlayerRef TargetPlayerId { get; set; }
-
         public bool Alive = true;
-        private HealthObjectsService _healthObjectsService;
 
-        public void Init(BotData botData)
+        [Networked] private NetworkObject Target { get; set; }
+        public BotData BotData => _botData;
+        public BotView View => _view;
+        public TeamSide BotTeamSide => BotData.TeamSide;
+
+        public void Init(BotData botData, List<BotMovePoint> movePoints)
         {
+            _movePoints = movePoints;
             _botData = botData;
         }
 
         [Inject]
-        private void Construct(TeamsService teamsService, HealthObjectsService healthObjectsService)
+        private void Construct(TeamsService teamsService)
         {
-            _healthObjectsService = healthObjectsService;
-            _teamsService = teamsService;
+            _teamsService = teamsService;   
         }
 
         public override void Spawned()
         {
             base.Spawned();
-            
+
             ChangeMoveDirection();
-            
+
             Observable.Interval(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
             {
-                if(HasStateAuthority == false) return;
-                
+                if (HasStateAuthority == false) return;
+
                 SearchForTargets();
             }));
-            
+
             Observable.Interval(TimeSpan.FromSeconds(3)).TakeUntilDestroy(this).Subscribe((l =>
             {
-                if(HasStateAuthority == false) return;
-                
+                if (HasStateAuthority == false) return;
+
                 ChangeMoveDirection();
             }));
-            
         }
 
         public override void FixedUpdateNetwork()
         {
-            if(HasStateAuthority == false) return;
-            
-            if(Alive == false) return;
-            
-            if (TargetPlayerId != PlayerRef.None)
+            if (HasStateAuthority == false) return;
+
+            if (Alive == false) return;
+
+            if (Target != null)
             {
                 MoveToTarget();
             }
             else
             {
-                Move(_movePos);
+                Move(_movePos, _speed);
             }
         }
 
         private void SearchForTargets()
         {
-            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _searchRadius, _playerLayer, out var colliders);
+            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _searchRadius, _playerLayer,
+                out var colliders);
 
-            bool playerFound = false;
-            
+            bool targetFound = false;
+
             if (overlapSphere)
             {
                 foreach (Collider2D collider in colliders)
                 {
-                    bool isPlayer = collider.TryGetComponent<PlayerCharacter>(out var playerCharacter);
+                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
+
+                    if (isDamagable == false) continue;
+
+                    bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
+                    bool isBot = damagable.DamageId == DamagableType.Bot;
+                    bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
+                    bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
+                    bool isPlayer = damagable.DamageId == DamagableType.Player;
+
+                    if (isBot)
+                    {
+                        Bot bot = damagable as Bot;
+
+                        TeamSide botSide = _teamsService.GetUnitTeamSide(bot);
+
+                        if (TryAssignTarget(bot.Object, botSide))
+                        {
+                            targetFound = true;
+                            break;
+                        }
+    
+                    }
 
                     if (isPlayer)
                     {
+                        PlayerCharacter playerCharacter = damagable as PlayerCharacter;
+
                         TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerCharacter.Object.InputAuthority);
 
-                        if (playerTeamSide == _botData.TeamSide)
+                        if (playerTeamSide != BotTeamSide)
                         {
-                            continue;
+                            targetFound = true;
+
+                            if (TryAssignTarget(playerCharacter.Object, playerTeamSide))
+                                break;
                         }
-                        else
-                        {
-                            playerFound = true;
-                            
-                            if (TargetPlayerId != null)
-                            {
-                                if (playerCharacter.Object.InputAuthority != TargetPlayerId)
-                                {
-                                    Debug.Log($"Found new target! {playerCharacter.Object.InputAuthority.PlayerId}", playerCharacter);
-                                    TargetPlayerId = playerCharacter.Object.InputAuthority;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                Debug.Log($"Found new target! {playerCharacter.Object.InputAuthority.PlayerId}", playerCharacter);
-                                TargetPlayerId = playerCharacter.Object.InputAuthority;
-                                
-                            }
-                        }
-                        
                     }
                 }
             }
 
-            if (playerFound == false)
+            if (targetFound == false)
             {
-                TargetPlayerId = PlayerRef.None;
+                Target = null;
             }
-            
         }
+
+        private bool TryAssignTarget(NetworkObject potentialTarget, TeamSide targetTeam)
+        {
+            if (targetTeam == BotTeamSide) return false;
+
+            if (Target != null)
+            {
+                bool isSameTarget = potentialTarget.Id == Target.Id;
+
+                if (isSameTarget)
+                {
+                    return false;
+                }
+                else
+                {
+                    //Debug.Log($"Found new target!", potentialTarget.gameObject);
+                    Target = potentialTarget;
+                    return true;
+                }
+            }
+            else
+            {
+                //Debug.Log($"Found target!", potentialTarget.gameObject);
+                Target = potentialTarget;
+                return true;
+            }
+        }
+
 
         private void MoveToTarget()
         {
-            if (_targetPlayer == null)
-            {
-                _targetPlayer = Runner.GetPlayerObject(TargetPlayerId).GetComponent<PlayerCharacter>();
-            }
-            
-            Vector2 direction = (_targetPlayer.transform.position - transform.position).normalized;
-            Vector2 movePos = direction * _speed;
-            
-            Move(movePos);
-            
+            Vector3 direction = (Target.transform.position - transform.position).normalized;
+            Vector3 movePos = transform.position + direction;
+
+            Move(movePos, _chaseSpeed);
+
             _weaponController.AimWeaponTowards(direction);
-            //_weaponController.TryToFire(direction);
+            _weaponController.TryToFire(direction);
         }
 
         private void ChangeMoveDirection()
         {
-            _movePos = transform.position + Random.onUnitSphere * Random.Range(1f, _moveDistance);
+            var movePoints = _movePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude).ToList();
+    
+            int index = Math.Clamp(Random.Range(0, 4), 0, movePoints.Count());
+
+            BotMovePoint movePoint = movePoints[index];
+            
+            _movePos = movePoint.transform.position;
+            //_movePos = transform.position + Random.onUnitSphere * Random.Range(1f, _moveDistance);
         }
-        
-        private void Move(Vector3 movePos)
+
+        private void Move(Vector3 movePos, float speed)
         {
-            _rigidbody.position = Vector3.MoveTowards(transform.position, movePos, Runner.DeltaTime * _speed);
+            _rigidbody.position = Vector3.MoveTowards(transform.position, movePos, Runner.DeltaTime * speed);
         }
 
 
@@ -179,6 +213,5 @@ namespace Dev.BotsLogic
         {
             return (int)bot.Object.Id.Raw;
         }
-        
     }
 }

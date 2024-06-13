@@ -65,6 +65,8 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void OnCastButtonClicked()
         {
+            Debug.Log($"Cast clicked {_castController.AllowToCast}");
+            
             if(_castController.AllowToCast == false) return;
             
             if (_castController.CurrentAbilityToCast == AbilityType.MiniAirStrike)

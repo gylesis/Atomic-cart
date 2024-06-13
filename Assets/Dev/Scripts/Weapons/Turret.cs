@@ -1,7 +1,9 @@
 ﻿using System;
+using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Utils;
+using Dev.Weapons.Guns;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -23,15 +25,15 @@ namespace Dev.Weapons
         private TeamsService _teamsService;
         private TeamSide _ownerTeamSide;
 
-        private PlayerCharacter _targetPlayer;
-
-        [Networked] private PlayerRef TargetPlayerId { get; set; }
+        [Networked] private NetworkObject Target { get; set; }
 
         private TickTimer _directionChooseTimer;
-        private Vector2 _direction;
+        private Vector2 _direction; 
 
         public Subject<Unit> ToDie { get; } = new Subject<Unit>();
 
+        private bool HasTarget => Target != null;
+        
         [Inject]
         private void Construct(TeamsService teamsService)
         {
@@ -56,73 +58,99 @@ namespace Dev.Weapons
         {
             bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _detectionRadius, _playerLayer, out var colliders);
 
-            bool playerFound = false;
+            bool targetFound = false;
             
             if (overlapSphere)
             {
                 foreach (Collider2D collider in colliders)
                 {
-                    bool isPlayer = collider.TryGetComponent<PlayerCharacter>(out var playerCharacter);
+                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
+                    
+                    if(isDamagable == false) continue;
+                    
+                    bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
+                    bool isBot = damagable.DamageId == DamagableType.Bot;
+                    bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
+                    bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
+                    bool isPlayer = damagable.DamageId == DamagableType.Player;
 
-                    if (isPlayer)
+                    if (isBot)
                     {
-                        TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerCharacter.Object.InputAuthority);
+                        Bot bot = damagable as Bot;
 
-                        if (playerTeamSide == _ownerTeamSide)
+                        TeamSide botSide = _teamsService.GetUnitTeamSide(bot);
+
+                        if (TryAssignTarget(bot.Object, botSide))
                         {
-                            continue;
-                        }
-                        else
-                        {
-                            playerFound = true;
-                            
-                            if (TargetPlayerId != null)
-                            {
-                                if (playerCharacter.Object.InputAuthority != TargetPlayerId)
-                                {
-                                    Debug.Log($"Found new target! {playerCharacter.Object.InputAuthority.PlayerId}", playerCharacter);
-                                    TargetPlayerId = playerCharacter.Object.InputAuthority;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                Debug.Log($"Found new target! {playerCharacter.Object.InputAuthority.PlayerId}", playerCharacter);
-                                TargetPlayerId = playerCharacter.Object.InputAuthority;
-                            }
+                            targetFound = true;
+                            break;
                         }
                         
                     }
+                    
+                    if (isPlayer)
+                    {
+                        PlayerCharacter playerCharacter = damagable as PlayerCharacter;
+                        
+                        TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerCharacter.Object.InputAuthority);
+
+                        if (TryAssignTarget(playerCharacter.Object, playerTeamSide))
+                        {
+                            targetFound = true;
+                            break;
+                        }
+                        
+                    }
+                    
                 }
             }
 
-            if (playerFound == false)
+            if (targetFound == false)
             {
-                TargetPlayerId = PlayerRef.None;
+                Target = null;
             }
             
+        }
+
+        private bool TryAssignTarget(NetworkObject potentialTarget, TeamSide targetTeam)
+        {
+            if (targetTeam == _ownerTeamSide) return false;
+            
+            if (Target != null)
+            {
+                bool isSameTarget = potentialTarget.Id == Target.Id;
+                
+                if (isSameTarget)
+                {
+                    return false;
+                }
+                else
+                {
+                    //Debug.Log($"Found new target!", potentialTarget.gameObject);
+                    Target = potentialTarget;
+                    return true;
+                }
+            }
+            else
+            {
+                //Debug.Log($"Found target!", potentialTarget.gameObject);
+                Target = potentialTarget;
+                return true;
+            }
         }
         
         public override void FixedUpdateNetwork()
         {
             if(HasStateAuthority == false) return;
             
-            if(TargetPlayerId == PlayerRef.None)
+            if(HasTarget == false)
             {
                 HaoticDirectionMovement();
                 
                 return;
             }
             
-            if (_targetPlayer == null)
-            {
-                _targetPlayer = Runner.GetPlayerObject(TargetPlayerId).GetComponent<PlayerCharacter>();
-            }
-            
-            Vector2 direction = (_targetPlayer.transform.position - transform.position).normalized;
+            Vector2 direction = (Target.transform.position - transform.position).normalized;
 
             _direction = direction;
             _turretView.transform.up = direction;

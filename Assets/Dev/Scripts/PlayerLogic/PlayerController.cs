@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.UI;
@@ -71,8 +69,7 @@ namespace Dev.PlayerLogic
             SetInteractionAction(null);
         }
 
-        [Rpc]
-        public void RPC_Init(float moveSpeed, float shootThreshold, float speedLowerVelocity)
+        public void Init(float moveSpeed, float shootThreshold, float speedLowerVelocity)
         {
             _speed = moveSpeed;
             _shootThreshold = shootThreshold;

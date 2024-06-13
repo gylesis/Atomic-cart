@@ -15,11 +15,6 @@ namespace Dev
         private bool _toFollow;
         private CameraService _cameraService;
 
-        public void SetupTarget(Transform target)
-        {
-            _target = target;
-        }
-
         [Inject]
         private void Construct(CameraService cameraService, GameSettings gameSettings)
         {
@@ -32,8 +27,6 @@ namespace Dev
             if (HasStateAuthority)
             {
                 _cameraService.SetMainCameraState(false);
-
-                SetupTarget(PlayerCharacter.LocalPlayerCharacter.transform);
             }
             else
             {
@@ -41,6 +34,11 @@ namespace Dev
             }
         }
 
+        public void SetupTarget(Transform target)
+        {
+            _target = target;
+        }
+        
         public void SetFollowState(bool toFollow)
         {
             _toFollow = toFollow;

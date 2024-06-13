@@ -16,8 +16,8 @@ namespace Dev.PlayerLogic
 
         public void ChangePlayerCharacterClass(PlayerRef playerRef, CharacterClass characterClass)
         {
-            PlayerCharacter playerCharacter = _playersSpawner.SpawnPlayer(playerRef, characterClass, _runner, false);
-            
+            _playersSpawner.ChangePlayerCharacter(playerRef, characterClass, _runner);
+
             
             
         }

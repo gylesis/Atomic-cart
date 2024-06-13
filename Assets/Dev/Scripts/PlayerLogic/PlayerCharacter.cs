@@ -78,6 +78,6 @@ namespace Dev.PlayerLogic
         }
         
         
-        public int DamageId => Object.InputAuthority.PlayerId;
+        public DamagableType DamageId => DamagableType.Player;
     }
-}
+}   

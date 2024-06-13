@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
@@ -15,7 +16,10 @@ namespace Dev.BotsLogic
     {
         [SerializeField] private Bot _botPrefab;
         
+        private List<BotMovePoint> _levelMovePoints;
+
         private TeamsService _teamsService;
+        private GameSettings _gameSettings;
 
         public Subject<Bot> BotSpawned { get; } = new Subject<Bot>();
         public Subject<Bot> BotDeSpawned { get; } = new Subject<Bot>();
@@ -28,18 +32,21 @@ namespace Dev.BotsLogic
         }
         
         [Inject]
-        private void Construct(TeamsService teamsService)
+        private void Construct(TeamsService teamsService, GameSettings gameSettings)
         {
+            _gameSettings = gameSettings;
             _teamsService = teamsService;
         }
         
         private void OnLevelLoaded(Level level) 
         {
-            int blueBots = 2;
-            int redBots = 2;
-
             if (HasStateAuthority)
             {
+                _levelMovePoints = level.BotMovePoints;
+                
+                int blueBots = _gameSettings.BotsPerTeam;
+                int redBots = _gameSettings.BotsPerTeam;
+                
                 SpawnBots(blueBots, TeamSide.Blue);
                 SpawnBots(redBots, TeamSide.Red);
             }   
@@ -70,7 +77,7 @@ namespace Dev.BotsLogic
                 bot.View.RPC_SetTeamBannerColor(AtomicConstants.Teams.GetTeamColor(team));
                 
                 _teamsService.AssignForTeam(bot, team);
-                bot.Init(botData);
+                bot.Init(botData, _levelMovePoints);
             });
                 
             AliveBots.Add(bot);

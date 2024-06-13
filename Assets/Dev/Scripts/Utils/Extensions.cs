@@ -46,7 +46,7 @@ namespace Dev.Utils
             {
                 var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(teamSide);
 
-                SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+                SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
                 return spawnPoint.transform.position;
             }
@@ -85,13 +85,12 @@ namespace Dev.Utils
 
                             if (damagable is IObstacleDamageable obstacleDamageable)
                             {
-                                bool isStaticObstacle =
-                                    damagable.DamageId == AtomicConstants.DamageIds.ObstacleDamageId;
+                                bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
 
                                 if (isStaticObstacle) { }
 
                                 bool isObstacleWithHealth =
-                                    damagable.DamageId == AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
+                                    damagable.DamageId == DamagableType.ObstacleWithHealth;
 
                                 if (isObstacleWithHealth)
                                 {
@@ -102,7 +101,7 @@ namespace Dev.Utils
                                 continue;
                             }
 
-                            bool isDummyTarget = damagable.DamageId == -2;
+                            bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
 
                             if (isDummyTarget)
                             {
@@ -129,7 +128,7 @@ namespace Dev.Utils
                                 continue;
                             }
 
-                            bool isBot = damagable.DamageId == AtomicConstants.DamageIds.BotDamageId;
+                            bool isBot = damagable.DamageId == DamagableType.Bot;
 
                             if (isBot)
                             {

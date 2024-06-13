@@ -3,6 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -19,7 +20,6 @@ namespace Dev.Weapons
 
         private AbilityCastCommand _currentCastCommand;
         
-        private TeamsService _teamsService;
         private PlayerCharacter _playerCharacter;
         private AirStrikeController _airStrikeController;
 
@@ -30,11 +30,10 @@ namespace Dev.Weapons
         public Subject<AbilityType> AbilityChanged { get; } = new();
             
         [Inject]
-        private void Construct(TeamsService teamsService, PlayerCharacter playerCharacter, AirStrikeController airStrikeController)
+        private void Construct(PlayerCharacter playerCharacter, AirStrikeController airStrikeController)
         {
             _airStrikeController = airStrikeController;
             _playerCharacter = playerCharacter;
-            _teamsService = teamsService;
         }
 
         public async override void Spawned()
@@ -42,7 +41,8 @@ namespace Dev.Weapons
             if(HasStateAuthority == false) return;
 
             await UniTask.Delay(100);
-            
+
+            Debug.Log("Init cast commands");
             _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret, _turretPrefab));
             _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, _landminePrefab, _playerCharacter.TeamSide));
             _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, _airStrikeController, _playerCharacter.TeamSide));
@@ -51,8 +51,6 @@ namespace Dev.Weapons
             {
                 castCommand.AbilityRecharged.TakeUntilDestroy(this).Subscribe((OnAbilityRecharged));
             }
-            
-            //_placeTurretCastCommand = new PlaceTurretCastCommand(Runner, _turret);
         }
 
         public void CastAbility(Vector3 pos)
@@ -62,6 +60,8 @@ namespace Dev.Weapons
             AbilityCastCommand command = GetCommand(_currentAbilityToCast);
             command.Process(pos);
 
+            Debug.Log($"About to cast {_currentAbilityToCast}");
+            
             _currentCastCommand = command;
         }
 
@@ -82,6 +82,13 @@ namespace Dev.Weapons
         private AbilityCastCommand GetCommand(AbilityType abilityType)
         {
             return _castCommands.First(x => x.AbilityType == abilityType);
+        }
+
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            base.Despawned(runner, hasState);
+
+            _castCommands = null;
         }
     }
 

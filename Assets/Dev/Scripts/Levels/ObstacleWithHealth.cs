@@ -1,4 +1,5 @@
 using Dev.Utils;
+using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace Dev.Levels
         [SerializeField] protected int _health = 50;
         
         public int Health => _health;
-        public override int DamageId => AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
+        public override DamagableType DamageId => DamagableType.ObstacleWithHealth;
 
         private HealthObjectsService _healthObjectsService;
 

@@ -1,5 +1,4 @@
 ﻿using Dev.Infrastructure;
-using Dev.Utils;
 using Dev.Weapons.Guns;
 using Zenject;
 
@@ -8,8 +7,7 @@ namespace Dev.Levels
     public class DummyTarget : NetworkContext, IDamageable
     {
         private HealthObjectsService _healthObjectsService;
-        public int DamageId => AtomicConstants.DamageIds.ObstacleDamageId;
-
+        public DamagableType DamageId => DamagableType.Obstacle;
 
         [Inject]
         private void Construct(HealthObjectsService healthObjectsService)

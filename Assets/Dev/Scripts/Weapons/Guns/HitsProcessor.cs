@@ -51,7 +51,12 @@ namespace Dev.Weapons.Guns
                     if (isDamageable)
                     {
                         var isPlayer = collider.TryGetComponent<PlayerCharacter>(out var player);
-    
+                        
+                        bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
+                        bool isBot = damagable.DamageId == DamagableType.Bot;
+                        bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
+                        bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
+
                         if (isPlayer)
                         {
                             PlayerRef target = player.Object.StateAuthority;
@@ -66,14 +71,11 @@ namespace Dev.Weapons.Guns
                         
                         if (damagable is IObstacleDamageable obstacleDamageable)
                         {
-                            bool isStaticObstacle = damagable.DamageId == AtomicConstants.DamageIds.ObstacleDamageId;
-
                             if (isStaticObstacle)
                             {
                                 OnHit((damagable as Obstacle).Object,  owner, damage, HitType.Obstacle, projectile);
                             }
 
-                            bool isObstacleWithHealth = damagable.DamageId == AtomicConstants.DamageIds.ObstacleWithHealthDamageId;
 
                             if (isObstacleWithHealth)
                             {
@@ -83,9 +85,7 @@ namespace Dev.Weapons.Guns
                             needToDestroy = true;
                             break;
                         }
-
-                        bool isDummyTarget = damagable.DamageId == AtomicConstants.DamageIds.DummyTargetDamageId;
-
+                       
                         if (isDummyTarget)
                         {
                             DummyTarget dummyTarget = damagable as DummyTarget;
@@ -95,8 +95,6 @@ namespace Dev.Weapons.Guns
 
                             break;
                         }
-
-                        bool isBot = damagable.DamageId == AtomicConstants.DamageIds.BotDamageId;
 
                         if (isBot)
                         {

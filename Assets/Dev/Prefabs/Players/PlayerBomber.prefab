@@ -24,6 +24,10 @@ PrefabInstance:
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1674433856282694118, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: _currentAbilityToCast
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3459795353489080509, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: Hitboxes.Array.data[0]
       value: 

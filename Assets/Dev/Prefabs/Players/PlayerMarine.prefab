@@ -20,6 +20,10 @@ PrefabInstance:
       propertyPath: NetworkedBehaviours.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1674433856282694118, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: _currentAbilityToCast
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5231129319991485753, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: _collider2D
       value: 

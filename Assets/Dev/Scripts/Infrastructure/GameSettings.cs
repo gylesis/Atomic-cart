@@ -11,6 +11,9 @@ namespace Dev.Infrastructure
         [Header("Game")]
         [SerializeField] private int _timeAfterWinGame = 5;
 
+        [SerializeField] private int _botsPerTeam = 2;
+        
+
         [FormerlySerializedAs("_friendlyFireOn")] [SerializeField] private bool _isFriendlyFireOn;
             
         [Header("Player")] 
@@ -26,6 +29,9 @@ namespace Dev.Infrastructure
         
         [Header("Debug")]
         [SerializeField] private MapName _firstLevelName;
+
+
+        public int BotsPerTeam => _botsPerTeam;
 
         public WeaponStaticDataContainer WeaponStaticDataContainer => _weaponStaticDataContainer;
 

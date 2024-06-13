@@ -194,8 +194,8 @@ Transform:
   m_GameObject: {fileID: 1503964217302602948}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.82, z: 0}
-  m_LocalScale: {x: 2.54, y: 3.12, z: 1}
+  m_LocalPosition: {x: 0, y: -0.41, z: 0}
+  m_LocalScale: {x: 1.55575, y: 0.6391125, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6354534433250160693}
@@ -467,7 +467,6 @@ GameObject:
   - component: {fileID: 8629133303523588648}
   - component: {fileID: 6340942788523308819}
   - component: {fileID: 7619175838533121882}
-  - component: {fileID: 1423293678110382777}
   m_Layer: 8
   m_Name: Bot
   m_TagString: Untagged
@@ -517,7 +516,6 @@ MonoBehaviour:
   - {fileID: 5160045293362288918}
   - {fileID: 6340942788523308819}
   - {fileID: 7619175838533121882}
-  - {fileID: 1423293678110382777}
   - {fileID: 9126651368652506643}
   - {fileID: 2302387289523997873}
 --- !u!114 &5160045293362288918
@@ -594,7 +592,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 1.22}
@@ -640,6 +638,7 @@ MonoBehaviour:
   _weaponController: {fileID: 5160045293362288918}
   _rigidbody: {fileID: 6354534433250160690}
   _speed: 5
+  _chaseSpeed: 2
   _playerLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -647,21 +646,6 @@ MonoBehaviour:
   _moveDistance: 50
   _view: {fileID: 6428500650265862553}
   Alive: 1
---- !u!114 &1423293678110382777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6354534433250160694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 063f1c9f8ce5470b98fa67f6d218f351, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
-  _IsActive:
-    _value: 1
 --- !u!1 &7551077672319180125
 GameObject:
   m_ObjectHideFlags: 0

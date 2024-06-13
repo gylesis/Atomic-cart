@@ -117,7 +117,7 @@ namespace Dev.CartLogic
 
             var distance = Vector3.Distance(_cart.transform.position, _nextPoint.transform.position);
 
-            if (distance < 0.1)
+            if (distance < 0.5)
             {
                 SetNewPoints(_currentPointIndex);
             }
