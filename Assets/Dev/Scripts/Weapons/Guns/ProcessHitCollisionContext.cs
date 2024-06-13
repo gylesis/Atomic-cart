@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Dev.Weapons.Guns
 {
-    public struct ProcessCollisionContext
+    public struct ProcessHitCollisionContext
     {
         public NetworkRunner NetworkRunner { get; private set; }
 
@@ -22,7 +22,7 @@ namespace Dev.Weapons.Guns
        
         public TeamSide OwnerTeamSide { get; private set; }
         
-        public ProcessCollisionContext(NetworkRunner networkRunner, Projectile projectile, Vector3 overlapPos, float radius, int damage, LayerMask hitMask, bool isOwnerBot)
+        public ProcessHitCollisionContext(NetworkRunner networkRunner, Projectile projectile, Vector3 overlapPos, float radius, int damage, LayerMask hitMask, bool isOwnerBot, TeamSide ownerTeamSide)
         {
             NetworkRunner = networkRunner;
             OverlapPos = overlapPos;
@@ -30,6 +30,7 @@ namespace Dev.Weapons.Guns
             Damage = damage;
             HitMask = hitMask;
             IsOwnerBot = isOwnerBot;
+            OwnerTeamSide = ownerTeamSide;
             Projectile = projectile;
         }
     }

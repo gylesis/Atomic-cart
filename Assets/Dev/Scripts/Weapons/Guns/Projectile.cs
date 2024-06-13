@@ -25,14 +25,7 @@ namespace Dev.Weapons.Guns
         [FormerlySerializedAs("_collideWhileMoving")] [SerializeField]
         private bool _checkOverlapWhileMoving;
 
-        [Networked] public TickTimer DestroyTimer { get; set; }
-
-        public Transform View => _view;
-
-        public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
-
-        public float OverlapRadius => _overlapRadius;
-
+        
         private Vector2 _moveDirection;
         private float _force;
         protected int _damage;
@@ -40,12 +33,21 @@ namespace Dev.Weapons.Guns
 
         private HealthObjectsService _healthObjectsService;
         private HitsProcessor _hitsProcessor;
+        private TeamsService _teamsService;
+        
+        [Networked] public TickTimer DestroyTimer { get; set; }
+        public Transform View => _view;
+        public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
+        public float OverlapRadius => _overlapRadius;
+        private TeamSide OwnerTeamSide => _teamsService.GetUnitTeamSide(Object.Id);
 
-        private bool _isOwnerIsBot => _owner == PlayerRef.None;
-
+        private bool IsOwnerIsBot => _owner == PlayerRef.None;
+        
+        
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor)
+        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor, TeamsService teamsService)
         {
+            _teamsService = teamsService;
             _hitsProcessor = hitsProcessor;
             _healthObjectsService = healthObjectsService;
         }
@@ -86,7 +88,7 @@ namespace Dev.Weapons.Guns
         }
 
         [Rpc]
-        public void RPC_SetViewState(bool isEnabled)
+        public void RPC_SetViewState(bool isEnabled)    
         {
             _view.gameObject.SetActive(isEnabled);
         }
@@ -95,10 +97,10 @@ namespace Dev.Weapons.Guns
         {
             if (_checkOverlapWhileMoving == false) return;
 
-            ProcessCollisionContext collisionContext = new ProcessCollisionContext(Runner, this, transform.position,
-                _overlapRadius, _damage, _hitMask, _isOwnerIsBot);
+            ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Runner, this, transform.position,
+                _overlapRadius, _damage, _hitMask, IsOwnerIsBot, OwnerTeamSide);
 
-            _hitsProcessor.ProcessCollision(collisionContext);
+            _hitsProcessor.ProcessHitCollision(hitCollisionContext);
 
             if (HasStateAuthority == false) return;
 

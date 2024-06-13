@@ -13,7 +13,6 @@ namespace Dev.Weapons.Guns
                     Projectile projectile = o.GetComponent<Projectile>();
 
                     BulletHitOverlapRadius = projectile.OverlapRadius;
-
                     
                     projectile.Init(direction, ProjectileSpeed, Damage, Object.InputAuthority);
 

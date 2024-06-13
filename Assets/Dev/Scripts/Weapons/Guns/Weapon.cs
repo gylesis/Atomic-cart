@@ -1,4 +1,5 @@
 ﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Dev.Weapons.StaticData;
 using Fusion;
 using UnityEngine;
@@ -32,6 +33,14 @@ namespace Dev.Weapons.Guns
         public Vector2 ShootDirection => transform.up;
 
         public float BulletHitOverlapRadius { get; protected set; } = 0.5f;
+        
+        [Networked] public TeamSide OwnerTeamSide { get; private set; }
+
+        [Rpc]
+        public void RPC_SetOwnerTeam(TeamSide teamSide)
+        {
+            OwnerTeamSide = teamSide;
+        }
         
         public virtual void StartShoot(float power) { }
         
