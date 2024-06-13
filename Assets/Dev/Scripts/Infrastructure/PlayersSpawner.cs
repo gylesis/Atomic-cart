@@ -145,8 +145,8 @@ namespace Dev.Infrastructure
 
             PlayerBase playerBase = PlayersBase[playerRef];
 
-            SetAbilityType(playerBase, characterClass);
             playerBase.AbilityCastController.ResetAbility();
+            SetAbilityType(playerBase, characterClass);
             
             playerNetObj.RequestStateAuthority();
             playerNetObj.AssignInputAuthority(playerRef);
@@ -312,9 +312,9 @@ namespace Dev.Infrastructure
         private void LoadWeapon(PlayerCharacter playerCharacter)
         {
             var weaponSetupContext = new WeaponSetupContext(WeaponType.Rifle);
-            playerCharacter.WeaponController.Init(weaponSetupContext, playerCharacter.TeamSide);
+            playerCharacter.WeaponController.Init(weaponSetupContext);
         }
-
+    
         public PlayerCharacter GetPlayer(PlayerRef playerRef)
         {
             return GetPlayerBase(playerRef).Character;

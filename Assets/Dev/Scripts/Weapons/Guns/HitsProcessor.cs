@@ -59,13 +59,15 @@ namespace Dev.Weapons.Guns
 
                     if (isPlayer)
                     {
-                        PlayerCharacter playerCharacter = damagable as PlayerCharacter;
+                        PlayerCharacter targetPlayer = damagable as PlayerCharacter;
+                        PlayerRef targetPlayerRef = targetPlayer.Object.InputAuthority;
+                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetPlayerRef);
 
-                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(owner);
-                            
+                        Debug.Log($"Hit to player {targetPlayerRef} from team {targetTeamSide}, by {owner} from team {ownerTeamSide}");
+                        
                         if (ownerTeamSide == targetTeamSide) continue;
 
-                        OnHit(playerCharacter.Object, owner, damage, HitType.Player, projectile);
+                        OnHit(targetPlayer.Object, owner, damage, HitType.Player, projectile);
                         needToDestroy = true;
 
                         break;

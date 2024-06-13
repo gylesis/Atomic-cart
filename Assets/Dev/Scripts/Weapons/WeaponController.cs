@@ -47,7 +47,7 @@ namespace Dev.Weapons
             _weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
 
-        public void Init(WeaponSetupContext weaponSetupContext, TeamSide ownerTeamSide)
+        public void Init(WeaponSetupContext weaponSetupContext)
         {
             _weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.WeaponType, true);
         }

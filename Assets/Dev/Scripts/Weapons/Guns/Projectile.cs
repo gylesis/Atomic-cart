@@ -39,7 +39,7 @@ namespace Dev.Weapons.Guns
         public Transform View => _view;
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
-        private TeamSide OwnerTeamSide => _teamsService.GetUnitTeamSide(Object.Id);
+        private TeamSide OwnerTeamSide => _teamsService.GetUnitTeamSide(Object.InputAuthority);
 
         private bool IsOwnerIsBot => _owner == PlayerRef.None;
         
@@ -79,7 +79,7 @@ namespace Dev.Weapons.Guns
 
         public void Init(Vector2 moveDirection, float force, int damage, PlayerRef owner)
         {
-            _owner = owner;
+            _owner = owner; 
             _damage = damage;
             _force = force;
             _moveDirection = moveDirection;

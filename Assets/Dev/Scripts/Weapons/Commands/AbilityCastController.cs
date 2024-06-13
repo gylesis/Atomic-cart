@@ -46,7 +46,6 @@ namespace Dev.Weapons
 
             await UniTask.Delay(100);
 
-            Debug.Log("Init cast commands");
             _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret, _turretPrefab));
             _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, _landminePrefab, _playerBase.TeamSide));
             _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, _airStrikeController, _playerBase.TeamSide));
@@ -72,7 +71,8 @@ namespace Dev.Weapons
         public void ResetAbility()
         {
             if(_castCommands.Count == 0) return;
-            
+
+            Debug.Log($"Reset ability {CurrentAbilityToCast}");
             _currentCastCommand = null;
             AbilityCastCommand command = GetCommand(CurrentAbilityToCast);
             command.Reset();

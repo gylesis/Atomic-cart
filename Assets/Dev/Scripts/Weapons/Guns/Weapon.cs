@@ -15,32 +15,19 @@ namespace Dev.Weapons.Guns
         [SerializeField] protected Transform _view;
         
         public Transform View => _view;
-
         [Networked] public TickTimer CooldownTimer { get; set; }
-
         public WeaponType WeaponType => _weaponType;
-
         public virtual bool AllowToShoot => CooldownTimer.ExpiredOrNotRunning(Runner);
 
         public float BulletMaxDistance => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).BulletMaxDistance;
-
         public float Cooldown => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).Cooldown;
         public int Damage => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).Damage;
 
         public Vector2 ShootPos => _shootPoint.position;
         public Transform ShootPoint => _shootPoint;
-
         public Vector2 ShootDirection => transform.up;
 
         public float BulletHitOverlapRadius { get; protected set; } = 0.5f;
-        
-        [Networked] public TeamSide OwnerTeamSide { get; private set; }
-
-        [Rpc]
-        public void RPC_SetOwnerTeam(TeamSide teamSide)
-        {
-            OwnerTeamSide = teamSide;
-        }
         
         public virtual void StartShoot(float power) { }
         
