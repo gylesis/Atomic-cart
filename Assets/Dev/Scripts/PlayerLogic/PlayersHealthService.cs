@@ -41,7 +41,7 @@ namespace Dev.PlayerLogic
         {
             _init = true;
 
-            _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
 
@@ -148,11 +148,12 @@ namespace Dev.PlayerLogic
         private void OnPlayerHealthZero(PlayerRef playerRef, PlayerRef owner)
         {
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
-
+            PlayerBase playerBase = _playersSpawner.GetPlayerBase(playerRef);
+    
             playerCharacter.RPC_OnDeath();
 
-            playerCharacter.PlayerController.SetAllowToMove(false);
-            playerCharacter.PlayerController.SetAllowToShoot(false);
+            playerBase.PlayerController.SetAllowToMove(false);
+            playerBase.PlayerController.SetAllowToShoot(false);
 
             var playerDieEventContext = new PlayerDieEventContext();
             playerDieEventContext.Killer = owner;
@@ -172,10 +173,10 @@ namespace Dev.PlayerLogic
 
         public void RestorePlayerHealth(PlayerRef playerRef)
         {
-            PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
+            PlayerBase playerBase = _playersSpawner.GetPlayerBase(playerRef);
 
             CharacterData characterData =
-                _charactersDataContainer.GetCharacterDataByClass(playerCharacter.CharacterClass);
+                _charactersDataContainer.GetCharacterDataByClass(playerBase.CharacterClass);
 
             GainHealthToPlayer(playerRef, characterData.CharacterStats.Health);
         }
@@ -184,10 +185,10 @@ namespace Dev.PlayerLogic
         {
             Debug.Log($"Gained {health} HP for player {playerRef}");
 
-            PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
+            PlayerBase playerBase = _playersSpawner.GetPlayerBase(playerRef);
 
             CharacterData characterData =
-                _charactersDataContainer.GetCharacterDataByClass(playerCharacter.CharacterClass);
+                _charactersDataContainer.GetCharacterDataByClass(playerBase.CharacterClass);
 
             int maxHealth = characterData.CharacterStats.Health;
 

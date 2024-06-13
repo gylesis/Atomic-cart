@@ -4,7 +4,6 @@ using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
-using Zenject;
 
 namespace Dev.PlayerLogic
 {
@@ -15,10 +14,9 @@ namespace Dev.PlayerLogic
         [SerializeField] private Collider2D _collider2D;
         [SerializeField] private WeaponController _weaponController;
 
-        [SerializeField] private PlayerController _playerController;
         [SerializeField] private Rigidbody2D _rigidbody2D;
         
-        public PlayerController PlayerController => _playerController;
+       
         public PlayerView PlayerView => _playerView;
         public Collider2D Collider2D => _collider2D;
         public Rigidbody2D Rigidbody => _rigidbody2D;
@@ -26,15 +24,13 @@ namespace Dev.PlayerLogic
 
         public float ShootThreshold => _shootThreshold;
 
-        [Networked] public CharacterClass CharacterClass { get; private set; }
-
         [Networked] private NetworkBool IsDead { get; set; }
         
         public static PlayerCharacter LocalPlayerCharacter;
-
-        [Networked] public TeamSide TeamSide { get; private set; }
         
-        public InputService InputService { get; private set; }
+        
+        [Networked] public CharacterClass CharacterClass { get; private set; }
+        [Networked] public TeamSide TeamSide { get; private set; }
         
         public override void Spawned()
         {
@@ -42,12 +38,6 @@ namespace Dev.PlayerLogic
             {
                 LocalPlayerCharacter = this;
             }
-        }
-
-        [Inject]
-        private void Construct(InputService inputService)
-        {
-            InputService = inputService;
         }
         
         [Rpc]

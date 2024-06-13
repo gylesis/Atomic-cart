@@ -39,7 +39,7 @@ namespace Dev.Levels
             if (HasStateAuthority == false) return;
 
             LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
-            _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
 
         private void OnLevelLoaded(Level level)

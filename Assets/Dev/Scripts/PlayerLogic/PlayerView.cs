@@ -20,7 +20,7 @@ namespace Dev.PlayerLogic
         [SerializeField] private SpriteRenderer _crosshairSpriteRenderer;
 
         private static readonly int Move = Animator.StringToHash("Move");
-        private PlayerCharacter _playerCharacter;
+        private PlayerBase _playerBase;
 
         [Networked]
         private Color TeamColor { get; set; }
@@ -60,21 +60,21 @@ namespace Dev.PlayerLogic
         {
             if(HasStateAuthority == false) return;
             
-            if (_playerCharacter == null && PlayerCharacter.LocalPlayerCharacter != null)
+            if (_playerBase == null && PlayerCharacter.LocalPlayerCharacter != null)
             {
-                _playerCharacter = PlayerCharacter.LocalPlayerCharacter;
+                _playerBase = PlayerBase.LocalPlayerBase;
             }
 
-            float crosshairColorTarget = _playerCharacter.PlayerController.IsPlayerAiming ? 1 : 0;
+            float crosshairColorTarget = _playerBase.PlayerController.IsPlayerAiming ? 1 : 0;
 
             Color color = _crosshairSpriteRenderer.color;
             color.a = Mathf.Lerp(color.a, crosshairColorTarget, Runner.DeltaTime * 20);
             _crosshairSpriteRenderer.color = color;
 
-            Vector3 lookDirection = _playerCharacter.PlayerController.LastLookDirection.normalized;
+            Vector3 lookDirection = _playerBase.PlayerController.LastLookDirection.normalized;
 
-            Weapon weapon = _playerCharacter.WeaponController.CurrentWeapon;
-            float aimDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(_playerCharacter.transform.position, weapon.ShootDirection, 
+            Weapon weapon = _playerBase.Character.WeaponController.CurrentWeapon;
+            float aimDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(_playerBase.transform.position, weapon.ShootDirection, 
                 weapon.BulletMaxDistance, weapon.BulletHitOverlapRadius + 0.05f);
 
             Vector3 targetPos = Vector3.zero + lookDirection * aimDistance;

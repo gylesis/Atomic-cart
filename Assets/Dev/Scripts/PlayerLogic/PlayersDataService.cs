@@ -34,7 +34,7 @@ namespace Dev.PlayerLogic
         {
             base.OnInjectCompleted();
             
-            _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
 
@@ -61,10 +61,15 @@ namespace Dev.PlayerLogic
         {
             return _playersSpawner.GetPlayer(playerRef);
         }
-
+        
+        public PlayerBase GetPlayerBase(PlayerRef playerRef)
+        {
+            return _playersSpawner.GetPlayerBase(playerRef);
+        }
+        
         public CharacterClass GetPlayerCharacterClass(PlayerRef playerRef)
         {
-            return GetPlayer(playerRef).CharacterClass;
+            return _playersSpawner.GetPlayerBase(playerRef).CharacterClass;
         }
         
         public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;

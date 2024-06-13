@@ -32,7 +32,7 @@ namespace Dev.PlayerLogic
 
         public override void Spawned()
         {
-            _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 
             _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe(UpdateTableScore);

@@ -10,7 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1425220058820768765}
   - component: {fileID: 540960217206303372}
+  - component: {fileID: 5419960813115014141}
+  - component: {fileID: 7006521492943995195}
   - component: {fileID: 4065643546084726696}
+  - component: {fileID: 998696771792111929}
+  - component: {fileID: 5057071567940366527}
   m_Layer: 0
   m_Name: PlayerBase
   m_TagString: Untagged
@@ -25,13 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2405011219587723232}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.2994765, y: 2.2224596, z: -0.017698836}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &540960217206303372
 MonoBehaviour:
@@ -51,6 +55,41 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 4065643546084726696}
+  - {fileID: 998696771792111929}
+  - {fileID: 5057071567940366527}
+--- !u!114 &5419960813115014141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2405011219587723232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: 7006521492943995195}
+  _installerPrefabs: []
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!114 &7006521492943995195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2405011219587723232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e837766e38347fbb064abc51db4e0ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerBase: {fileID: 4065643546084726696}
+  _abilityCastController: {fileID: 998696771792111929}
+  _playerController: {fileID: 5057071567940366527}
 --- !u!114 &4065643546084726696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,6 +102,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51f432bdb672477d83518a9019a6987a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
-  _PlayerCharacterInstance: {fileID: 0}
+  _Character: {fileID: 0}
+--- !u!114 &998696771792111929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2405011219587723232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60fb585a00954c0a83a4ae8b898a8f57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
+  _IsActive:
+    _value: 1
+  _turretPrefab: {fileID: 2673182492497880130, guid: 318a08ca55ecb59449313743856e11c4, type: 3}
+  _landminePrefab: {fileID: 4171667660458924660, guid: fc666f2763e02b740b18208e5b81ebdc, type: 3}
+  _CurrentAbilityToCast: 0
+--- !u!114 &5057071567940366527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2405011219587723232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afe19be252cb4874bf099a34c6108f5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
+  _IsActive:
+    _value: 1
+  _shiftSpeed: 2
+  _dashTime: 0.5
+  _LastLookDirection: {x: 0, y: 0}
+  _IsPlayerAiming:
+    _value: 0

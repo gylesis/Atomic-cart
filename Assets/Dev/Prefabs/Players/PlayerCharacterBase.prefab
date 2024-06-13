@@ -484,14 +484,10 @@ GameObject:
   - component: {fileID: 5544195138823906173}
   - component: {fileID: 5544195138823906169}
   - component: {fileID: 5231129319991485753}
-  - component: {fileID: 5429065874298734006}
   - component: {fileID: 5999655236562569822}
   - component: {fileID: 5544195138823906170}
   - component: {fileID: 7142691939699321184}
   - component: {fileID: 4837053613947184219}
-  - component: {fileID: 1674433856282694118}
-  - component: {fileID: 4462124491008006493}
-  - component: {fileID: 1220025778561999087}
   m_Layer: 3
   m_Name: PlayerCharacterBase
   m_TagString: Player
@@ -538,10 +534,8 @@ MonoBehaviour:
   - {fileID: 898484371}
   NetworkedBehaviours:
   - {fileID: 5231129319991485753}
-  - {fileID: 5429065874298734006}
   - {fileID: 5999655236562569822}
   - {fileID: 4837053613947184219}
-  - {fileID: 1674433856282694118}
   - {fileID: 7671677920196908379}
   - {fileID: 805192663281508345}
 --- !u!114 &5231129319991485753
@@ -563,31 +557,9 @@ MonoBehaviour:
   _playerView: {fileID: 898484370}
   _collider2D: {fileID: 7142691939699321184}
   _weaponController: {fileID: 5999655236562569822}
-  _playerController: {fileID: 5429065874298734006}
   _rigidbody2D: {fileID: 5544195138823906170}
   _CharacterClass: 0
   _TeamSide: 0
---- !u!114 &5429065874298734006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5544195138823906174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afe19be252cb4874bf099a34c6108f5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
-  _IsActive:
-    _value: 1
-  _playerCharacter: {fileID: 5231129319991485753}
-  _LastLookDirection: {x: 0, y: 0}
-  _IsPlayerAiming:
-    _value: 0
-  _shiftSpeed: 2
-  _dashTime: 0.5
 --- !u!114 &5999655236562569822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -690,55 +662,6 @@ MonoBehaviour:
     Position: 0.01
     Rotation: 0.01
     Scale: 0.01
---- !u!114 &1674433856282694118
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5544195138823906174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60fb585a00954c0a83a4ae8b898a8f57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
-  _IsActive:
-    _value: 1
-  _turretPrefab: {fileID: 2673182492497880130, guid: 318a08ca55ecb59449313743856e11c4, type: 3}
-  _landminePrefab: {fileID: 4171667660458924660, guid: fc666f2763e02b740b18208e5b81ebdc, type: 3}
-  _currentAbilityToCast: 1
---- !u!114 &4462124491008006493
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5544195138823906174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e837766e38347fbb064abc51db4e0ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _playerCharacter: {fileID: 5231129319991485753}
---- !u!114 &1220025778561999087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5544195138823906174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scriptableObjectInstallers: []
-  _monoInstallers:
-  - {fileID: 4462124491008006493}
-  _installerPrefabs: []
-  _autoRun: 1
-  _kernel: {fileID: 0}
 --- !u!1 &6258946657195857654
 GameObject:
   m_ObjectHideFlags: 0

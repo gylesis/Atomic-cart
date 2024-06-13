@@ -1,4 +1,5 @@
-﻿using Fusion;
+﻿using Dev.PlayerLogic;
+using Fusion;
 using UnityEngine;
 
 namespace Dev.Weapons.Guns
@@ -18,7 +19,9 @@ namespace Dev.Weapons.Guns
         public bool IsOwnerBot { get; private set; }
         
         public Projectile Projectile { get; private set; }
-    
+       
+        public TeamSide OwnerTeamSide { get; private set; }
+        
         public ProcessCollisionContext(NetworkRunner networkRunner, Projectile projectile, Vector3 overlapPos, float radius, int damage, LayerMask hitMask, bool isOwnerBot)
         {
             NetworkRunner = networkRunner;

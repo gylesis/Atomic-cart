@@ -155,16 +155,16 @@ namespace Dev.Infrastructure
 
         private void SetEnemiesFreezeState(bool toFreeze)
         {
-            foreach (PlayerCharacter player in _playersSpawner.Players)
+            foreach (PlayerBase player in _playersSpawner.PlayersBases)
             {
                 player.PlayerController.SetAllowToMove(!toFreeze);
                 player.PlayerController.SetAllowToShoot(!toFreeze);
             }
-        }
+        }   
 
         private void RespawnAllPlayers()
         {
-            foreach (PlayerCharacter player in _playersSpawner.Players)
+            foreach (PlayerCharacter player in _playersSpawner.PlayersCharacters)
             {
                 _playersSpawner.RespawnPlayerCharacter(player.Object.InputAuthority);
             }

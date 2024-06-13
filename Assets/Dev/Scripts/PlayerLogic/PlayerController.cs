@@ -15,40 +15,37 @@ namespace Dev.PlayerLogic
 {
     public class PlayerController : NetworkContext
     {
-        [SerializeField] private PlayerCharacter _playerCharacter;
-        private WeaponController _weaponController => _playerCharacter.WeaponController;
-        private PlayerView PlayerView => _playerCharacter.PlayerView;
-
-        [Networked] private Vector2 LastMoveDirection { get; set; }
-        [Networked] public Vector2 LastLookDirection { get; private set; }
-
-        [Networked] public NetworkBool IsPlayerAiming { get; private set; }
-
-        public bool AllowToMove { get; private set; } = true;
-
-        public bool AllowToShoot { get; private set; } = true;
-
         [SerializeField] private float _shiftSpeed = 2;
         [SerializeField] private float _dashTime = 0.5f;
-
+        
         private float _speed;
         private float _shootThreshold;
         private float _speedLowerSpeed;
+        private Action _onActionButtonPressed;
+        private TickTimer _dashTimer;
 
         private PopUpService _popUpService;
         private JoysticksContainer _joysticksContainer;
+        private PlayerBase _playerBase;
+        private InputService _inputService;
+        
+        private PlayerCharacter PlayerCharacter => _playerBase.Character;
+        private WeaponController _weaponController => PlayerCharacter.WeaponController;
+        private PlayerView PlayerView => PlayerCharacter.PlayerView;
 
+        public bool AllowToMove { get; private set; } = true;
+        public bool AllowToShoot { get; private set; } = true;
+        
+        [Networked] private Vector2 LastMoveDirection { get; set; }
+        [Networked] public Vector2 LastLookDirection { get; private set; }
+        [Networked] public NetworkBool IsPlayerAiming { get; private set; }
         [Networked] private Vector2 LookDirection { get; set; }
         [Networked] private Vector2 MoveDirection { get; set; }
 
-        private TickTimer _dashTimer;
-
-        private Action _onActionButtonPressed;
-        private InputService _inputService;
-
         [Inject]
-        private void Construct(PopUpService popUpService, JoysticksContainer joysticksContainer, InputService inputService)
+        private void Construct(PopUpService popUpService, JoysticksContainer joysticksContainer, InputService inputService, PlayerBase playerBase)
         {
+            _playerBase = playerBase;
             _inputService = inputService;
             _popUpService = popUpService;
             _joysticksContainer = joysticksContainer;
@@ -120,7 +117,7 @@ namespace Dev.PlayerLogic
                         {
                             Vector2 velocity = moveDirection * (_speed * Runner.DeltaTime);
 
-                            _playerCharacter.Rigidbody.velocity = velocity;
+                            PlayerCharacter.Rigidbody.velocity = velocity;
                         }
 
                         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -132,7 +129,7 @@ namespace Dev.PlayerLogic
 
                 if (moveDirection == Vector2.zero)
                 {
-                    Vector2 velocity = _playerCharacter.Rigidbody.velocity;
+                    Vector2 velocity = PlayerCharacter.Rigidbody.velocity;
 
                     if (velocity.sqrMagnitude != 0)
                     {
@@ -149,7 +146,7 @@ namespace Dev.PlayerLogic
                         velocity.x = Mathf.Clamp(velocity.x, 0, float.MaxValue);
                         velocity.y = Mathf.Clamp(velocity.y, 0, float.MaxValue);
 
-                        _playerCharacter.Rigidbody.velocity = velocity;
+                        PlayerCharacter.Rigidbody.velocity = velocity;
                     }
                 }
 
@@ -157,14 +154,14 @@ namespace Dev.PlayerLogic
                 {
                     if (input.CastAbility)
                     {
-                        AbilityCastController castController = _playerCharacter.GetComponent<AbilityCastController>();
+                        AbilityCastController castController = _playerBase.AbilityCastController;
 
-                        castController.CastAbility(transform.position + (Vector3)LastLookDirection.normalized * 6);
+                        castController.CastAbility(_playerBase.Character.transform.position + (Vector3)LastLookDirection.normalized * 6);
                     }
 
                     if (input.ResetAbility)
                     {
-                        AbilityCastController castController = _playerCharacter.GetComponent<AbilityCastController>();
+                        AbilityCastController castController = _playerBase.AbilityCastController;
 
                         castController.ResetAbility();
                     }
@@ -185,7 +182,7 @@ namespace Dev.PlayerLogic
 
             _dashTimer = TickTimer.CreateFromSeconds(Runner, dashTime);
 
-            Vector3 targetPos = _playerCharacter.transform.position +
+            Vector3 targetPos = PlayerCharacter.transform.position +
                                 (Vector3)LastMoveDirection.normalized * dashDistance;
 
             float stepPerTick = 0.05f;
@@ -197,7 +194,7 @@ namespace Dev.PlayerLogic
 
                 force *= _shiftSpeed * Runner.DeltaTime;
 
-                _playerCharacter.Rigidbody.velocity += LastLookDirection * force;
+                PlayerCharacter.Rigidbody.velocity += LastLookDirection * force;
 
                 await Task.Yield();
             }

@@ -14,26 +14,30 @@ namespace Dev.Weapons
     {
         [SerializeField] private Turret _turretPrefab;
         [SerializeField] private Landmine _landminePrefab;
-        [SerializeField] private AbilityType _currentAbilityToCast;
         
         private List<AbilityCastCommand> _castCommands = new List<AbilityCastCommand>(4);
-
         private AbilityCastCommand _currentCastCommand;
         
-        private PlayerCharacter _playerCharacter;
+        private PlayerBase _playerBase;
         private AirStrikeController _airStrikeController;
 
         public bool AllowToCast => _currentCastCommand == null ? true : _currentCastCommand.AllowToCast;
-        public AbilityType CurrentAbilityToCast => _currentAbilityToCast;
+        [Networked, HideInInspector] public AbilityType CurrentAbilityToCast { get; private set; }
         
         public Subject<AbilityType> AbilityRecharged { get; } = new();
         public Subject<AbilityType> AbilityChanged { get; } = new();
             
         [Inject]
-        private void Construct(PlayerCharacter playerCharacter, AirStrikeController airStrikeController)
+        private void Construct(PlayerBase playerBase, AirStrikeController airStrikeController)
         {
             _airStrikeController = airStrikeController;
-            _playerCharacter = playerCharacter;
+            _playerBase = playerBase;
+        }
+
+        [Rpc]
+        public void RPC_SetAbilityType(AbilityType abilityType)
+        {
+            CurrentAbilityToCast = abilityType;
         }
 
         public async override void Spawned()
@@ -44,8 +48,8 @@ namespace Dev.Weapons
 
             Debug.Log("Init cast commands");
             _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret, _turretPrefab));
-            _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, _landminePrefab, _playerCharacter.TeamSide));
-            _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, _airStrikeController, _playerCharacter.TeamSide));
+            _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, _landminePrefab, _playerBase.TeamSide));
+            _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, _airStrikeController, _playerBase.TeamSide));
             
             foreach (AbilityCastCommand castCommand in _castCommands)
             {
@@ -57,18 +61,20 @@ namespace Dev.Weapons
         {
             ResetAbility();
 
-            AbilityCastCommand command = GetCommand(_currentAbilityToCast);
+            AbilityCastCommand command = GetCommand(CurrentAbilityToCast);
             command.Process(pos);
 
-            Debug.Log($"About to cast {_currentAbilityToCast}");
+            Debug.Log($"About to cast {CurrentAbilityToCast}");
             
             _currentCastCommand = command;
         }
 
         public void ResetAbility()
         {
+            if(_castCommands.Count == 0) return;
+            
             _currentCastCommand = null;
-            AbilityCastCommand command = GetCommand(_currentAbilityToCast);
+            AbilityCastCommand command = GetCommand(CurrentAbilityToCast);
             command.Reset();
         }
 

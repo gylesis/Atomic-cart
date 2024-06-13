@@ -16,7 +16,7 @@ namespace Dev.Weapons.Guns
 
         public override void Shoot(Vector2 direction, float power = 1)
         {
-            PushForcePlayer(direction);
+            //PushForcePlayer(direction);
 
             Projectile projectile = Runner.Spawn(ProjectilePrefab, ShootPos, Quaternion.identity,
                 Object.InputAuthority, (runner, o) =>
@@ -34,13 +34,13 @@ namespace Dev.Weapons.Guns
         private void PushForcePlayer(Vector2 direction) // TODO temp, need better way to apply this
         {
             NetworkObject networkObject = Runner.GetPlayerObject(Object.InputAuthority);
-            PlayerCharacter playerCharacter = networkObject.GetComponent<PlayerCharacter>();
-
-            playerCharacter.Rigidbody.velocity = -direction * FirePushPower;
+            PlayerBase playerBase = networkObject.GetComponent<PlayerBase>();
+    
+            playerBase.Character.Rigidbody.velocity = -direction * FirePushPower;
             // player.Rigidbody.AddForce(-direction * _firePushPower, ForceMode2D.Impulse);
-            playerCharacter.PlayerController.SetAllowToMove(false);
+            playerBase.PlayerController.SetAllowToMove(false);
             Observable.Timer(TimeSpan.FromSeconds(0.5f))
-                .Subscribe((l => { playerCharacter.PlayerController.SetAllowToMove(true); }));
+                .Subscribe((l => { playerBase.PlayerController.SetAllowToMove(true); }));
         }
 
         protected override void SpawnVFXOnDestroyProjectile(Projectile projectile)

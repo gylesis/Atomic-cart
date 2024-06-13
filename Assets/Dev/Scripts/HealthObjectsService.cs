@@ -236,11 +236,12 @@ namespace Dev
         private void OnPlayerHealthZero(PlayerRef victim, PlayerRef killer)
         {
             PlayerCharacter playerCharacter = _playersDataService.GetPlayer(victim);
+            PlayerBase playerBase = _playersDataService.GetPlayerBase(victim);
 
             playerCharacter.RPC_OnDeath();
             
-            playerCharacter.PlayerController.SetAllowToMove(false);
-            playerCharacter.PlayerController.SetAllowToShoot(false);
+            playerBase.PlayerController.SetAllowToMove(false);
+            playerBase.PlayerController.SetAllowToShoot(false);
            
             var playerDieEventContext = new PlayerDieEventContext();
             playerDieEventContext.Killer = killer;

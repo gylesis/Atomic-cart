@@ -100,7 +100,7 @@ namespace Dev.Levels.Interactions
                 onInteraction = null;
             }
             
-            _playersDataService.GetPlayer(target).PlayerController.SetInteractionAction(onInteraction);
+            _playersDataService.GetPlayerBase(target).PlayerController.SetInteractionAction(onInteraction);
         }
         
     }

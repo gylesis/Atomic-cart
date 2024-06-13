@@ -16,7 +16,7 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private DefaultReactiveButton _interactionButton;
         [SerializeField] private LongClickReactiveButton _castAbilityButton;
 
-        private PlayerCharacter _playerCharacter;
+        private PlayerBase _playerBase;
         private AbilityCastController _castController;
         private PlayersSpawner _playersSpawner;
 
@@ -44,23 +44,31 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void Start()
         {
-            _playersSpawner.PlayerSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseSpawned));
+            _playersSpawner.PlayerCharacterSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerCharacterSpawned));
         }
 
-        private void OnPlayerSpawned(PlayerSpawnEventContext context)
+        private void OnPlayerBaseSpawned(PlayerSpawnEventContext context)
         {
-            if (_playerCharacter != null) return;
+            if (_playerBase != null) return;
 
             NetworkRunner runner = FindObjectOfType<NetworkRunner>();
 
-            if (runner.LocalPlayer != context.PlayerRef) return;
-
-            _playerCharacter = context.Transform.GetComponent<PlayerCharacter>();
-
-            _castAbilityButton.SetAllowToLongClick(false);
+            PlayerRef playerRef = context.PlayerRef;
             
-            _castController = _playerCharacter.GetComponent<AbilityCastController>();
+            if (runner.LocalPlayer != playerRef) return;
+
+            PlayerBase playerBase = _playersSpawner.GetPlayerBase(playerRef);
+
+            _playerBase = playerBase;
+            
+            _castController = playerBase.AbilityCastController;
             _castController.AbilityRecharged.TakeUntilDestroy(this).Subscribe((OnAbilityRecharged));
+        }
+
+        private void OnPlayerCharacterSpawned(PlayerSpawnEventContext context)
+        {
+            _castAbilityButton.SetAllowToLongClick(false);
         }
 
         private void OnCastButtonClicked()
@@ -82,7 +90,7 @@ namespace Dev.UI.PopUpsAndMenus
 
             PlayerInput input = new PlayerInput();
             input.CastAbility = true;
-            _playerCharacter.InputService.SimulateInput(input);
+            _playerBase.InputService.SimulateInput(input);
         }
 
         private void OnCastButtonLongClicked()
