@@ -73,9 +73,9 @@ namespace Dev.Weapons.Guns
 
                     if (isObstacleWithHealth)
                     {
-                        ObstacleWithHealth obstacleWithHealth = damagable as ObstacleWithHealth;
+                        NetworkObject networkObject = collider.GetComponent<NetworkObject>();
                         
-                        OnHit(obstacleWithHealth.Object, owner, damage, HitType.ObstacleWithHealth,
+                        OnHit(networkObject, owner, damage, HitType.ObstacleWithHealth,
                             projectile);
                         
                         needToDestroy = true;
@@ -84,9 +84,9 @@ namespace Dev.Weapons.Guns
 
                     if (isStaticObstacle)
                     {
-                        Obstacle staticObstacle = damagable as Obstacle;
-                        
-                        OnHit(staticObstacle.Object, owner, damage, HitType.Obstacle, projectile);
+                        NetworkObject networkObject = collider.GetComponent<NetworkObject>();
+
+                        OnHit(networkObject, owner, damage, HitType.Obstacle, projectile);
                         
                         needToDestroy = true;
                         break;

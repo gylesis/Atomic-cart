@@ -195,24 +195,24 @@ namespace Dev
             }));
         }
         
-        public void RestoreHealth(ObjectWithHealth objectWithHealth, bool isPlayer)
+        public void RestoreHealth(NetworkObject networkObject, bool isPlayer)
         {
             if (isPlayer)
             {
-                PlayerRef playerRef = objectWithHealth.Object.StateAuthority;
+                PlayerRef playerRef = networkObject.StateAuthority;
                 
                 CharacterClass playerCharacterClass = _playersDataService.GetPlayerCharacterClass(playerRef);
                 
                 CharacterData characterData = _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
              
-                GainHealthToPlayer(objectWithHealth, characterData.CharacterStats.Health);
+                GainHealthToPlayer(networkObject, characterData.CharacterStats.Health);
             }
         }
 
-        public void GainHealthToPlayer(ObjectWithHealth objectWithHealth, int health)
+        public void GainHealthToPlayer(NetworkObject player, int health)
         {
-            PlayerRef playerRef = objectWithHealth.Object.StateAuthority;   
-            NetworkId playerId = objectWithHealth.Object.Id;
+            PlayerRef playerRef = player.StateAuthority;   
+            NetworkId playerId = player.Id;
             
             CharacterClass playerCharacterClass = _playersDataService.GetPlayerCharacterClass(playerRef);
 
@@ -255,6 +255,7 @@ namespace Dev
             
             Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
             {
+                RestoreHealth(playerCharacter.Object, true);
                 _playersDataService.PlayersSpawner.RespawnPlayerCharacter(victim);
             }));
         }
