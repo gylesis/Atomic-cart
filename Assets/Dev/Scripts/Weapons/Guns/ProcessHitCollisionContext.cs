@@ -37,5 +37,4 @@ namespace Dev.Weapons.Guns
             Projectile = projectile;
         }
     }
-    
 }

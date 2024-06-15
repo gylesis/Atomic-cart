@@ -1,6 +1,7 @@
 ﻿using Dev.BotsLogic;
 using Dev.Levels;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Fusion;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -42,9 +43,7 @@ namespace Dev.Weapons.Guns
         {
             Vector3 pos = transform.position;
 
-            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Runner, explosionRadius, Damage, pos, _hitMask, OwnerTeamSide, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
-            
-            _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);
+            Extensions.AtomicCart.ExplodeAndHitPlayers(Runner, explosionRadius, Damage, pos, _hitMask, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
 
             void OnUnitHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
             {

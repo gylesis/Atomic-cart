@@ -65,7 +65,7 @@ namespace Dev.Weapons.Guns
                         TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetPlayerRef);
 
                         //Debug.Log($"Hit to player {targetPlayerRef} from team {targetTeamSide}, by {owner} from team {ownerTeamSide}");
-
+                        
                         if (ownerTeamSide == targetTeamSide) continue;
 
                         OnHit(targetPlayer.Object, owner, damage, DamagableType.Player, projectile);
@@ -77,10 +77,10 @@ namespace Dev.Weapons.Guns
                     if (isObstacleWithHealth)
                     {
                         NetworkObject networkObject = collider.GetComponent<NetworkObject>();
-
+                        
                         OnHit(networkObject, owner, damage, DamagableType.ObstacleWithHealth,
                             projectile);
-
+                        
                         needToDestroy = true;
                         break;
                     }
@@ -90,7 +90,7 @@ namespace Dev.Weapons.Guns
                         NetworkObject networkObject = collider.GetComponent<NetworkObject>();
 
                         OnHit(networkObject, owner, damage, DamagableType.Obstacle, projectile);
-
+                        
                         needToDestroy = true;
                         break;
                     }
@@ -117,7 +117,9 @@ namespace Dev.Weapons.Guns
                             needToDestroy = true;
                             break;
                         }
+                       
                     }
+                   
                 }
 
                 if (needToDestroy)
@@ -126,100 +128,6 @@ namespace Dev.Weapons.Guns
                 }
             }
         }
-
-       
-        public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext)
-        {
-            NetworkRunner runner = explodeContext.NetworkRunner;
-            Vector3 pos = explodeContext.ExplosionPos;
-            float explosionRadius = explodeContext.ExplosionRadius;
-            TeamSide ownerTeamSide = explodeContext.OwnerTeamSide;
-            LayerMask hitMask = explodeContext.HitMask;
-            int damage = explodeContext.Damage;
-            PlayerRef owner = explodeContext.Owner;
-
-            var overlapSphere = Extensions.OverlapCircle(runner, pos, explosionRadius, hitMask, out var colliders);
-
-            if (overlapSphere)
-            {
-                float maxDistance = (pos - (pos + Vector3.right * explosionRadius)).sqrMagnitude;
-
-                foreach (Collider2D collider in colliders)
-                {
-                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
-
-                    if (isDamagable == false) continue;
-
-                    bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
-                    bool isBot = damagable.DamageId == DamagableType.Bot;
-                    bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
-                    bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
-                    bool isPlayer = damagable.DamageId == DamagableType.Player;
-
-                    if (isDamagable)
-                    {
-                        float distance = (collider.transform.position - pos).sqrMagnitude;
-
-                        float damagePower = 1 - distance / maxDistance;
-
-                        damagePower = 1;
-
-                        //Debug.Log($"DMG power {damagePower}");
-
-                        int totalDamage = (int)(damagePower * damage);
-
-                        if (isStaticObstacle) { }
-
-                        if (isObstacleWithHealth)
-                        {
-                            explodeContext.ObstacleWithHealthHit?.Invoke(damagable as ObstacleWithHealth, owner, totalDamage);
-
-                            continue;
-                        }
-
-                        if (isDummyTarget)
-                        {
-                            DummyTarget dummyTarget = damagable as DummyTarget;
-
-                            explodeContext.DummyHit?.Invoke(dummyTarget.Object, owner, totalDamage);
-
-                            continue;
-                        }
-
-                        if (isPlayer)
-                        {
-                            PlayerCharacter playerCharacter = damagable as PlayerCharacter;
-
-                            PlayerRef target = playerCharacter.Object.StateAuthority;
-
-                            TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(target);
-
-                            if (ownerTeamSide == targetTeamSide) continue;
-
-                            explodeContext.UnitHit?.Invoke(playerCharacter.Object, owner, totalDamage);
-
-                            continue;
-                        }
-
-                        if (isBot)
-                        {
-                            // TODO implement damage to other enemies bots
-                            
-                            Bot targetBot = damagable as Bot;
-
-                            TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetBot);
-
-                            if (ownerTeamSide == targetTeamSide) continue;
-                            
-                            explodeContext.UnitHit?.Invoke(targetBot.Object, owner, totalDamage);
-
-                            continue;
-                        }
-                    }
-                }
-            }
-        }
-        
 
         private void OnHit(NetworkObject networkObject, PlayerRef shooter, int damage, DamagableType damagableType,
                            Projectile projectile)
@@ -244,12 +152,11 @@ namespace Dev.Weapons.Guns
 
                         _healthObjectsService.ApplyDamage(damageContext);
                     }
-
                     break;
                 case DamagableType.DummyTarget:
                     break;
                 default:
-                    break;
+                   break;
             }
 
             //Debug.Log($"Damage type: {damagableType},");

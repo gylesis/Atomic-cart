@@ -35,7 +35,7 @@ namespace Dev.Weapons.Guns
         
 
         private HealthObjectsService _healthObjectsService;
-        protected HitsProcessor _hitsProcessor;
+        private HitsProcessor _hitsProcessor;
         
         [Networked] public TickTimer DestroyTimer { get; set; }
         public Transform View => _view;
