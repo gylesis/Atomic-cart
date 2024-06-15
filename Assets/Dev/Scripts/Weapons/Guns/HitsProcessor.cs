@@ -1,4 +1,5 @@
-﻿using Dev.BotsLogic;
+﻿using System;
+using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
@@ -63,11 +64,11 @@ namespace Dev.Weapons.Guns
                         PlayerRef targetPlayerRef = targetPlayer.Object.InputAuthority;
                         TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetPlayerRef);
 
-                        Debug.Log($"Hit to player {targetPlayerRef} from team {targetTeamSide}, by {owner} from team {ownerTeamSide}");
+                        //Debug.Log($"Hit to player {targetPlayerRef} from team {targetTeamSide}, by {owner} from team {ownerTeamSide}");
                         
                         if (ownerTeamSide == targetTeamSide) continue;
 
-                        OnHit(targetPlayer.Object, owner, damage, HitType.Player, projectile);
+                        OnHit(targetPlayer.Object, owner, damage, DamagableType.Player, projectile);
                         needToDestroy = true;
 
                         break;
@@ -77,7 +78,7 @@ namespace Dev.Weapons.Guns
                     {
                         NetworkObject networkObject = collider.GetComponent<NetworkObject>();
                         
-                        OnHit(networkObject, owner, damage, HitType.ObstacleWithHealth,
+                        OnHit(networkObject, owner, damage, DamagableType.ObstacleWithHealth,
                             projectile);
                         
                         needToDestroy = true;
@@ -88,7 +89,7 @@ namespace Dev.Weapons.Guns
                     {
                         NetworkObject networkObject = collider.GetComponent<NetworkObject>();
 
-                        OnHit(networkObject, owner, damage, HitType.Obstacle, projectile);
+                        OnHit(networkObject, owner, damage, DamagableType.Obstacle, projectile);
                         
                         needToDestroy = true;
                         break;
@@ -98,7 +99,7 @@ namespace Dev.Weapons.Guns
                     {
                         DummyTarget dummyTarget = damagable as DummyTarget;
 
-                        OnHit(dummyTarget.Object, owner, damage, HitType.Bot, projectile);
+                        OnHit(dummyTarget.Object, owner, damage, DamagableType.Bot, projectile);
                         needToDestroy = true;
 
                         break;
@@ -106,26 +107,19 @@ namespace Dev.Weapons.Guns
 
                     if (isBot)
                     {
-                        if (isOwnerBot)
-                        {
-                            continue; // TODO implement damage to other enemies bots
-                        }
-                        else
-                        {
-                            Bot targetBot = damagable as Bot;
+                        Bot targetBot = damagable as Bot;
 
-                            TeamSide shooterTeam = _teamsService.GetUnitTeamSide(owner);
-                            TeamSide botTeam = _teamsService.GetUnitTeamSide(targetBot);
+                        TeamSide botTeam = _teamsService.GetUnitTeamSide(targetBot);
 
-                            if (shooterTeam != botTeam)
-                            {
-                                OnHit(targetBot.Object, owner, damage, HitType.Bot, projectile);
-                            }
+                        if (ownerTeamSide != botTeam)
+                        {
+                            OnHit(targetBot.Object, owner, damage, DamagableType.Bot, projectile);
+                            needToDestroy = true;
+                            break;
                         }
+                       
                     }
-
-                    needToDestroy = true;
-                    break;
+                   
                 }
 
                 if (needToDestroy)
@@ -135,27 +129,41 @@ namespace Dev.Weapons.Guns
             }
         }
 
-        private void OnHit(NetworkObject networkObject, PlayerRef shooter, int damage, HitType hitType,
+        private void OnHit(NetworkObject networkObject, PlayerRef shooter, int damage, DamagableType damagableType,
                            Projectile projectile)
         {
-            if (hitType == HitType.Player || hitType == HitType.Bot)
+            switch (damagableType)
             {
-                if (projectile is ExplosiveProjectile == false)
-                {
-                    _healthObjectsService.ApplyDamage(networkObject, shooter, damage);
-                }
-            }
-            else if (hitType == HitType.ObstacleWithHealth)
-            {
-                ObstaclesManager.Instance.ApplyDamageToObstacle(shooter,
-                    networkObject.GetComponent<ObstacleWithHealth>(), damage);
+                case DamagableType.ObstacleWithHealth:
+                    ObstaclesManager.Instance.ApplyDamageToObstacle(shooter,
+                        networkObject.GetComponent<ObstacleWithHealth>(), damage);
+                    break;
+                case DamagableType.Obstacle:
+                    break;
+                case DamagableType.Bot:
+                case DamagableType.Player:
+                    if (projectile is ExplosiveProjectile == false)
+                    {
+                        ApplyDamageContext damageContext = new ApplyDamageContext();
+                        damageContext.Damage = damage;
+                        damageContext.VictimObj = networkObject;
+                        damageContext.Shooter = shooter;
+                        damageContext.ShooterTeam = _processHitCollisionContext.OwnerTeamSide;
+
+                        _healthObjectsService.ApplyDamage(damageContext);
+                    }
+                    break;
+                case DamagableType.DummyTarget:
+                    break;
+                default:
+                   break;
             }
 
-            //Debug.Log($"Damage for {hitType}");
+            //Debug.Log($"Damage type: {damagableType},");
 
             HitContext hitContext = new HitContext();
             hitContext.GameObject = networkObject.gameObject;
-            hitContext.HitType = hitType;
+            hitContext.DamagableType = damagableType;
 
             Hit.OnNext(hitContext);
         }

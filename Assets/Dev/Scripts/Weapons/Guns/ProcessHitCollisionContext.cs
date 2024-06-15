@@ -22,8 +22,11 @@ namespace Dev.Weapons.Guns
        
         public TeamSide OwnerTeamSide { get; private set; }
         
-        public ProcessHitCollisionContext(NetworkRunner networkRunner, Projectile projectile, Vector3 overlapPos, float radius, int damage, LayerMask hitMask, bool isOwnerBot, TeamSide ownerTeamSide)
+        public PlayerRef Owner { get; private set; }
+        
+        public ProcessHitCollisionContext(NetworkRunner networkRunner, Projectile projectile, Vector3 overlapPos, float radius, int damage, LayerMask hitMask, bool isOwnerBot, PlayerRef owner, TeamSide ownerTeamSide)
         {
+            Owner = owner;
             NetworkRunner = networkRunner;
             OverlapPos = overlapPos;
             Radius = radius;

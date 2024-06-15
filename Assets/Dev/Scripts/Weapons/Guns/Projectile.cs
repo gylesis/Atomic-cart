@@ -30,26 +30,31 @@ namespace Dev.Weapons.Guns
         [Networked] private float Force { get; set; }
         [Networked] protected int Damage { get; set; }
         [Networked] private PlayerRef Owner { get; set; }
+        
+        [Networked] public TeamSide OwnerTeamSide { get; private set; }
+        
 
         private HealthObjectsService _healthObjectsService;
         private HitsProcessor _hitsProcessor;
-        private TeamsService _teamsService;
         
         [Networked] public TickTimer DestroyTimer { get; set; }
         public Transform View => _view;
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
-        private TeamSide OwnerTeamSide => _teamsService.GetUnitTeamSide(Object.InputAuthority);
-
         private bool IsOwnerIsBot => Owner == PlayerRef.None;
         
         
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor, TeamsService teamsService)
+        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor)
         {
-            _teamsService = teamsService;
             _hitsProcessor = hitsProcessor;
             _healthObjectsService = healthObjectsService;
+        }
+
+        [Rpc]
+        public void RPC_SetOwnerTeam(TeamSide ownerTeam)
+        {
+            OwnerTeamSide = ownerTeam;
         }
 
         protected override void OnInjectCompleted()
@@ -61,17 +66,17 @@ namespace Dev.Weapons.Guns
 
         private void OnHit(HitContext hitContext)
         {
-            if (hitContext.HitType == HitType.Obstacle)
+            if (hitContext.DamagableType == DamagableType.Obstacle)
             {
                 OnObstacleHit(hitContext.GameObject.GetComponent<Obstacle>());
             }
 
-            if (hitContext.HitType == HitType.Player)
+            if (hitContext.DamagableType == DamagableType.Player)
             {
                 OnPlayerHit(hitContext.GameObject.GetComponent<PlayerCharacter>());
             }
 
-            if (hitContext.HitType == HitType.Bot)
+            if (hitContext.DamagableType == DamagableType.Bot)
             {
                 OnBotHit(hitContext.GameObject.GetComponent<Bot>());
             }
@@ -98,7 +103,7 @@ namespace Dev.Weapons.Guns
             if (_checkOverlapWhileMoving == false) return;
 
             ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Runner, this, transform.position,
-                _overlapRadius, Damage, _hitMask, IsOwnerIsBot, OwnerTeamSide);
+                _overlapRadius, Damage, _hitMask, IsOwnerIsBot, Owner, OwnerTeamSide);
 
             _hitsProcessor.ProcessHitCollision(hitCollisionContext);
 
@@ -111,7 +116,13 @@ namespace Dev.Weapons.Guns
 
         protected void ApplyDamage(NetworkObject target, PlayerRef shooter, int damage)
         {
-            _healthObjectsService.ApplyDamage(target, shooter, damage);
+            ApplyDamageContext damageContext = new ApplyDamageContext();
+            damageContext.Damage = damage;
+            damageContext.VictimObj = target;
+            damageContext.Shooter = shooter;
+            damageContext.ShooterTeam = OwnerTeamSide;
+            
+            _healthObjectsService.ApplyDamage(damageContext);
         }
 
         protected void ApplyDamageToObstacle(ObstacleWithHealth obstacleWithHealth, PlayerRef shooter, int damage)

@@ -138,7 +138,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _checkOverlapWhileMoving: 0
-  _explosionRadius: 5
+  _explosionRadius: 2
 --- !u!114 &6797543861436920845 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 880675783536816808, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}

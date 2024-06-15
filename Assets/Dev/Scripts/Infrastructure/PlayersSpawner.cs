@@ -96,6 +96,8 @@ namespace Dev.Infrastructure
                 PlayerBase playerBase = networkRunner.Spawn(_playerBasePrefab, null, null, playerRef);
                 playerBase.Object.AssignInputAuthority(playerRef);
 
+               
+                
                 RPC_AddPlayer(playerRef, playerBase);
             }
             else
@@ -135,10 +137,13 @@ namespace Dev.Infrastructure
             PlayerCharacter playerCharacter = networkRunner.Spawn(characterData.PlayerCharacterPrefab, spawnPos,
                 quaternion.identity, playerRef, onBeforeSpawned: (runner, o) =>
                 {
-                    o.transform.parent = PlayersBase[playerRef].transform;
+                    PlayerCharacter character = o.GetComponent<PlayerCharacter>();
+                    character.WeaponController.RPC_SetOwnerTeam(teamSide);
+                    character.transform.parent = PlayersBase[playerRef].transform;
+                    
                     DependenciesContainer.Instance.Inject(o.gameObject);
                 });
-
+            
             NetworkObject playerNetObj = playerCharacter.Object;
 
             PlayersBase[playerRef].Character = playerCharacter;

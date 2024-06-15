@@ -21,9 +21,14 @@ namespace Dev.Weapons
         public Transform WeaponParent => _weaponParent;
         public int WeaponsAmount => Weapons.Count;
         [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
+
         public bool AllowToShoot { get; private set; } = true;
 
-        [HideInInspector, CanBeNull, Networked] public Weapon CurrentWeapon { get; set; }
+        [HideInInspector, CanBeNull, Networked]
+        public Weapon CurrentWeapon { get; set; }
+
+        [Networked] public TeamSide OwnerTeamSide { get; private set; }
+        [Networked] public NetworkBool TeamWasSet { get; private set; }
 
         public Vector3 Direction => WeaponParent.up;
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();
@@ -47,6 +52,13 @@ namespace Dev.Weapons
             _weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
 
+        [Rpc]
+        public void RPC_SetOwnerTeam(TeamSide ownerTeam)
+        {
+            OwnerTeamSide = ownerTeam;
+            TeamWasSet = true;
+        }
+
         public void Init(WeaponSetupContext weaponSetupContext)
         {
             _weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.WeaponType, true);
@@ -68,6 +80,8 @@ namespace Dev.Weapons
 
             weapon.transform.parent = WeaponParent;
 
+            weapon.RPC_SetOwnerTeam(OwnerTeamSide);
+
             if (withChoose)
             {
                 RPC_ChooseWeapon(Weapons.Count);
@@ -76,22 +90,16 @@ namespace Dev.Weapons
 
         public void TryToFire(Vector2 direction)
         {
-            AllowToShoot = CurrentWeapon.AllowToShoot;
+            if (AbleToShoot() == false) return;
 
-            if (AllowToShoot)
-            {
-                Shoot(direction);
-            }
+            Shoot(direction);
         }
 
         public void TryToFire()
         {
-            AllowToShoot = CurrentWeapon.AllowToShoot;
+            if (AbleToShoot() == false) return;
 
-            if (AllowToShoot)
-            {
-                Shoot();
-            }
+            Shoot();
         }
 
         public void AimWeaponTowards(Vector2 direction)
@@ -149,6 +157,19 @@ namespace Dev.Weapons
             //_weaponUiView.ShootReloadView(cooldown, cooldown);
         }
 
+
+        private bool AbleToShoot()
+        {
+            if (TeamWasSet == false)
+            {
+                Debug.Log($"Owner of this Weapon Controller is not set, please initialize owner team", gameObject);
+                return false;
+            }
+
+            if (CurrentWeapon.AllowToShoot == false) return false;
+
+            return true;
+        }
 
         private void OnWeaponChanged(Weapon weapon)
         {

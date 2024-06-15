@@ -16,6 +16,8 @@ namespace Dev.Weapons.Guns
         
         public Transform View => _view;
         [Networked] public TickTimer CooldownTimer { get; set; }
+        [Networked] public TeamSide OwnerTeamSide { get; private set; }
+        
         public WeaponType WeaponType => _weaponType;
         public virtual bool AllowToShoot => CooldownTimer.ExpiredOrNotRunning(Runner);
 
@@ -28,6 +30,12 @@ namespace Dev.Weapons.Guns
         public Vector2 ShootDirection => transform.up;
 
         public float BulletHitOverlapRadius { get; protected set; } = 0.5f;
+        
+        [Rpc]
+        public void RPC_SetOwnerTeam(TeamSide ownerTeam)
+        {
+            OwnerTeamSide = ownerTeam;
+        }
         
         public virtual void StartShoot(float power) { }
         

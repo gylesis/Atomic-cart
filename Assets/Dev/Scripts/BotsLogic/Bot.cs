@@ -14,12 +14,14 @@ using Random = UnityEngine.Random;
 
 namespace Dev.BotsLogic
 {
+    [SelectionBase]
     public class Bot : NetworkContext, IDamageable
     {
         public DamagableType DamageId => DamagableType.Bot;
 
         [SerializeField] private WeaponController _weaponController;
-
+        [SerializeField] private bool _allowToShoot = true;
+        
         [SerializeField] private Rigidbody2D _rigidbody;
 
         [SerializeField] private float _speed = 1.2f;
@@ -41,6 +43,7 @@ namespace Dev.BotsLogic
         public bool Alive = true;
 
         [Networked] private NetworkObject Target { get; set; }
+        
         public BotData BotData => _botData;
         public BotView View => _view;
         public TeamSide BotTeamSide => BotData.TeamSide;
@@ -49,6 +52,8 @@ namespace Dev.BotsLogic
         {
             _movePoints = movePoints;
             _botData = botData;
+            
+            _weaponController.RPC_SetOwnerTeam(_botData.TeamSide);
         }
 
         [Inject]
@@ -188,7 +193,11 @@ namespace Dev.BotsLogic
             Move(movePos, _chaseSpeed);
 
             _weaponController.AimWeaponTowards(direction);
-            _weaponController.TryToFire(direction);
+
+            if (_allowToShoot)
+            {
+                _weaponController.TryToFire(direction);
+            }
         }
 
         private void ChangeMoveDirection()

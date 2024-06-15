@@ -68,8 +68,13 @@ namespace Dev
             }
         }
 
-        public void ApplyDamage(NetworkObject victimObj, PlayerRef shooter, int damage)
+        public void ApplyDamage(ApplyDamageContext damageContext)
         {
+            NetworkObject victimObj = damageContext.VictimObj;
+            TeamSide shooterTeam = damageContext.ShooterTeam;
+            int damage = damageContext.Damage;
+            PlayerRef shooter = damageContext.Shooter;
+
             bool isDamagable = victimObj.TryGetComponent<IDamageable>(out var damagable);
 
             if (isDamagable == false)
@@ -95,14 +100,26 @@ namespace Dev
             bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
             bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
             bool isPlayer = damagable.DamageId == DamagableType.Player;
-            
-            if (_gameSettings.IsFriendlyFireOn == false)
-            {
-                TeamSide victimTeamSide = _teamsService.GetUnitTeamSide(victimId);
-                TeamSide shooterTeamSide = _teamsService.GetUnitTeamSide(shooter);
 
-                if (victimTeamSide == shooterTeamSide) return;
+            if (isPlayer || isBot)
+            {
+                if (_gameSettings.IsFriendlyFireOn == false)
+                {
+                    TeamSide victimTeamSide ;
+
+                    if (isBot)
+                    {
+                        victimTeamSide = _teamsService.GetUnitTeamSide(victimId);
+                    }
+                    else 
+                    {
+                        victimTeamSide = _teamsService.GetUnitTeamSide(victimObj.StateAuthority);
+                    }
+                    
+                    if (victimTeamSide == shooterTeam) return;
+                }
             }
+            
 
             RPC_SpawnDamageHintFor(shooter, victimObj.transform.position, damage);
             
@@ -169,6 +186,8 @@ namespace Dev
 
             HealthChanged.OnNext(data);
 
+            Debug.Log($"Damage {damage} applied to {victimObj.name}", victimObj);
+            
             if (currentHealth <= 0)
             {
                 HealthZero.OnNext(data);
@@ -272,4 +291,13 @@ namespace Dev
         }
         
     }
+
+    public struct ApplyDamageContext
+    {
+        public int Damage;
+        public PlayerRef Shooter;
+        public TeamSide ShooterTeam;
+        public NetworkObject VictimObj;
+    }
+    
 }

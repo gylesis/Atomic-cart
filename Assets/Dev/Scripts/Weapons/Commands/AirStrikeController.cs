@@ -38,16 +38,17 @@ namespace Dev.Weapons
 
             IsBusy = true;
 
+            _miniAirStrikeBombCount = 1;
             _miniAirStrikeExplosionBombCount = _miniAirStrikeBombCount;
 
             Vector3[] poses = new Vector3[_miniAirStrikeBombCount];
             
             for (int i = 0; i < _miniAirStrikeBombCount; i++)
             {
-                Vector3 spawnPos = pos + (Vector3)Random.insideUnitCircle * _miniAirStrikeRadius;
-                poses[i] = spawnPos;
+                //Vector3 spawnPos = pos + (Vector3)Random.insideUnitCircle * _miniAirStrikeRadius;
+                poses[i] = pos;
                 
-                SpawnMarker(spawnPos);
+                SpawnMarker(pos);
 
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
             }

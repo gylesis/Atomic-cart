@@ -72,6 +72,23 @@ namespace Dev.UI.PopUpsAndMenus
         private void OnPlayerCharacterSpawned(PlayerSpawnEventContext context)
         {
             SetLongClickAvailability();
+
+            SetCastButtonAvailability(context);
+        }
+
+        private void SetCastButtonAvailability(PlayerSpawnEventContext context)
+        {
+            switch (context.CharacterClass)
+            {
+                case CharacterClass.Soldier:
+                case CharacterClass.Engineer:
+                case CharacterClass.Bomber:
+                    _castAbilityButton.Enable();
+                    break;
+                default:
+                    _castAbilityButton.Disable();
+                    break;
+            }
         }
 
         private void OnCastButtonClicked()

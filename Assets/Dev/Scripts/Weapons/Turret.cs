@@ -44,6 +44,8 @@ namespace Dev.Weapons
         {
             _owner = owner;
             _ownerTeamSide = _teamsService.GetUnitTeamSide(owner);
+
+            _weaponController.RPC_SetOwnerTeam(_ownerTeamSide);
             
             Observable.Interval(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
             {

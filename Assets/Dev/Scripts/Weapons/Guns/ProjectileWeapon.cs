@@ -68,6 +68,8 @@ namespace Dev.Weapons.Guns
         {
             DependenciesContainer.Instance.Inject(projectile.gameObject);
             
+            projectile.RPC_SetOwnerTeam(OwnerTeamSide);
+            
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
             projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 5);
 
