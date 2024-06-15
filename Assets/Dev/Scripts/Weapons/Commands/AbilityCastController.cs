@@ -21,6 +21,7 @@ namespace Dev.Weapons
         private PlayerBase _playerBase;
         private AirStrikeController _airStrikeController;
         private GameService _gameService;
+        private TearGasService _tearGasService;
 
         public bool AllowToCast => _currentCastCommand == null ? true : _currentCastCommand.AllowToCast;
         [Networked, HideInInspector] public AbilityType CurrentAbilityToCast { get; private set; }
@@ -29,8 +30,9 @@ namespace Dev.Weapons
         public Subject<AbilityType> AbilityChanged { get; } = new();
             
         [Inject]
-        private void Construct(PlayerBase playerBase, AirStrikeController airStrikeController, GameService gameService)
+        private void Construct(PlayerBase playerBase, AirStrikeController airStrikeController, GameService gameService, TearGasService tearGasService)
         {
+            _tearGasService = tearGasService;
             _gameService = gameService;
             _airStrikeController = airStrikeController;
             _playerBase = playerBase;
@@ -60,9 +62,10 @@ namespace Dev.Weapons
 
             await UniTask.Delay(100);
 
-            _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret, _turretPrefab));
-            _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, _landminePrefab, _playerBase.TeamSide));
-            _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, _airStrikeController, _playerBase.TeamSide));
+            _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret,  _playerBase.TeamSide, _turretPrefab));
+            _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, _playerBase.TeamSide, _landminePrefab));
+            _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, _playerBase.TeamSide, _airStrikeController));
+            _castCommands.Add(new ExplodeTearGasCommand(Runner, AbilityType.TearGas, _playerBase.TeamSide, _tearGasService));
             
             foreach (AbilityCastCommand castCommand in _castCommands)
             {

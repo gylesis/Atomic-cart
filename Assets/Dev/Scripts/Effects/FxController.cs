@@ -24,7 +24,7 @@ namespace Dev.Effects
             }
         }
 
-        public void SpawnEffectAt(string effectName, Vector3 pos, Quaternion rotation = default)
+        public TEffectType SpawnEffectAt<TEffectType>(string effectName, Vector3 pos, Quaternion rotation = default, float destroyDelay = 4) where TEffectType : Effect
         {
             var hasEffect = _fxContainer.TryGetEffectDataByName(effectName, out var effectPrefab);
 
@@ -32,8 +32,13 @@ namespace Dev.Effects
             {   
                 Effect effect = Runner.Spawn(effectPrefab, pos, rotation, Runner.LocalPlayer);
 
-                Observable.Timer(TimeSpan.FromSeconds(4)).TakeUntilDestroy(this).Subscribe((l => { Runner.Despawn(effect.Object); }));
+                Observable.Timer(TimeSpan.FromSeconds(destroyDelay)).TakeUntilDestroy(this).Subscribe((l => { Runner.Despawn(effect.Object); }));
+                
+                return effect as TEffectType;
+                
             }
+
+            return null;
         }   
 
         /*public Effect SpawnEffectAt(string effectName, Transform parent, Quaternion rotation = default)

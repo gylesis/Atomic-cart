@@ -9,7 +9,7 @@ namespace Dev.Weapons
         {
             ExplodeAndHitPlayers(_explosionRadius);  
             
-            FxController.Instance.SpawnEffectAt("landmine_explosion", transform.position);
+            FxController.Instance.SpawnEffectAt<Effect>("landmine_explosion", transform.position);
 
             ToDestroy.OnNext(this);
         }

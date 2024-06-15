@@ -3400,66 +3400,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 488147166}
   m_CullTransparentMesh: 1
---- !u!1 &491409929
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 491409930}
-  - component: {fileID: 491409931}
-  m_Layer: 0
-  m_Name: MainInstaller
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &491409930
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 491409929}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -70.066864, y: 20.048298, z: -0.36453927}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 557373208}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &491409931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 491409929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1d7d293099f42e28a550638789035f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _playersSpawner: {fileID: 1172855482}
-  _playersHealthService: {fileID: 1901119633}
-  _playersDataService: {fileID: 2082067708}
-  _teamsService: {fileID: 273665697}
-  _teamsScoreService: {fileID: 727226721}
-  _worldTextProvider: {fileID: 856067265}
-  _popUpService: {fileID: 950226681}
-  _timeService: {fileID: 288897669}
-  _gameService: {fileID: 848995484}
-  _cameraService: {fileID: 931003129}
-  _levelService: {fileID: 1139585698}
-  _joysticksContainer: {fileID: 1334996200}
-  _botsController: {fileID: 1332757292}
-  _healthObjectsService: {fileID: 54623241}
-  _hitsProcessor: {fileID: 1690248805}
-  _airStrikeController: {fileID: 1928949168}
 --- !u!1 &499663076
 GameObject:
   m_ObjectHideFlags: 0
@@ -3915,6 +3855,7 @@ GameObject:
   m_Component:
   - component: {fileID: 557373208}
   - component: {fileID: 557373209}
+  - component: {fileID: 557373210}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -3934,8 +3875,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 491409930}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &557373209
@@ -3952,7 +3892,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers: []
   _monoInstallers:
-  - {fileID: 491409931}
+  - {fileID: 557373210}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -3970,6 +3910,35 @@ MonoBehaviour:
   _parentNewObjectsUnderSceneContext: 0
   _contractNames: []
   _parentContractNames: []
+--- !u!114 &557373210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557373207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1d7d293099f42e28a550638789035f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playersSpawner: {fileID: 1172855482}
+  _playersHealthService: {fileID: 1901119633}
+  _playersDataService: {fileID: 2082067708}
+  _teamsService: {fileID: 273665697}
+  _teamsScoreService: {fileID: 727226721}
+  _worldTextProvider: {fileID: 856067265}
+  _popUpService: {fileID: 950226681}
+  _timeService: {fileID: 288897669}
+  _gameService: {fileID: 848995484}
+  _cameraService: {fileID: 931003129}
+  _levelService: {fileID: 1139585698}
+  _joysticksContainer: {fileID: 1334996200}
+  _botsController: {fileID: 1332757292}
+  _healthObjectsService: {fileID: 54623241}
+  _hitsProcessor: {fileID: 1690248805}
+  _airStrikeController: {fileID: 1928949168}
+  _tearGasService: {fileID: 1812458420}
 --- !u!1 &559353634
 GameObject:
   m_ObjectHideFlags: 0
@@ -10440,6 +10409,7 @@ Transform:
   - {fileID: 54623240}
   - {fileID: 1690248804}
   - {fileID: 1928949167}
+  - {fileID: 1812458419}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1401659308
@@ -13581,6 +13551,79 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1795485163}
   m_CullTransparentMesh: 1
+--- !u!1 &1812458418
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1812458419}
+  - component: {fileID: 1812458421}
+  - component: {fileID: 1812458420}
+  m_Layer: 0
+  m_Name: TearGasService
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1812458419
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812458418}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1395464432}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1812458420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812458418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0d6a6512b524a55baa577a297d6e560, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
+  _IsActive:
+    _value: 1
+  _tearGasPrefab: {fileID: 1153973792856026068, guid: 5bde66d69200b1048a3f48ec3b424f6a, type: 3}
+  _expansionTime: 3
+  _expansionRadius: 10
+  _damagePerSecond: 25
+  _duration: 4
+  _effectHideDuration: 1
+  _secondsDamageTick: 1.5
+--- !u!114 &1812458421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812458418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2626264518
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1812458420}
 --- !u!1 &1842863887
 GameObject:
   m_ObjectHideFlags: 0
@@ -14407,6 +14450,7 @@ MonoBehaviour:
   _miniAirStrikeBombCount: 10
   _miniAirStrikeRadius: 15
   _cooldownBeforeNextBomb: 0.5
+  _explosionRadius: 0
   _miniAirStrikeDamage: 50
   _IsBusy:
     _value: 0

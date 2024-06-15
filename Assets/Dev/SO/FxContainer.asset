@@ -23,3 +23,5 @@ MonoBehaviour:
     Prefab: {fileID: 115409960412582468, guid: 141a31d9d69aa23409d993e549f2e367, type: 3}
   - Name: landmine_explosion
     Prefab: {fileID: 9042885199830165286, guid: c359eb4a88ddb444bb4e12ac1b1b7383, type: 3}
+  - Name: teargas
+    Prefab: {fileID: 3822852745849569462, guid: c7dd6f854c7ff1140ae689c45e3e8754, type: 3}

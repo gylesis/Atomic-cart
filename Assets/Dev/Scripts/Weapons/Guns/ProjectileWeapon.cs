@@ -146,7 +146,7 @@ namespace Dev.Weapons.Guns
         /// <param name="projectile"></param>
         protected virtual void SpawnVFXOnDestroyProjectile(Projectile projectile)
         {
-            FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);
+            FxController.Instance.SpawnEffectAt<Effect>("bullet_explosion", projectile.transform.position);
         }
     }
 

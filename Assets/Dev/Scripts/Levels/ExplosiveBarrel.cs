@@ -27,7 +27,7 @@ namespace Dev.Levels
         {
             base.OnZeroHealth();
 
-            FxController.Instance.SpawnEffectAt("barrel_explosion", transform.position);
+            FxController.Instance.SpawnEffectAt<Effect>("barrel_explosion", transform.position);
 
             ExplodeAtAndHitPlayers(transform.position);
         }

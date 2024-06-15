@@ -15,11 +15,16 @@ namespace Dev.Weapons.Guns
 
         public void Init(Vector3 moveDirection, float force, int damage, PlayerRef owner, float explosionRadius)
         {
-            _explosionRadius = explosionRadius;
+            SetExplosionRadius(explosionRadius);
 
             Init(moveDirection, force, damage, owner);
         }
 
+        public void SetExplosionRadius(float explosionRadius)
+        {
+            _explosionRadius = explosionRadius;
+        }
+        
         protected override void OnPlayerHit(PlayerCharacter playerCharacter)
         {
             base.OnPlayerHit(playerCharacter);
@@ -39,8 +44,8 @@ namespace Dev.Weapons.Guns
         }
 
         protected void ExplodeAndHitPlayers(float explosionRadius)
-        {
-            Vector3 pos = transform.position;
+        {   
+            Vector3 pos = transform.position;   
 
             ProcessExplodeContext explodeContext = new ProcessExplodeContext(Runner, explosionRadius, Damage, pos, _hitMask, OwnerTeamSide, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
             

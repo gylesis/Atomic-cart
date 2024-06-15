@@ -8,11 +8,9 @@ namespace Dev.Weapons
     public class CallAirStrikeCommand : AbilityCastCommand
     {
         private AirStrikeController _airStrikeController;
-        private TeamSide _teamSide;
 
-        public CallAirStrikeCommand(NetworkRunner runner, AbilityType abilityType, AirStrikeController airStrikeController, TeamSide teamSide) : base(runner, abilityType)
+        public CallAirStrikeCommand(NetworkRunner runner, AbilityType abilityType, TeamSide teamSide, AirStrikeController airStrikeController) : base(runner, abilityType, teamSide)
         {
-            _teamSide = teamSide;
             _airStrikeController = airStrikeController;
         }
         
@@ -27,7 +25,6 @@ namespace Dev.Weapons
 
         private void OnAirStrikeCompleted()
         {
-            Debug.Log($"Airstrike completed");
             Reset();    
         }
 

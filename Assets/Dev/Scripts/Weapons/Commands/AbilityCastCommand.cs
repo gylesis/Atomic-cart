@@ -1,4 +1,5 @@
 ﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -13,9 +14,11 @@ namespace Dev.Weapons
         public Subject<AbilityType> AbilityRecharged { get; } = new Subject<AbilityType>();
         
         protected NetworkRunner _runner;
+        protected TeamSide _teamSide;
 
-        protected AbilityCastCommand(NetworkRunner runner, AbilityType abilityType)
+        protected AbilityCastCommand(NetworkRunner runner, AbilityType abilityType, TeamSide teamSide)
         {
+            _teamSide = teamSide;
             AbilityType = abilityType;
             _runner = runner;
         }

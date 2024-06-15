@@ -83,6 +83,7 @@ namespace Dev.UI.PopUpsAndMenus
                 case CharacterClass.Soldier:
                 case CharacterClass.Engineer:
                 case CharacterClass.Bomber:
+                case CharacterClass.Marine:
                     _castAbilityButton.Enable();
                     break;
                 default:

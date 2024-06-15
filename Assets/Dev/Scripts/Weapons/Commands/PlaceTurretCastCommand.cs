@@ -1,4 +1,5 @@
-﻿using Fusion;
+﻿using Dev.PlayerLogic;
+using Fusion;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace Dev.Weapons
         
         public bool AllowToCast { get; private set; }
 
-        public PlaceTurretCastCommand(NetworkRunner runner, AbilityType abilityType, Turret turretPrefab) : base(runner, abilityType)
+        public PlaceTurretCastCommand(NetworkRunner runner, AbilityType abilityType, TeamSide teamSide, Turret turretPrefab) : base(runner, abilityType, teamSide)
         {
             _turretPrefab = turretPrefab;
         }   

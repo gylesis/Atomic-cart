@@ -103,7 +103,7 @@ namespace Dev.Weapons
 
             _view.DOScale(0, 0.5f);
             
-            FxController.Instance.SpawnEffectAt("landmine_explosion", transform.position);
+            FxController.Instance.SpawnEffectAt<Effect>("landmine_explosion", transform.position);
 
             Observable.Timer(TimeSpan.FromSeconds(3)).TakeUntilDestroy(this).Subscribe((l =>
             {

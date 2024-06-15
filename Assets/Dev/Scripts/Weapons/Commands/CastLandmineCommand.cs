@@ -8,13 +8,11 @@ namespace Dev.Weapons
     public class CastLandmineCommand : AbilityCastCommand
     {
         private Landmine _landminePrefab;
-        private TeamSide _ownerTeamSide;
         
         private Landmine _spawnedLandmine;
 
-        public CastLandmineCommand(NetworkRunner runner, AbilityType abilityType, Landmine landminePrefab, TeamSide ownerTeamSide) : base(runner, abilityType)
+        public CastLandmineCommand(NetworkRunner runner, AbilityType abilityType, TeamSide ownerTeamSide, Landmine landminePrefab) : base(runner, abilityType, ownerTeamSide)
         {
-            _ownerTeamSide = ownerTeamSide;
             _landminePrefab = landminePrefab;
         }
         
@@ -28,7 +26,7 @@ namespace Dev.Weapons
 
                 landmine.ToDestroy.TakeUntilDestroy(landmine).Subscribe((unit => OnLandmineDestroyed()));
                 
-                landmine.Init(_ownerTeamSide);
+                landmine.Init(_teamSide);
                 landmine.Init(Vector2.zero, 0, 50, _runner.LocalPlayer);
             });
             
