@@ -184,6 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b699fed0ce9848fc9dada2cda3694ff2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _readyUis:
@@ -232,7 +233,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929976, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Name
-      value: MapLobbyMenu Variant
+      value: SessionMenu Variant
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929979, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Pivot.x
@@ -664,7 +665,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2111925835, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 10.350002
+      value: 10.349976
       objectReference: {fileID: 0}
     - target: {fileID: 2111925835, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -720,7 +721,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_AnchorMax.y
@@ -728,7 +729,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_AnchorMin.y
@@ -736,7 +737,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 164.1
+      value: 164.09998
       objectReference: {fileID: 0}
     - target: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_SizeDelta.y
@@ -784,7 +785,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -1751.71
+      value: 168.29004
       objectReference: {fileID: 0}
     - target: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
       propertyPath: m_AnchoredPosition.y

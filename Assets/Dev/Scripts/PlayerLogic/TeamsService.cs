@@ -38,6 +38,8 @@ namespace Dev.PlayerLogic
                 }
             }
 
+            Debug.Log($"Didnt found team for {teamMember.MemberId}");
+
             return Teams.First();
         }
 

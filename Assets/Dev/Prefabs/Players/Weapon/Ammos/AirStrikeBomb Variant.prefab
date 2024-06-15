@@ -32,6 +32,10 @@ PrefabInstance:
       propertyPath: SyncScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 908989132282622331, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1466458761704203568, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: m_Name
       value: AirStrikeBomb Variant
@@ -100,6 +104,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 7ef84e379a7780d48af1905d3b6f4538, type: 3}
+    - target: {fileID: 1916851821665958631, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 13
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -136,8 +144,9 @@ MonoBehaviour:
   _overlapRadius: 5
   _hitMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 264
   _checkOverlapWhileMoving: 0
+  _OwnerTeamSide: 0
   _explosionRadius: 2
 --- !u!114 &6797543861436920845 stripped
 MonoBehaviour:

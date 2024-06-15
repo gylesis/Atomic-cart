@@ -21,6 +21,8 @@ namespace Dev.Weapons
         [SerializeField] private float _miniAirStrikeRadius = 15;
         [SerializeField] private float _cooldownBeforeNextBomb = 0.5f;
 
+        [SerializeField] private float _explosionRadius;
+        
         [SerializeField] private int _miniAirStrikeDamage = 50;
         
         
@@ -38,49 +40,46 @@ namespace Dev.Weapons
 
             IsBusy = true;
 
-            _miniAirStrikeBombCount = 1;
             _miniAirStrikeExplosionBombCount = _miniAirStrikeBombCount;
 
             Vector3[] poses = new Vector3[_miniAirStrikeBombCount];
             
-            for (int i = 0; i < _miniAirStrikeBombCount; i++)
+            for (int index = 0; index < _miniAirStrikeBombCount; index++)
             {
-                //Vector3 spawnPos = pos + (Vector3)Random.insideUnitCircle * _miniAirStrikeRadius;
-                poses[i] = pos;
+                Vector3 spawnPos = pos + (Vector3)Random.insideUnitCircle * _miniAirStrikeRadius;
+                poses[index] = spawnPos;
                 
-                SpawnMarker(pos);
-
+                SpawnMarker(index, spawnPos);
+                
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
             }
 
-            for (int i = 0; i < _miniAirStrikeBombCount; i++)
+            for (int index = 0; index < _miniAirStrikeBombCount; index++)
             {
-                Vector3 spawnPos = poses[i];
+                Vector3 spawnPos = poses[index];
 
-                SpawnAirStrikeBomb(spawnPos, ownerTeam, 1.5f);
+                SpawnAirStrikeBomb(index, spawnPos, ownerTeam, 1.5f);
 
                 await UniTask.Delay(TimeSpan.FromSeconds(_cooldownBeforeNextBomb));
             }
         }
 
-        private void SpawnMarker(Vector3 spawnPos)
+        private void SpawnMarker(int index, Vector3 spawnPos)
         {
             AirStrikeMarker marker = Runner.Spawn(_airStrikerMarker, spawnPos);
-            marker.Animate();
-          
-            marker.View.localScale = Vector3.one *  0.001f;
-            marker.View.DOScale(1, 1f);
+            marker.Show();
+            _markers.Add(index, marker);
         }
 
-        private void SpawnAirStrikeBomb(Vector3 spawnPos, TeamSide ownerTeam, float detonateDelay)
+        private void SpawnAirStrikeBomb(int index, Vector3 spawnPos, TeamSide ownerTeam, float detonateDelay)
         {
             AirStrikeBomb bomb = Runner.Spawn(_airStrikeBombPrefab, spawnPos, onBeforeSpawned: (runner, o) =>
             {
                 DependenciesContainer.Instance.Inject(o.gameObject);
 
                 AirStrikeBomb airStrikeBomb = o.GetComponent<AirStrikeBomb>();
-                airStrikeBomb.Init(ownerTeam);
-                airStrikeBomb.Init(Vector2.zero, 0, _miniAirStrikeDamage, Runner.LocalPlayer, 5);
+                airStrikeBomb.RPC_SetOwnerTeam(ownerTeam);
+                airStrikeBomb.Init(Vector2.zero, 0, _miniAirStrikeDamage, Runner.LocalPlayer, _explosionRadius);
 
                 float size = Random.Range(0.8f, 1.2f);
 
@@ -91,8 +90,10 @@ namespace Dev.Weapons
             bomb.ToDestroy.Take(1).Subscribe((OnToDestroy));
             bomb.transform.DOScale(1, 0.8f);
 
-            Observable.Timer(TimeSpan.FromSeconds(detonateDelay)).Subscribe((l =>
+            Observable.Timer(TimeSpan.FromSeconds(detonateDelay)).TakeUntilDestroy(this).Subscribe((l =>
             {
+                _markers[index].Hide();
+                _markers.Remove(index);
                 bomb.StartDetonate();
             }));
         }

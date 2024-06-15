@@ -1,7 +1,5 @@
-﻿using System;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using DG.Tweening;
-using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -15,13 +13,19 @@ namespace Dev.Weapons
 
         public Transform View => _view;
 
-        public void Animate()
+        public void Show()
         {
-            _view.transform.rotation = Quaternion.Euler(0,0,Random.Range(0, 360f)); 
+            _view.rotation = Quaternion.Euler(0,0,Random.Range(0, 360f)); 
             
-            Observable.Timer(TimeSpan.FromSeconds(5)).Subscribe((l =>
+            //transform.localScale = Vector3.one *  0.001f;
+            _view.DOScale(1, 1f);
+        }
+
+        public void Hide()
+        {
+            _view.DOScale(0, 1).OnComplete((() =>
             {
-                _view.DOScale(0, 0.5f).OnComplete((() => { Runner.Despawn(Object); }));
+                Runner.Despawn(Object);
             }));
         }
 
