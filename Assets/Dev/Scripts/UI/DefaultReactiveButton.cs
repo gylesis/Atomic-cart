@@ -11,8 +11,8 @@ namespace Dev.UI
     {
         [SerializeField] protected CanvasGroup _canvasGroup;
         [SerializeField] protected Button _button;
-
-        private IDisposable _disposable;
+    
+        protected IDisposable _clickDisposable;
 
         private void Reset()
         {
@@ -25,7 +25,7 @@ namespace Dev.UI
 
         protected virtual void Awake()
         {
-            _disposable = _button
+            _clickDisposable = _button
                 .OnClickAsObservable()
                 .TakeUntilDestroy(this)
                 .Subscribe((_ => { Clicked.OnNext(Unit.Default); }));
@@ -47,7 +47,7 @@ namespace Dev.UI
 
         private void OnDestroy()
         {
-            _disposable.Dispose();
+            _clickDisposable?.Dispose();
         }
     }
 

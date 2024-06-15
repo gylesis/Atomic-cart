@@ -43,7 +43,7 @@ namespace Dev.Weapons.Guns
         {
             Vector3 pos = transform.position;
 
-            Extensions.AtomicCart.ExplodeAndHitPlayers(Runner, explosionRadius, _damage, pos, _hitMask, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
+            Extensions.AtomicCart.ExplodeAndHitPlayers(Runner, explosionRadius, Damage, pos, _hitMask, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
 
             void OnUnitHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
             {

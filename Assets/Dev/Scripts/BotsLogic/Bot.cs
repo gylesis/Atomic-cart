@@ -60,7 +60,7 @@ namespace Dev.BotsLogic
         public override void Spawned()
         {
             base.Spawned();
-
+            
             ChangeMoveDirection();
 
             Observable.Interval(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
@@ -193,6 +193,8 @@ namespace Dev.BotsLogic
 
         private void ChangeMoveDirection()
         {
+            if (HasStateAuthority == false) return;
+            
             var movePoints = _movePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude).ToList();
     
             int index = Math.Clamp(Random.Range(0, 4), 0, movePoints.Count());

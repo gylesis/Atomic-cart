@@ -1,4 +1,5 @@
-﻿using Dev.Infrastructure;
+﻿using System;
+using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Weapons;
 using Fusion;
@@ -64,11 +65,13 @@ namespace Dev.UI.PopUpsAndMenus
             
             _castController = playerBase.AbilityCastController;
             _castController.AbilityRecharged.TakeUntilDestroy(this).Subscribe((OnAbilityRecharged));
+            
+            SetLongClickAvailability();
         }
 
         private void OnPlayerCharacterSpawned(PlayerSpawnEventContext context)
         {
-            _castAbilityButton.SetAllowToLongClick(false);
+            SetLongClickAvailability();
         }
 
         private void OnCastButtonClicked()
@@ -77,14 +80,7 @@ namespace Dev.UI.PopUpsAndMenus
             
             if(_castController.AllowToCast == false) return;
             
-            if (_castController.CurrentAbilityToCast == AbilityType.MiniAirStrike)
-            {
-                _castAbilityButton.SetAllowToLongClick(false);
-            }
-            else
-            {
-                _castAbilityButton.SetAllowToLongClick(true);
-            }
+            SetLongClickAvailability();
             
             CastButtonClicked.OnNext(Unit.Default);
 
@@ -95,6 +91,7 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void OnCastButtonLongClicked()
         {
+            Debug.Log($"Long click");
             _castAbilityButton.SetAllowToLongClick(false);
             
             if (_castController.CurrentAbilityToCast == AbilityType.MiniAirStrike)
@@ -108,13 +105,26 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void OnAbilityRecharged(AbilityType abilityType)
         {
-            if (abilityType == AbilityType.MiniAirStrike)
+            Debug.Log($"Ability recharged");
+
+           SetLongClickAvailability();
+        }
+
+        private void SetLongClickAvailability()
+        {
+            if(_castController == null) return;
+            
+            AbilityType abilityType = _castController.CurrentAbilityToCast;
+
+            switch (abilityType)
             {
-                _castAbilityButton.SetAllowToLongClick(false);
-            }
-            else
-            {
-                _castAbilityButton.SetAllowToLongClick(false);
+                case AbilityType.Turret:
+                case AbilityType.Landmine:
+                    _castAbilityButton.SetAllowToLongClick(true);
+                    break;
+                default:
+                    _castAbilityButton.SetAllowToLongClick(false);
+                    break;
             }
         }
 

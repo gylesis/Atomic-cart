@@ -15,12 +15,25 @@ namespace Dev.UI.PopUpsAndMenus
             new Subject<Unit>();
 
         private float _timer;
-        private IDisposable _disposable;
+        private IDisposable _longClickDisposable;
+        
         private bool _longClickEnabled;
-
+        private bool _longPressCompleted;
+        
         protected override void Awake()
         {
-            base.Awake();
+            _clickDisposable = _button
+                .OnClickAsObservable()
+                .TakeUntilDestroy(this)
+                .Subscribe((_ =>
+                {
+                    if (_longClickEnabled)
+                    {
+                        if(_longPressCompleted) return;
+                    }
+
+                    Clicked.OnNext(Unit.Default);
+                }));
 
             _button.OnPointerDownAsObservable().TakeUntilDestroy(this).Subscribe((OnPointerDown));
             _button.OnPointerUpAsObservable().TakeUntilDestroy(this).Subscribe((OnPointerUp));
@@ -31,8 +44,19 @@ namespace Dev.UI.PopUpsAndMenus
             OnProgressUpdate(0);
             
             if(_longClickEnabled == false) return;
+
+            if (_longPressCompleted)
+            {
+                LongClick.OnNext(Unit.Default);
+            }
+
+            Observable.Timer(TimeSpan.FromTicks(1)).Subscribe((l =>
+            {
+                _longPressCompleted = false;
+            }));
             
-            _disposable?.Dispose();
+          
+            _longClickDisposable?.Dispose();
         }
 
         private void OnPointerDown(PointerEventData eventData)
@@ -40,16 +64,17 @@ namespace Dev.UI.PopUpsAndMenus
             if(_longClickEnabled == false) return;
                 
             _timer = 0;
-            _disposable?.Dispose();
+            _longClickDisposable?.Dispose();
             
-            _disposable = Observable.EveryUpdate().Subscribe((l =>
+            _longClickDisposable = Observable.EveryUpdate().Subscribe((l =>
             {
                 _timer += Time.deltaTime;
 
                 if (_timer >= _holdSeconds)
                 {
-                    LongClick.OnNext(Unit.Default);
-                    _disposable?.Dispose();
+                    _longPressCompleted = true;
+                    
+                    _longClickDisposable?.Dispose();
                     _timer = _holdSeconds;
                 }
 

@@ -20,6 +20,7 @@ namespace Dev.Weapons
         
         private PlayerBase _playerBase;
         private AirStrikeController _airStrikeController;
+        private GameService _gameService;
 
         public bool AllowToCast => _currentCastCommand == null ? true : _currentCastCommand.AllowToCast;
         [Networked, HideInInspector] public AbilityType CurrentAbilityToCast { get; private set; }
@@ -28,10 +29,23 @@ namespace Dev.Weapons
         public Subject<AbilityType> AbilityChanged { get; } = new();
             
         [Inject]
-        private void Construct(PlayerBase playerBase, AirStrikeController airStrikeController)
+        private void Construct(PlayerBase playerBase, AirStrikeController airStrikeController, GameService gameService)
         {
+            _gameService = gameService;
             _airStrikeController = airStrikeController;
             _playerBase = playerBase;
+        }
+
+        protected override void OnInjectCompleted()
+        {
+            base.OnInjectCompleted();
+
+            _gameService.GameRestarted.Subscribe((unit => OnGameRestarted()));
+        }
+
+        private void OnGameRestarted()
+        {
+            ResetAbility();
         }
 
         [Rpc]

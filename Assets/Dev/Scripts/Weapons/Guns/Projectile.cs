@@ -26,10 +26,10 @@ namespace Dev.Weapons.Guns
         private bool _checkOverlapWhileMoving;
 
         
-        private Vector2 _moveDirection;
-        private float _force;
-        protected int _damage;
-        private PlayerRef _owner;
+        [Networked] private Vector2 MoveDirection { get; set; }
+        [Networked] private float Force { get; set; }
+        [Networked] protected int Damage { get; set; }
+        [Networked] private PlayerRef Owner { get; set; }
 
         private HealthObjectsService _healthObjectsService;
         private HitsProcessor _hitsProcessor;
@@ -41,7 +41,7 @@ namespace Dev.Weapons.Guns
         public float OverlapRadius => _overlapRadius;
         private TeamSide OwnerTeamSide => _teamsService.GetUnitTeamSide(Object.InputAuthority);
 
-        private bool IsOwnerIsBot => _owner == PlayerRef.None;
+        private bool IsOwnerIsBot => Owner == PlayerRef.None;
         
         
         [Inject]
@@ -79,14 +79,14 @@ namespace Dev.Weapons.Guns
 
         public void Init(Vector2 moveDirection, float force, int damage, PlayerRef owner)
         {
-            _owner = owner; 
-            _damage = damage;
-            _force = force;
-            _moveDirection = moveDirection;
+            Owner = owner; 
+            Damage = damage;
+            Force = force;
+            MoveDirection = moveDirection;
 
-            transform.up = _moveDirection;
+            transform.up = MoveDirection;
         }
-
+    
         [Rpc]
         public void RPC_SetViewState(bool isEnabled)    
         {
@@ -98,14 +98,14 @@ namespace Dev.Weapons.Guns
             if (_checkOverlapWhileMoving == false) return;
 
             ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Runner, this, transform.position,
-                _overlapRadius, _damage, _hitMask, IsOwnerIsBot, OwnerTeamSide);
+                _overlapRadius, Damage, _hitMask, IsOwnerIsBot, OwnerTeamSide);
 
             _hitsProcessor.ProcessHitCollision(hitCollisionContext);
 
             if (HasStateAuthority == false) return;
 
-            transform.position = Vector3.MoveTowards(transform.position, transform.position + (Vector3)_moveDirection,
-                Runner.DeltaTime * _force);
+            transform.position = Vector3.MoveTowards(transform.position, transform.position + (Vector3)MoveDirection,
+                Runner.DeltaTime * Force);
             //_networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
         }
 

@@ -56,7 +56,7 @@ namespace Dev.CartLogic
             base.OnInjectCompleted();
             
             PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
-            playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
+            playersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
 
             _cart.CartZoneEntered.TakeUntilDestroy(this).Subscribe((OnCartZoneEntered));
             _cart.CartZoneExit.TakeUntilDestroy(this).Subscribe((OnCartZoneExit));

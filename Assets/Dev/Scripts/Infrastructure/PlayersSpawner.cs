@@ -26,7 +26,7 @@ namespace Dev.Infrastructure
         public Subject<PlayerSpawnEventContext> PlayerCharacterSpawned { get; } = new Subject<PlayerSpawnEventContext>();
         
         public Subject<PlayerRef> CharacterDeSpawned { get; } = new Subject<PlayerRef>();
-        public Subject<PlayerRef> PlayerDeSpawned { get; } = new Subject<PlayerRef>();
+        public Subject<PlayerRef> PlayerBaseDeSpawned { get; } = new Subject<PlayerRef>();
 
         [Networked, Capacity(10)] private NetworkDictionary<PlayerRef, PlayerBase> PlayersBase { get; }
 
@@ -205,7 +205,7 @@ namespace Dev.Infrastructure
                 _teamsService.RemoveFromTeam(playerRef);
 
                 PlayersBase.Remove(playerRef);
-                PlayerDeSpawned.OnNext(playerRef);
+                PlayerBaseDeSpawned.OnNext(playerRef);
             }
             else
             {
@@ -285,6 +285,7 @@ namespace Dev.Infrastructure
 
         public void RespawnPlayerCharacter(PlayerRef playerRef)
         {
+            Debug.Log($"Respawn player {playerRef}");
             _playersHealthService.RestorePlayerHealth(playerRef);
 
             TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerRef);

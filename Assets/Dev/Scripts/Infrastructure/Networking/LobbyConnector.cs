@@ -134,7 +134,6 @@ namespace Dev.Infrastructure
             _sessionJoined = null;
         }
 
-
         public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
         {
             
@@ -152,7 +151,13 @@ namespace Dev.Infrastructure
 
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
 
-        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+        public async void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+        {
+            Curtains.Instance.SetText("Game closed");
+            Curtains.Instance.Show();
+            await SceneManager.LoadSceneAsync(0);
+            Curtains.Instance.Hide();
+        }
 
         public void OnConnectedToServer(NetworkRunner runner) { }
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
@@ -175,7 +180,10 @@ namespace Dev.Infrastructure
             Debug.Log($"Custom auth response");
         }
 
-        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+        {
+            Debug.Log($"Host migration!!");
+        }
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
         {
         }

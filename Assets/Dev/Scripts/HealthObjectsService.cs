@@ -77,19 +77,24 @@ namespace Dev
                 Debug.Log($"Object {victimObj.name} is not damagable, skipping {damage} damage", victimObj);
                 return;
             }
+          
+            NetworkId victimId = victimObj.Id;
+            PlayerRef victimPlayerRef = victimObj.StateAuthority;
+
+            bool hasHealthDataForObject = HealthData.Any(x => x.ObjId == victimId);
+
+            if (hasHealthDataForObject == false)
+            {
+                Debug.Log($" No Health Data presented for object {victimObj.name}, skipping {damage} damage. Probably missed initialization", victimObj);
+                return;
+            }
             
+            // target
             bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
             bool isBot = damagable.DamageId == DamagableType.Bot;
             bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
             bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
             bool isPlayer = damagable.DamageId == DamagableType.Player;
-            
-            NetworkId victimId = victimObj.Id;
-            PlayerRef victimPlayerRef = victimObj.StateAuthority;
-
-            bool hasObject = HealthData.Any(x => x.ObjId == victimId);
-
-            if (hasObject == false) return;
             
             if (_gameSettings.IsFriendlyFireOn == false)
             {
@@ -118,10 +123,9 @@ namespace Dev
             {
                 PlayerCharacter playerCharacter = damagable as PlayerCharacter;
 
-                //Vector3 playerPos = _playersDataService.GetPlayerPos(victimPlayerRef);
+                PlayerRef victim = victimObj.StateAuthority;
                 
-                //RPC_SpawnDamageHintFor(shooter, playerPos, damage);
-                //RPC_SpawnDamageHintFor(victim, playerPos, damage);
+                RPC_SpawnDamageHintFor(victim, victimObj.transform.position, damage);
 
                 string nickname = _playersDataService.GetNickname(victimPlayerRef);
 

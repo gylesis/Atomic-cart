@@ -47,12 +47,8 @@ namespace Dev.Weapons
                 Vector3 spawnPos = pos + (Vector3)Random.insideUnitCircle * _miniAirStrikeRadius;
                 poses[i] = spawnPos;
                 
-                AirStrikeMarker marker = Runner.Spawn(_airStrikerMarker, spawnPos);
-                marker.Animate();
-          
-                marker.View.localScale = Vector3.one *  0.001f;
-                marker.View.DOScale(1, 1f);
-                
+                SpawnMarker(spawnPos);
+
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
             }
 
@@ -60,13 +56,22 @@ namespace Dev.Weapons
             {
                 Vector3 spawnPos = poses[i];
 
-                SpawnBomb(spawnPos, ownerTeam, 1.5f);
+                SpawnAirStrikeBomb(spawnPos, ownerTeam, 1.5f);
 
                 await UniTask.Delay(TimeSpan.FromSeconds(_cooldownBeforeNextBomb));
             }
         }
 
-        private void SpawnBomb(Vector3 spawnPos, TeamSide ownerTeam, float detonateDelay)
+        private void SpawnMarker(Vector3 spawnPos)
+        {
+            AirStrikeMarker marker = Runner.Spawn(_airStrikerMarker, spawnPos);
+            marker.Animate();
+          
+            marker.View.localScale = Vector3.one *  0.001f;
+            marker.View.DOScale(1, 1f);
+        }
+
+        private void SpawnAirStrikeBomb(Vector3 spawnPos, TeamSide ownerTeam, float detonateDelay)
         {
             AirStrikeBomb bomb = Runner.Spawn(_airStrikeBombPrefab, spawnPos, onBeforeSpawned: (runner, o) =>
             {

@@ -34,16 +34,21 @@ namespace Dev.PlayerLogic
         {
             base.OnInjectCompleted();
             
-            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
-            _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseSpawned));
+            _playersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
         }
 
+        public bool HasData(PlayerRef playerRef)
+        {
+            return PlayersData.ContainsKey(playerRef);
+        }
+        
         public string GetNickname(PlayerRef playerRef)
         {
             return PlayersData[playerRef].Name.Value;
         }
 
-        private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
+        private void OnPlayerBaseSpawned(PlayerSpawnEventContext spawnEventContext)
         {
             PlayerRef playerRef = spawnEventContext.PlayerRef;
 

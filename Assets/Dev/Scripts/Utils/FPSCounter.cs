@@ -7,8 +7,6 @@ namespace Dev.Utils
 {
     public class FPSCounter : MonoBehaviour
     {
-        [SerializeField] private TMP_Text _fpsText;
-
         [SerializeField] private int _targetFPS = -1;
             
         private readonly Queue<float> _fpsValues = new Queue<float>();
@@ -18,7 +16,7 @@ namespace Dev.Utils
             Application.targetFrameRate = _targetFPS;
         }
 
-        private void Update()
+        private void OnGUI()
         {
             if (_fpsValues.Count > 30)
             {
@@ -38,7 +36,16 @@ namespace Dev.Utils
 
             averageFPS /= _fpsValues.Count;
 
-            _fpsText.text = $"FPS:{(int)averageFPS}";
+            GUIStyle guiStyle = new GUIStyle();
+            guiStyle.fontSize = 35;
+            guiStyle.fontStyle = FontStyle.Bold;
+            guiStyle.active = new GUIStyleState
+            { 
+                textColor = Color.white
+            };
+            
+            GUI.Label(new Rect(400,50, 100,50), $"FPS:{(int)averageFPS}", guiStyle);
         }
+
     }
 }

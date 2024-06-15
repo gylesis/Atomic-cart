@@ -20,36 +20,65 @@ namespace Dev.BotsLogic
 
         private TeamsService _teamsService;
         private GameSettings _gameSettings;
+        private GameService _gameService;
 
         public Subject<Bot> BotSpawned { get; } = new Subject<Bot>();
         public Subject<Bot> BotDeSpawned { get; } = new Subject<Bot>();
         
         [Networked, Capacity(8)] public NetworkLinkedList<Bot> AliveBots { get; }
-        
-        private void Start()
+
+
+        protected override void Start()
         {
+            base.Start();
+            
             LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
         }
-        
+
         [Inject]
-        private void Construct(TeamsService teamsService, GameSettings gameSettings)
+        private void Construct(TeamsService teamsService, GameSettings gameSettings, GameService gameService)
         {
+            _gameService = gameService;
             _gameSettings = gameSettings;
             _teamsService = teamsService;
         }
-        
-        private void OnLevelLoaded(Level level) 
+
+        protected override void OnInjectCompleted()
         {
-            if (HasStateAuthority)
+            base.OnInjectCompleted();
+
+            _gameService.GameRestarted.Subscribe((unit => OnGameRestarted()));
+        }
+
+        private void OnGameRestarted()
+        {
+            if(HasStateAuthority == false) return;
+
+            for (var index = AliveBots.Count - 1; index >= 0; index--)
             {
-                _levelMovePoints = level.BotMovePoints;
+                var bot = AliveBots[index];
+                DespawnBot(bot, false, 0);
+            }
+            
+            SetupBots();
+        }
+
+        private void OnLevelLoaded(Level level)
+        {
+            if (HasStateAuthority == false) return;
+            
+            SetupBots();
+        }
+
+        private void SetupBots()
+        {
+            _levelMovePoints = LevelService.Instance.CurrentLevel.BotMovePoints;
                 
-                int blueBots = _gameSettings.BotsPerTeam;
-                int redBots = _gameSettings.BotsPerTeam;
+            int blueBots = _gameSettings.BotsPerTeam;
+            int redBots = _gameSettings.BotsPerTeam;
                 
-                SpawnBots(blueBots, TeamSide.Blue);
-                SpawnBots(redBots, TeamSide.Red);
-            }   
+            SpawnBots(blueBots, TeamSide.Blue);
+            SpawnBots(redBots, TeamSide.Red);
         }
         
         private void SpawnBots(int botsCount, TeamSide team)
@@ -84,18 +113,19 @@ namespace Dev.BotsLogic
             BotSpawned.OnNext(bot);
         }
 
-        public void DespawnBot(Bot bot, bool spawnAfterDeath = true)
+        public void DespawnBot(Bot bot, bool spawnAfterDeath = true, float despawnDelay = 1)
         {
             TeamSide teamSide = bot.BotData.TeamSide;
-            
+                
             BotDeSpawned.OnNext(bot);  
             
             _teamsService.RemoveFromTeam(bot);
 
-            Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe((l =>
+            Observable.Timer(TimeSpan.FromSeconds(despawnDelay)).Subscribe((l =>
             {
+                AliveBots.Remove(bot);
                 Runner.Despawn(bot.Object);
-
+                
                 if (spawnAfterDeath)
                 {
                     SpawnBot(teamSide); // TODO

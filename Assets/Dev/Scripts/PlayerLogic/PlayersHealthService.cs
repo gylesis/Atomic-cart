@@ -41,11 +41,11 @@ namespace Dev.PlayerLogic
         {
             _init = true;
 
-            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
-            _playersSpawner.PlayerDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseSpawned));
+            _playersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseDespawned));
         }
 
-        private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
+        private void OnPlayerBaseSpawned(PlayerSpawnEventContext spawnEventContext)
         {
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(spawnEventContext.PlayerRef);
 
@@ -62,7 +62,7 @@ namespace Dev.PlayerLogic
             PlayersHealth.Add(playerRef, startHealth);
         }
 
-        private void OnPlayerDespawned(PlayerRef playerRef)
+        private void OnPlayerBaseDespawned(PlayerRef playerRef)
         {
             PlayerCharacter playerCharacter = _playersSpawner.GetPlayer(playerRef);
 
@@ -221,7 +221,11 @@ namespace Dev.PlayerLogic
             {
                 var rect = new Rect(50, height, 100, 20);
 
-                string nickname = PlayersDataService.Instance.GetNickname(pair.Key);
+                PlayerRef playerRef = pair.Key;
+                
+                if(PlayersDataService.Instance.HasData(playerRef) == false) continue;
+                
+                string nickname = PlayersDataService.Instance.GetNickname(playerRef);
                 int health = pair.Value;
 
                 var guiStyle = new GUIStyle();
