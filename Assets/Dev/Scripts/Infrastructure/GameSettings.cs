@@ -10,11 +10,14 @@ namespace Dev.Infrastructure
     {
         [Header("Game")]
         [SerializeField] private int _timeAfterWinGame = 5;
+        [SerializeField] private bool _isFriendlyFireOn;
 
+        [Header("Bots")]
+        [SerializeField] private float _botsTargetsSearchRadius = 15;
         [SerializeField] private int _botsPerTeam = 2;
-        
-
-        [FormerlySerializedAs("_friendlyFireOn")] [SerializeField] private bool _isFriendlyFireOn;
+        [SerializeField] private float _botsSearchForTargetsCooldown = 0.5f;
+        [SerializeField] private float _botsChangeMoveDirectionCooldown = 5;
+        [SerializeField] private int _botsNearestPointsAmountToChoose = 5;
             
         [Header("Player")] 
         [SerializeField] private float _cameraZoomModifier = 15f;
@@ -32,6 +35,11 @@ namespace Dev.Infrastructure
 
 
         public int BotsPerTeam => _botsPerTeam;
+        public float BotsTargetsSearchRadius => _botsTargetsSearchRadius;
+        public float BotsSearchForTargetsCooldown => _botsSearchForTargetsCooldown;
+        public float BotsChangeMoveDirectionCooldown => _botsChangeMoveDirectionCooldown;
+        public int BotsNearestPointsAmountToChoose => _botsNearestPointsAmountToChoose;
+
 
         public WeaponStaticDataContainer WeaponStaticDataContainer => _weaponStaticDataContainer;
 

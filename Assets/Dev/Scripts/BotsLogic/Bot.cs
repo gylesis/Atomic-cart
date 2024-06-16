@@ -9,6 +9,8 @@ using Dev.Weapons.Guns;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Serialization;
 using Zenject;
 using Random = UnityEngine.Random;
 
@@ -19,6 +21,8 @@ namespace Dev.BotsLogic
     {
         public DamagableType DamageId => DamagableType.Bot;
 
+        [SerializeField] private NavMeshAgent _navMeshAgent;
+        
         [SerializeField] private WeaponController _weaponController;
         [SerializeField] private bool _allowToShoot = true;
         
@@ -28,19 +32,20 @@ namespace Dev.BotsLogic
         [SerializeField] private float _chaseSpeed = 3.5f;
 
         [SerializeField] private LayerMask _playerLayer;
-        [SerializeField] private float _searchRadius = 5;
+       
 
         [SerializeField] private float _moveDistance = 10;
         [SerializeField] private BotView _view;
 
         private BotData _botData;
-        private Vector3 _movePos;
+        private Vector3 _movePointPos;
         private int _currentPointIndex = 0;
         private List<BotMovePoint> _movePoints;
 
         private TeamsService _teamsService;
 
         public bool Alive = true;
+        private GameSettings _gameSettings;
 
         [Networked] private NetworkObject Target { get; set; }
         
@@ -57,9 +62,10 @@ namespace Dev.BotsLogic
         }
 
         [Inject]
-        private void Construct(TeamsService teamsService)
+        private void Construct(TeamsService teamsService, GameSettings gameSettings)
         {
-            _teamsService = teamsService;   
+            _gameSettings = gameSettings;
+            _teamsService = teamsService;
         }
 
         public override void Spawned()
@@ -68,14 +74,14 @@ namespace Dev.BotsLogic
             
             ChangeMoveDirection();
 
-            Observable.Interval(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
+            Observable.Interval(TimeSpan.FromSeconds(_gameSettings.BotsSearchForTargetsCooldown)).TakeUntilDestroy(this).Subscribe((l =>
             {
                 if (HasStateAuthority == false) return;
 
                 SearchForTargets();
             }));
 
-            Observable.Interval(TimeSpan.FromSeconds(3)).TakeUntilDestroy(this).Subscribe((l =>
+            Observable.Interval(TimeSpan.FromSeconds(_gameSettings.BotsChangeMoveDirectionCooldown)).TakeUntilDestroy(this).Subscribe((l =>
             {
                 if (HasStateAuthority == false) return;
 
@@ -95,13 +101,13 @@ namespace Dev.BotsLogic
             }
             else
             {
-                Move(_movePos, _speed);
+                Move(_movePointPos, _speed);
             }
         }
 
         private void SearchForTargets()
         {
-            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _searchRadius, _playerLayer,
+            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _gameSettings.BotsTargetsSearchRadius, _playerLayer,
                 out var colliders);
 
             bool targetFound = false;
@@ -205,18 +211,20 @@ namespace Dev.BotsLogic
             if (HasStateAuthority == false) return;
             
             var movePoints = _movePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude).ToList();
-    
-            int index = Math.Clamp(Random.Range(0, 4), 0, movePoints.Count());
+
+            int maxPoints = _gameSettings.BotsNearestPointsAmountToChoose;
+            int index = Math.Clamp(Random.Range(0, maxPoints), 0, movePoints.Count());
 
             BotMovePoint movePoint = movePoints[index];
             
-            _movePos = movePoint.transform.position;
-            //_movePos = transform.position + Random.onUnitSphere * Random.Range(1f, _moveDistance);
+            _movePointPos = movePoint.transform.position;
         }
 
         private void Move(Vector3 movePos, float speed)
         {
-            _rigidbody.position = Vector3.MoveTowards(transform.position, movePos, Runner.DeltaTime * speed);
+            //_rigidbody.position = Vector3.MoveTowards(transform.position, movePos, Runner.DeltaTime * speed);
+            _navMeshAgent.speed = speed;
+            _navMeshAgent.SetDestination(movePos);
         }
 
 

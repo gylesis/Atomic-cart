@@ -6,6 +6,7 @@ using Dev.PlayerLogic;
 using Dev.Utils;
 using DG.Tweening;
 using Fusion;
+using NavMeshPlus.Components;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -26,7 +27,6 @@ namespace Dev.BotsLogic
         public Subject<Bot> BotDeSpawned { get; } = new Subject<Bot>();
         
         [Networked, Capacity(8)] public NetworkLinkedList<Bot> AliveBots { get; }
-
 
         protected override void Start()
         {
