@@ -53,12 +53,12 @@ namespace Dev.Weapons.Guns
 
             void OnUnitHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
             {
-                ApplyDamageToUnit(obj, shooter, totalDamage);
+                ApplyDamageToUnit(obj, Owner, totalDamage);
             }
 
             void OnDummyHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
             {
-                ApplyDamageToUnit(obj, shooter, totalDamage);
+                ApplyDamageToUnit(obj, Owner, totalDamage);
             }
 
             void OnObstacleWithHealthHit(ObstacleWithHealth obj, PlayerRef shooter, int totalDamage)

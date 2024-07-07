@@ -36,19 +36,16 @@ namespace Dev.Weapons.Guns
 
         private HealthObjectsService _healthObjectsService;
         protected HitsProcessor _hitsProcessor;
-        private SessionStateService _sessionStateService;
 
         [Networked] public TickTimer DestroyTimer { get; set; }
         public Transform View => _view;
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
-        private bool IsOwnerIsBot => Owner.IsBot;
         
         
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor, SessionStateService sessionStateService)
-        {
-            _sessionStateService = sessionStateService;
+        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor)
+        {   
             _hitsProcessor = hitsProcessor;
             _healthObjectsService = healthObjectsService;
         }
@@ -106,7 +103,7 @@ namespace Dev.Weapons.Guns
             if (_checkOverlapWhileMoving == false) return;
 
             ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Runner, this, transform.position,
-                _overlapRadius, Damage, _hitMask, IsOwnerIsBot, false, Owner, OwnerTeamSide);
+                _overlapRadius, Damage, _hitMask, false, Owner, OwnerTeamSide);
 
             _hitsProcessor.ProcessHitCollision(hitCollisionContext);
 
@@ -117,12 +114,12 @@ namespace Dev.Weapons.Guns
             //_networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
         }
 
-        protected void ApplyDamageToUnit(NetworkObject target, PlayerRef shooter, int damage)
+        protected void ApplyDamageToUnit(NetworkObject target, SessionPlayer shooter, int damage)
         {
             ApplyDamageContext damageContext = new ApplyDamageContext();
             damageContext.Damage = damage;
             damageContext.VictimObj = target;
-            damageContext.Shooter = Owner;
+            damageContext.Shooter = shooter;
             
             _healthObjectsService.ApplyDamage(damageContext);
         }
