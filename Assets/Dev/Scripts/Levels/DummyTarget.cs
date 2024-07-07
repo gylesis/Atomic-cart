@@ -7,7 +7,7 @@ namespace Dev.Levels
     public class DummyTarget : NetworkContext, IDamageable
     {
         private HealthObjectsService _healthObjectsService;
-        public DamagableType DamageId => DamagableType.Obstacle;
+        public DamagableType DamageId => DamagableType.DummyTarget;
 
         [Inject]
         private void Construct(HealthObjectsService healthObjectsService)

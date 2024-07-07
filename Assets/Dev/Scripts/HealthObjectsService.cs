@@ -109,21 +109,18 @@ namespace Dev
         {
             bool isDamageFromServer = damageContext.IsFromServer;
             
-            if (isDamageFromServer)
-            {
-                Debug.LogError($"Damage from server need to be refactored");
-                return;
-            }
-            
             NetworkObject victimObj = damageContext.VictimObj;
             TeamSide shooterTeam = damageContext.Shooter.TeamSide;
             int damage = damageContext.Damage;
             SessionPlayer shooter = damageContext.Shooter;  
             bool isOwnerBot = damageContext.Shooter.IsBot;
 
-            bool isDamagable = victimObj.TryGetComponent<IDamageable>(out var damagable);
 
-            if (isDamagable == false)
+           
+            
+            bool isTargetDamagable = victimObj.TryGetComponent<IDamageable>(out var damagable);
+
+            if (isTargetDamagable == false)
             {
                 Debug.Log($"Object {victimObj.name} is not damagable, skipping {damage} damage", victimObj);
                 return;
@@ -131,12 +128,10 @@ namespace Dev
 
             NetworkId victimId = victimObj.Id;
 
-            bool hasHealthDataForObject = HealthData.Any(x => x.ObjId == victimId);
-
-            if (hasHealthDataForObject == false)
+            if (HasData(victimId) == false)
             {
-                Debug.Log(
-                    $" No Health Data presented for object {victimObj.name}, skipping {damage} damage. Probably missed initialization",
+                Debug.Log("No Health Data presented for object {victimObj.name}, skipping {damage} damage. " +
+                          "Probably missed initialization",
                     victimObj);
                 return;
             }
@@ -148,28 +143,37 @@ namespace Dev
             bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
             bool isPlayer = damagable.DamageId == DamagableType.Player;
 
-            if (isPlayer || isBot)
+            Color hintDamageColor = GetHintDamageColor(damagable.DamageId);
+            
+            if (isDamageFromServer == false)
             {
-                if (_gameSettings.IsFriendlyFireOn == false)
+                if (isPlayer || isBot) //
                 {
-                    TeamSide victimTeamSide;
-
-                    if (isBot)
+                    if (_gameSettings.IsFriendlyFireOn == false)
                     {
-                        victimTeamSide = _teamsService.GetUnitTeamSide(victimId);
-                    }
-                    else
-                    {
-                        victimTeamSide = _teamsService.GetUnitTeamSide(victimObj.StateAuthority);
-                    }
+                        TeamSide victimTeamSide;
 
-                    if (victimTeamSide == shooterTeam) return;
+                        if (isBot)
+                        {
+                            victimTeamSide = _teamsService.GetUnitTeamSide(victimId);
+                        }
+                        else
+                        {
+                            victimTeamSide = _teamsService.GetUnitTeamSide(victimObj.StateAuthority);
+                        }
+
+                        if (victimTeamSide == shooterTeam)
+                        {
+                            Debug.Log($"Damage from the same team, skipping damage");
+                            return;
+                        }
+                    }
                 }
             }
 
             if (isOwnerBot == false)
             {
-                RPC_SpawnDamageHintFor(shooter.Owner, victimObj.transform.position, damage);
+                RPC_SpawnDamageHintFor(shooter.Owner, victimObj.transform.position, damage, hintDamageColor);
             }
 
             if (isDummyTarget)
@@ -177,8 +181,6 @@ namespace Dev
                 DummyTarget dummyTarget = damagable as DummyTarget;
 
                 Debug.Log($"Damage {damage} applied to dummy target {dummyTarget.name}");
-
-                Vector3 playerPos = dummyTarget.transform.position;
 
                 damage = 0;
             }
@@ -190,15 +192,15 @@ namespace Dev
                 PlayerCharacter playerCharacter = damagable as PlayerCharacter;
                 PlayerRef victim = victimObj.StateAuthority;
 
-                RPC_SpawnDamageHintFor(victim, victimObj.transform.position, damage);
+                RPC_SpawnDamageHintFor(victim, victimObj.transform.position, damage, hintDamageColor);
 
                 string nickname = _playersDataService.GetNickname(victim);
 
-                Debug.Log($"Player {nickname} got hit for {damage}");
+                //Debug.Log($"Player {nickname} got hit for {damage}");
 
                 if (currentHealth == 0)
                 {
-                    OnPlayerHealthZero(playerCharacter.Object.StateAuthority, shooter);
+                    OnPlayerHealthZero(playerCharacter.Object.StateAuthority, shooter, isDamageFromServer);
                 }
             }
 
@@ -208,11 +210,44 @@ namespace Dev
 
                 if (currentHealth == 0)
                 {
-                    OnBotHealthZero(bot, shooter);
+                    OnBotHealthZero(bot, shooter, isDamageFromServer);
+                }
+            }
+
+            if (isObstacleWithHealth)
+            {
+                ObstacleWithHealth obstacle = damagable as ObstacleWithHealth;
+
+                if (currentHealth <= 0)
+                {
+                    OnObstacleZeroHealth(obstacle);
                 }
             }
         }
 
+        private Color GetHintDamageColor(DamagableType damagableType)
+        {
+            Color color;
+            
+            switch (damagableType)
+            {
+                case DamagableType.ObstacleWithHealth:
+                    color = Color.cyan;
+                    break;
+                case DamagableType.Player:
+                    color = Color.yellow;
+                    break;
+                case DamagableType.DummyTarget:
+                    color = Color.gray;
+                    break;
+                default:
+                    color = Color.red;
+                    break;
+            }
+
+            return color;
+        }
+        
         private int ApplyDamageInternal(NetworkObject victimObj, int damage)
         {
             NetworkId victimId = victimObj.Id;
@@ -232,7 +267,7 @@ namespace Dev
 
             HealthChanged.OnNext(data);
 
-            Debug.Log($"Damage {damage} applied to {victimObj.name}", victimObj);
+            //Debug.Log($"Damage {damage} applied to {victimObj.name}", victimObj);
 
             if (currentHealth <= 0)
             {
@@ -242,18 +277,19 @@ namespace Dev
             return currentHealth;
         }
 
-        private void OnBotHealthZero(Bot bot, SessionPlayer killer)
+        private void OnBotHealthZero(Bot bot, SessionPlayer killer, bool isDamageFromServer)
         {
             bot.RPC_OnDeath(true);
             
-            var botDieContext = new UnitDieContext();
-            botDieContext.Killer = killer;
-            botDieContext.Victim = _sessionStateService.GetSessionPlayer(bot);
-
+            var dieContext = new UnitDieContext();
+            dieContext.Killer = killer;
+            dieContext.Victim = _sessionStateService.GetSessionPlayer(bot);
+            dieContext.IsKilledByServer = isDamageFromServer;
+            
             bot.Alive = false;
             bot.View.transform.DOScale(0, 0.5f);
 
-            BotDied.OnNext(botDieContext);
+            BotDied.OnNext(dieContext);
 
             //LoggerUI.Instance.Log($"Player {playerRef} is dead");
 
@@ -264,7 +300,45 @@ namespace Dev
                 _botsController.RespawnBot(bot);
             }));
         }
+        
+        private void OnPlayerHealthZero(PlayerRef victim, SessionPlayer killer, bool isKilledByServer)
+        {
+            PlayerCharacter playerCharacter = _playersDataService.GetPlayer(victim);
+            PlayerBase playerBase = _playersDataService.GetPlayerBase(victim);
 
+            playerCharacter.RPC_OnDeath();
+
+            playerBase.PlayerController.SetAllowToMove(false);
+            playerBase.PlayerController.SetAllowToShoot(false);
+
+            var dieContext = new UnitDieContext();
+            dieContext.Killer = killer;
+            dieContext.Victim = _sessionStateService.GetSessionPlayer(victim);
+            dieContext.IsKilledByServer = isKilledByServer;
+
+            PlayerDied.OnNext(dieContext);       
+
+            //LoggerUI.Instance.Log($"Player {playerRef} is dead");
+
+            float respawnTime = 2;
+
+            Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
+            {
+                RestoreHealth(playerCharacter.Object, true);
+                _playersDataService.PlayersSpawner.RespawnPlayerCharacter(victim);
+            }));
+        }
+
+        private void OnObstacleZeroHealth(ObstacleWithHealth obstacle)
+        {
+            obstacle.OnZeroHealth();
+
+            Observable.Timer(TimeSpan.FromSeconds(_gameSettings.BarrelsRespawnCooldown)).Subscribe((l =>
+            {
+                RestoreObstacle(obstacle);
+            }));
+        }
+        
         public void RestoreHealth(NetworkObject networkObject, bool isPlayer = false, bool isBot = false)
         {
             if (isPlayer)
@@ -301,13 +375,19 @@ namespace Dev
             RestoreHealth(_playersDataService.GetPlayerBase(playerRef).Object, true);
         }
 
+        public void RestoreObstacle(ObstacleWithHealth obstacle)
+        {
+            obstacle.Restore();
+            RestoreHealth(obstacle.Object);
+        }
+        
         public void GainHealthToPlayer(PlayerRef playerRef, int health)
         {
             NetworkId playerId = _playersDataService.GetPlayer(playerRef).Object.Id;
 
             GainHealthTo(playerId, health);
 
-            Debug.Log($"Gained {health} HP for player {playerRef}");
+            //Debug.Log($"Gained {health} HP for player {playerRef}");
         }
 
         private void GainHealthTo(NetworkId id, int health)
@@ -324,46 +404,18 @@ namespace Dev
             HealthData.Set(index, data);    
         }
 
-        private void OnPlayerHealthZero(PlayerRef victim, SessionPlayer killer)
-        {
-            PlayerCharacter playerCharacter = _playersDataService.GetPlayer(victim);
-            PlayerBase playerBase = _playersDataService.GetPlayerBase(victim);
-
-            playerCharacter.RPC_OnDeath();
-
-            playerBase.PlayerController.SetAllowToMove(false);
-            playerBase.PlayerController.SetAllowToShoot(false);
-
-            var playerDieEventContext = new UnitDieContext();
-            playerDieEventContext.Killer = killer;
-            playerDieEventContext.Victim = _sessionStateService.GetSessionPlayer(victim);
-
-            PlayerDied.OnNext(playerDieEventContext);       
-
-            //LoggerUI.Instance.Log($"Player {playerRef} is dead");
-
-            float respawnTime = 2;
-
-            Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
-            {
-                RestoreHealth(playerCharacter.Object, true);
-                _playersDataService.PlayersSpawner.RespawnPlayerCharacter(victim);
-            }));
-        }
-
-
         [Rpc]
-        private void RPC_SpawnDamageHintFor([RpcTarget] PlayerRef playerRef, Vector3 pos, int damage)
+        private void RPC_SpawnDamageHintFor([RpcTarget] PlayerRef playerRef, Vector3 pos, int damage, Color color)
         {
-            _worldTextProvider.SpawnDamageText(pos, damage);
+            _worldTextProvider.SpawnDamageText(pos, damage, color);
         }
     }
 
     public struct ApplyDamageContext // TODO refactor
     {
-        public int Damage;
         public SessionPlayer Shooter;
         public NetworkObject VictimObj;
+        public int Damage;
         public bool IsFromServer;
     }
 }

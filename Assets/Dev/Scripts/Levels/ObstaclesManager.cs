@@ -12,15 +12,13 @@ namespace Dev.Levels
 {
     public class ObstaclesManager : NetworkContext
     {
-        [SerializeField] private float _barrelsRespawnCooldown = 5f;
-
         private LevelService _levelService;
         public static ObstaclesManager Instance { get; private set; }
 
         [Networked, Capacity(32)] private NetworkLinkedList<ObstacleHealthData> ObstacleHealthDatas { get; }
         
         private GameStateService _gameStateService;
-        private WorldTextProvider _worldTextProvider;
+        private HealthObjectsService _healthObjectsService;
 
         private List<Obstacle> Obstacles => _levelService.CurrentLevel.Obstacles;
 
@@ -30,9 +28,9 @@ namespace Dev.Levels
         }
 
         [Inject]
-        private void Init(LevelService levelManager, GameStateService gameStateService, WorldTextProvider worldTextProvider)
+        private void Init(LevelService levelManager, GameStateService gameStateService, HealthObjectsService healthObjectsService)
         {
-            _worldTextProvider = worldTextProvider;
+            _healthObjectsService = healthObjectsService;
             _gameStateService = gameStateService;
             _levelService = levelManager;
         }
@@ -68,66 +66,9 @@ namespace Dev.Levels
             {
                 if (obstacle is ObstacleWithHealth obstacleWithHealth)
                 {
-                    RestoreObstacle(obstacleWithHealth);
+                    _healthObjectsService.RestoreObstacle(obstacleWithHealth);
                 }
             }
-        }
-
-        private void RestoreObstacle(ObstacleWithHealth obstacleWithHealth)
-        {
-            int id = (int) obstacleWithHealth.Object.Id.Raw;
-            
-            obstacleWithHealth.Restore();
-
-            ObstacleHealthData obstacleHealthData =
-                ObstacleHealthDatas.First(x => x.ObstacleId == id);
-            
-            int index = ObstacleHealthDatas.IndexOf(obstacleHealthData);
-
-            obstacleHealthData.CurrentHealth = obstacleHealthData.MaxHealth;
-
-            ObstacleHealthDatas.Set(index, obstacleHealthData);
-        }
-
-
-        public void ApplyDamageToObstacle(PlayerRef shooter, ObstacleWithHealth obstacle, int damage)
-        {
-            int id = (int) obstacle.Object.Id.Raw;
-
-            ObstacleHealthData obstacleHealthData = ObstacleHealthDatas.First(x => x.ObstacleId == id);
-            int indexOf = ObstacleHealthDatas.IndexOf(obstacleHealthData);
-
-            RPC_SpawnDamageHint(shooter, obstacle.transform.position, damage);
-
-            var currentHealth = obstacleHealthData.CurrentHealth;
-
-            currentHealth -= damage;
-
-            if (currentHealth <= 0)
-            {
-                currentHealth = 0;
-                OnObstacleZeroHealth(obstacle);
-            }
-
-            obstacleHealthData.CurrentHealth = currentHealth;
-
-            ObstacleHealthDatas.Set(indexOf, obstacleHealthData);
-        }
-
-        [Rpc]
-        private void RPC_SpawnDamageHint([RpcTarget] PlayerRef playerRef, Vector3 pos, int damage)
-        {
-            _worldTextProvider.SpawnDamageText(pos, damage);
-        }
-
-        private void OnObstacleZeroHealth(ObstacleWithHealth obstacle)
-        {
-            obstacle.OnZeroHealth();
-
-            Observable.Timer(TimeSpan.FromSeconds(_barrelsRespawnCooldown)).Subscribe((l =>
-            {
-                RestoreObstacle(obstacle);
-            }));
         }
     }
 

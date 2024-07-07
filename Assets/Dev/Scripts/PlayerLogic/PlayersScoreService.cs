@@ -96,7 +96,8 @@ namespace Dev.PlayerLogic
         {
             SessionPlayer killerPlayer = context.Killer;
             SessionPlayer deadPlayer = context.Victim;
-            bool killedByServer = context.KilledByServer;
+            
+            bool killedByServer = context.IsKilledByServer;
             
             string killerName;
 

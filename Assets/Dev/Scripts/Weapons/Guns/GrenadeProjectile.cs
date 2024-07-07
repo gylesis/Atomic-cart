@@ -7,20 +7,18 @@ namespace Dev.Weapons.Guns
 {
     public class GrenadeProjectile : ExplosiveProjectile
     {
-        [Networked] private float FlyTargetTime { get; set; }
+        protected override bool CheckForHitsWhileMoving => false;
         
         private Vector2 _originPos;
         private Vector2 _targetPos;
-
-        [Networked] private TickTimer FlyTimer { get; set; }
-
         private bool _hasFlied;
-      
-        
+        private TickTimer DetonateTimer;
+
+        [Networked] private float FlyTargetTime { get; set; }
+        [Networked] private TickTimer FlyTimer { get; set; }
         [Networked] private Vector3 TargetSize {get; set;}
         [Networked] private Vector3 OriginSize {get; set;}
 
-        private TickTimer DetonateTimer;
             
         public void Init(Vector3 moveDirection, float force, int damage, PlayerRef owner, float explosionRadius, Vector2 targetPos, float flyTime)
         {
@@ -35,14 +33,14 @@ namespace Dev.Weapons.Guns
             
             Init(moveDirection, force, damage, owner, explosionRadius);
         }
-        
+
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
 
             if (DetonateTimer.Expired(Runner))
             {
-                ExplodeAndHitPlayers(_explosionRadius);
+                ExplodeAndDealDamage(_explosionRadius);
                 ToDestroy.OnNext(this);
                 return;
             }

@@ -6,7 +6,6 @@ using Fusion;
 using Fusion.Addons.Physics;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.Weapons.Guns
@@ -22,32 +21,32 @@ namespace Dev.Weapons.Guns
         /// <summary>
         /// Do projectile need to register collision while flying?
         /// </summary>
-        [FormerlySerializedAs("_collideWhileMoving")] [SerializeField]
-        private bool _checkOverlapWhileMoving;
-
+        protected abstract bool CheckForHitsWhileMoving { get; }
+        
+        protected HitsProcessor _hitsProcessor;
         
         [Networked] private Vector2 MoveDirection { get; set; }
         [Networked] private float Force { get; set; }
         [Networked] protected int Damage { get; set; }
-        
         [Networked] protected SessionPlayer Owner { get; set; }
-        public TeamSide OwnerTeamSide => Owner.TeamSide;
-        
-
-        private HealthObjectsService _healthObjectsService;
-        protected HitsProcessor _hitsProcessor;
-
         [Networked] public TickTimer DestroyTimer { get; set; }
+        
         public Transform View => _view;
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
-        
-        
+
+
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor)
+        private void Construct(HitsProcessor hitsProcessor)
         {   
             _hitsProcessor = hitsProcessor;
-            _healthObjectsService = healthObjectsService;
+        }
+
+        protected override void OnInjectCompleted()
+        {
+            base.OnInjectCompleted();
+
+            _hitsProcessor.Hit.TakeUntilDestroy(this).Subscribe((OnHit));
         }
 
         [Rpc]
@@ -66,16 +65,9 @@ namespace Dev.Weapons.Guns
             transform.up = MoveDirection;
         }
 
-        protected override void OnInjectCompleted()
-        {
-            base.OnInjectCompleted();
-
-            _hitsProcessor.Hit.TakeUntilDestroy(this).Subscribe((OnHit));
-        }
-
         private void OnHit(HitContext hitContext)
         {
-            if (hitContext.DamagableType == DamagableType.Obstacle)
+            if (hitContext.DamagableType == DamagableType.Obstacle || hitContext.DamagableType == DamagableType.ObstacleWithHealth)
             {
                 OnObstacleHit(hitContext.GameObject.GetComponent<Obstacle>());
             }
@@ -89,6 +81,11 @@ namespace Dev.Weapons.Guns
             {
                 OnBotHit(hitContext.GameObject.GetComponent<Bot>());
             }
+
+            if (hitContext.DamagableType == DamagableType.DummyTarget)
+            {
+                OnDummyHit(hitContext.GameObject.GetComponent<DummyTarget>());
+            }
         }
 
 
@@ -100,12 +97,12 @@ namespace Dev.Weapons.Guns
 
         public override void FixedUpdateNetwork()
         {
-            if (_checkOverlapWhileMoving == false) return;
+            if (CheckForHitsWhileMoving)
+            {
+                ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Runner, this, transform.position, _overlapRadius, Damage, _hitMask, false, Owner);
 
-            ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Runner, this, transform.position,
-                _overlapRadius, Damage, _hitMask, false, Owner, OwnerTeamSide);
-
-            _hitsProcessor.ProcessHitCollision(hitCollisionContext);
+                _hitsProcessor.ProcessHitCollision(hitCollisionContext);
+            }
 
             if (HasStateAuthority == false) return;
 
@@ -114,33 +111,13 @@ namespace Dev.Weapons.Guns
             //_networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
         }
 
-        protected void ApplyDamageToUnit(NetworkObject target, SessionPlayer shooter, int damage)
-        {
-            ApplyDamageContext damageContext = new ApplyDamageContext();
-            damageContext.Damage = damage;
-            damageContext.VictimObj = target;
-            damageContext.Shooter = shooter;
-            
-            _healthObjectsService.ApplyDamage(damageContext);
-        }
-
-        protected void ApplyDamageToObstacle(ObstacleWithHealth obstacleWithHealth, PlayerRef shooter, int damage)
-        {
-            ObstaclesManager.Instance.ApplyDamageToObstacle(shooter, obstacleWithHealth, damage);
-        }
-
         protected virtual void OnObstacleHit(Obstacle obstacle) { }
 
         protected virtual void OnPlayerHit(PlayerCharacter playerCharacter) { }
 
         protected virtual void OnBotHit(Bot bot) { }
-
-        protected void ApplyForceToPlayer(PlayerCharacter playerCharacter, Vector2 forceDirection, float forcePower)
-        {
-            Debug.DrawRay(playerCharacter.transform.position, forceDirection * forcePower, Color.blue, 5f);
-
-            playerCharacter.Rigidbody.AddForce(forceDirection * forcePower, ForceMode2D.Impulse);
-        }
+        
+        protected virtual void OnDummyHit(DummyTarget dummyTarget) { }
 
         protected virtual void OnDrawGizmos()
         {

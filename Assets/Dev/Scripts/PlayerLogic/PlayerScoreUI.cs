@@ -1,11 +1,14 @@
 ﻿using Dev.Infrastructure;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Dev.PlayerLogic
 {
     public class PlayerScoreUI : MonoBehaviour
     {
+        [SerializeField] private Image _highlightImage;
+        
         [SerializeField] private TMP_Text _playerName;
         [SerializeField] private TMP_Text _killsCountText;
         [SerializeField] private TMP_Text _deathsCountText;
@@ -36,6 +39,11 @@ namespace Dev.PlayerLogic
             _playerName.text = $"{SessionPlayer.Name}";
             _killsCountText.text = $"{Kills}";
             _deathsCountText.text = $"{Deaths}";
+        }
+
+        public void SetHighlightColor(Color color)
+        {
+            _highlightImage.color = color;
         }
         
     }

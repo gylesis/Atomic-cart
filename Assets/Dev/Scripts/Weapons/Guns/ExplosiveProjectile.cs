@@ -28,43 +28,34 @@ namespace Dev.Weapons.Guns
         protected override void OnPlayerHit(PlayerCharacter playerCharacter)
         {
             base.OnPlayerHit(playerCharacter);
-            ExplodeAndHitPlayers(_explosionRadius);
+            ExplodeAndDealDamage(_explosionRadius);
         }
 
         protected override void OnBotHit(Bot bot)
         {
             base.OnBotHit(bot);
-            ExplodeAndHitPlayers(_explosionRadius);
+            ExplodeAndDealDamage(_explosionRadius);
+        }
+
+        protected override void OnDummyHit(DummyTarget dummyTarget)
+        {
+            base.OnDummyHit(dummyTarget);
+            ExplodeAndDealDamage(_explosionRadius);
         }
 
         protected override void OnObstacleHit(Obstacle obstacle)
         {
             base.OnObstacleHit(obstacle);
-            ExplodeAndHitPlayers(_explosionRadius);
+            ExplodeAndDealDamage(_explosionRadius);
         }
 
-        protected void ExplodeAndHitPlayers(float explosionRadius)
+        protected void ExplodeAndDealDamage(float explosionRadius)
         {   
             Vector3 pos = transform.position;   
 
-            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Runner, explosionRadius, Damage, pos, _hitMask, OwnerTeamSide, false, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Runner, Owner, explosionRadius, Damage, pos, _hitMask, false);
             
             _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);
-
-            void OnUnitHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
-            {
-                ApplyDamageToUnit(obj, Owner, totalDamage);
-            }
-
-            void OnDummyHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
-            {
-                ApplyDamageToUnit(obj, Owner, totalDamage);
-            }
-
-            void OnObstacleWithHealthHit(ObstacleWithHealth obj, PlayerRef shooter, int totalDamage)
-            {
-                ApplyDamageToObstacle(obj, shooter, totalDamage);
-            }
         }
 
 #if UNITY_EDITOR

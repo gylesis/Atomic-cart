@@ -2868,24 +2868,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d48ed1b4c0a43b4a6cbe340f38adcf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _runner: {fileID: 0}
-  _object: {fileID: 0}
-  InvokeRpc: 0
-  ObjectIndex: 0
-  WordOffset: 0
-  WordCount: 0
-  DefaultReplicated: 1
-  _setStateAuthorityNeutralOnSpawned: 1
-  _IsActive:
-    _value: 1
-  _BotsHealth:
-    _items: []
-  _teamsService: {fileID: 0}
-  _worldTextProvider: {fileID: 0}
-  _charactersDataContainer: {fileID: 0}
-  _botsController: {fileID: 0}
-  _gameSettings: {fileID: 0}
-  _healthObjectsService: {fileID: 0}
 --- !u!114 &927926860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3340,7 +3322,6 @@ MonoBehaviour:
   _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
-  _barrelsRespawnCooldown: 5
 --- !u!114 &1192389097 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1310755303106171040, guid: 770ffa84bfde73e4d9b08bbb0cf6e87a, type: 3}
@@ -5832,26 +5813,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa7210957144bf19fd748ba9ec54dfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _runner: {fileID: 0}
-  _object: {fileID: 0}
-  InvokeRpc: 0
-  ObjectIndex: 0
-  WordOffset: 0
-  WordCount: 0
-  DefaultReplicated: 1
-  _setStateAuthorityNeutralOnSpawned: 1
-  _IsActive:
-    _value: 1
-  _playersSpawner: {fileID: 0}
-  _PlayersHealth:
-    _items: []
-  _init: 0
-  _teamsService: {fileID: 0}
-  _worldTextProvider: {fileID: 0}
-  _charactersDataContainer: {fileID: 0}
-  _gameSettings: {fileID: 0}
-  _healthObjectsService: {fileID: 0}
-  _sessionStateService: {fileID: 0}
 --- !u!114 &1901119634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6966,7 +6927,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1068517966, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: Flags
-      value: 2561
+      value: 264705
       objectReference: {fileID: 0}
     - target: {fileID: 1068517966, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: SortKey
@@ -7084,6 +7045,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayersScoreMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 176364412944069359, guid: b7edace9aa985284183895bad1632a2d, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1921402739518233357, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: m_BlockingMask.m_Bits
       value: 503
@@ -7095,6 +7060,22 @@ PrefabInstance:
     - target: {fileID: 4673092120881630333, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -22.791748
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905228270142069005, guid: b7edace9aa985284183895bad1632a2d, type: 3}
+      propertyPath: _localPlayerColor.a
+      value: 0.56078434
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905228270142069005, guid: b7edace9aa985284183895bad1632a2d, type: 3}
+      propertyPath: _localPlayerColor.b
+      value: 0.22352941
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905228270142069005, guid: b7edace9aa985284183895bad1632a2d, type: 3}
+      propertyPath: _localPlayerColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905228270142069005, guid: b7edace9aa985284183895bad1632a2d, type: 3}
+      propertyPath: _localPlayerColor.r
+      value: 0.23137255
       objectReference: {fileID: 0}
     - target: {fileID: 7369406235520552885, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: Flags

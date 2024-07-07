@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
-using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -15,10 +14,12 @@ namespace Dev.PlayerLogic
 
         [SerializeField] private PlayerScoreUI _playerScoreUIPrefab;
 
+        [SerializeField] private Color _localPlayerColor;
+        
+        
         private PlayersScoreService _playersScoreService;
 
         private List<PlayerScoreUI> _scoreUis = new List<PlayerScoreUI>();
-
 
         [Inject]
         private void Init(PlayersScoreService playersScoreService)
@@ -55,11 +56,21 @@ namespace Dev.PlayerLogic
                 }
                 else
                 {
-                    PlayerScoreUI scoreUi = Instantiate(_playerScoreUIPrefab, GetTeamUIParent(teamSide));
+                    scoreUI = Instantiate(_playerScoreUIPrefab, GetTeamUIParent(teamSide));
 
-                    scoreUi.Init(sessionPlayer, scoreData.PlayerFragCount, scoreData.PlayerDeathCount);
+                    scoreUI.Init(sessionPlayer, scoreData.PlayerFragCount, scoreData.PlayerDeathCount);
 
-                    _scoreUis.Add(scoreUi);
+                    _scoreUis.Add(scoreUI);
+                }
+
+                scoreUI.SetHighlightColor(Color.clear);
+                
+                if (sessionPlayer.IsBot == false)
+                {
+                    if (sessionPlayer.Owner == Runner.LocalPlayer)
+                    {
+                        scoreUI.SetHighlightColor(_localPlayerColor);
+                    }
                 }
             }
 

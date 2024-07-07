@@ -1,5 +1,4 @@
-﻿using System;
-using Dev.BotsLogic;
+﻿using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
@@ -15,150 +14,128 @@ namespace Dev.Weapons.Guns
     {
         private HealthObjectsService _healthObjectsService;
         private TeamsService _teamsService;
-        private ProcessHitCollisionContext _processHitCollisionContext;
-        private SessionStateService _sessionStateService;
 
         public Subject<HitContext> Hit { get; } = new();
 
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, TeamsService teamsService, SessionStateService sessionStateService)
-        {
-            _sessionStateService = sessionStateService;
+        private void Construct(HealthObjectsService healthObjectsService, TeamsService teamsService)
+        {   
             _teamsService = teamsService;
             _healthObjectsService = healthObjectsService;
         }
 
         public void ProcessHitCollision(ProcessHitCollisionContext context)
         {
-            _processHitCollisionContext = context;
-
             Vector3 pos = context.OverlapPos;
             NetworkRunner runner = context.NetworkRunner;
             float overlapRadius = context.Radius;
             LayerMask hitMask = context.HitMask;
             int damage = context.Damage;
             bool isOwnerBot = context.IsOwnerBot;
-            PlayerRef owner = runner.LocalPlayer;
             Projectile projectile = context.Projectile;
             TeamSide ownerTeamSide = context.OwnerTeamSide;
+            bool isHitFromServer = context.IsHitFromServer;
+            SessionPlayer shooter = context.Owner;
 
             var overlapSphere = Extensions.OverlapCircle(runner, pos, overlapRadius, hitMask, out var colliders);
 
-            if (overlapSphere)
+            if (overlapSphere == false) return;
+            
+            bool needToDestroy = false;
+
+            foreach (Collider2D cldr in colliders)
             {
-                bool needToDestroy = false;
+                bool isDamagable = cldr.TryGetComponent<IDamageable>(out var damagable);
 
-                foreach (Collider2D collider in colliders)
+                if (isDamagable == false) continue;
+
+                bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
+                bool isBot = damagable.DamageId == DamagableType.Bot;
+                bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
+                bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
+                bool isPlayer = damagable.DamageId == DamagableType.Player;
+
+                if (isPlayer)
                 {
-                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
+                    PlayerCharacter targetPlayer = damagable as PlayerCharacter;
+                    TeamSide targetTeamSide = targetPlayer.TeamSide;
 
-                    if (isDamagable == false) continue;
+                    //Debug.Log($"Hit to player {targetPlayerRef} from team {targetTeamSide}, by {owner} from team {ownerTeamSide}");
 
-                    bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
-                    bool isBot = damagable.DamageId == DamagableType.Bot;
-                    bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
-                    bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
-                    bool isPlayer = damagable.DamageId == DamagableType.Player;
+                    if (ownerTeamSide == targetTeamSide) continue;
 
-                    if (isPlayer)
-                    {
-                        PlayerCharacter targetPlayer = damagable as PlayerCharacter;
-                        PlayerRef targetPlayerRef = targetPlayer.Object.InputAuthority;
-                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetPlayerRef);
+                    OnHit(targetPlayer.Object, shooter, damage, DamagableType.Player, projectile, isHitFromServer);
+                    needToDestroy = true;
 
-                        //Debug.Log($"Hit to player {targetPlayerRef} from team {targetTeamSide}, by {owner} from team {ownerTeamSide}");
-
-                        if (ownerTeamSide == targetTeamSide) continue;
-
-                        OnHit(targetPlayer.Object, owner, damage, DamagableType.Player, projectile);
-                        needToDestroy = true;
-
-                        break;
-                    }
-
-                    if (isObstacleWithHealth)
-                    {
-                        NetworkObject networkObject = collider.GetComponent<NetworkObject>();
-
-                        OnHit(networkObject, owner, damage, DamagableType.ObstacleWithHealth,
-                            projectile);
-
-                        needToDestroy = true;
-                        break;
-                    }
-
-                    if (isStaticObstacle)
-                    {
-                        NetworkObject networkObject = collider.GetComponent<NetworkObject>();
-
-                        OnHit(networkObject, owner, damage, DamagableType.Obstacle, projectile);
-
-                        needToDestroy = true;
-                        break;
-                    }
-
-                    if (isDummyTarget)
-                    {
-                        DummyTarget dummyTarget = damagable as DummyTarget;
-
-                        OnHit(dummyTarget.Object, owner, damage, DamagableType.Bot, projectile);
-                        needToDestroy = true;
-
-                        break;
-                    }
-
-                    if (isBot)
-                    {
-                        Bot targetBot = damagable as Bot;
-
-                        TeamSide botTeam = targetBot.BotTeamSide;
-
-                        if (ownerTeamSide != botTeam)
-                        {
-                            Debug.Log($"Damage to bot");
-                            OnHit(targetBot.Object, owner, damage, DamagableType.Bot, projectile);
-                            needToDestroy = true;
-                            break;
-                        }
-                    }
+                    break;
                 }
 
-                if (needToDestroy)
+                if (isObstacleWithHealth)
                 {
-                    projectile.ToDestroy.OnNext(projectile);
+                    NetworkObject networkObject = cldr.GetComponent<NetworkObject>();
+
+                    OnHit(networkObject, shooter, damage, DamagableType.ObstacleWithHealth,
+                        projectile, isHitFromServer);
+
+                    needToDestroy = true;
+                    break;
                 }
+
+                if (isStaticObstacle)
+                {
+                    NetworkObject networkObject = cldr.GetComponent<NetworkObject>();
+
+                    OnHit(networkObject, shooter, damage, DamagableType.Obstacle, projectile, isHitFromServer);
+
+                    needToDestroy = true;
+                    break;
+                }
+
+                if (isDummyTarget)
+                {
+                    DummyTarget dummyTarget = damagable as DummyTarget;
+
+                    OnHit(dummyTarget.Object, shooter, damage, DamagableType.Bot, projectile, isHitFromServer);
+                    needToDestroy = true;
+
+                    break;
+                }
+
+                if (isBot)
+                {
+                    Bot targetBot = damagable as Bot;
+
+                    TeamSide botTeam = targetBot.BotTeamSide;
+
+                    if (ownerTeamSide != botTeam)
+                    {
+                        OnHit(targetBot.Object, shooter, damage, DamagableType.Bot, projectile, isHitFromServer);
+                        needToDestroy = true;
+                        break;
+                    }
+                }
+            }
+
+            if (needToDestroy)
+            {
+                projectile.ToDestroy.OnNext(projectile);
             }
         }
 
 
-        private void OnHit(NetworkObject networkObject, PlayerRef shooter, int damage, DamagableType damagableType,
-                           Projectile projectile)
+        private void OnHit(NetworkObject networkObject, SessionPlayer shooter, int damage, DamagableType damagableType,
+                           Projectile projectile, bool isHitFromServer)
         {
-            switch (damagableType)
+            if (damagableType != DamagableType.Obstacle && projectile is ExplosiveProjectile == false)
             {
-                case DamagableType.ObstacleWithHealth:
-                    ObstaclesManager.Instance.ApplyDamageToObstacle(shooter,
-                        networkObject.GetComponent<ObstacleWithHealth>(), damage);
-                    break;
-                case DamagableType.Obstacle:
-                    break;
-                case DamagableType.Bot:
-                case DamagableType.Player:
-                    if (projectile is ExplosiveProjectile == false)
-                    {
-                        ApplyDamageContext damageContext = new ApplyDamageContext();
-                        damageContext.Damage = damage;
-                        damageContext.VictimObj = networkObject;
-                        damageContext.Shooter = _processHitCollisionContext.Owner;
+                ApplyDamageContext damageContext = new ApplyDamageContext();
+                damageContext.IsFromServer = isHitFromServer;
+                damageContext.Damage = damage;
+                damageContext.VictimObj = networkObject;
+                damageContext.Shooter = shooter;
 
-                        _healthObjectsService.ApplyDamage(damageContext);
-                    }
-
-                    break;
-                case DamagableType.DummyTarget:
-                    break;
-                default:
-                    break;
+                //Debug.Log($"Damage from hit");
+                _healthObjectsService.ApplyDamage(damageContext);
             }
 
             //Debug.Log($"Damage type: {damagableType},");
@@ -178,90 +155,109 @@ namespace Dev.Weapons.Guns
             TeamSide ownerTeamSide = explodeContext.OwnerTeamSide;
             LayerMask hitMask = explodeContext.HitMask;
             int damage = explodeContext.Damage;
-            PlayerRef owner = explodeContext.Owner;
+            SessionPlayer owner = explodeContext.Owner;
+            bool isDamageFromServer = explodeContext.IsDamageFromServer;
 
             var overlapSphere = Extensions.OverlapCircle(runner, pos, explosionRadius, hitMask, out var colliders);
 
-            if (overlapSphere)
+            if (overlapSphere == false) return;
+            
+            float maxDistance = (pos - (pos + Vector3.right * explosionRadius)).sqrMagnitude;
+
+            foreach (Collider2D collider in colliders)
             {
-                float maxDistance = (pos - (pos + Vector3.right * explosionRadius)).sqrMagnitude;
+                bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
 
-                foreach (Collider2D collider in colliders)
+                if (isDamagable == false) continue;
+
+                bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
+                bool isBot = damagable.DamageId == DamagableType.Bot;
+                bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
+                bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
+                bool isPlayer = damagable.DamageId == DamagableType.Player;
+
+                float distance = (collider.transform.position - pos).sqrMagnitude;
+                float damagePower = 1 - distance / maxDistance;
+                damagePower = 1;
+
+                //Debug.Log($"DMG power {damagePower}");
+
+                int totalDamage = (int)(damagePower * damage);
+
+                if (isStaticObstacle) { }
+
+                if (isObstacleWithHealth)
                 {
-                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
+                    ObstacleWithHealth obstacle = (damagable as ObstacleWithHealth);
 
-                    if (isDamagable == false) continue;
+                    OnExplode(obstacle.Object, owner, DamagableType.ObstacleWithHealth, totalDamage,
+                        isDamageFromServer);
 
-                    bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
-                    bool isBot = damagable.DamageId == DamagableType.Bot;
-                    bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
-                    bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
-                    bool isPlayer = damagable.DamageId == DamagableType.Player;
+                    continue;
+                }
 
-                    if (isDamagable)
-                    {
-                        float distance = (collider.transform.position - pos).sqrMagnitude;
+                if (isDummyTarget)
+                {
+                    DummyTarget dummyTarget = damagable as DummyTarget;
 
-                        float damagePower = 1 - distance / maxDistance;
+                    OnExplode(dummyTarget.Object, owner, DamagableType.DummyTarget, totalDamage,
+                        isDamageFromServer);
 
-                        damagePower = 1;
+                    continue;
+                }
 
-                        //Debug.Log($"DMG power {damagePower}");
+                if (isPlayer)
+                {
+                    PlayerCharacter playerCharacter = damagable as PlayerCharacter;
 
-                        int totalDamage = (int)(damagePower * damage);
+                    PlayerRef target = playerCharacter.Object.StateAuthority;
 
-                        if (isStaticObstacle) { }
+                    TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(target);
 
-                        if (isObstacleWithHealth)
-                        {
-                            explodeContext.ObstacleWithHealthHit?.Invoke(damagable as ObstacleWithHealth, owner, totalDamage);
+                    //Debug.Log($"owner teamside {ownerTeamSide}, target team {targetTeamSide}");
 
-                            continue;
-                        }
+                    if (ownerTeamSide == targetTeamSide) continue;
 
-                        if (isDummyTarget)
-                        {
-                            DummyTarget dummyTarget = damagable as DummyTarget;
+                    OnExplode(playerCharacter.Object, owner, DamagableType.Player, totalDamage,
+                        isDamageFromServer);
 
-                            explodeContext.DummyHit?.Invoke(dummyTarget.Object, owner, totalDamage);
+                    continue;
+                }
 
-                            continue;
-                        }
+                if (isBot)
+                {
+                    // TODO implement damage to other enemies bots
 
-                        if (isPlayer)
-                        {
-                            PlayerCharacter playerCharacter = damagable as PlayerCharacter;
+                    Bot targetBot = damagable as Bot;
 
-                            PlayerRef target = playerCharacter.Object.StateAuthority;
+                    TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetBot);
 
-                            TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(target);
+                    if (ownerTeamSide == targetTeamSide) continue;
 
-                            Debug.Log($"owner teamside {ownerTeamSide}, target team {targetTeamSide}");
-                            
-                            if (ownerTeamSide == targetTeamSide) continue;
+                    OnExplode(targetBot.Object, owner, DamagableType.Bot, totalDamage, isDamageFromServer);
 
-                            explodeContext.UnitHit?.Invoke(playerCharacter.Object, owner, totalDamage);
-
-                            continue;
-                        }
-
-                        if (isBot)
-                        {
-                            // TODO implement damage to other enemies bots
-                            
-                            Bot targetBot = damagable as Bot;
-
-                            TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetBot);
-
-                            if (ownerTeamSide == targetTeamSide) continue;
-                            
-                            explodeContext.UnitHit?.Invoke(targetBot.Object, owner, totalDamage);
-
-                            continue;
-                        }
-                    }
+                    continue;
                 }
             }
         }
+
+        private void OnExplode(NetworkObject networkObject, SessionPlayer shooter, DamagableType damagableType,
+                               int damage, bool isDamageFromServer)
+        {
+
+            if (damagableType != DamagableType.Obstacle)
+            {
+                ApplyDamageContext damageContext = new ApplyDamageContext();
+             
+                damageContext.IsFromServer = isDamageFromServer;
+                damageContext.Damage = damage;
+                damageContext.VictimObj = networkObject;
+                damageContext.Shooter = shooter;
+                
+                Debug.Log($"Damage from explosion");
+                _healthObjectsService.ApplyDamage(damageContext);
+            }
+        }
+
     }
 }

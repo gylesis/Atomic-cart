@@ -2,9 +2,6 @@
 {
     public class Bullet : Projectile
     {
-        
-        
-        
-        
+        protected override bool CheckForHitsWhileMoving => true;
     }
 }

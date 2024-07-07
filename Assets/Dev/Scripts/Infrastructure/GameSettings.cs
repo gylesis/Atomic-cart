@@ -33,6 +33,9 @@ namespace Dev.Infrastructure
         [Header("Debug")]
         [SerializeField] private MapName _firstLevelName;
 
+        [SerializeField] private float _barrelsRespawnCooldown = 5f;
+
+        public float BarrelsRespawnCooldown => _barrelsRespawnCooldown;
 
         public int BotsPerTeam => _botsPerTeam;
         public float BotsTargetsSearchRadius => _botsTargetsSearchRadius;

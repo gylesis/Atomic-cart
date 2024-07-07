@@ -6,6 +6,6 @@ namespace Dev
     {
         public SessionPlayer Killer;
         public SessionPlayer Victim;
-        public bool KilledByServer;
+        public bool IsKilledByServer;
     }
 }

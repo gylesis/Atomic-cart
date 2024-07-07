@@ -5,6 +5,10 @@ namespace Dev.Infrastructure
 {
     public struct SessionPlayer : INetworkStruct
     {
+        private static readonly SessionPlayer @default = new SessionPlayer();
+        
+        public static SessionPlayer Default => default;
+            
         [Networked]
         public NetworkId Id { get; private set; }
 
@@ -16,8 +20,10 @@ namespace Dev.Infrastructure
         [Networked]
         public NetworkBool IsBot { get; private set; }
         
+        [Networked]
         public TeamSide TeamSide { get; private set; }
         
+        [Networked]
         public PlayerRef Owner { get; private set; }
 
         public SessionPlayer(NetworkId id, string name, bool isBot, TeamSide teamSide, PlayerRef owner)

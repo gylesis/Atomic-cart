@@ -2,6 +2,6 @@
 {
     public class AkBulletProjectile : Projectile
     {
-        
+        protected override bool CheckForHitsWhileMoving => true;
     }
 }

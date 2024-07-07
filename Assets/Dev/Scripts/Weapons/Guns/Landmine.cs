@@ -18,6 +18,8 @@ namespace Dev.Weapons
 {
     public class Landmine : ExplosiveProjectile
     {
+        protected override bool CheckForHitsWhileMoving => false;
+        
         [SerializeField] private float _detonateSeconds;
         [SerializeField] private float _searchRadius = 5;
         [SerializeField] private float _detonateRadius = 5;
@@ -94,7 +96,7 @@ namespace Dev.Weapons
 
         private void Explode()
         {
-            ExplodeAndHitPlayers(_detonateRadius);
+            ExplodeAndDealDamage(_detonateRadius);
             _exploding = true;
 
             _view.DOScale(0, 0.5f);

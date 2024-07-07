@@ -37,7 +37,7 @@ namespace Dev.Utils
             return worldText;
         }
 
-        public void SpawnDamageText(Vector3 pos, int damage)
+        public void SpawnDamageText(Vector3 pos, int damage, Color color)
         {   
             pos += (Vector3)Random.insideUnitCircle * 4;
 
@@ -55,7 +55,7 @@ namespace Dev.Utils
 
             string text = $"-{damage}";
             
-            worldText.Setup(text, _damageTextColor);
+            worldText.Setup(text, color);
 
             Sequence sequence = DOTween.Sequence();
 
