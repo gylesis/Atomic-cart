@@ -14,14 +14,7 @@ namespace Dev.Levels
         [SerializeField] private LayerMask _hitMask;
 
         [SerializeField] private int _damage = 30;
-       
-        private PlayersHealthService _playersHealthService;
-
-        [Inject]
-        private void Construct(PlayersHealthService playersHealthService)
-        {
-            _playersHealthService = playersHealthService;
-        }
+        
         
         public override void OnZeroHealth()
         {
@@ -32,8 +25,16 @@ namespace Dev.Levels
             ExplodeAtAndHitPlayers(transform.position);
         }
 
-        private void ExplodeAtAndHitPlayers(Vector3 pos)
+        private void ExplodeAtAndHitPlayers(Vector3 pos) // TODO refactor
         {
+            return;
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext();
+            explodeContext.Damage = _damage;
+            explodeContext.NetworkRunner = Runner;
+            explodeContext.Owner = PlayerRef.None;
+            
+            _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);
+            
             var overlapSphere = Extensions.OverlapCircle(Runner, pos, _explosionRadius, _hitMask, out var hits);
 
             if (overlapSphere)
@@ -53,8 +54,13 @@ namespace Dev.Levels
         private void OnPlayerHit(PlayerCharacter playerCharacter)
         {
             PlayerRef target = playerCharacter.Object.InputAuthority;
+
+            ApplyDamageContext damageContext = new ApplyDamageContext();
+            damageContext.Damage = _damage;
+            damageContext.IsFromServer = true;
+            damageContext.VictimObj = playerCharacter.Object;
             
-            _playersHealthService.ApplyDamageFromServer(target, _damage);
+            _healthObjectsService.ApplyDamage(damageContext);
         }
 
         private void OnDrawGizmos()

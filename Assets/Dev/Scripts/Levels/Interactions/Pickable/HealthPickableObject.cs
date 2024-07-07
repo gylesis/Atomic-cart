@@ -12,19 +12,19 @@ namespace Dev.Levels.Interactions.Pickable
         [SerializeField] private int _healthRestoreAmount;
         
         private PlayersDataService _playersDataService;
-        private PlayersHealthService _playersHealthService;
+        private HealthObjectsService _healthObjectsService;
 
         [Inject]
-        private void Construct(PlayersDataService playersDataService, PlayersHealthService playersHealthService)
+        private void Construct(PlayersDataService playersDataService, HealthObjectsService healthObjectsService)
         {
-            _playersHealthService = playersHealthService;
+            _healthObjectsService = healthObjectsService;
             _playersDataService = playersDataService;
         }
         
         protected override void OnAutoInteraction(PlayerRef interactedPlayer)
         {
             base.OnAutoInteraction(interactedPlayer);
-            _playersHealthService.GainHealthToPlayer(interactedPlayer, _healthRestoreAmount);
+            _healthObjectsService.GainHealthToPlayer(interactedPlayer, _healthRestoreAmount);
 
             Vector3 playerPos = _playersDataService.GetPlayerPos(interactedPlayer);
 

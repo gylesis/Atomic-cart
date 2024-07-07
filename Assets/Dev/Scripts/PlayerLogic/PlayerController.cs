@@ -105,7 +105,7 @@ namespace Dev.PlayerLogic
             foreach (PlayerInput input in _inputService.BufferedInputs)
             {
                 MoveDirection = input.MoveDirection;
-                LookDirection = input.LookDirection;
+                LookDirection = input.AimDirection;
 
                 Vector2 moveDirection = MoveDirection;
 
@@ -152,14 +152,14 @@ namespace Dev.PlayerLogic
 
                 if (AllowToShoot)
                 {
-                    if (input.CastAbility)
+                    if (input.ToCastAbility)
                     {
                         AbilityCastController castController = _playerBase.AbilityCastController;
 
                         castController.CastAbility(_playerBase.Character.transform.position + (Vector3)LastLookDirection.normalized * 6);
                     }
 
-                    if (input.ResetAbility)
+                    if (input.ToResetAbility)
                     {
                         AbilityCastController castController = _playerBase.AbilityCastController;
 

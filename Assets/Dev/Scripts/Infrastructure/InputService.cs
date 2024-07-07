@@ -5,10 +5,10 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class InputService : ITickable, IInitializable
+    public class InputService : ITickable
     {
-        private Joystick _aimJoystick;
-        private Joystick _movementJoystick;
+        private Joystick AimJoystick => _joysticksContainer.AimJoystick;
+        private Joystick MovementJoystick => _joysticksContainer.MovementJoystick;
 
         private KeyCode[] _keyCodes =
         {
@@ -32,19 +32,13 @@ namespace Dev.Infrastructure
             _joysticksContainer = joysticksContainer;
         }
 
-        public void Initialize()
-        {
-            _aimJoystick = _joysticksContainer.AimJoystick;
-            _movementJoystick = _joysticksContainer.MovementJoystick;
-        }
-
         public void Tick()
         {
-            Vector2 joystickDirection = _movementJoystick.Direction;
+            Vector2 movementJoystickDirection = MovementJoystick.Direction;
 
-            var moveDirection = joystickDirection;
+            Vector2 moveDirection = movementJoystickDirection;
 
-            if (joystickDirection == Vector2.zero)
+            if (movementJoystickDirection == Vector2.zero)
             {
                 var x = Input.GetAxis("Horizontal");
                 var y = Input.GetAxis("Vertical");
@@ -55,25 +49,14 @@ namespace Dev.Infrastructure
                 //moveDirection.Normalize();
             }
 
-            Vector2 aimJoystickDirection = _aimJoystick.Direction;
+            Vector2 aimJoystickDirection = AimJoystick.Direction;
 
             PlayerInput playerInput = new PlayerInput();
-            
-            playerInput.MoveDirection = moveDirection;
-            playerInput.LookDirection = aimJoystickDirection;
-            //playerInput.WeaponNum = -1;
 
-            playerInput.CastAbility = Input.GetKeyDown(KeyCode.F);
+            playerInput.WithMoveDirection(moveDirection);
+            playerInput.WithAimDirection(aimJoystickDirection);
+            playerInput.WithCast(Input.GetKeyDown(KeyCode.F));
             
-
-            for (int i = 0; i < _keyCodes.Length; i++)
-            {
-                if (Input.GetKeyDown(_keyCodes[i]))
-                {
-                    int numberPressed = i + 1;
-                    playerInput.WeaponNum = numberPressed;
-                }
-            }
 
             if (moveDirection == Vector2.zero && aimJoystickDirection == Vector2.zero)
             {

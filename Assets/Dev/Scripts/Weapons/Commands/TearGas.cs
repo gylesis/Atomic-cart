@@ -7,7 +7,7 @@ namespace Dev.Weapons
     {
         public void DealDamage()
         {
-            Debug.Log($"Deal damage from tear gas with radius {_explosionRadius}");
+            //Debug.Log($"Deal damage from tear gas with radius {_explosionRadius}");
             ExplodeAndHitPlayers(_explosionRadius);  
         }
 

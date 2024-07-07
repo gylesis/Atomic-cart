@@ -31,7 +31,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3479234215287147716}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -166,7 +165,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3479234215287147716}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -306,7 +304,6 @@ RectTransform:
   - {fileID: 3479234215169184265}
   - {fileID: 3479234214331879380}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -367,8 +364,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 2305
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 3479234215287147719}
+  NetworkedBehaviours: []
 --- !u!114 &3479234215287147719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,8 +377,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180f235d82ef46cda1516425262f7808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsActive:
-    _value: 1
   _playerName: {fileID: 3479234215742716929}
   _killsCountText: {fileID: 3479234215169184264}
   _deathsCountText: {fileID: 3479234214331879383}
@@ -417,7 +411,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3479234215287147716}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}

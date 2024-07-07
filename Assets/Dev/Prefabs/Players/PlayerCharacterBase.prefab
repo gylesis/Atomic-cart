@@ -578,6 +578,8 @@ MonoBehaviour:
   _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
   _weaponParent: {fileID: 3706869247759106061}
   _CurrentWeapon: {fileID: 0}
+  _TeamWasSet:
+    _value: 0
 --- !u!50 &5544195138823906170
 Rigidbody2D:
   serializedVersion: 4

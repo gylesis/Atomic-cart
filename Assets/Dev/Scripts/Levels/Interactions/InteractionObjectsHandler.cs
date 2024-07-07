@@ -1,7 +1,6 @@
 ﻿using System;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
-using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
 using Fusion;
 using UniRx;
@@ -14,14 +13,14 @@ namespace Dev.Levels.Interactions
     {
         private LevelService _levelService;
         private PopUpService _popUpService;
-        private PlayersHealthService _playersHealthService;
         private PlayersDataService _playersDataService;
+        private HealthObjectsService _healthObjectsService;
 
         [Inject]
-        private void Init(LevelService levelService, PopUpService popUpService, PlayersHealthService playersHealthService, PlayersDataService playersDataService)
+        private void Init(LevelService levelService, PopUpService popUpService, HealthObjectsService healthObjectsService, PlayersDataService playersDataService)
         {
+            _healthObjectsService = healthObjectsService;
             _playersDataService = playersDataService;
-            _playersHealthService = playersHealthService;
             _popUpService = popUpService;
             _levelService = levelService;
         }
@@ -31,7 +30,7 @@ namespace Dev.Levels.Interactions
             base.OnInjectCompleted();
             
             _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
-            _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe((OnPlayerDied));
+            _healthObjectsService.PlayerDied.TakeUntilDestroy(this).Subscribe((OnPlayerDied));
         }
 
         private void OnLevelLoaded(Level level)
@@ -46,11 +45,11 @@ namespace Dev.Levels.Interactions
             }
         }
 
-        private void OnPlayerDied(PlayerDieEventContext context)
+        private void OnPlayerDied(UnitDieContext context)
         {
-            PlayerRef playerRef = context.Killed;
-
-            RPC_OnInteractionObjectInteract(playerRef,false, null);
+            SessionPlayer sessionPlayer = context.Victim;
+    
+            RPC_OnInteractionObjectInteract(sessionPlayer.Owner,false, null);
         }
 
         private void OnPlayerZoneEntered(PlayerCharacter playerCharacter, InteractionObject interactionObject)

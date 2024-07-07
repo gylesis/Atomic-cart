@@ -39,10 +39,6 @@ namespace Dev.Weapons
             _detonateCircleSprite.transform.localScale = new Vector3(_detonateRadius,_detonateRadius,1);
         }
 
-        public void Init(TeamSide teamSide)
-        {
-            _ownerTeam = teamSide;
-        }
 
         public override void FixedUpdateNetwork()
         {

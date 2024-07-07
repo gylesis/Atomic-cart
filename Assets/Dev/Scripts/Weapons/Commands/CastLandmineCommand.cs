@@ -1,4 +1,5 @@
-﻿using Dev.PlayerLogic;
+﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Dev.Weapons
         
         private Landmine _spawnedLandmine;
 
-        public CastLandmineCommand(NetworkRunner runner, AbilityType abilityType, TeamSide ownerTeamSide, Landmine landminePrefab) : base(runner, abilityType, ownerTeamSide)
+        public CastLandmineCommand(NetworkRunner runner, AbilityType abilityType, SessionPlayer owner, Landmine landminePrefab) : base(runner, abilityType, owner)
         {
             _landminePrefab = landminePrefab;
         }
@@ -26,8 +27,7 @@ namespace Dev.Weapons
 
                 landmine.ToDestroy.TakeUntilDestroy(landmine).Subscribe((unit => OnLandmineDestroyed()));
                 
-                landmine.Init(_teamSide);
-                landmine.Init(Vector2.zero, 0, 50, _runner.LocalPlayer);
+                landmine.Init(Vector2.zero, 0, 50, _owner);
             });
             
             AllowToCast = false;

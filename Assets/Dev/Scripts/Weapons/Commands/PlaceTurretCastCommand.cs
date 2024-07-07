@@ -1,4 +1,5 @@
-﻿using Dev.PlayerLogic;
+﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UniRx.Triggers;
@@ -14,7 +15,7 @@ namespace Dev.Weapons
         
         public bool AllowToCast { get; private set; }
 
-        public PlaceTurretCastCommand(NetworkRunner runner, AbilityType abilityType, TeamSide teamSide, Turret turretPrefab) : base(runner, abilityType, teamSide)
+        public PlaceTurretCastCommand(NetworkRunner runner, AbilityType abilityType, SessionPlayer owner, Turret turretPrefab) : base(runner, abilityType, owner)
         {
             _turretPrefab = turretPrefab;
         }   
@@ -31,7 +32,7 @@ namespace Dev.Weapons
 
                 turret.OnDestroyAsObservable().Subscribe((unit => OnTurretDestroyed(turret)));
                 
-                turret.Init(localPlayer);
+                turret.Init(_owner);
             });
 
             AllowToCast = false;

@@ -19,28 +19,32 @@ namespace Dev.Weapons
 
         [SerializeField] private float _effectHideDuration = 1;
         
-        
         /// <summary>
         /// Hello
         /// </summary>
         [SerializeField] private float _secondsDamageTick = 1.5f;
             
         private TearGas _tearGas;
-        private TickTimer _durationTimer;
-        private TickTimer _damageTickTimer;
+        [Networked] private TickTimer _durationTimer { get; set; }
+        [Networked] private TickTimer _damageTickTimer{ get; set; }
+        private NetworkRunner _localNetRunner;
 
         public Subject<Unit> DurationEnded { get; } = new Subject<Unit>();
         
-        public void ExplodeTearGas(Vector3 pos, TeamSide ownerTeam)
+        public void ExplodeTearGas(NetworkRunner networkRunner, Vector3 pos, SessionPlayer owner)
         {
+            _localNetRunner = networkRunner;
+
+            Debug.Log($"Called tear gas from player {networkRunner.LocalPlayer}, from team {owner.TeamSide}");
+            
             TearGasEffect tearGasEffect = FxController.Instance.SpawnEffectAt<TearGasEffect>("teargas", pos, destroyDelay: _duration);
 
             tearGasEffect.StartExpansion(_expansionRadius, _expansionTime + _effectHideDuration, (() =>
-            {
+            {   
                 tearGasEffect.Hide(_effectHideDuration);
             }));
             
-            _durationTimer = TickTimer.CreateFromSeconds(Runner ,_duration);
+            _durationTimer = TickTimer.CreateFromSeconds(_localNetRunner ,_duration);
 
             Observable.Timer(TimeSpan.FromSeconds(_duration)).TakeUntilDestroy(this).Subscribe((l =>
             {
@@ -49,33 +53,35 @@ namespace Dev.Weapons
                 _tearGas = null;
             }));
             
-            _damageTickTimer = TickTimer.CreateFromSeconds(Runner, _secondsDamageTick);
+            _damageTickTimer = TickTimer.CreateFromSeconds(_localNetRunner, _secondsDamageTick);
 
-            _tearGas = Runner.Spawn(_tearGasPrefab, position: pos, onBeforeSpawned: ((runner, o) =>
+            _tearGas = _localNetRunner.Spawn(_tearGasPrefab, position: pos, onBeforeSpawned: ((runner, o) =>
             {
                 TearGas gas = o.GetComponent<TearGas>();
 
                 gas.ToDestroy.Take(1).Subscribe(OnToDestroy);
-                gas.RPC_SetOwnerTeam(ownerTeam);
-                gas.Init(Vector2.zero, 0, _damagePerSecond, Runner.LocalPlayer, _expansionRadius);
+                gas.RPC_SetOwner(owner);
+                gas.Init(Vector2.zero, 0, _damagePerSecond, _localNetRunner.LocalPlayer, _expansionRadius);
             }));
         }
 
         private void OnToDestroy(Projectile projectile)
         {
-            Runner.Despawn(projectile.Object);
+            _localNetRunner.Despawn(projectile.Object);
         }
-        
-        public override void FixedUpdateNetwork()
+
+        public override void Render()
         {
-            if(_durationTimer.ExpiredOrNotRunning(Runner)) return;
+            if(_localNetRunner == null) return;
+            
+            if(_durationTimer.ExpiredOrNotRunning(_localNetRunner)) return;
 
             if(_tearGas == null) return;
             
-            if(_damageTickTimer.Expired(Runner))
+            if(_damageTickTimer.Expired(_localNetRunner))
             {
-                _damageTickTimer = TickTimer.CreateFromSeconds(Runner, _secondsDamageTick);
-            
+                _damageTickTimer = TickTimer.CreateFromSeconds(_localNetRunner, _secondsDamageTick);
+                
                 _tearGas.DealDamage();
             }
         }

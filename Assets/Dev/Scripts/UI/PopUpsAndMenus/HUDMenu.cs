@@ -15,14 +15,21 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private DefaultReactiveButton _exitMenuButton;
 
         [SerializeField] private DefaultReactiveButton _interactionButton;
+
         [SerializeField] private LongClickReactiveButton _castAbilityButton;
+
+        [SerializeField] private DefaultReactiveButton _toggleCastModesButton;
+
 
         private PlayerBase _playerBase;
         private AbilityCastController _castController;
         private PlayersSpawner _playersSpawner;
+        private JoysticksContainer _joysticksContainer;
 
         public Subject<Unit> CastButtonClicked { get; } = new Subject<Unit>();
         public Subject<Unit> InteractiveButtonClicked { get; } = new Subject<Unit>();
+
+        private bool _isCastModeDefault = false;
 
         protected override void Awake()
         {
@@ -32,14 +39,18 @@ namespace Dev.UI.PopUpsAndMenus
             _exitMenuButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitMenuButtonClicked()));
             _interactionButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnInteractionButtonClicked()));
 
+            _toggleCastModesButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnToggleCastModesClicked()));
+            SetCastMode(_isCastModeDefault);
+            
             _castAbilityButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnCastButtonClicked()));
             _castAbilityButton.LongClick.TakeUntilDestroy(this)
                 .Subscribe((unit => OnCastButtonLongClicked()));
         }
 
         [Inject]
-        private void Construct(PlayersSpawner playersSpawner)
+        private void Construct(PlayersSpawner playersSpawner, JoysticksContainer joysticksContainer)
         {
+            _joysticksContainer = joysticksContainer;
             _playersSpawner = playersSpawner;
         }
 
@@ -56,16 +67,16 @@ namespace Dev.UI.PopUpsAndMenus
             NetworkRunner runner = FindObjectOfType<NetworkRunner>();
 
             PlayerRef playerRef = context.PlayerRef;
-            
+
             if (runner.LocalPlayer != playerRef) return;
 
             PlayerBase playerBase = _playersSpawner.GetPlayerBase(playerRef);
 
             _playerBase = playerBase;
-            
+
             _castController = playerBase.AbilityCastController;
             _castController.AbilityRecharged.TakeUntilDestroy(this).Subscribe((OnAbilityRecharged));
-            
+
             SetLongClickAvailability();
         }
 
@@ -87,31 +98,32 @@ namespace Dev.UI.PopUpsAndMenus
                     _castAbilityButton.Enable();
                     break;
                 default:
-                    _castAbilityButton.Disable();
+                    _castAbilityButton.Disable(); // for new character classes
                     break;
             }
         }
 
         private void OnCastButtonClicked()
         {
-            Debug.Log($"Cast clicked {_castController.AllowToCast}");
-            
-            if(_castController.AllowToCast == false) return;
-            
+            if (_castController.AllowToCast == false) return;
+
             SetLongClickAvailability();
-            
+
             CastButtonClicked.OnNext(Unit.Default);
 
             PlayerInput input = new PlayerInput();
-            input.CastAbility = true;
+            input.WithCast(true);
+            
             _playerBase.InputService.SimulateInput(input);
+            
+            OnToggleCastModesClicked();
         }
 
         private void OnCastButtonLongClicked()
         {
             Debug.Log($"Long click");
             _castAbilityButton.SetAllowToLongClick(false);
-            
+
             if (_castController.CurrentAbilityToCast == AbilityType.MiniAirStrike)
             {
                 return;
@@ -125,13 +137,13 @@ namespace Dev.UI.PopUpsAndMenus
         {
             Debug.Log($"Ability recharged");
 
-           SetLongClickAvailability();
+            SetLongClickAvailability();
         }
 
         private void SetLongClickAvailability()
         {
-            if(_castController == null) return;
-            
+            if (_castController == null) return;
+
             AbilityType abilityType = _castController.CurrentAbilityToCast;
 
             switch (abilityType)
@@ -144,6 +156,17 @@ namespace Dev.UI.PopUpsAndMenus
                     _castAbilityButton.SetAllowToLongClick(false);
                     break;
             }
+        }
+        
+        private void OnToggleCastModesClicked()
+        {
+            _isCastModeDefault = !_isCastModeDefault;
+            SetCastMode(_isCastModeDefault);
+        }
+
+        private void SetCastMode(bool isCasting)
+        {
+            _castAbilityButton.gameObject.SetActive(isCasting);
         }
 
         public void SetInteractionButtonState(bool enabled)

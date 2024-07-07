@@ -29,32 +29,44 @@ namespace Dev.Weapons.Guns
         [Networked] private Vector2 MoveDirection { get; set; }
         [Networked] private float Force { get; set; }
         [Networked] protected int Damage { get; set; }
-        [Networked] private PlayerRef Owner { get; set; }
         
-        [Networked] public TeamSide OwnerTeamSide { get; private set; }
+        [Networked] protected SessionPlayer Owner { get; set; }
+        public TeamSide OwnerTeamSide => Owner.TeamSide;
         
 
         private HealthObjectsService _healthObjectsService;
         protected HitsProcessor _hitsProcessor;
-        
+        private SessionStateService _sessionStateService;
+
         [Networked] public TickTimer DestroyTimer { get; set; }
         public Transform View => _view;
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
-        private bool IsOwnerIsBot => Owner == PlayerRef.None;
+        private bool IsOwnerIsBot => Owner.IsBot;
         
         
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor)
+        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor, SessionStateService sessionStateService)
         {
+            _sessionStateService = sessionStateService;
             _hitsProcessor = hitsProcessor;
             _healthObjectsService = healthObjectsService;
         }
 
         [Rpc]
-        public void RPC_SetOwnerTeam(TeamSide ownerTeam)
+        public void RPC_SetOwner(SessionPlayer owner)
         {
-            OwnerTeamSide = ownerTeam;
+            Owner = owner;
+        }
+
+        public void Init(Vector2 moveDirection, float force, int damage, SessionPlayer owner)
+        {
+            Owner = owner; 
+            Damage = damage;
+            Force = force;
+            MoveDirection = moveDirection;
+
+            transform.up = MoveDirection;
         }
 
         protected override void OnInjectCompleted()
@@ -82,16 +94,7 @@ namespace Dev.Weapons.Guns
             }
         }
 
-        public void Init(Vector2 moveDirection, float force, int damage, PlayerRef owner)
-        {
-            Owner = owner; 
-            Damage = damage;
-            Force = force;
-            MoveDirection = moveDirection;
 
-            transform.up = MoveDirection;
-        }
-    
         [Rpc]
         public void RPC_SetViewState(bool isEnabled)    
         {
@@ -103,7 +106,7 @@ namespace Dev.Weapons.Guns
             if (_checkOverlapWhileMoving == false) return;
 
             ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Runner, this, transform.position,
-                _overlapRadius, Damage, _hitMask, IsOwnerIsBot, Owner, OwnerTeamSide);
+                _overlapRadius, Damage, _hitMask, IsOwnerIsBot, false, Owner, OwnerTeamSide);
 
             _hitsProcessor.ProcessHitCollision(hitCollisionContext);
 
@@ -114,13 +117,12 @@ namespace Dev.Weapons.Guns
             //_networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
         }
 
-        protected void ApplyDamage(NetworkObject target, PlayerRef shooter, int damage)
+        protected void ApplyDamageToUnit(NetworkObject target, PlayerRef shooter, int damage)
         {
             ApplyDamageContext damageContext = new ApplyDamageContext();
             damageContext.Damage = damage;
             damageContext.VictimObj = target;
-            damageContext.Shooter = shooter;
-            damageContext.ShooterTeam = OwnerTeamSide;
+            damageContext.Shooter = Owner;
             
             _healthObjectsService.ApplyDamage(damageContext);
         }

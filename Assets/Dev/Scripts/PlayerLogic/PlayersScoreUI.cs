@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
 using Fusion;
@@ -13,107 +14,90 @@ namespace Dev.PlayerLogic
         [SerializeField] private PlayerScoreUIContainer _redTeamScores;
 
         [SerializeField] private PlayerScoreUI _playerScoreUIPrefab;
-        private TeamsService _teamsService;
-        private PlayersSpawner _playersSpawner;
 
-        [Networked, Capacity(20)] private NetworkLinkedList<PlayerScoreUI> ScoreUis { get; }
+        private PlayersScoreService _playersScoreService;
+
+        private List<PlayerScoreUI> _scoreUis = new List<PlayerScoreUI>();
+
 
         [Inject]
-        private void Init(TeamsService teamsService, PlayersSpawner playersSpawner)
+        private void Init(PlayersScoreService playersScoreService)
         {
-            _teamsService = teamsService;
-            _playersSpawner = playersSpawner;
+            _playersScoreService = playersScoreService;
         }
 
-        public override void Spawned()
+        protected override void OnInjectCompleted()
         {
-            if (HasStateAuthority == false)
-            {
-                return;
-            }
+            base.OnInjectCompleted();
 
-            _playersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersScoreService.OnScoreUpdate.TakeUntilDestroy(this).Subscribe((unit => OnScoreUpdated()));
         }
 
-        private void OnPlayerDespawned(PlayerRef playerRef)
+        private void OnScoreUpdated()
         {
-            for (var index = ScoreUis.Count - 1; index >= 0; index--)
-            {
-                PlayerScoreUI playerScoreUI = ScoreUis.Get(index);
-
-                if (playerScoreUI.PlayerId == playerRef)
-                {
-                    ScoreUis.Remove(playerScoreUI);
-                    RPC_Destroy(playerScoreUI);
-                }
-            }
+            UpdateScores(_playersScoreService.PlayerScoreList.ToArray());
         }
 
-        [Rpc]
-        private void RPC_Destroy(PlayerScoreUI playerScoreUI)
-        {
-            Destroy(playerScoreUI.gameObject);
-        }
-
-
-        public void UpdateScores(PlayerScoreData[] scoreDatas)
+        private void UpdateScores(PlayerScoreData[] scoreDatas)
         {
             for (var index = 0; index < scoreDatas.Length; index++)
             {
                 PlayerScoreData scoreData = scoreDatas[index];
-                PlayerRef playerId = scoreData.PlayerId;
+                SessionPlayer sessionPlayer = scoreData.SessionPlayer;
+                TeamSide teamSide = sessionPlayer.TeamSide;
 
-                var hasScoreUI = ScoreUis.FirstOrDefault(x => x.PlayerId == playerId) != null;
-                
-                if (hasScoreUI)
+                PlayerScoreUI scoreUI = _scoreUis.FirstOrDefault(x => x.SessionPlayer.Id == sessionPlayer.Id);
+
+                if (scoreUI != null)
                 {
-                    PlayerScoreUI playerScoreUI = ScoreUis.Get(index);
-
-                    playerScoreUI.RPC_UpdateData(scoreData.PlayerFragCount, scoreData.PlayerDeathCount);
-                    playerScoreUI.RPC_InitNickname(scoreData.Nickname.Value);
-
-                    continue;
+                    scoreUI.UpdateData(scoreData.PlayerFragCount, scoreData.PlayerDeathCount);
+                   // scoreUI.InitNickname(scoreData.SessionPlayer.Name);  // TODO make on change nickname event
                 }
+                else
+                {
+                    PlayerScoreUI scoreUi = Instantiate(_playerScoreUIPrefab, GetTeamUIParent(teamSide));
 
-                PlayerScoreUI scoreUI = Runner.Spawn(_playerScoreUIPrefab, Vector3.zero, Quaternion.identity,
-                    scoreData.PlayerId,
-                    (runner, o) =>
-                    {
-                        PlayerScoreUI playerScoreUI = o.GetComponent<PlayerScoreUI>();
-                        playerScoreUI.RPC_Init(scoreData.Nickname.Value, scoreData.PlayerFragCount,
-                            scoreData.PlayerDeathCount,
-                            playerId);
-                    });
+                    scoreUi.Init(sessionPlayer, scoreData.PlayerFragCount, scoreData.PlayerDeathCount);
 
-                ScoreUis.Add(scoreUI);
+                    _scoreUis.Add(scoreUi);
+                }
             }
 
-            RPC_ApplyParents();
+            OrderScoreUI();
         }
 
-        [Rpc]
-        private void RPC_ApplyParents()
-        {
-            foreach (PlayerScoreUI playerScoreUI in ScoreUis)
-            {
-                TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerScoreUI.PlayerId);
-
-                RPC_SetScoreUIParent(playerScoreUI, playerTeamSide);
-            }
-        }
-
-
-        [Rpc]
-        private void RPC_SetScoreUIParent(PlayerScoreUI playerScoreUI, TeamSide teamSide)
+        private Transform GetTeamUIParent(TeamSide teamSide)
         {
             if (teamSide == TeamSide.Blue)
             {
-                playerScoreUI.transform.parent = _blueTeamScores.ScoresUIParent;
+                return _blueTeamScores.ScoresUIParent;
             }
             else
             {
-                playerScoreUI.transform.parent = _redTeamScores.ScoresUIParent;
+                return _redTeamScores.ScoresUIParent;
             }
         }
+
+        private void OrderScoreUI()
+        {
+            var blueScoresUI = _scoreUis.Where(x => x.SessionPlayer.TeamSide == TeamSide.Blue).OrderByDescending(x => x.Kills).ThenBy(x => x.Deaths).ToList();
+            var redScoresUI = _scoreUis.Where(x => x.SessionPlayer.TeamSide == TeamSide.Red).OrderByDescending(x => x.Kills).ThenBy(x => x.Deaths).ToList();
+            
+            for (var index = 0; index < blueScoresUI.Count; index++)
+            {
+                PlayerScoreUI scoreUI = blueScoresUI[index];
+                
+                scoreUI.transform.SetSiblingIndex(index);
+            }
+            
+            for (var index = 0; index < redScoresUI.Count; index++)
+            {
+                PlayerScoreUI scoreUI = redScoresUI[index];
+                
+                scoreUI.transform.SetSiblingIndex(index);
+            }
+            
+        }
+        
     }
 }

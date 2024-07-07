@@ -1,4 +1,5 @@
-﻿using Dev.PlayerLogic;
+﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Fusion;
 using UnityEngine;
 
@@ -22,11 +23,15 @@ namespace Dev.Weapons.Guns
        
         public TeamSide OwnerTeamSide { get; private set; }
         
-        public PlayerRef Owner { get; private set; }
+        public SessionPlayer Owner { get; private set; }
         
-        public ProcessHitCollisionContext(NetworkRunner networkRunner, Projectile projectile, Vector3 overlapPos, float radius, int damage, LayerMask hitMask, bool isOwnerBot, PlayerRef owner, TeamSide ownerTeamSide)
+        public bool IsHitFromServer { get; private set; }
+        
+        
+        public ProcessHitCollisionContext(NetworkRunner networkRunner, Projectile projectile, Vector3 overlapPos, float radius, int damage, LayerMask hitMask, bool isOwnerBot, bool isHitFromServer, SessionPlayer owner, TeamSide ownerTeamSide)
         {
-            Owner = owner;
+            IsHitFromServer = isHitFromServer;
+            Owner = owner;          
             NetworkRunner = networkRunner;
             OverlapPos = overlapPos;
             Radius = radius;

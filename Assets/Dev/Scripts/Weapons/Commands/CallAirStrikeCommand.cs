@@ -1,4 +1,5 @@
-﻿using Dev.PlayerLogic;
+﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Dev.Weapons
     {
         private AirStrikeController _airStrikeController;
 
-        public CallAirStrikeCommand(NetworkRunner runner, AbilityType abilityType, TeamSide teamSide, AirStrikeController airStrikeController) : base(runner, abilityType, teamSide)
+        public CallAirStrikeCommand(NetworkRunner runner, AbilityType abilityType, SessionPlayer owner, AirStrikeController airStrikeController) : base(runner, abilityType, owner)
         {
             _airStrikeController = airStrikeController;
         }
@@ -20,7 +21,7 @@ namespace Dev.Weapons
 
             _airStrikeController.AirstrikeCompleted.Take(1).Subscribe((unit => OnAirStrikeCompleted()));
             
-            _airStrikeController.CallMiniAirStrike(pos, _teamSide);
+            _airStrikeController.CallMiniAirStrike(_runner, pos, _owner);
         }
 
         private void OnAirStrikeCompleted()

@@ -67,9 +67,15 @@ namespace Dev.PlayerLogic
             return _playersSpawner.GetPlayer(playerRef);
         }
         
+        
         public PlayerBase GetPlayerBase(PlayerRef playerRef)
         {
             return _playersSpawner.GetPlayerBase(playerRef);
+        }
+        
+        public PlayerBase GetPlayerBase(NetworkId id)
+        {
+            return _playersSpawner.GetPlayerBase(id);
         }
         
         public CharacterClass GetPlayerCharacterClass(PlayerRef playerRef)

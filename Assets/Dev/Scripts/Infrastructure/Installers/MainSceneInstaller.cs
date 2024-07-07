@@ -9,6 +9,7 @@ using Dev.Weapons;
 using Dev.Weapons.Guns;
 using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.Infrastructure
@@ -16,7 +17,6 @@ namespace Dev.Infrastructure
     public class MainSceneInstaller : MonoInstaller
     {
         [SerializeField] private PlayersSpawner _playersSpawner;
-        [SerializeField] private PlayersHealthService _playersHealthService;
         [SerializeField] private PlayersDataService _playersDataService;
         [SerializeField] private TeamsService _teamsService;
         [SerializeField] private TeamsScoreService _teamsScoreService;
@@ -24,7 +24,7 @@ namespace Dev.Infrastructure
         [SerializeField] private WorldTextProvider _worldTextProvider;
         [SerializeField] private PopUpService _popUpService;
         [SerializeField] private TimeService _timeService;
-        [SerializeField] private GameService _gameService;
+        [FormerlySerializedAs("_gameService")] [SerializeField] private GameStateService gameStateService;
 
         [SerializeField] private CameraService _cameraService;
         
@@ -39,6 +39,11 @@ namespace Dev.Infrastructure
 
         [SerializeField] private AirStrikeController _airStrikeController;
         [SerializeField] private TearGasService _tearGasService;
+
+        [FormerlySerializedAs("_gamesState")] [SerializeField] private SessionStateService sessionStateService;
+
+        [SerializeField] private PlayersScoreService _playersScoreService;
+        
         
         public override void InstallBindings()
         {
@@ -57,7 +62,11 @@ namespace Dev.Infrastructure
             Container.Bind<BotsController>().FromInstance(_botsController).AsSingle();
 
             Container.Bind<WorldTextProvider>().FromInstance(_worldTextProvider).AsSingle();
-           
+
+            Container.Bind<SessionStateService>().FromInstance(sessionStateService).AsSingle();
+            Container.Bind<SessionPlayersController>().AsSingle().NonLazy();
+            Container.Bind<PlayersScoreService>().FromInstance(_playersScoreService).AsSingle();
+            
             BindPlayer();
             BindServices();
         }
@@ -66,13 +75,12 @@ namespace Dev.Infrastructure
         {
             Container.Bind<PlayerCharacterClassChangeService>().AsSingle().NonLazy();
             Container.Bind<PlayersSpawner>().FromInstance(_playersSpawner).AsSingle();
-            Container.Bind<PlayersHealthService>().FromInstance(_playersHealthService).AsSingle();
             Container.Bind<PlayersDataService>().FromInstance(_playersDataService).AsSingle();
         }
 
         private void BindServices()
         {
-            Container.Bind<GameService>().FromInstance(_gameService).AsSingle();
+            Container.Bind<GameStateService>().FromInstance(gameStateService).AsSingle();
             Container.Bind<LevelService>().FromInstance(_levelService).AsSingle();
             Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
             Container.Bind<PopUpService>().FromInstance(_popUpService).AsSingle();

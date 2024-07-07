@@ -14,11 +14,13 @@ namespace Dev.Weapons
         public Subject<AbilityType> AbilityRecharged { get; } = new Subject<AbilityType>();
         
         protected NetworkRunner _runner;
-        protected TeamSide _teamSide;
+        protected TeamSide TeamSide => _owner.TeamSide;
+        
+        protected SessionPlayer _owner;
 
-        protected AbilityCastCommand(NetworkRunner runner, AbilityType abilityType, TeamSide teamSide)
+        protected AbilityCastCommand(NetworkRunner runner, AbilityType abilityType, SessionPlayer owner)
         {
-            _teamSide = teamSide;
+            _owner = owner;
             AbilityType = abilityType;
             _runner = runner;
         }

@@ -20,8 +20,9 @@ namespace Dev.Weapons
         
         private PlayerBase _playerBase;
         private AirStrikeController _airStrikeController;
-        private GameService _gameService;
+        private GameStateService _gameStateService;
         private TearGasService _tearGasService;
+        private SessionStateService _sessionStateService;
 
         public bool AllowToCast => _currentCastCommand == null ? true : _currentCastCommand.AllowToCast;
         [Networked, HideInInspector] public AbilityType CurrentAbilityToCast { get; private set; }
@@ -30,10 +31,11 @@ namespace Dev.Weapons
         public Subject<AbilityType> AbilityChanged { get; } = new();
             
         [Inject]
-        private void Construct(PlayerBase playerBase, AirStrikeController airStrikeController, GameService gameService, TearGasService tearGasService)
+        private void Construct(PlayerBase playerBase, AirStrikeController airStrikeController, GameStateService gameStateService, TearGasService tearGasService, SessionStateService sessionStateService)
         {
+            _sessionStateService = sessionStateService;
             _tearGasService = tearGasService;
-            _gameService = gameService;
+            _gameStateService = gameStateService;
             _airStrikeController = airStrikeController;
             _playerBase = playerBase;
         }
@@ -42,7 +44,7 @@ namespace Dev.Weapons
         {
             base.OnInjectCompleted();
 
-            _gameService.GameRestarted.Subscribe((unit => OnGameRestarted()));
+            _gameStateService.GameRestarted.Subscribe((unit => OnGameRestarted()));
         }
 
         private void OnGameRestarted()
@@ -61,11 +63,15 @@ namespace Dev.Weapons
             if(HasStateAuthority == false) return;
 
             await UniTask.Delay(100);
+            
+            TeamSide team = _playerBase.TeamSide;
 
-            _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret,  _playerBase.TeamSide, _turretPrefab));
-            _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, _playerBase.TeamSide, _landminePrefab));
-            _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, _playerBase.TeamSide, _airStrikeController));
-            _castCommands.Add(new ExplodeTearGasCommand(Runner, AbilityType.TearGas, _playerBase.TeamSide, _tearGasService));
+            SessionPlayer owner = _sessionStateService.GetSessionPlayer(_playerBase.Object.InputAuthority);
+
+            _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret,  owner, _turretPrefab));
+            _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, owner, _landminePrefab));
+            _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, owner, _airStrikeController));
+            _castCommands.Add(new ExplodeTearGasCommand(Runner, AbilityType.TearGas, owner, _tearGasService));
             
             foreach (AbilityCastCommand castCommand in _castCommands)
             {
@@ -89,7 +95,7 @@ namespace Dev.Weapons
         {
             if(_castCommands.Count == 0) return;
 
-            Debug.Log($"Reset ability {CurrentAbilityToCast}");
+           // Debug.Log($"Reset ability {CurrentAbilityToCast}");
             _currentCastCommand = null;
             AbilityCastCommand command = GetCommand(CurrentAbilityToCast);
             command.Reset();

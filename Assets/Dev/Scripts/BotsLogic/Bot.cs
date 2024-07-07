@@ -10,7 +10,6 @@ using Fusion;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Serialization;
 using Zenject;
 using Random = UnityEngine.Random;
 
@@ -21,18 +20,19 @@ namespace Dev.BotsLogic
     {
         public DamagableType DamageId => DamagableType.Bot;
 
-        [SerializeField] private NavMeshAgent _navMeshAgent;
+        [SerializeField] private Collider2D _collider;
         
+        [SerializeField] private NavMeshAgent _navMeshAgent;
+
         [SerializeField] private WeaponController _weaponController;
         [SerializeField] private bool _allowToShoot = true;
-        
+
         [SerializeField] private Rigidbody2D _rigidbody;
 
         [SerializeField] private float _speed = 1.2f;
         [SerializeField] private float _chaseSpeed = 3.5f;
 
         [SerializeField] private LayerMask _playerLayer;
-       
 
         [SerializeField] private float _moveDistance = 10;
         [SerializeField] private BotView _view;
@@ -43,12 +43,13 @@ namespace Dev.BotsLogic
         private List<BotMovePoint> _movePoints;
 
         private TeamsService _teamsService;
-
-        public bool Alive = true;
         private GameSettings _gameSettings;
 
+        public bool Alive = true;
+
         [Networked] private NetworkObject Target { get; set; }
-        
+        [Networked] private NetworkBool IsFrozen { get; set; }
+
         public BotData BotData => _botData;
         public BotView View => _view;
         public TeamSide BotTeamSide => BotData.TeamSide;
@@ -57,8 +58,8 @@ namespace Dev.BotsLogic
         {
             _movePoints = movePoints;
             _botData = botData;
-            
-            _weaponController.RPC_SetOwnerTeam(_botData.TeamSide);
+
+            _weaponController.RPC_SetOwner(_botData.SessionPlayer);
         }
 
         [Inject]
@@ -68,25 +69,38 @@ namespace Dev.BotsLogic
             _teamsService = teamsService;
         }
 
+        [Rpc]
+        public void RPC_OnDeath(bool isDead) // TODO bullshit
+        {
+            _collider.enabled = !isDead;
+        }
+    
         public override void Spawned()
         {
             base.Spawned();
-            
+
             ChangeMoveDirection();
 
-            Observable.Interval(TimeSpan.FromSeconds(_gameSettings.BotsSearchForTargetsCooldown)).TakeUntilDestroy(this).Subscribe((l =>
-            {
-                if (HasStateAuthority == false) return;
+            Observable.Interval(TimeSpan.FromSeconds(_gameSettings.BotsSearchForTargetsCooldown)).TakeUntilDestroy(this)
+                .Subscribe((l =>
+                {
+                    if (HasStateAuthority == false) return;
 
-                SearchForTargets();
-            }));
+                    SearchForTargets();
+                }));
 
-            Observable.Interval(TimeSpan.FromSeconds(_gameSettings.BotsChangeMoveDirectionCooldown)).TakeUntilDestroy(this).Subscribe((l =>
-            {
-                if (HasStateAuthority == false) return;
+            Observable.Interval(TimeSpan.FromSeconds(_gameSettings.BotsChangeMoveDirectionCooldown))
+                .TakeUntilDestroy(this).Subscribe((l =>
+                {
+                    if (HasStateAuthority == false) return;
 
-                ChangeMoveDirection();
-            }));
+                    ChangeMoveDirection();
+                }));
+        }
+
+        public void SetFreezeState(bool toFreeze)
+        {
+            IsFrozen = toFreeze;
         }
 
         public override void FixedUpdateNetwork()
@@ -94,6 +108,8 @@ namespace Dev.BotsLogic
             if (HasStateAuthority == false) return;
 
             if (Alive == false) return;
+
+            if (IsFrozen) return;
 
             if (Target != null)
             {
@@ -107,7 +123,8 @@ namespace Dev.BotsLogic
 
         private void SearchForTargets()
         {
-            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _gameSettings.BotsTargetsSearchRadius, _playerLayer,
+            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position,
+                _gameSettings.BotsTargetsSearchRadius, _playerLayer,
                 out var colliders);
 
             bool targetFound = false;
@@ -137,7 +154,6 @@ namespace Dev.BotsLogic
                             targetFound = true;
                             break;
                         }
-    
                     }
 
                     if (isPlayer)
@@ -209,14 +225,15 @@ namespace Dev.BotsLogic
         private void ChangeMoveDirection()
         {
             if (HasStateAuthority == false) return;
-            
-            var movePoints = _movePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude).ToList();
+
+            var movePoints = _movePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude)
+                .ToList();
 
             int maxPoints = _gameSettings.BotsNearestPointsAmountToChoose;
             int index = Math.Clamp(Random.Range(0, maxPoints), 0, movePoints.Count());
 
             BotMovePoint movePoint = movePoints[index];
-            
+
             _movePointPos = movePoint.transform.position;
         }
 

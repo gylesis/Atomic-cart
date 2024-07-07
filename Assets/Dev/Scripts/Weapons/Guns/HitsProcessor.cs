@@ -16,12 +16,14 @@ namespace Dev.Weapons.Guns
         private HealthObjectsService _healthObjectsService;
         private TeamsService _teamsService;
         private ProcessHitCollisionContext _processHitCollisionContext;
+        private SessionStateService _sessionStateService;
 
         public Subject<HitContext> Hit { get; } = new();
 
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, TeamsService teamsService)
+        private void Construct(HealthObjectsService healthObjectsService, TeamsService teamsService, SessionStateService sessionStateService)
         {
+            _sessionStateService = sessionStateService;
             _teamsService = teamsService;
             _healthObjectsService = healthObjectsService;
         }
@@ -109,10 +111,11 @@ namespace Dev.Weapons.Guns
                     {
                         Bot targetBot = damagable as Bot;
 
-                        TeamSide botTeam = _teamsService.GetUnitTeamSide(targetBot);
+                        TeamSide botTeam = targetBot.BotTeamSide;
 
                         if (ownerTeamSide != botTeam)
                         {
+                            Debug.Log($"Damage to bot");
                             OnHit(targetBot.Object, owner, damage, DamagableType.Bot, projectile);
                             needToDestroy = true;
                             break;
@@ -127,7 +130,46 @@ namespace Dev.Weapons.Guns
             }
         }
 
-       
+
+        private void OnHit(NetworkObject networkObject, PlayerRef shooter, int damage, DamagableType damagableType,
+                           Projectile projectile)
+        {
+            switch (damagableType)
+            {
+                case DamagableType.ObstacleWithHealth:
+                    ObstaclesManager.Instance.ApplyDamageToObstacle(shooter,
+                        networkObject.GetComponent<ObstacleWithHealth>(), damage);
+                    break;
+                case DamagableType.Obstacle:
+                    break;
+                case DamagableType.Bot:
+                case DamagableType.Player:
+                    if (projectile is ExplosiveProjectile == false)
+                    {
+                        ApplyDamageContext damageContext = new ApplyDamageContext();
+                        damageContext.Damage = damage;
+                        damageContext.VictimObj = networkObject;
+                        damageContext.Shooter = _processHitCollisionContext.Owner;
+
+                        _healthObjectsService.ApplyDamage(damageContext);
+                    }
+
+                    break;
+                case DamagableType.DummyTarget:
+                    break;
+                default:
+                    break;
+            }
+
+            //Debug.Log($"Damage type: {damagableType},");
+
+            HitContext hitContext = new HitContext();
+            hitContext.GameObject = networkObject.gameObject;
+            hitContext.DamagableType = damagableType;
+
+            Hit.OnNext(hitContext);
+        }
+
         public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext)
         {
             NetworkRunner runner = explodeContext.NetworkRunner;
@@ -194,6 +236,8 @@ namespace Dev.Weapons.Guns
 
                             TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(target);
 
+                            Debug.Log($"owner teamside {ownerTeamSide}, target team {targetTeamSide}");
+                            
                             if (ownerTeamSide == targetTeamSide) continue;
 
                             explodeContext.UnitHit?.Invoke(playerCharacter.Object, owner, totalDamage);
@@ -218,47 +262,6 @@ namespace Dev.Weapons.Guns
                     }
                 }
             }
-        }
-        
-
-        private void OnHit(NetworkObject networkObject, PlayerRef shooter, int damage, DamagableType damagableType,
-                           Projectile projectile)
-        {
-            switch (damagableType)
-            {
-                case DamagableType.ObstacleWithHealth:
-                    ObstaclesManager.Instance.ApplyDamageToObstacle(shooter,
-                        networkObject.GetComponent<ObstacleWithHealth>(), damage);
-                    break;
-                case DamagableType.Obstacle:
-                    break;
-                case DamagableType.Bot:
-                case DamagableType.Player:
-                    if (projectile is ExplosiveProjectile == false)
-                    {
-                        ApplyDamageContext damageContext = new ApplyDamageContext();
-                        damageContext.Damage = damage;
-                        damageContext.VictimObj = networkObject;
-                        damageContext.Shooter = shooter;
-                        damageContext.ShooterTeam = _processHitCollisionContext.OwnerTeamSide;
-
-                        _healthObjectsService.ApplyDamage(damageContext);
-                    }
-
-                    break;
-                case DamagableType.DummyTarget:
-                    break;
-                default:
-                    break;
-            }
-
-            //Debug.Log($"Damage type: {damagableType},");
-
-            HitContext hitContext = new HitContext();
-            hitContext.GameObject = networkObject.gameObject;
-            hitContext.DamagableType = damagableType;
-
-            Hit.OnNext(hitContext);
         }
     }
 }

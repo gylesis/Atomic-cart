@@ -1,4 +1,5 @@
-﻿using Dev.PlayerLogic;
+﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Dev.Weapons
     {
         private TearGasService _tearGasService;
 
-        public ExplodeTearGasCommand(NetworkRunner runner, AbilityType abilityType, TeamSide teamSide, TearGasService tearGasService) : base(runner, abilityType, teamSide)
+        public ExplodeTearGasCommand(NetworkRunner runner, AbilityType abilityType, SessionPlayer owner, TearGasService tearGasService) : base(runner, abilityType, owner)
         {
             _tearGasService = tearGasService;
         }
@@ -18,7 +19,7 @@ namespace Dev.Weapons
         {
             base.Process(pos);
             
-            _tearGasService.ExplodeTearGas(pos, _teamSide);
+            _tearGasService.ExplodeTearGas(_runner, pos, _owner);
             _tearGasService.DurationEnded.Subscribe((unit => OnTearGasEnded()));
         }
 

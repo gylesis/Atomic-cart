@@ -21,7 +21,7 @@ namespace Dev.Weapons
 
         [SerializeField] private float _haoticDirectionSpeed = 0.5f;
         
-        private PlayerRef _owner;
+        private SessionPlayer _owner;
         private TeamsService _teamsService;
         private TeamSide _ownerTeamSide;
 
@@ -31,7 +31,7 @@ namespace Dev.Weapons
         private Vector2 _direction; 
 
         public Subject<Unit> ToDie { get; } = new Subject<Unit>();
-
+    
         private bool HasTarget => Target != null;
         
         [Inject]
@@ -40,12 +40,12 @@ namespace Dev.Weapons
             _teamsService = teamsService;
         }
         
-        public void Init(PlayerRef owner)
+        public void Init(SessionPlayer owner)
         {
             _owner = owner;
-            _ownerTeamSide = _teamsService.GetUnitTeamSide(owner);
+            _ownerTeamSide = _owner.TeamSide;
 
-            _weaponController.RPC_SetOwnerTeam(_ownerTeamSide);
+            _weaponController.RPC_SetOwner(_owner);
             
             Observable.Interval(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
             {

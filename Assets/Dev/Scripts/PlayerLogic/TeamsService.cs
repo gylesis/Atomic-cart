@@ -7,7 +7,7 @@ namespace Dev.PlayerLogic
 {
     public class TeamsService : NetworkContext
     {
-        [Networked, Capacity(2)] private NetworkLinkedList<Team> Teams { get; }
+         [Networked, Capacity(2)] private NetworkLinkedList<Team> Teams { get; }
 
         // public Team RedTeam => _teams.First(x => x.TeamSide == TeamSide.Red);
         // public Team BlueTeam => _teams.First(x => x.TeamSide == TeamSide.Blue);
@@ -24,6 +24,11 @@ namespace Dev.PlayerLogic
 
             Teams.Add(blueTeam);
             Teams.Add(redTeam);
+        }
+
+        public int GetTeamMembersCount(TeamSide teamSide)
+        {
+            return GetTeam(teamSide).Members.Count;
         }
 
         private Team GetTeamByMember(TeamMember teamMember)
@@ -55,7 +60,7 @@ namespace Dev.PlayerLogic
         
         public void AssignForTeam(TeamMember teamMember, TeamSide teamSide)
         {
-            Team team = Teams.First(x => x.TeamSide == teamSide);
+            Team team = GetTeam(teamSide);
             int indexOf = Teams.IndexOf(team);
 
             team.AddMember(teamMember);
@@ -75,22 +80,24 @@ namespace Dev.PlayerLogic
 
         public void SwapTeams()
         {
-            Team blueTeam = Teams.FirstOrDefault(x => x.TeamSide == TeamSide.Blue);
-            Team redTeam = Teams.FirstOrDefault(x => x.TeamSide == TeamSide.Red);
+            Team blueTeam = GetTeam(TeamSide.Blue);
+            Team redTeam = GetTeam(TeamSide.Red);
 
-            foreach (TeamMember blueTeamPlayer in blueTeam.Players)
+            foreach (TeamMember blueTeamPlayer in blueTeam.Members)
             {   
                 RemoveFromTeam(blueTeamPlayer);
                 AssignForTeam(blueTeamPlayer, TeamSide.Red);
             }
 
-            foreach (TeamMember redTeamPlayer in redTeam.Players)
+            foreach (TeamMember redTeamPlayer in redTeam.Members)
             {
                 RemoveFromTeam(redTeamPlayer);
                 AssignForTeam(redTeamPlayer, TeamSide.Blue);
             }
         }
 
-        
+
+        private Team GetTeam(TeamSide teamSide) => Teams.First(x => x.TeamSide == teamSide);
+
     }
 }

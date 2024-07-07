@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Fusion;
 using UniRx;
@@ -11,31 +11,51 @@ namespace Dev.PlayerLogic
 {
     public class PlayersScoreService : NetworkContext
     {
-        [SerializeField] private PlayersScoreUI _playersScoreUI;
-
-        [Networked, Capacity(10)] private NetworkLinkedList<PlayerScoreData> PlayerScoreList { get; }
+        [Networked, Capacity(10)] public NetworkLinkedList<PlayerScoreData> PlayerScoreList { get; }
        
-        private TeamsService _teamsService;
         private PlayersDataService _playersDataService;
-        private PlayersSpawner _playersSpawner;
-        private PlayersHealthService _playersHealthService;
+        private SessionStateService _sessionStateService;
+        private BotsController _botsController;
+        private HealthObjectsService _healthObjectsService;
 
+        public Subject<Unit> OnScoreUpdate { get; } = new Subject<Unit>();
+        
         [Inject]
-        private void Init(TeamsService teamsService, PlayersDataService playersDataService,
-            PlayersSpawner playersSpawner, PlayersHealthService playersHealthService)
+        private void Init(TeamsService teamsService, PlayersDataService playersDataService, SessionStateService sessionStateService, BotsController botsController, HealthObjectsService healthObjectsService)
         {
-            _teamsService = teamsService;
+            _healthObjectsService = healthObjectsService;
+            _botsController = botsController;
+            _sessionStateService = sessionStateService;
             _playersDataService = playersDataService;
-            _playersHealthService = playersHealthService;
-            _playersSpawner = playersSpawner;
         }
 
         public override void Spawned()
         {
-            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
-            _playersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersDataService.PlayersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersDataService.PlayersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 
-            _playersHealthService.PlayerKilled.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
+            _botsController.BotSpawned.TakeUntilDestroy(this).Subscribe((OnBotSpawned));
+            _botsController.BotDeSpawned.TakeUntilDestroy(this).Subscribe((OnBotDespawned));
+            
+            _healthObjectsService.PlayerDied.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
+            _healthObjectsService.BotDied.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
+        }
+
+        private void OnBotSpawned(Bot bot)
+        {
+            PlayerScoreList.Add(new PlayerScoreData(_sessionStateService.GetSessionPlayer(bot)));
+            
+            RPC_UpdateScore();
+        }
+
+        private void OnBotDespawned(Bot bot)
+        {
+            if (PlayerScoreList.Any(x => x.SessionPlayer.Id == bot.Object.Id))
+            {
+                PlayerScoreList.Remove(PlayerScoreList.First(x => x.SessionPlayer.Id == bot.Object.Id));
+            }
+
+            RPC_UpdateScore();
         }
 
         private async void OnPlayerSpawned(PlayerSpawnEventContext playerSpawnData)
@@ -44,53 +64,58 @@ namespace Dev.PlayerLogic
             
             if(Runner.IsSharedModeMasterClient == false) return;
             
-            var playerScoreData = new PlayerScoreData();
+            PlayerRef playerRef = playerSpawnData.PlayerRef;
 
-            PlayerRef playerId = playerSpawnData.PlayerRef;
+            NetworkId id = _playersDataService.GetPlayerBase(playerRef).Object.Id;
 
-            playerScoreData.PlayerId = playerId;
-            playerScoreData.PlayerTeamSide = _teamsService.GetUnitTeamSide(playerId);
-            playerScoreData.Nickname = _playersDataService.GetNickname(playerId);
+            var playerScoreData = new PlayerScoreData(_sessionStateService.GetSessionPlayer(id));
+
             playerScoreData.PlayerDeathCount = 0;
             playerScoreData.PlayerFragCount = 0;
 
             PlayerScoreList.Add(playerScoreData);
 
-           // _playersScoreUI.UpdateScores(PlayerScoreList.ToArray());
+            RPC_UpdateScore();
+            // _playersScoreUI.UpdateScores(PlayerScoreList.ToArray());
         }
 
         private void OnPlayerDespawned(PlayerRef playerRef)
         {
-            PlayerScoreData playerScoreData = PlayerScoreList.FirstOrDefault(x => x.PlayerId == playerRef);
+            if(Runner.IsSharedModeMasterClient == false) return;
+            
+            NetworkId id = _playersDataService.GetPlayerBase(playerRef).Object.Id;
+            
+            PlayerScoreData playerScoreData = PlayerScoreList.FirstOrDefault(x => x.SessionPlayer.Id == id);
 
             PlayerScoreList.Remove(playerScoreData);
+
+            RPC_UpdateScore();
         }
 
-        private void UpdateTableScore(PlayerDieEventContext context)
+        private void UpdateTableScore(UnitDieContext context)
         {
-            PlayerRef killerPlayer = context.Killer;
-            PlayerRef deadPlayer = context.Killed;
-
-            bool isKilledByServer = killerPlayer == PlayerRef.None;
+            SessionPlayer killerPlayer = context.Killer;
+            SessionPlayer deadPlayer = context.Victim;
+            bool killedByServer = context.KilledByServer;
             
             string killerName;
 
-            if (isKilledByServer)
+            if (killedByServer)
             {
                 killerName = "Server";
             }
             else
             {
-                killerName = _playersDataService.GetNickname(killerPlayer);
+                killerName = killerPlayer.Name;
             }
             
-            string deadName = _playersDataService.GetNickname(deadPlayer);
+            string deadName = deadPlayer.Name;
 
             for (var index = 0; index < PlayerScoreList.Count; index++)
             {
                 PlayerScoreData playerScoreData = PlayerScoreList[index];
                 
-                if (playerScoreData.PlayerId == deadPlayer)
+                if (playerScoreData.SessionPlayer.Id == deadPlayer.Id)
                 {
                     var playerDeathCount = playerScoreData.PlayerDeathCount;
                     playerDeathCount++;
@@ -98,9 +123,9 @@ namespace Dev.PlayerLogic
                     playerScoreData.PlayerDeathCount = playerDeathCount;
                 }
 
-                if (isKilledByServer == false)
+                if (killedByServer == false)
                 {
-                    if (playerScoreData.PlayerId == killerPlayer)
+                    if (playerScoreData.SessionPlayer.Id == killerPlayer.Id)
                     {
                         var playerFragCount = playerScoreData.PlayerFragCount;
                         playerFragCount++;
@@ -111,10 +136,16 @@ namespace Dev.PlayerLogic
                 
                 PlayerScoreList.Set(index, playerScoreData);
             }
-
-            _playersScoreUI.UpdateScores(PlayerScoreList.ToArray());
-
+            
             Debug.Log($"{killerName} killed {deadName}");
+
+            RPC_UpdateScore();
+        }
+
+        [Rpc]
+        private void RPC_UpdateScore()
+        {
+            OnScoreUpdate.OnNext(Unit.Default);
         }
     }
 

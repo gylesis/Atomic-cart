@@ -11,34 +11,34 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class GameService : NetworkContext
+    public class GameStateService : NetworkContext
     {
         private TimeService _timeService;
-        private PlayersSpawner _playersSpawner;
         private PopUpService _popUpService;
         private GameSettings _gameSettings;
         private TeamsScoreService _teamsScoreService;
         private TeamsService _teamsService;
 
         private bool _teamsSwapHappened;
-        
+
         private CartPathService _cartPathService;
         private LevelService _levelService;
+        private SessionStateService _sessionStateService;
 
         public Subject<Unit> GameRestarted { get; } = new Subject<Unit>();
 
         [Inject]
-        private void Init(TimeService timeService, PlayersSpawner playersSpawner,
+        private void Init(TimeService timeService, SessionStateService sessionStateService,
             PopUpService popUpService, GameSettings gameSettings, TeamsScoreService teamsScoreService,
             TeamsService teamsService, LevelService levelService)
         {
+            _sessionStateService = sessionStateService;
             _levelService = levelService;
             _teamsService = teamsService;
             _teamsScoreService = teamsScoreService;
             _gameSettings = gameSettings;
             _popUpService = popUpService;
             _timeService = timeService;
-            _playersSpawner = playersSpawner;
         }
 
         protected override void OnInjectCompleted()
@@ -144,8 +144,8 @@ namespace Dev.Infrastructure
             {
                 onRestarted?.Invoke();
                 _cartPathService.ResetCart();
-                RespawnAllPlayers();
-                SetEnemiesFreezeState(false);
+                _sessionStateService.RespawnAllPlayers();
+                _sessionStateService.SetEnemiesFreezeState(false);
                 _timeService.ResetTimer();
                 _timeService.SetPauseState(false);
                 
@@ -153,21 +153,6 @@ namespace Dev.Infrastructure
             }));
         }
 
-        private void SetEnemiesFreezeState(bool toFreeze)
-        {
-            foreach (PlayerBase player in _playersSpawner.PlayersBases)
-            {
-                player.PlayerController.SetAllowToMove(!toFreeze);
-                player.PlayerController.SetAllowToShoot(!toFreeze);
-            }
-        }   
-
-        private void RespawnAllPlayers()
-        {
-            foreach (PlayerCharacter player in _playersSpawner.PlayersCharacters)
-            {
-                _playersSpawner.RespawnPlayerCharacter(player.Object.InputAuthority);
-            }
-        }
+       
     }
 }

@@ -6,7 +6,7 @@ namespace Dev.UI
     {
         [SerializeField] private Joystick _movementJoystick;
         [SerializeField] private Joystick _aimJoystick;
-        
+
         public Joystick MovementJoystick => _movementJoystick;
         public Joystick AimJoystick => _aimJoystick;
     }

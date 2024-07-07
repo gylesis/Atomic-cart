@@ -25,7 +25,6 @@ namespace Dev.Weapons
         
         [SerializeField] private int _miniAirStrikeDamage = 50;
         
-        
         public Subject<Unit> AirstrikeCompleted { get; } = new Subject<Unit>();
 
         [Networked] public NetworkBool IsBusy { get; private set; }
@@ -33,9 +32,12 @@ namespace Dev.Weapons
         private int _miniAirStrikeExplosionBombCount = 0;
 
         private Dictionary<int, AirStrikeMarker> _markers = new Dictionary<int, AirStrikeMarker>();
+        private NetworkRunner _localNetRunner;
 
-        public async void CallMiniAirStrike(Vector3 pos, TeamSide ownerTeam)
+        public async void CallMiniAirStrike(NetworkRunner networkRunner, Vector3 pos, SessionPlayer owner)
         {
+            _localNetRunner = networkRunner;
+                
             if (IsBusy) return;
 
             IsBusy = true;
@@ -58,7 +60,7 @@ namespace Dev.Weapons
             {
                 Vector3 spawnPos = poses[index];
 
-                SpawnAirStrikeBomb(index, spawnPos, ownerTeam, 1.5f);
+                SpawnAirStrikeBomb(index, spawnPos, owner, 1.5f);
 
                 await UniTask.Delay(TimeSpan.FromSeconds(_cooldownBeforeNextBomb));
             }
@@ -66,20 +68,20 @@ namespace Dev.Weapons
 
         private void SpawnMarker(int index, Vector3 spawnPos)
         {
-            AirStrikeMarker marker = Runner.Spawn(_airStrikerMarker, spawnPos);
+            AirStrikeMarker marker = _localNetRunner.Spawn(_airStrikerMarker, spawnPos);
             marker.Show();
             _markers.Add(index, marker);
         }
 
-        private void SpawnAirStrikeBomb(int index, Vector3 spawnPos, TeamSide ownerTeam, float detonateDelay)
+        private void SpawnAirStrikeBomb(int index, Vector3 spawnPos, SessionPlayer owner, float detonateDelay)
         {
-            AirStrikeBomb bomb = Runner.Spawn(_airStrikeBombPrefab, spawnPos, onBeforeSpawned: (runner, o) =>
+            AirStrikeBomb bomb = _localNetRunner.Spawn(_airStrikeBombPrefab, spawnPos, onBeforeSpawned: (runner, o) =>
             {
                 DependenciesContainer.Instance.Inject(o.gameObject);
 
                 AirStrikeBomb airStrikeBomb = o.GetComponent<AirStrikeBomb>();
-                airStrikeBomb.RPC_SetOwnerTeam(ownerTeam);
-                airStrikeBomb.Init(Vector2.zero, 0, _miniAirStrikeDamage, Runner.LocalPlayer, _explosionRadius);
+                airStrikeBomb.RPC_SetOwner(owner);
+                airStrikeBomb.Init(Vector2.zero, 0, _miniAirStrikeDamage, _localNetRunner.LocalPlayer, _explosionRadius);
 
                 float size = Random.Range(0.8f, 1.2f);
 
@@ -101,7 +103,7 @@ namespace Dev.Weapons
         private void OnToDestroy(Projectile projectile)
         {
             _miniAirStrikeExplosionBombCount--;
-            Runner.Despawn(projectile.Object);
+            _localNetRunner.Despawn(projectile.Object);
 
             if (_miniAirStrikeExplosionBombCount <= 0)
             {

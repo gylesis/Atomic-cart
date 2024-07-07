@@ -17,7 +17,7 @@ namespace Dev.Weapons.Guns
         {
             SetExplosionRadius(explosionRadius);
 
-            Init(moveDirection, force, damage, owner);
+            Init(moveDirection, force, damage, Owner);
         }
 
         public void SetExplosionRadius(float explosionRadius)
@@ -47,18 +47,18 @@ namespace Dev.Weapons.Guns
         {   
             Vector3 pos = transform.position;   
 
-            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Runner, explosionRadius, Damage, pos, _hitMask, OwnerTeamSide, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Runner, explosionRadius, Damage, pos, _hitMask, OwnerTeamSide, false, OnObstacleWithHealthHit, OnDummyHit, OnUnitHit);
             
             _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);
 
             void OnUnitHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
             {
-                ApplyDamage(obj, shooter, totalDamage);
+                ApplyDamageToUnit(obj, shooter, totalDamage);
             }
 
             void OnDummyHit(NetworkObject obj, PlayerRef shooter, int totalDamage)
             {
-                ApplyDamage(obj, shooter, totalDamage);
+                ApplyDamageToUnit(obj, shooter, totalDamage);
             }
 
             void OnObstacleWithHealthHit(ObstacleWithHealth obj, PlayerRef shooter, int totalDamage)

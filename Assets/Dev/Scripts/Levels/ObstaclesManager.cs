@@ -19,7 +19,7 @@ namespace Dev.Levels
 
         [Networked, Capacity(32)] private NetworkLinkedList<ObstacleHealthData> ObstacleHealthDatas { get; }
         
-        private GameService _gameService;
+        private GameStateService _gameStateService;
         private WorldTextProvider _worldTextProvider;
 
         private List<Obstacle> Obstacles => _levelService.CurrentLevel.Obstacles;
@@ -30,10 +30,10 @@ namespace Dev.Levels
         }
 
         [Inject]
-        private void Init(LevelService levelManager, GameService gameService, WorldTextProvider worldTextProvider)
+        private void Init(LevelService levelManager, GameStateService gameStateService, WorldTextProvider worldTextProvider)
         {
             _worldTextProvider = worldTextProvider;
-            _gameService = gameService;
+            _gameStateService = gameStateService;
             _levelService = levelManager;
         }
 
@@ -42,7 +42,7 @@ namespace Dev.Levels
             base.OnInjectCompleted();
             
             _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
-            _gameService.GameRestarted.TakeUntilDestroy(this).Subscribe((unit => OnGameRestarted()));
+            _gameStateService.GameRestarted.TakeUntilDestroy(this).Subscribe((unit => OnGameRestarted()));
         }
 
         private void OnLevelLoaded(Level level)

@@ -27,7 +27,11 @@ namespace Dev.Weapons
         [HideInInspector, CanBeNull, Networked]
         public Weapon CurrentWeapon { get; set; }
 
-        [Networked] public TeamSide OwnerTeamSide { get; private set; }
+        public TeamSide OwnerTeamSide => Owner.TeamSide;
+        
+        [Networked] public SessionPlayer Owner { get; private set; }
+        
+        
         [Networked] public NetworkBool TeamWasSet { get; private set; }
 
         public Vector3 Direction => WeaponParent.up;
@@ -53,9 +57,9 @@ namespace Dev.Weapons
         }
 
         [Rpc]
-        public void RPC_SetOwnerTeam(TeamSide ownerTeam)
+        public void RPC_SetOwner(SessionPlayer owner)
         {
-            OwnerTeamSide = ownerTeam;
+            Owner = owner;
             TeamWasSet = true;
         }
 
@@ -80,7 +84,7 @@ namespace Dev.Weapons
 
             weapon.transform.parent = WeaponParent;
 
-            weapon.RPC_SetOwnerTeam(OwnerTeamSide);
+            weapon.RPC_SetOwner(Owner);
 
             if (withChoose)
             {

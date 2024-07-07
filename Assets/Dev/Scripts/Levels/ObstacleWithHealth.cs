@@ -15,11 +15,13 @@ namespace Dev.Levels
         public int Health => _health;
         public override DamagableType DamageId => DamagableType.ObstacleWithHealth;
 
-        private HealthObjectsService _healthObjectsService;
+        protected HealthObjectsService _healthObjectsService;
+        protected HitsProcessor _hitsProcessor;
 
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService)
+        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor)
         {
+            _hitsProcessor = hitsProcessor;
             _healthObjectsService = healthObjectsService;
         }
 
@@ -39,7 +41,7 @@ namespace Dev.Levels
             
             if (Runner.IsSharedModeMasterClient)
             {
-                _healthObjectsService.UnregisterObject(Object);
+                _healthObjectsService.RPC_UnregisterObject(Object);
             }
         }
 

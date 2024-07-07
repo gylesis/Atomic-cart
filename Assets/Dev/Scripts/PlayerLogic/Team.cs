@@ -6,7 +6,7 @@ namespace Dev.PlayerLogic
 {
     public struct Team : INetworkStruct
     {
-        [Networked, Capacity(10)] public NetworkLinkedList<TeamMember> Players => default;
+        [Networked, Capacity(10)] public NetworkLinkedList<TeamMember> Members => default;
         [Networked] public TeamSide TeamSide { get; private set; }
     
         public Team(TeamSide teamSide)
@@ -16,28 +16,28 @@ namespace Dev.PlayerLogic
 
         public bool HasTeamMember(TeamMember teamMember)
         {
-            return Players.Any(x => x.MemberId == teamMember.MemberId);
+            return Members.Any(x => x.MemberId == teamMember.MemberId);
         }
         
         public void AddMember(TeamMember teamMember)
         {
-            Players.Add(teamMember);
+            Members.Add(teamMember);
         }   
 
         public void RemoveMember(TeamMember teamMember)
         { 
-            Players.Remove(teamMember);
+            Members.Remove(teamMember);
         }
         
         public void RemoveMember(NetworkId networkId)
         {
-            bool hasMember = Players.Any(x => x.MemberId == networkId.Raw);
+            bool hasMember = Members.Any(x => x.MemberId == networkId.Raw);
 
             if (hasMember != null)
             {
-                TeamMember teamMember = Players.FirstOrDefault(x => x.MemberId == networkId.Raw);
+                TeamMember teamMember = Members.FirstOrDefault(x => x.MemberId == networkId.Raw);
 
-                Players.Remove(teamMember);
+                Members.Remove(teamMember);
             }
         }
     }

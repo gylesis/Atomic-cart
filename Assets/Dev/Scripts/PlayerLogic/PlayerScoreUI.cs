@@ -1,40 +1,41 @@
 ﻿using Dev.Infrastructure;
-using Fusion;
 using TMPro;
 using UnityEngine;
 
 namespace Dev.PlayerLogic
 {
-    public class PlayerScoreUI : NetworkContext
+    public class PlayerScoreUI : MonoBehaviour
     {
         [SerializeField] private TMP_Text _playerName;
         [SerializeField] private TMP_Text _killsCountText;
         [SerializeField] private TMP_Text _deathsCountText;
         
-        [Networked]
-        public PlayerRef PlayerId { get; private set; }
-
-        
-        [Rpc]
-        public void RPC_Init(string nickname, int kills, int deaths, PlayerRef playerId)
+        public SessionPlayer SessionPlayer { get; private set; }
+        public int Kills { get; private set; }
+        public int Deaths { get; private set; }
+     
+        public void Init(SessionPlayer sessionPlayer, int kills, int deaths)
         {
-            PlayerId = playerId;
-            _playerName.text = nickname;
-            _killsCountText.text = $"{kills}";
-            _deathsCountText.text = $"{deaths}";
+            Kills = kills;
+            Deaths = deaths;
+            SessionPlayer = sessionPlayer;
+
+            UpdateText();
         }
 
-        [Rpc]
-        public void RPC_InitNickname(string nickname) // TODO replace
+        public void UpdateData(int kills, int deaths)
         {
-            _playerName.text = nickname;
+            Kills = kills;
+            Deaths = deaths;
+
+            UpdateText();
         }
-        
-        [Rpc]
-        public void RPC_UpdateData(int kills, int deaths)
+
+        private void UpdateText()
         {
-            _killsCountText.text = $"{kills}";
-            _deathsCountText.text = $"{deaths}";
+            _playerName.text = $"{SessionPlayer.Name}";
+            _killsCountText.text = $"{Kills}";
+            _deathsCountText.text = $"{Deaths}";
         }
         
     }
