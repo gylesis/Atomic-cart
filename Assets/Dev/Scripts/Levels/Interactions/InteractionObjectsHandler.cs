@@ -25,6 +25,16 @@ namespace Dev.Levels.Interactions
             _levelService = levelService;
         }
 
+        protected override void CorrectState()
+        {
+            base.CorrectState();
+
+            if (IsProxy)
+            {
+                OnLevelLoaded(_levelService.CurrentLevel);
+            }
+        }
+
         protected override void OnInjectCompleted()
         {
             base.OnInjectCompleted();
@@ -49,25 +59,30 @@ namespace Dev.Levels.Interactions
         {
             SessionPlayer sessionPlayer = context.Victim;
     
-            RPC_OnInteractionObjectInteract(sessionPlayer.Owner,false, null);
+            if(Runner.LocalPlayer != sessionPlayer.Owner) return;
+            
+            OnInteractionObjectInteract(sessionPlayer.Owner,false, null);
         }
 
         private void OnPlayerZoneEntered(PlayerCharacter playerCharacter, InteractionObject interactionObject)
         {
             PlayerRef playerRef = playerCharacter.Object.InputAuthority;
+            
+            if(Runner.LocalPlayer != playerRef) return;
 
-            RPC_OnInteractionObjectInteract(playerRef,true, interactionObject);
+            OnInteractionObjectInteract(playerRef,true, interactionObject);
         }
 
         private void OnPlayerZoneExit(PlayerCharacter playerCharacter, InteractionObject interactionObject)
         {
             PlayerRef playerRef = playerCharacter.Object.InputAuthority;
 
-            RPC_OnInteractionObjectInteract(playerRef,false, interactionObject);
+            if(Runner.LocalPlayer != playerRef) return;
+            
+            OnInteractionObjectInteract(playerRef,false, interactionObject);
         }
 
-        [Rpc]
-        private void RPC_OnInteractionObjectInteract([RpcTarget] PlayerRef target, bool isOn, InteractionObject interactionObject)
+        private void OnInteractionObjectInteract([RpcTarget] PlayerRef target, bool isOn, InteractionObject interactionObject)
         {
             Action onInteraction;
 
