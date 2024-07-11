@@ -4,6 +4,7 @@ using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.Utils;
 using Dev.Weapons.StaticData;
+using DG.Tweening;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -92,10 +93,10 @@ namespace Dev.Weapons.Guns
             projectile.SetViewStateLocal(false);
             //projectile.RPC_SetViewState(false);
             SpawnVFXOnDestroyProjectile(projectile);
-            
+            projectile.IsAlive = false;
             //RPC_LOG(Runner.LatestServerTick.Raw);
 
-            DestroyProjectile(projectile);
+            DestroyProjectile(projectile, 0.5f);
         }
 
         /// <summary>
@@ -127,18 +128,22 @@ namespace Dev.Weapons.Guns
         /// Called when Max Distance reached, Alive timer expired or hit to obtacle or player
         /// </summary>
         /// <param name="projectile"></param>
-        private void DestroyProjectile(Projectile projectile)
+        private void DestroyProjectile(Projectile projectile, float delay = 0)
         {
-            var exists = _aliveProjectiles.Exists(x => x.Projectile == projectile);
-
-            if (exists)
+            DOVirtual.DelayedCall(delay, () =>
             {
-                SpawnedProjectileContext context = _aliveProjectiles.First(x => x.Projectile == projectile);
+                var exists = _aliveProjectiles.Exists(x => x.Projectile == projectile);
+    
+                if (exists)
+                {
+                    SpawnedProjectileContext context = _aliveProjectiles.First(x => x.Projectile == projectile);
 
-                _aliveProjectiles.Remove(context);
+                    _aliveProjectiles.Remove(context);
                 
-                Runner.Despawn(projectile.Object);
-            }
+                    Runner.Despawn(projectile.Object);
+                }
+            } );
+            
         }
 
         /// <summary>

@@ -29,13 +29,13 @@ namespace Dev.Weapons.Guns
         [Networked] protected int Damage { get; set; }
         [Networked] protected SessionPlayer Owner { get; set; }
         [Networked] public TickTimer DestroyTimer { get; set; }
+
+        [Networked] public NetworkBool IsAlive { get; set; } = true;
         
         public Transform View => _view;
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
 
-        [Networked] public NetworkBool Collided { get; set; }
-    
         [Inject]
         private void Construct(HitsProcessor hitsProcessor)
         {   
@@ -104,6 +104,8 @@ namespace Dev.Weapons.Guns
         {
             if(Object == null) return;
             
+            if(IsAlive == false) return;
+            
             if (CheckForHitsWhileMoving)
             {
                 ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Object.Id, transform.position, _overlapRadius, Damage, false, Owner);
@@ -111,11 +113,24 @@ namespace Dev.Weapons.Guns
                 _hitsProcessor.ProcessHitCollision(hitCollisionContext);
             }
 
-            //if (HasStateAuthority == false) return;
-
             transform.position = Vector3.MoveTowards(transform.position, transform.position + (Vector3)MoveDirection,
                 Runner.DeltaTime * Force);
-            //_networkRigidbody2D.Rigidbody.velocity = _moveDirection * _force * Runner.DeltaTime;
+        }
+
+        public override void Render()
+        {
+            base.Render();
+
+            if (IsProxy)
+            {
+                bool hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius);
+
+                if (hitSomething)
+                {
+                    SetViewStateLocal(false);
+                }
+            }
+           
         }
 
         protected virtual void OnObstacleHit(Obstacle obstacle) { }
