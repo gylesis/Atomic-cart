@@ -36,8 +36,6 @@ namespace Dev.Levels
         {
             base.Spawned();
             
-            if (HasStateAuthority == false) return;
-
             LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
             _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
@@ -63,6 +61,8 @@ namespace Dev.Levels
 
         private void OnControlPoint(Unit obj)
         {
+            if(Runner.IsSharedModeMasterClient == false) return;
+            
             AddTime();
         }
 
@@ -75,6 +75,8 @@ namespace Dev.Levels
 
         private void OnPlayerSpawned(PlayerSpawnEventContext spawnEventContext)
         {
+            if(Runner.IsSharedModeMasterClient == false) return;
+            
             if (_playersSpawner.PlayersCount > 0)
             {
                 if (LeftTime.ExpiredOrNotRunning(Runner))

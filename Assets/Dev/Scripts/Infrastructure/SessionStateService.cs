@@ -2,6 +2,7 @@
 using Dev.BotsLogic;
 using Dev.PlayerLogic;
 using Fusion;
+using UnityEngine;
 using Zenject;
 
 namespace Dev.Infrastructure
@@ -36,14 +37,17 @@ namespace Dev.Infrastructure
             return Players.First(x => x.Id == bot.Object.Id);
         }
         
-        public void AddPlayer(NetworkId id, string name, bool isBot, TeamSide teamSide)
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_AddPlayer(NetworkId id, string name, bool isBot, TeamSide teamSide)
         {
             SessionPlayer sessionPlayer = new SessionPlayer(id, name, isBot, teamSide, isBot ? PlayerRef.None : _playersDataService.GetPlayerBase(id).Object.InputAuthority);
             
             Players.Add(sessionPlayer);
+            Debug.Log($"Session player added {name}. Count {Players.Count}");
         }
 
-        public void RemovePlayer(NetworkId id)
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_RemovePlayer(NetworkId id)
         {
             bool hasPlayer = Players.Any(x => x.Id == id);
 

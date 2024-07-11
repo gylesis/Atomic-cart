@@ -61,7 +61,7 @@ namespace Dev.Weapons
 
                 gas.ToDestroy.Take(1).Subscribe(OnToDestroy);
                 gas.RPC_SetOwner(owner);
-                gas.Init(Vector2.zero, 0, _damagePerSecond, _localNetRunner.LocalPlayer, _expansionRadius);
+                gas.Init(Vector2.zero, 0, _damagePerSecond, _expansionRadius);
             }));
         }
 

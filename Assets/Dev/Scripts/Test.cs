@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using Dev.Infrastructure;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Dev
@@ -20,4 +21,6 @@ namespace Dev
         }
         
     }
+
+   
 }

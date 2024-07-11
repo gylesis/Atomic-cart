@@ -9,64 +9,26 @@ namespace Dev.PlayerLogic
     public class PlayersDataService : NetworkContext
     {
         private PlayersSpawner _playersSpawner;
-
-        [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, PlayerData> PlayersData { get; }
-
-        public static PlayersDataService Instance { get; private set; }
-
+        private SessionStateService _sessionStateService;
+        
         public PlayersSpawner PlayersSpawner => _playersSpawner;
 
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-        }
-
         [Inject]
-        public void Init(PlayersSpawner playersSpawner)
+        public void Init(SessionStateService sessionStateService, PlayersSpawner playersSpawner)
         {
             _playersSpawner = playersSpawner;
-        }
-
-        protected override void OnInjectCompleted()
-        {
-            base.OnInjectCompleted();
-            
-            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseSpawned));
-            _playersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
-        }
-
-        public bool HasData(PlayerRef playerRef)
-        {
-            return PlayersData.ContainsKey(playerRef);
+            _sessionStateService = sessionStateService;
         }
         
         public string GetNickname(PlayerRef playerRef)
         {
-            return PlayersData[playerRef].Name.Value;
-        }
-
-        private void OnPlayerBaseSpawned(PlayerSpawnEventContext spawnEventContext)
-        {
-            PlayerRef playerRef = spawnEventContext.PlayerRef;
-
-            var playerData = new PlayerData(playerRef, $"Player {playerRef.PlayerId}");
-
-            PlayersData.Add(playerRef, playerData);
+            return _sessionStateService.GetSessionPlayer(playerRef).Name;
         }
         
-        private void OnPlayerDespawned(PlayerRef playerRef)
-        {
-            PlayersData.Remove(playerRef);
-        }
-
         public PlayerCharacter GetPlayer(PlayerRef playerRef)
         {
             return _playersSpawner.GetPlayer(playerRef);
         }
-        
         
         public PlayerBase GetPlayerBase(PlayerRef playerRef)
         {
@@ -86,15 +48,4 @@ namespace Dev.PlayerLogic
         public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;
     }
     
-    public struct PlayerData : INetworkStruct
-    {
-        [Networked] public NetworkString<_16> Name { get; set; }
-        [Networked] public PlayerRef PlayerRef { get; set; }
-
-        public PlayerData(PlayerRef playerRef, string name)
-        {
-            PlayerRef = playerRef;
-            Name = name;
-        }
-    }
 }

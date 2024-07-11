@@ -1,7 +1,6 @@
 ﻿using Dev.BotsLogic;
 using Dev.Levels;
 using Dev.PlayerLogic;
-using Fusion;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,11 +12,11 @@ namespace Dev.Weapons.Guns
     {
         protected float _explosionRadius;
 
-        public void Init(Vector3 moveDirection, float force, int damage, PlayerRef owner, float explosionRadius)
+        public void Init(Vector3 moveDirection, float force, int damage, float explosionRadius)
         {
-            SetExplosionRadius(explosionRadius);
+            SetExplosionRadius(explosionRadius);    
 
-            Init(moveDirection, force, damage, Owner);
+            Init(moveDirection, force, damage, explosionRadius);
         }
 
         public void SetExplosionRadius(float explosionRadius)
@@ -53,7 +52,7 @@ namespace Dev.Weapons.Guns
         {   
             Vector3 pos = transform.position;   
 
-            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Runner, Owner, explosionRadius, Damage, pos, _hitMask, false);
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Owner, explosionRadius, Damage, pos, false);
             
             _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);
         }

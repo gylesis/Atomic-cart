@@ -2806,7 +2806,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.29999998
+  m_VoxelSize: 0.4
   m_BuildHeightMesh: 0
   m_HideEditorLogs: 0
   m_NavMeshData: {fileID: 0}
@@ -2970,7 +2970,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfeff37e46094077a11390241b7fe9df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _cartVelocity: 2
@@ -3579,7 +3578,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2082234028
   ObjectInterest: 1
-  Flags: 264449
+  Flags: 133377
   NestedObjects:
   - {fileID: 1982587516579225310}
   - {fileID: 158154952720298998}
@@ -3620,7 +3619,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13227e818b7c4bfd829b4d0983dbfa54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _botMovePointsParent: {fileID: 4436542059390838756}

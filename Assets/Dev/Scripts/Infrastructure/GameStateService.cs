@@ -57,6 +57,8 @@ namespace Dev.Infrastructure
 
         private void OnPointReached()
         {
+            if (Runner.IsSharedModeMasterClient == false) return;
+            
             if (_cartPathService.IsOnLastPoint == false) return;
 
             _timeService.SetPauseState(true);

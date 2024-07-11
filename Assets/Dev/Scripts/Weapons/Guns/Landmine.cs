@@ -55,7 +55,7 @@ namespace Dev.Weapons
             
             if(_hasAnyTarget) return;
             
-            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _searchRadius, LayerMask.GetMask("Player", "Bot"), out var colliders);
+            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _searchRadius, out var colliders);
 
             if (overlapSphere)
             {

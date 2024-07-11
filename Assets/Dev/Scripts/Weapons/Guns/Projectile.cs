@@ -16,7 +16,6 @@ namespace Dev.Weapons.Guns
         [SerializeField] protected Transform _view;
         [SerializeField] protected NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] protected float _overlapRadius = 1f;
-        [SerializeField] protected LayerMask _hitMask;
 
         /// <summary>
         /// Do projectile need to register collision while flying?
@@ -35,7 +34,8 @@ namespace Dev.Weapons.Guns
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
 
-
+        [Networked] public NetworkBool Collided { get; set; }
+    
         [Inject]
         private void Construct(HitsProcessor hitsProcessor)
         {   
@@ -55,9 +55,8 @@ namespace Dev.Weapons.Guns
             Owner = owner;
         }
 
-        public void Init(Vector2 moveDirection, float force, int damage, SessionPlayer owner)
-        {
-            Owner = owner; 
+        public void Init(Vector2 moveDirection, float force, int damage)
+        {   
             Damage = damage;
             Force = force;
             MoveDirection = moveDirection;
@@ -67,7 +66,7 @@ namespace Dev.Weapons.Guns
 
         private void OnHit(HitContext hitContext)
         {
-            if (hitContext.DamagableType == DamagableType.Obstacle || hitContext.DamagableType == DamagableType.ObstacleWithHealth)
+            if (hitContext.DamagableType is DamagableType.Obstacle or DamagableType.ObstacleWithHealth)
             {
                 OnObstacleHit(hitContext.GameObject.GetComponent<Obstacle>());
             }
@@ -94,17 +93,25 @@ namespace Dev.Weapons.Guns
         {
             _view.gameObject.SetActive(isEnabled);
         }
+        
+        public void SetViewStateLocal(bool isEnabled)    
+        {
+            _view.gameObject.SetActive(isEnabled);
+        }
 
+    
         public override void FixedUpdateNetwork()
         {
+            if(Object == null) return;
+            
             if (CheckForHitsWhileMoving)
             {
-                ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Runner, this, transform.position, _overlapRadius, Damage, _hitMask, false, Owner);
+                ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Object.Id, transform.position, _overlapRadius, Damage, false, Owner);
 
                 _hitsProcessor.ProcessHitCollision(hitCollisionContext);
             }
 
-            if (HasStateAuthority == false) return;
+            //if (HasStateAuthority == false) return;
 
             transform.position = Vector3.MoveTowards(transform.position, transform.position + (Vector3)MoveDirection,
                 Runner.DeltaTime * Force);

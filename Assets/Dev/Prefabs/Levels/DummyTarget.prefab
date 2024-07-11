@@ -52,7 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2445456018
   ObjectInterest: 1
-  Flags: 3073
+  Flags: 134145
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3282270796135108721}
@@ -68,7 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1b478d27fbd4e559992db605d83e40a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
 --- !u!58 &2372932094148299828

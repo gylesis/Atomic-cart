@@ -52,6 +52,8 @@ namespace Dev.PlayerLogic
 
         private void OnPointReached()
         {
+            if (Runner.IsSharedModeMasterClient == false) return;
+            
             Debug.Log($"On point reached");
             TeamSide teamToCapturePoints = _cartPathService.TeamToCapturePoints;
 

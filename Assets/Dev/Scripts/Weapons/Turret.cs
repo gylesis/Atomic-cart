@@ -18,20 +18,18 @@ namespace Dev.Weapons
         [SerializeField] private float _detectionRadius = 15;
         [SerializeField] private LayerMask _playerLayer;
         [SerializeField] private TurretView _turretView;
-
         [SerializeField] private float _haoticDirectionSpeed = 0.5f;
         
         private SessionPlayer _owner;
-        private TeamsService _teamsService;
         private TeamSide _ownerTeamSide;
+        private TickTimer _directionChooseTimer;
+        private Vector2 _direction;
 
+        private TeamsService _teamsService;
+        
         [Networked] private NetworkObject Target { get; set; }
 
-        private TickTimer _directionChooseTimer;
-        private Vector2 _direction; 
-
         public Subject<Unit> ToDie { get; } = new Subject<Unit>();
-    
         private bool HasTarget => Target != null;
         
         [Inject]
@@ -58,7 +56,7 @@ namespace Dev.Weapons
         
         private void SearchForTargets()
         {
-            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _detectionRadius, _playerLayer, out var colliders);
+            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _detectionRadius, out var colliders);
 
             bool targetFound = false;
             

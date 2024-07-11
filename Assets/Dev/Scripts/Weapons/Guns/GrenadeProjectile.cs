@@ -20,7 +20,7 @@ namespace Dev.Weapons.Guns
         [Networked] private Vector3 OriginSize {get; set;}
 
             
-        public void Init(Vector3 moveDirection, float force, int damage, PlayerRef owner, float explosionRadius, Vector2 targetPos, float flyTime)
+        public void Init(Vector3 moveDirection, float force, int damage, float explosionRadius, Vector2 targetPos, float flyTime)
         {
             FlyTargetTime = flyTime;
             _originPos = transform.position;
@@ -31,7 +31,7 @@ namespace Dev.Weapons.Guns
             TargetSize = View.localScale * 2;
             OriginSize = View.localScale;
             
-            Init(moveDirection, force, damage, owner, explosionRadius);
+            Init(moveDirection, force, damage, explosionRadius);
         }
 
         public override void FixedUpdateNetwork()

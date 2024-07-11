@@ -43,6 +43,8 @@ namespace Dev.PlayerLogic
 
         private void OnBotSpawned(Bot bot)
         {
+            if(Runner.IsSharedModeMasterClient == false) return;
+            
             PlayerScoreList.Add(new PlayerScoreData(_sessionStateService.GetSessionPlayer(bot)));
             
             RPC_UpdateScore();
@@ -50,6 +52,8 @@ namespace Dev.PlayerLogic
 
         private void OnBotDespawned(Bot bot)
         {
+            if(Runner.IsSharedModeMasterClient == false) return;
+            
             if (PlayerScoreList.Any(x => x.SessionPlayer.Id == bot.Object.Id))
             {
                 PlayerScoreList.Remove(PlayerScoreList.First(x => x.SessionPlayer.Id == bot.Object.Id));
@@ -60,9 +64,9 @@ namespace Dev.PlayerLogic
 
         private async void OnPlayerSpawned(PlayerSpawnEventContext playerSpawnData)
         {
-            await Task.Delay(500);
-            
             if(Runner.IsSharedModeMasterClient == false) return;
+            
+            await Task.Delay(500);
             
             PlayerRef playerRef = playerSpawnData.PlayerRef;
 

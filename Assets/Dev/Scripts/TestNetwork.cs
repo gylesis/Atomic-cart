@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Fusion;
 using UnityEngine;
@@ -10,10 +12,13 @@ namespace Dev
     public class TestNetwork : NetworkContext
     {
         [Networked, Capacity(999)] private NetworkLinkedList<int> Numbers { get; }
+
+        [SerializeField] private TestObject _testObject;
+        
         
         private bool _init;
 
-        private void Awake()
+        private async void Awake()
         {
             var startGameArgs = new StartGameArgs();
             startGameArgs.GameMode = GameMode.Shared;
@@ -21,12 +26,23 @@ namespace Dev
             startGameArgs.SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>();
             
             FindObjectOfType<NetworkRunner>().StartGame(startGameArgs);
+
+          
         }
 
-        public override void Spawned()
+        public async override void Spawned()
         {
             _init = true;
-            Object.ReleaseStateAuthority();
+            //Object.ReleaseStateAuthority();
+            
+            TestObject obj1 = Runner.Spawn(_testObject, onBeforeSpawned: (runner, o) =>
+            {
+                o.GetBehaviour<TestObject>().Setup(50);
+            });
+            
+            await UniTask.DelayFrame(5);
+
+            Instantiate(obj1);
         }
 
         private void OnGUI()
@@ -35,7 +51,6 @@ namespace Dev
             
             GUI.Label(new Rect(300, 100, 100, 100), HasStateAuthority ? "Is owner" : "Not owner");
             GUI.Label(new Rect(300, 200, 100, 100), Runner.IsSharedModeMasterClient ? "Is master client" : "Isn't master client");
-            
             
             if (GUI.Button(new Rect(100, 100, 100, 100) ,"Add"))
             {
@@ -54,7 +69,7 @@ namespace Dev
            // GUI.Label(new Rect(150, 200, 100, 100), $"{Num}");
         }
 
-        [Rpc]
+       // [Rpc]
         private void RPC_AddNum(bool toAdd)
         {
             if (toAdd)

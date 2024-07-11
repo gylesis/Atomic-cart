@@ -25,7 +25,7 @@ namespace Dev.Weapons.Guns
 
                     BulletHitOverlapRadius = projectile.OverlapRadius;
                     
-                    projectile.Init(direction, ProjectileSpeed, Damage, Object.InputAuthority, ExplosionRadius);
+                    projectile.Init(direction, ProjectileSpeed, Damage, ExplosionRadius);
 
                     OnProjectileBeforeSpawned(projectile);
                 });

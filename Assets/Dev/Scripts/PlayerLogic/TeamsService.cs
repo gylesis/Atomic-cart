@@ -17,7 +17,7 @@ namespace Dev.PlayerLogic
         {
             //Debug.Log($"SDFs");
             
-            if (HasStateAuthority == false) return;
+            if (Runner.IsSharedModeMasterClient == false) return;
 
             var blueTeam = new Team(TeamSide.Blue);
             var redTeam = new Team(TeamSide.Red);
@@ -58,7 +58,8 @@ namespace Dev.PlayerLogic
             return GetTeamByMember(teamMember).TeamSide;
         }
         
-        public void AssignForTeam(TeamMember teamMember, TeamSide teamSide)
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_AssignForTeam(TeamMember teamMember, TeamSide teamSide)
         {
             Team team = GetTeam(teamSide);
             int indexOf = Teams.IndexOf(team);
@@ -68,7 +69,8 @@ namespace Dev.PlayerLogic
             Teams.Set(indexOf, team);
         }
 
-        public void RemoveFromTeam(TeamMember teamMember)
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_RemoveFromTeam(TeamMember teamMember)
         {
             Team team = GetTeamByMember(teamMember);
             int indexOf = Teams.IndexOf(team);
@@ -85,14 +87,14 @@ namespace Dev.PlayerLogic
 
             foreach (TeamMember blueTeamPlayer in blueTeam.Members)
             {   
-                RemoveFromTeam(blueTeamPlayer);
-                AssignForTeam(blueTeamPlayer, TeamSide.Red);
+                RPC_RemoveFromTeam(blueTeamPlayer);
+                RPC_AssignForTeam(blueTeamPlayer, TeamSide.Red);
             }
 
             foreach (TeamMember redTeamPlayer in redTeam.Members)
             {
-                RemoveFromTeam(redTeamPlayer);
-                AssignForTeam(redTeamPlayer, TeamSide.Blue);
+                RPC_RemoveFromTeam(redTeamPlayer);
+                RPC_AssignForTeam(redTeamPlayer, TeamSide.Blue);
             }
         }
 

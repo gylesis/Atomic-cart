@@ -16,7 +16,7 @@ namespace Dev.Weapons
         [SerializeField] private Transform _weaponParent;
 
         private PlayerCharacter _playerCharacter;
-        private WeaponProvider _weaponProvider;
+       // private WeaponProvider _weaponProvider;
 
         public Transform WeaponParent => _weaponParent;
         public int WeaponsAmount => Weapons.Count;
@@ -53,7 +53,7 @@ namespace Dev.Weapons
                 weap.transform.parent = WeaponParent;
             }
 
-            _weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
+            //_weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
 
         [Rpc]
@@ -65,7 +65,7 @@ namespace Dev.Weapons
 
         public void Init(WeaponSetupContext weaponSetupContext)
         {
-            _weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.WeaponType, true);
+            //_weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.WeaponType, true);
         }
 
         public bool HasAnyWeapon => Weapons.Count > 0 && CurrentWeapon != null;

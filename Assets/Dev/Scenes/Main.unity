@@ -416,7 +416,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25447c33a9754e78a40ee31f19e6ee9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
 --- !u!114 &54623242
@@ -433,7 +432,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1383684799
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 54623241}
@@ -489,7 +488,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4bbe275d6144cd845b077fbb6579f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 0
   _timeText: {fileID: 488147168}
@@ -507,7 +505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 691773012
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 101580044}
@@ -732,7 +730,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3171008378
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 273665697}
@@ -748,7 +746,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 225d153b53b48074e99ebd8f3ab31b7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!1 &274015265
@@ -920,7 +917,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7e924f3fd242cc8438872dbc1f31e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _gameTimeView: {fileID: 101580044}
@@ -946,7 +942,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2230170232
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 288897669}
@@ -1126,7 +1122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1234252703
   ObjectInterest: 1
-  Flags: 264705
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 388949244}
@@ -1157,7 +1153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec52a7f071d0e2f4ea54749917acc1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _networkRunner: {fileID: 1268234257}
@@ -2251,7 +2246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3602583159
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 727226721}
@@ -2267,7 +2262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10f0aca303e31e54f86e720343798561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _blueScoreText: {fileID: 4060028552756506391}
@@ -2317,7 +2311,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c91083868c4db78a75cd70ccbdd6f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!114 &731713281
@@ -2334,7 +2327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2451163527
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 731713280}
@@ -2385,7 +2378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3316539943
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 790960263}
@@ -2401,7 +2394,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c67cae73e5414d2fbab790499d65e2e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!1 &793678755
@@ -2758,7 +2750,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1888086572
   ObjectInterest: 1
-  Flags: 264705
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 848995484}
@@ -2774,7 +2766,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fab73c6a3d018d45aba277702019ae9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!1 &856067263
@@ -2823,68 +2814,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _worldTextPrefab: {fileID: 6419785139149661179, guid: 177ad050e896fd644bd52afd4e167557, type: 3}
   _damageTextColor: {r: 1, g: 0, b: 0, a: 1}
---- !u!1 &927926857
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 927926858}
-  - component: {fileID: 927926860}
-  - component: {fileID: 927926859}
-  m_Layer: 0
-  m_Name: BotsHealthService
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &927926858
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 927926857}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1395464432}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &927926859
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 927926857}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d48ed1b4c0a43b4a6cbe340f38adcf5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &927926860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 927926857}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 1126012465
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours: []
 --- !u!1 &931003128
 GameObject:
   m_ObjectHideFlags: 0
@@ -2915,7 +2844,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc37f83b4da480489050bddbb6e2ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _mainCamera: {fileID: 519420031}
@@ -2933,7 +2861,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1741699909
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 931003129}
@@ -3218,7 +3146,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50177c1a3f244eb7b704fd9a0cd3bd9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _CurrentLevel: {fileID: 0}
@@ -3236,7 +3163,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2530651185
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1139585698}
@@ -3303,7 +3230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2255845404
   ObjectInterest: 1
-  Flags: 2561
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1179362383}
@@ -3319,7 +3246,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 239b805bd8b871e419ab7884f85b9cd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!114 &1192389097 stripped
@@ -3665,7 +3591,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 634f587e0cdd4c61a8492a0affc0e29f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _botPrefab: {fileID: 7619175838533121882, guid: c43f212528146734cb9face32caa2409, type: 3}
@@ -3684,7 +3609,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1848506944
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1332757292}
@@ -3744,7 +3669,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f0e3ac9407746ed88d805b6806bf627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
 --- !u!114 &1354313791
@@ -3761,7 +3685,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 4125636083
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1354313790}
@@ -3860,12 +3784,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 388949243}
+  - {fileID: 856067264}
   - {fileID: 1268234258}
+  - {fileID: 388949243}
   - {fileID: 1172855483}
   - {fileID: 931003131}
   - {fileID: 1693408547}
-  - {fileID: 1901119632}
   - {fileID: 2082067707}
   - {fileID: 1139585697}
   - {fileID: 273665694}
@@ -3873,12 +3797,10 @@ Transform:
   - {fileID: 848995481}
   - {fileID: 790960260}
   - {fileID: 950226680}
-  - {fileID: 856067264}
   - {fileID: 727226718}
   - {fileID: 1179362380}
   - {fileID: 731713279}
   - {fileID: 1332757291}
-  - {fileID: 927926858}
   - {fileID: 54623240}
   - {fileID: 1690248804}
   - {fileID: 1928949167}
@@ -4839,7 +4761,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a47abf51b344b4384efe5d513bca9bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!114 &1690248806
@@ -4856,7 +4777,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3187546160
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1690248805}
@@ -4890,7 +4811,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e86eeb39f27940f896bebf2d95b58444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _fxContainer: {fileID: 11400000, guid: cc4edc5e3b303e14aa794fe792946f45, type: 2}
@@ -4923,7 +4843,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1042056825
   ObjectInterest: 1
-  Flags: 264705
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1693408546}
@@ -5463,7 +5383,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d6a6512b524a55baa577a297d6e560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _tearGasPrefab: {fileID: 1153973792856026068, guid: 5bde66d69200b1048a3f48ec3b424f6a, type: 3}
@@ -5487,7 +5406,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2626264518
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1812458420}
@@ -5582,7 +5501,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca6410d9bc9c4e43984c2269403d3aec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 0
 --- !u!114 &1854909742
@@ -5768,68 +5686,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1901119631
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1901119632}
-  - component: {fileID: 1901119634}
-  - component: {fileID: 1901119633}
-  m_Layer: 0
-  m_Name: PlayersHealthService
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1901119632
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1901119631}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1395464432}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1901119633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1901119631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aa7210957144bf19fd748ba9ec54dfa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1901119634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1901119631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 2372296770
-  ObjectInterest: 1
-  Flags: 264705
-  NestedObjects: []
-  NetworkedBehaviours: []
 --- !u!1 &1928949166
 GameObject:
   m_ObjectHideFlags: 0
@@ -5875,7 +5731,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c03bf293b31454da9e1a80c9bf90d6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
   _airStrikeBombPrefab: {fileID: 1938022760885984847, guid: 6d511c2a21c520f4aa5e29ece82857b1, type: 3}
@@ -5901,7 +5756,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 4143880608
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1928949168}
@@ -6033,7 +5888,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87e7f476660440128abae4dcdf75272c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 1
   _IsActive:
     _value: 1
 --- !u!114 &2082067709
@@ -6050,7 +5904,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3298954725
   ObjectInterest: 1
-  Flags: 264705
+  Flags: 133633
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2082067708}
@@ -6240,7 +6094,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1161691534502274921, guid: 98fdcca30e86d4a478edf6bf6cbf6893, type: 3}
       propertyPath: Flags
-      value: 264705
+      value: 133633
       objectReference: {fileID: 0}
     - target: {fileID: 1161691534502274921, guid: 98fdcca30e86d4a478edf6bf6cbf6893, type: 3}
       propertyPath: SortKey

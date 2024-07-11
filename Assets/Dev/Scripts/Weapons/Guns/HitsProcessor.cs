@@ -1,4 +1,5 @@
-﻿using Dev.BotsLogic;
+﻿using System;
+using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
@@ -26,23 +27,24 @@ namespace Dev.Weapons.Guns
 
         public void ProcessHitCollision(ProcessHitCollisionContext context)
         {
-            Vector3 pos = context.OverlapPos;
-            NetworkRunner runner = context.NetworkRunner;
-            float overlapRadius = context.Radius;
-            LayerMask hitMask = context.HitMask;
-            int damage = context.Damage;
-            bool isOwnerBot = context.IsOwnerBot;
-            Projectile projectile = context.Projectile;
-            TeamSide ownerTeamSide = context.OwnerTeamSide;
-            bool isHitFromServer = context.IsHitFromServer;
+            NetworkRunner runner = Runner;
             SessionPlayer shooter = context.Owner;
+            bool isHitFromServer = context.IsHitFromServer;
+            TeamSide ownerTeamSide = context.OwnerTeamSide;
+            bool isOwnerBot = context.IsOwnerBot;
 
-            var overlapSphere = Extensions.OverlapCircle(runner, pos, overlapRadius, hitMask, out var colliders);
+            Vector3 pos = context.OverlapPos;
+            float overlapRadius = context.Radius;
+            int damage = context.Damage;
+            
+            var overlapSphere = Extensions.OverlapCircle(runner, pos, overlapRadius, out var colliders);
 
             if (overlapSphere == false) return;
             
-            bool needToDestroy = false;
-
+            Projectile projectile = Runner.FindObject(context.ProjectileId).GetComponent<Projectile>();
+            NetworkObject hitObject = null;
+            DamagableType damagableType = DamagableType.DummyTarget;
+            
             foreach (Collider2D cldr in colliders)
             {
                 bool isDamagable = cldr.TryGetComponent<IDamageable>(out var damagable);
@@ -55,6 +57,8 @@ namespace Dev.Weapons.Guns
                 bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
                 bool isPlayer = damagable.DamageId == DamagableType.Player;
 
+                damagableType = damagable.DamageId;
+                
                 if (isPlayer)
                 {
                     PlayerCharacter targetPlayer = damagable as PlayerCharacter;
@@ -64,20 +68,14 @@ namespace Dev.Weapons.Guns
 
                     if (ownerTeamSide == targetTeamSide) continue;
 
-                    OnHit(targetPlayer.Object, shooter, damage, DamagableType.Player, projectile, isHitFromServer);
-                    needToDestroy = true;
-
+                    hitObject = targetPlayer.Object;
                     break;
                 }
 
                 if (isObstacleWithHealth)
                 {
                     NetworkObject networkObject = cldr.GetComponent<NetworkObject>();
-
-                    OnHit(networkObject, shooter, damage, DamagableType.ObstacleWithHealth,
-                        projectile, isHitFromServer);
-
-                    needToDestroy = true;
+                    hitObject = networkObject;
                     break;
                 }
 
@@ -85,19 +83,14 @@ namespace Dev.Weapons.Guns
                 {
                     NetworkObject networkObject = cldr.GetComponent<NetworkObject>();
 
-                    OnHit(networkObject, shooter, damage, DamagableType.Obstacle, projectile, isHitFromServer);
-
-                    needToDestroy = true;
+                    hitObject = networkObject;
                     break;
                 }
 
                 if (isDummyTarget)
                 {
                     DummyTarget dummyTarget = damagable as DummyTarget;
-
-                    OnHit(dummyTarget.Object, shooter, damage, DamagableType.Bot, projectile, isHitFromServer);
-                    needToDestroy = true;
-
+                    hitObject = dummyTarget.Object;
                     break;
                 }
 
@@ -109,24 +102,39 @@ namespace Dev.Weapons.Guns
 
                     if (ownerTeamSide != botTeam)
                     {
-                        OnHit(targetBot.Object, shooter, damage, DamagableType.Bot, projectile, isHitFromServer);
-                        needToDestroy = true;
+                        hitObject = targetBot.Object;
                         break;
                     }
                 }
             }
 
-            if (needToDestroy)
+            bool isProjectileHitSomething = hitObject != null;
+            
+            if (isProjectileHitSomething)
             {
-                projectile.ToDestroy.OnNext(projectile);
+                if (projectile.Collided == false)
+                {
+                    projectile.Collided = true;
+                    OnHit(hitObject, shooter, damage, damagableType, projectile is ExplosiveProjectile, isHitFromServer);
+                    Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe((l =>
+                    {
+                        projectile.ToDestroy.OnNext(projectile);
+                    }));
+                }
+                else
+                {
+                    projectile.SetViewStateLocal(false);
+                }
+
+               
             }
+
         }
 
-
         private void OnHit(NetworkObject networkObject, SessionPlayer shooter, int damage, DamagableType damagableType,
-                           Projectile projectile, bool isHitFromServer)
+                           bool isExplosionProjectile, bool isHitFromServer)
         {
-            if (damagableType != DamagableType.Obstacle && projectile is ExplosiveProjectile == false)
+            if (damagableType != DamagableType.Obstacle && isExplosionProjectile == false)  
             {
                 ApplyDamageContext damageContext = new ApplyDamageContext();
                 damageContext.IsFromServer = isHitFromServer;
@@ -149,16 +157,22 @@ namespace Dev.Weapons.Guns
 
         public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext)
         {
-            NetworkRunner runner = explodeContext.NetworkRunner;
-            Vector3 pos = explodeContext.ExplosionPos;
-            float explosionRadius = explodeContext.ExplosionRadius;
-            TeamSide ownerTeamSide = explodeContext.OwnerTeamSide;
-            LayerMask hitMask = explodeContext.HitMask;
-            int damage = explodeContext.Damage;
-            SessionPlayer owner = explodeContext.Owner;
-            bool isDamageFromServer = explodeContext.IsDamageFromServer;
+            RPC_ProcessExplodeInternal(explodeContext);
+        }
 
-            var overlapSphere = Extensions.OverlapCircle(runner, pos, explosionRadius, hitMask, out var colliders);
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_ProcessExplodeInternal(ProcessExplodeContext context)
+        {
+            NetworkRunner runner = Runner;
+            SessionPlayer owner = context.Owner;
+            bool isDamageFromServer = context.IsDamageFromServer;
+            TeamSide ownerTeamSide = context.OwnerTeamSide;
+
+            Vector3 pos = context.ExplosionPos;
+            float explosionRadius = context.ExplosionRadius;
+            int damage = context.Damage;
+
+            var overlapSphere = Extensions.OverlapCircle(runner, pos, explosionRadius, out var colliders);
 
             if (overlapSphere == false) return;
             
@@ -240,7 +254,7 @@ namespace Dev.Weapons.Guns
                 }
             }
         }
-
+        
         private void OnExplode(NetworkObject networkObject, SessionPlayer shooter, DamagableType damagableType,
                                int damage, bool isDamageFromServer)
         {

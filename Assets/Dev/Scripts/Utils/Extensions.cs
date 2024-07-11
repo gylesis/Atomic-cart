@@ -136,10 +136,10 @@ namespace Dev.Utils
             return hits.Count > 0;
         }
 
-        public static bool OverlapCircle(NetworkRunner runner, Vector3 pos, float radius, LayerMask layerMask,
+        public static bool OverlapCircle(NetworkRunner runner, Vector3 pos, float radius,
                                          out List<Collider2D> colliders)
         {
-            colliders = new List<Collider2D>();
+            colliders = new List<Collider2D>(); 
 
             var contactFilter2D = new ContactFilter2D();
             // contactFilter2D.layerMask = layerMask;

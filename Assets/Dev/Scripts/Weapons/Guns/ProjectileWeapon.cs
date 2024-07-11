@@ -89,7 +89,8 @@ namespace Dev.Weapons.Guns
         /// <param name="projectile"></param>
         private void OnProjectileDestroy(Projectile projectile)
         {
-            projectile.RPC_SetViewState(false);
+            projectile.SetViewStateLocal(false);
+            //projectile.RPC_SetViewState(false);
             SpawnVFXOnDestroyProjectile(projectile);
             
             //RPC_LOG(Runner.LatestServerTick.Raw);

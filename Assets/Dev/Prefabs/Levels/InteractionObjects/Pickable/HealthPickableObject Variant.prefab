@@ -346,7 +346,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4694232948296534788, guid: 5d3c107d8b81cb14ab39f9b2159d9ac5, type: 3}
       propertyPath: Flags
-      value: 3073
+      value: 134145
       objectReference: {fileID: 0}
     - target: {fileID: 4694232948296534788, guid: 5d3c107d8b81cb14ab39f9b2159d9ac5, type: 3}
       propertyPath: SortKey

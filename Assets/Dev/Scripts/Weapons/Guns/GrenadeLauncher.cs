@@ -25,7 +25,7 @@ namespace Dev.Weapons.Guns
                     
                     Vector2 targetPos = (Vector2) transform.position + (direction * maxDistance);
 
-                    projectile.Init(direction, ProjectileSpeed, Damage, Object.InputAuthority, GrenadeExplosionRadius,
+                    projectile.Init(direction, ProjectileSpeed, Damage, GrenadeExplosionRadius,
                           targetPos, GrenadeFlyTime);
 
                     OnProjectileBeforeSpawned(projectile);

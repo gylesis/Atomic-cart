@@ -35,9 +35,7 @@ namespace Dev.Levels
         {
             MapData levelStaticData = _mapsContainer.MapDatas.First(x =>x.Name == levelName);
     
-            var networkRunner = FindObjectOfType<NetworkRunner>();      
-
-            Level level = networkRunner.Spawn(levelStaticData.Prefab, onBeforeSpawned: (runner, o) =>
+            Level level = Runner.Spawn(levelStaticData.Prefab, onBeforeSpawned: (runner, o) =>
             {
                 DependenciesContainer.Instance.Inject(o.gameObject);
             });

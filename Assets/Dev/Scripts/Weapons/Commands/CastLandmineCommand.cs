@@ -26,8 +26,8 @@ namespace Dev.Weapons
                 Landmine landmine = o.GetComponent<Landmine>();
 
                 landmine.ToDestroy.TakeUntilDestroy(landmine).Subscribe((unit => OnLandmineDestroyed()));
-                
-                landmine.Init(Vector2.zero, 0, 50, _owner);
+                landmine.RPC_SetOwner(_owner);
+                landmine.Init(Vector2.zero, 0, 50);
             });
             
             AllowToCast = false;

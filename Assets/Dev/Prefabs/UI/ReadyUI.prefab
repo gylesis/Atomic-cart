@@ -31,7 +31,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4393316691124452184}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -170,7 +169,6 @@ RectTransform:
   m_Children:
   - {fileID: 4393316690747915917}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -246,7 +244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 748807733
   ObjectInterest: 1
-  Flags: 2305
+  Flags: 264449
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 4393316691124452187}

@@ -81,7 +81,7 @@ namespace Dev.Weapons
 
                 AirStrikeBomb airStrikeBomb = o.GetComponent<AirStrikeBomb>();
                 airStrikeBomb.RPC_SetOwner(owner);
-                airStrikeBomb.Init(Vector2.zero, 0, _miniAirStrikeDamage, _localNetRunner.LocalPlayer, _explosionRadius);
+                airStrikeBomb.Init(Vector2.zero, 0, _miniAirStrikeDamage, _explosionRadius);
 
                 float size = Random.Range(0.8f, 1.2f);
 

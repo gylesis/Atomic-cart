@@ -7,7 +7,6 @@ namespace Dev.Levels
     public class ExplosiveBarrel : ObstacleWithHealth
     {
         [SerializeField] private float _explosionRadius;
-        [SerializeField] private LayerMask _hitMask;
 
         [SerializeField] private int _damage = 30;
         
@@ -22,7 +21,7 @@ namespace Dev.Levels
 
         private void ExplodeAtAndHitPlayers(Vector3 pos) // TODO refactor
         {
-            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Runner,new SessionPlayer(), _explosionRadius, _damage, pos, _hitMask, true);
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext(new SessionPlayer(), _explosionRadius, _damage, pos,  true);
         
             _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);
         }

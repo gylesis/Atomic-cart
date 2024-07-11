@@ -401,6 +401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
+  _testObject: {fileID: 1974318791600238861, guid: dd85b438e6ecfc44bbfa5c685cbdff89, type: 3}
 --- !u!114 &2141041470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,7 +416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 4274581403
   ObjectInterest: 1
-  Flags: 264705
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2141041469}

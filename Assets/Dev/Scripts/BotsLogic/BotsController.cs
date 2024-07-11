@@ -57,7 +57,7 @@ namespace Dev.BotsLogic
 
         private void OnGameRestarted()
         {
-            if(HasStateAuthority == false) return;
+            if (Runner.IsSharedModeMasterClient == false) return;
 
             for (var index = AliveBots.Count - 1; index >= 0; index--)
             {
@@ -70,7 +70,7 @@ namespace Dev.BotsLogic
 
         private void OnLevelLoaded(Level level)
         {
-            if (HasStateAuthority == false) return;
+            if (Runner.IsSharedModeMasterClient == false) return;
             
             SetupBots();
         }
@@ -106,12 +106,12 @@ namespace Dev.BotsLogic
                 
                 bot.View.RPC_SetTeamBannerColor(AtomicConstants.Teams.GetTeamColor(team));
                 
-                _teamsService.AssignForTeam(bot, team);
+                _teamsService.RPC_AssignForTeam(bot, team);
 
                 string id = $"{bot.GetHashCode()}";
                 id = $"{id[^3]}{id[^2]}{id[^1]}";
                 
-                _sessionStateService.AddPlayer(bot.Object.Id, $"Bot{id}", true, team);
+                _sessionStateService.RPC_AddPlayer(bot.Object.Id, $"Bot{id}", true, team);
 
                 _healthObjectsService.RegisterObject(bot.Object, 100);
                 
@@ -127,12 +127,12 @@ namespace Dev.BotsLogic
 
         public void DespawnBot(Bot bot, bool spawnAfterDeath = true, float despawnDelay = 1) // TODO refactor, need to make pool of bots
         {
-            _sessionStateService.RemovePlayer(bot.Object.Id);
+            _sessionStateService.RPC_RemovePlayer(bot.Object.Id);
             TeamSide teamSide = bot.BotData.TeamSide;
                 
             BotDeSpawned.OnNext(bot);  
             
-            _teamsService.RemoveFromTeam(bot);
+            _teamsService.RPC_RemoveFromTeam(bot);
 
             Observable.Timer(TimeSpan.FromSeconds(despawnDelay)).Subscribe((l =>
             {

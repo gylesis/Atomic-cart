@@ -468,7 +468,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d61f48cf404914b95ffcda2c911b7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _teamBanner: {fileID: 1503964216816281309}
@@ -541,7 +540,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2566534570
   ObjectInterest: 1
-  Flags: 264449
+  Flags: 133377
   NestedObjects:
   - {fileID: 205305111613894408}
   - {fileID: 3337809278069626669}
@@ -563,7 +562,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee053e2f94e43efb2a4d2971f9fb2cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
@@ -667,7 +665,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b89146b2e00462db5e792a17c40c56a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _collider: {fileID: 8629133303523588648}
@@ -922,6 +919,10 @@ PrefabInstance:
     - target: {fileID: 1997378482866777127, guid: 72807d6fe6787ab4292cad478db34cb7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7119570324272307896, guid: 72807d6fe6787ab4292cad478db34cb7, type: 3}
+      propertyPath: Flags
+      value: 133377
       objectReference: {fileID: 0}
     - target: {fileID: 7119570324272307896, guid: 72807d6fe6787ab4292cad478db34cb7, type: 3}
       propertyPath: SortKey

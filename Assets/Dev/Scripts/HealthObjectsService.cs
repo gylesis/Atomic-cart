@@ -55,22 +55,23 @@ namespace Dev
             RPC_InternalRegisterObject(networkObject, health);
         }
 
-        public void RegisterPlayer(PlayerCharacter playerCharacter)
+        public void RegisterPlayer(PlayerRef playerRef)
         {
-            if (Runner.IsSharedModeMasterClient == false) return;
-                
-            PlayerRef playerRef = playerCharacter.Object.InputAuthority;
+            RPC_RegisterPlayerInternal(playerRef);
+        }   
 
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_RegisterPlayerInternal(PlayerRef playerRef)
+        {
             CharacterClass playerCharacterClass = _playersDataService.GetPlayerCharacterClass(playerRef);
+            CharacterData characterData = _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
 
-            CharacterData characterData =
-                _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
+            PlayerCharacter playerCharacter = _playersDataService.GetPlayer(playerRef);
 
             RPC_InternalRegisterObject(playerCharacter.Object, characterData.CharacterStats.Health);
         }
             
-
-        [Rpc]
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPC_InternalRegisterObject(NetworkObject networkObject, int health)
         {
             if (HasData(networkObject.Id))
@@ -88,12 +89,10 @@ namespace Dev
             Debug.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
         }
 
-        [Rpc]
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_UnregisterObject(NetworkObject networkObject)
         {
             if (Runner == null) return;
-
-            if (Runner.IsSharedModeMasterClient == false) return;
 
             if (HasData(networkObject.Id))
             {
@@ -115,9 +114,6 @@ namespace Dev
             SessionPlayer shooter = damageContext.Shooter;  
             bool isOwnerBot = damageContext.Shooter.IsBot;
 
-
-           
-            
             bool isTargetDamagable = victimObj.TryGetComponent<IDamageable>(out var damagable);
 
             if (isTargetDamagable == false)
