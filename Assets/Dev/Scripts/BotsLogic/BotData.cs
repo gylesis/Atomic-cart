@@ -6,7 +6,10 @@ namespace Dev.BotsLogic
 {
     public struct BotData : INetworkStruct
     {
+        [Networked]
         public SessionPlayer SessionPlayer { get; private set; }
+        
+        [Networked]
         public CharacterClass CharacterClass { get; private set; }
 
         public TeamSide TeamSide => SessionPlayer.TeamSide;

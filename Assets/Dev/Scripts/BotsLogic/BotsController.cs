@@ -62,7 +62,7 @@ namespace Dev.BotsLogic
             for (var index = AliveBots.Count - 1; index >= 0; index--)
             {
                 var bot = AliveBots[index];
-                RespawnBot(bot);
+                RPC_RespawnBot(bot);
             }
             
             SetupBots();
@@ -149,7 +149,8 @@ namespace Dev.BotsLogic
 
         }
 
-        public void RespawnBot(Bot bot)
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_RespawnBot(Bot bot)
         {   
             _healthObjectsService.RestoreHealth(bot.Object);
             
@@ -158,7 +159,7 @@ namespace Dev.BotsLogic
             Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
 
             bot.RPC_OnDeath(false);
-            bot.View.transform.DOScale(1, 0.5f);
+            bot.View.RPC_Scale(1);
             bot.Alive = true;
             bot.transform.position = spawnPos;
         }

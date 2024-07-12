@@ -1,4 +1,5 @@
 ﻿using Dev.Infrastructure;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -26,6 +27,12 @@ namespace Dev.BotsLogic
         private void UpdateTeamBannerColor()
         {
             _teamBanner.color = TeamBannerColor;
+        }
+
+        [Rpc]
+        public void RPC_Scale(float target)
+        {
+            transform.DOScale(target, 0.5f);
         }
     }
 }

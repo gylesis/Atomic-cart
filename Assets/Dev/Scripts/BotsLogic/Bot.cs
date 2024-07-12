@@ -37,7 +37,7 @@ namespace Dev.BotsLogic
         [SerializeField] private float _moveDistance = 10;
         [SerializeField] private BotView _view;
 
-        private BotData _botData;
+        
         private Vector3 _movePointPos;
         private int _currentPointIndex = 0;
         private List<BotMovePoint> _movePoints;
@@ -49,17 +49,19 @@ namespace Dev.BotsLogic
 
         [Networked] private NetworkObject Target { get; set; }
         [Networked] private NetworkBool IsFrozen { get; set; }
+        [Networked] public BotData BotData { get; private set; }
 
-        public BotData BotData => _botData;
         public BotView View => _view;
         public TeamSide BotTeamSide => BotData.TeamSide;
 
         public void Init(BotData botData, List<BotMovePoint> movePoints)
         {
+            _navMeshAgent.updateUpAxis = false;
+            _navMeshAgent.updateRotation = false;
             _movePoints = movePoints;
-            _botData = botData;
+            BotData = botData;
 
-            _weaponController.RPC_SetOwner(_botData.SessionPlayer);
+            _weaponController.RPC_SetOwner(BotData.SessionPlayer);
         }
 
         [Inject]
