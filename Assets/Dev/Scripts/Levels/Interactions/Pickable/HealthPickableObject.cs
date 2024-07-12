@@ -23,6 +23,14 @@ namespace Dev.Levels.Interactions.Pickable
         
         protected override void OnAutoInteraction(PlayerRef interactedPlayer)
         {
+            bool isFullHealth = _healthObjectsService.IsFullHealth(_playersDataService.GetPlayerCharacterId(interactedPlayer));
+
+            if (isFullHealth)
+            {
+                Debug.Log($"Player has full hp, skipping health box");
+                return;
+            }
+            
             base.OnAutoInteraction(interactedPlayer);
             _healthObjectsService.GainHealthToPlayer(interactedPlayer, _healthRestoreAmount);
 

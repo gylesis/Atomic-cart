@@ -62,7 +62,7 @@ namespace Dev.Weapons
         {
             if(HasStateAuthority == false) return;
 
-            await UniTask.Delay(100);
+            await UniTask.Delay(200);
             
             TeamSide team = _playerBase.TeamSide;
 

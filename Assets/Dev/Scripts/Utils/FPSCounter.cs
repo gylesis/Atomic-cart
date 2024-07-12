@@ -8,12 +8,16 @@ namespace Dev.Utils
     public class FPSCounter : MonoBehaviour
     {
         [SerializeField] private int _targetFPS = -1;
-            
+
         private readonly Queue<float> _fpsValues = new Queue<float>();
-        
+
         private void Awake()
         {
+#if UNITY_EDITOR
+            Application.targetFrameRate = -1;
+#else
             Application.targetFrameRate = _targetFPS;
+#endif
         }
 
         private void OnGUI()
@@ -40,12 +44,11 @@ namespace Dev.Utils
             guiStyle.fontSize = 35;
             guiStyle.fontStyle = FontStyle.Bold;
             guiStyle.active = new GUIStyleState
-            { 
+            {
                 textColor = Color.white
             };
-            
-            GUI.Label(new Rect(400,50, 100,50), $"FPS:{(int)averageFPS}", guiStyle);
-        }
 
+            GUI.Label(new Rect(400, 50, 100, 50), $"FPS:{(int)averageFPS}", guiStyle);
+        }
     }
 }

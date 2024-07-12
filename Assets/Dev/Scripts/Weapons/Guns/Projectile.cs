@@ -87,7 +87,6 @@ namespace Dev.Weapons.Guns
             }
         }
 
-
         [Rpc]
         public void RPC_SetViewState(bool isEnabled)    
         {
@@ -98,7 +97,6 @@ namespace Dev.Weapons.Guns
         {
             _view.gameObject.SetActive(isEnabled);
         }
-
     
         public override void FixedUpdateNetwork()
         {
@@ -121,16 +119,34 @@ namespace Dev.Weapons.Guns
         {
             base.Render();
 
-            if (IsProxy)
-            {
-                bool hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius);
+            RenderBulletCollisionOnProxies();
+        }
 
+        private void RenderBulletCollisionOnProxies()
+        {
+            if (IsProxy == false) return;
+
+            if (Owner.IsBot)
+            {
+                bool hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Id);
+             
                 if (hitSomething)
                 {
                     SetViewStateLocal(false);
                 }
             }
-           
+            else
+            {
+                bool hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Owner);
+             
+                if (hitSomething)
+                {
+                    SetViewStateLocal(false);
+                }
+            }
+            
+            
+            
         }
 
         protected virtual void OnObstacleHit(Obstacle obstacle) { }

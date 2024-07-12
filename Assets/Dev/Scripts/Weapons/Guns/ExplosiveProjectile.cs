@@ -16,7 +16,7 @@ namespace Dev.Weapons.Guns
         {
             SetExplosionRadius(explosionRadius);    
 
-            Init(moveDirection, force, damage, explosionRadius);
+            Init(moveDirection, force, damage);
         }
 
         public void SetExplosionRadius(float explosionRadius)

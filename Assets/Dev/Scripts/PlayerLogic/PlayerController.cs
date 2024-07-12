@@ -31,7 +31,7 @@ namespace Dev.PlayerLogic
         
         private PlayerCharacter PlayerCharacter => _playerBase.Character;
         private WeaponController _weaponController => PlayerCharacter.WeaponController;
-        private PlayerView PlayerView => PlayerCharacter.PlayerView;
+        private PlayerView PlayerView => PlayerCharacter?.PlayerView;
 
         public bool AllowToMove { get; private set; } = true;
         public bool AllowToShoot { get; private set; } = true;
@@ -102,6 +102,8 @@ namespace Dev.PlayerLogic
         {
             if (HasStateAuthority == false) return;
 
+            if(PlayerCharacter == null) return;
+            
             foreach (PlayerInput input in _inputService.BufferedInputs)
             {
                 MoveDirection = input.MoveDirection;
@@ -235,7 +237,7 @@ namespace Dev.PlayerLogic
 
             bool isRight = sign == 1;
 
-            PlayerView.OnMove(moveDirection.magnitude, isRight);
+            PlayerView?.OnMove(moveDirection.magnitude, isRight);
         }
 
         private void AimRotation()

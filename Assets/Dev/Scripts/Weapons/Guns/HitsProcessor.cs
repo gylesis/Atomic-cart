@@ -117,11 +117,11 @@ namespace Dev.Weapons.Guns
             }
         }
 
-        public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius)
+        public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius, PlayerRef originalObjectId)
         {
             var overlapSphere = Extensions.OverlapCircle(runner, pos, radius, out var colliders);
 
-            if (colliders.Count == 0) return false;
+            if (overlapSphere == false) return false;
             
             foreach (Collider2D cldr in colliders)
             {
@@ -129,12 +129,38 @@ namespace Dev.Weapons.Guns
 
                 if (isDamagable)
                 {
+                    if (cldr.GetComponent<NetworkObject>().StateAuthority == originalObjectId)
+                        return false;
+                    
                     return true;
                 }
             }
             
             return false;
         }
+        
+        public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius, NetworkId originalObjectId)
+        {
+            var overlapSphere = Extensions.OverlapCircle(runner, pos, radius, out var colliders);
+
+            if (overlapSphere == false) return false;
+            
+            foreach (Collider2D cldr in colliders)
+            {
+                bool isDamagable = cldr.TryGetComponent<IDamageable>(out var damagable);
+
+                if (isDamagable)
+                {
+                    if (cldr.GetComponent<NetworkObject>().Id == originalObjectId)
+                        return false;
+                    
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
 
         private void OnHit(NetworkObject networkObject, SessionPlayer shooter, int damage, DamagableType damagableType,
                            bool isExplosionProjectile, bool isHitFromServer)
@@ -272,7 +298,7 @@ namespace Dev.Weapons.Guns
                 damageContext.VictimObj = networkObject;
                 damageContext.Shooter = shooter;
 
-                Debug.Log($"Damage from explosion");
+                //Debug.Log($"Damage from explosion");
                 _healthObjectsService.ApplyDamage(damageContext);
             }
         }

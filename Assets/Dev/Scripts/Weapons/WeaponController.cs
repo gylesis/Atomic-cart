@@ -17,25 +17,23 @@ namespace Dev.Weapons
 
         private PlayerCharacter _playerCharacter;
        // private WeaponProvider _weaponProvider;
-
+       
+        public bool AllowToShoot { get; private set; } = true;
+        [HideInInspector, CanBeNull, Networked] public Weapon CurrentWeapon { get; set; }
+        [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
+        [Networked] public SessionPlayer Owner { get; private set; }
+        [Networked] public NetworkBool TeamWasSet { get; private set; }
         public Transform WeaponParent => _weaponParent;
         public int WeaponsAmount => Weapons.Count;
-        [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
-
-        public bool AllowToShoot { get; private set; } = true;
-
-        [HideInInspector, CanBeNull, Networked]
-        public Weapon CurrentWeapon { get; set; }
-
-        public TeamSide OwnerTeamSide => Owner.TeamSide;
-        
-        [Networked] public SessionPlayer Owner { get; private set; }
-        
-        
-        [Networked] public NetworkBool TeamWasSet { get; private set; }
-
         public Vector3 Direction => WeaponParent.up;
+        public TeamSide OwnerTeamSide => Owner.TeamSide;
+        public bool HasAnyWeapon => Weapons.Count > 0 && CurrentWeapon != null;
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();
+
+        public void Init(WeaponSetupContext weaponSetupContext)
+        {
+            //_weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.WeaponType, true);
+        }
 
         public override void Spawned()
         {
@@ -63,12 +61,6 @@ namespace Dev.Weapons
             TeamWasSet = true;
         }
 
-        public void Init(WeaponSetupContext weaponSetupContext)
-        {
-            //_weaponProvider.ProvideWeaponToPlayer(Object.InputAuthority, weaponSetupContext.WeaponType, true);
-        }
-
-        public bool HasAnyWeapon => Weapons.Count > 0 && CurrentWeapon != null;
 
         public bool HasWeapon(WeaponType weaponType)
         {

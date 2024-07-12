@@ -58,8 +58,32 @@ namespace Dev
         public void RegisterPlayer(PlayerRef playerRef)
         {
             RPC_RegisterPlayerInternal(playerRef);
-        }   
+        }
 
+        public int GetHealth(NetworkId id)
+        {
+            if (HasData(id) == false)
+            {
+                Debug.Log($"No data for object with id {id}");
+                return -1;
+            }
+
+            return HealthData.First(x => x.ObjId == id).Health;
+        }
+
+        public bool IsFullHealth(NetworkId id)
+        {
+            if (HasData(id) == false)
+            {
+                Debug.Log($"No data for object with id {id}");
+                return false;
+            }
+
+            ObjectWithHealthData data = HealthData.First(x => x.ObjId == id);
+            
+            return data.Health == data.MaxHealth;
+        }
+        
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPC_RegisterPlayerInternal(PlayerRef playerRef)
         {
@@ -283,7 +307,7 @@ namespace Dev
             dieContext.IsKilledByServer = isDamageFromServer;
             
             bot.Alive = false;
-            bot.View.transform.DOScale(0, 0.5f);
+            bot.View.RPC_Scale(0);
 
             BotDied.OnNext(dieContext);
 
@@ -293,7 +317,7 @@ namespace Dev
 
             Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
             {
-                _botsController.RespawnBot(bot);
+                _botsController.RPC_RespawnBot(bot);
             }));
         }
         
@@ -405,6 +429,7 @@ namespace Dev
         {
             _worldTextProvider.SpawnDamageText(pos, damage, color);
         }
+        
     }
 
     public struct ApplyDamageContext // TODO refactor

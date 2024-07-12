@@ -64,7 +64,6 @@ namespace Dev.Infrastructure
             Container.Bind<WorldTextProvider>().FromInstance(_worldTextProvider).AsSingle();
 
             Container.Bind<SessionStateService>().FromInstance(sessionStateService).AsSingle();
-            Container.Bind<SessionPlayersController>().AsSingle().NonLazy();
             Container.Bind<PlayersScoreService>().FromInstance(_playersScoreService).AsSingle();
             
             BindPlayer();

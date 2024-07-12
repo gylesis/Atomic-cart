@@ -47,6 +47,19 @@ namespace Dev.Infrastructure
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_ChangePlayerId(PlayerRef playerRef, NetworkId newId)
+        {
+            SessionPlayer sessionPlayer = GetSessionPlayer(playerRef);
+    
+            SessionPlayer newSessionPlayer = new SessionPlayer(newId, sessionPlayer.Name, sessionPlayer.IsBot, sessionPlayer.TeamSide,
+                sessionPlayer.Owner);
+
+            SessionPlayer player = Players.First(x => x.Owner == playerRef);
+
+            Players.Set(Players.IndexOf(player), newSessionPlayer);
+        }   
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_RemovePlayer(NetworkId id)
         {
             bool hasPlayer = Players.Any(x => x.Id == id);
@@ -93,7 +106,7 @@ namespace Dev.Infrastructure
                 {
                     Bot bot = _botsController.GetBot(id);
                     
-                    _botsController.RespawnBot(bot);
+                    _botsController.RPC_RespawnBot(bot);
                 }
                 else
                 {
