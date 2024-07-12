@@ -5,9 +5,7 @@ using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.Utils;
-using DG.Tweening;
 using Fusion;
-using NavMeshPlus.Components;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -30,6 +28,8 @@ namespace Dev.BotsLogic
         public Subject<Bot> BotDeSpawned { get; } = new Subject<Bot>();
         
         [Networked, Capacity(8)] public NetworkLinkedList<Bot> AliveBots { get; }
+
+        public List<BotMovePoint> LevelMovePoints => _levelMovePoints;
 
         protected override void Start()
         {
@@ -68,17 +68,27 @@ namespace Dev.BotsLogic
             SetupBots();
         }
 
+        protected override void CorrectState()
+        {
+            base.CorrectState();
+
+            if (LevelService.Instance.CurrentLevel != null)
+            {
+                _levelMovePoints = LevelService.Instance.CurrentLevel.BotMovePoints;
+            }
+        }
+
         private void OnLevelLoaded(Level level)
         {
             if (Runner.IsSharedModeMasterClient == false) return;
+            
+            _levelMovePoints = LevelService.Instance.CurrentLevel.BotMovePoints;
             
             SetupBots();
         }
 
         private void SetupBots()
         {
-            _levelMovePoints = LevelService.Instance.CurrentLevel.BotMovePoints;
-                
             int blueBots = _gameSettings.BotsPerTeam;
             int redBots = _gameSettings.BotsPerTeam;
                 
@@ -118,11 +128,26 @@ namespace Dev.BotsLogic
                 SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(bot);
                 
                 var botData = new BotData(sessionPlayer, CharacterClass.Engineer);
-                bot.Init(botData, _levelMovePoints);
+                bot.Init(botData);
             });
                 
             AliveBots.Add(bot);
             BotSpawned.OnNext(bot);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_RespawnBot(Bot bot)
+        {   
+            _healthObjectsService.RestoreHealth(bot.Object);
+            
+            TeamSide teamSide = bot.BotTeamSide;
+            
+            Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
+
+            bot.RPC_OnDeath(false);
+            bot.View.RPC_Scale(1);
+            bot.Alive = true;
+            bot.transform.position = spawnPos;
         }
 
         public void DespawnBot(Bot bot, bool spawnAfterDeath = true, float despawnDelay = 1) // TODO refactor, need to make pool of bots
@@ -149,25 +174,10 @@ namespace Dev.BotsLogic
 
         }
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_RespawnBot(Bot bot)
-        {   
-            _healthObjectsService.RestoreHealth(bot.Object);
-            
-            TeamSide teamSide = bot.BotTeamSide;
-            
-            Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
-
-            bot.RPC_OnDeath(false);
-            bot.View.RPC_Scale(1);
-            bot.Alive = true;
-            bot.transform.position = spawnPos;
-        }
-        
         public Bot GetBot(NetworkId id)
-        {
+        {   
             return AliveBots.First(x => x.Object.Id == id);
         }
-        
+                
     }
 }

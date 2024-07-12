@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Dev.Infrastructure;
+using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -77,9 +78,10 @@ namespace Dev.PlayerLogic
 
                 PlayerBase playerBase = GetPlayerBase(player.Owner);
                 
+                if(playerBase == null) continue;
                 if(playerBase.Character == null) continue;
                 
-                NetworkId id = playerBase.Character.Object.Id;
+                NetworkId id = player.Owner.ToNetworkId();
                 int health = _healthObjectsService.GetHealth(id);
                 string playerName = player.Name;
 

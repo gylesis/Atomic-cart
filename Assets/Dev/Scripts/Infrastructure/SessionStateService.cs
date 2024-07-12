@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Dev.BotsLogic;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Fusion;
 using UnityEngine;
 using Zenject;
@@ -29,7 +30,7 @@ namespace Dev.Infrastructure
         
         public SessionPlayer GetSessionPlayer(PlayerRef playerRef)
         {
-            return GetSessionPlayer(_playersDataService.GetPlayerBase(playerRef).Object.Id);
+            return GetSessionPlayer(playerRef.ToNetworkId());
         }
         
         public SessionPlayer GetSessionPlayer(Bot bot)

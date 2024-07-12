@@ -40,12 +40,14 @@ namespace Dev.BotsLogic
         
         private Vector3 _movePointPos;
         private int _currentPointIndex = 0;
-        private List<BotMovePoint> _movePoints;
+        private List<BotMovePoint> MovePoints => _botsController.LevelMovePoints;
+        [SerializeField] private List<BotMovePoint> MovePoints1;
 
         private TeamsService _teamsService;
         private GameSettings _gameSettings;
 
         public bool Alive = true;
+        private BotsController _botsController;
 
         [Networked] private NetworkObject Target { get; set; }
         [Networked] private NetworkBool IsFrozen { get; set; }
@@ -54,19 +56,26 @@ namespace Dev.BotsLogic
         public BotView View => _view;
         public TeamSide BotTeamSide => BotData.TeamSide;
 
-        public void Init(BotData botData, List<BotMovePoint> movePoints)
+        protected override void Awake()
         {
+            base.Awake();
             _navMeshAgent.updateUpAxis = false;
             _navMeshAgent.updateRotation = false;
-            _movePoints = movePoints;
+        }
+
+        public void Init(BotData botData)
+        {
             BotData = botData;
 
+            MovePoints1 = _botsController.LevelMovePoints;
+            
             _weaponController.RPC_SetOwner(BotData.SessionPlayer);
         }
 
         [Inject]
-        private void Construct(TeamsService teamsService, GameSettings gameSettings)
+        private void Construct(TeamsService teamsService, GameSettings gameSettings, BotsController botsController)
         {
+            _botsController = botsController;
             _gameSettings = gameSettings;
             _teamsService = teamsService;
         }
@@ -226,7 +235,7 @@ namespace Dev.BotsLogic
         {
             if (HasStateAuthority == false) return;
 
-            var movePoints = _movePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude)
+            var movePoints = MovePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude)
                 .ToList();
 
             int maxPoints = _gameSettings.BotsNearestPointsAmountToChoose;

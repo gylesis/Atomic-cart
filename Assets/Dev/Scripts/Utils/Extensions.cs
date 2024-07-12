@@ -49,9 +49,20 @@ namespace Dev.Utils
                 SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
                 return spawnPoint.transform.position;
-            }
+            }   
 
         }
+        
+        public static NetworkId ToNetworkId(this PlayerRef playerRef)
+        {
+            return new NetworkId
+            {
+                Raw = (uint)Mathf.Clamp(playerRef.GetHashCode(), 0 , uint.MaxValue)
+            };
+        }
+        
+        
+        
 
         public static async Task<object> InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)
         {

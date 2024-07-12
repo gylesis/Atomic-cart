@@ -97,8 +97,11 @@ namespace Dev.Infrastructure
 
             PlayerBase playerBase = networkRunner.Spawn(_playerBasePrefab, null, null, playerRef);
             playerBase.Object.AssignInputAuthority(playerRef);
-
+            playerBase.CharacterClass = characterClass;
+            
             RPC_AddPlayer(playerRef, playerBase);
+            
+            _healthObjectsService.RegisterPlayer(playerRef);
 
             await UniTask.Delay(500);
             
@@ -115,9 +118,11 @@ namespace Dev.Infrastructure
         {
             if (isLeftFromSession)
             {
-                _sessionStateService.RPC_RemovePlayer(GetPlayerBase(playerRef).Object.Id);
+                NetworkId id = playerRef.ToNetworkId();
+
+                _sessionStateService.RPC_RemovePlayer(id);
                 _teamsService.RPC_RemoveFromTeam(playerRef);
-                _healthObjectsService.RPC_UnregisterObject(PlayersBase[playerRef].Character.Object);
+                _healthObjectsService.RPC_UnregisterObject(id);
                 PlayersBase.Remove(playerRef);
                 
                 PlayerBaseDeSpawned.OnNext(playerRef);
@@ -126,7 +131,7 @@ namespace Dev.Infrastructure
             {
                 PlayerCharacter playerCharacter = PlayersBase[playerRef].Character;
 
-                _healthObjectsService.RPC_UnregisterObject(playerCharacter.Object);
+                //_healthObjectsService.RPC_UnregisterObject(playerCharacter.Object); // TODO
                 
                 Runner.Despawn(playerCharacter.Object);
 
@@ -157,7 +162,9 @@ namespace Dev.Infrastructure
 
             NetworkObject playerNetObj = playerCharacter.Object;
 
+            RPC_AssignPlayerCharacter(playerRef, playerCharacter, characterClass);
             PlayersBase[playerRef].Character = playerCharacter;
+            PlayersBase[playerRef].CharacterClass = characterClass;
             
             playerBase.AbilityCastController.ResetAbility();
             SetAbilityType(playerBase, characterClass);
@@ -180,12 +187,18 @@ namespace Dev.Infrastructure
             spawnEventContext.CharacterClass = characterClass;
             spawnEventContext.PlayerRef = playerRef;
             spawnEventContext.Transform = playerCharacter.transform;
-
-            _healthObjectsService.RegisterPlayer(playerRef);
             
             PlayerCharacterSpawned.OnNext(spawnEventContext);
 
             return playerCharacter;
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_AssignPlayerCharacter(PlayerRef playerRef, PlayerCharacter playerCharacter,
+                                               CharacterClass characterClass)
+        {
+            PlayersBase[playerRef].Character = playerCharacter;
+            PlayersBase[playerRef].CharacterClass = characterClass;
         }
 
         public void ChangePlayerCharacter(PlayerRef playerRef, CharacterClass newCharacterClass)
@@ -195,6 +208,8 @@ namespace Dev.Infrastructure
             UpdatePlayerCharacter(playerCharacter, playerRef);
             SetCharacterTeamBannerColor(playerRef);
         }
+        
+       
 
         private static void SetAbilityType(PlayerBase playerBase, CharacterClass characterClass)
         {
@@ -236,7 +251,7 @@ namespace Dev.Infrastructure
         {
             PlayersBase.Add(playerRef, playerBase);
             
-            _sessionStateService.RPC_AddPlayer(playerBase.Object.Id, $"Player{Random.Range(10,99)}", false, _teamsService.GetUnitTeamSide(playerRef));
+            _sessionStateService.RPC_AddPlayer(playerRef.ToNetworkId(), $"Player{Random.Range(10,99)}", false, _teamsService.GetUnitTeamSide(playerRef));
         }
 
         private void SetCharacterTeamBannerColor(PlayerRef playerRef)
@@ -311,12 +326,6 @@ namespace Dev.Infrastructure
             SetCharacterTeamBannerColor(playerRef);
         }
 
-        private void LoadWeapon(PlayerCharacter playerCharacter)
-        {
-            var weaponSetupContext = new WeaponSetupContext(WeaponType.Rifle);
-            playerCharacter.WeaponController.Init(weaponSetupContext);
-        }
-
         public PlayerCharacter GetPlayer(PlayerRef playerRef)
         {
             return GetPlayerBase(playerRef).Character;
@@ -329,7 +338,7 @@ namespace Dev.Infrastructure
 
         public PlayerBase GetPlayerBase(NetworkId id)
         {
-            return PlayersBase.First(x => x.Value.Object.Id == id).Value;
+            return PlayersBase.First(x => x.Value.Object.StateAuthority.ToNetworkId() == id).Value;
         }
 
         public CameraController GetPlayerCameraController(PlayerRef playerRef)
@@ -341,9 +350,6 @@ namespace Dev.Infrastructure
 
             return cameraController;
         }
-
-        public Vector3 GetPlayerPos(PlayerRef playerRef) => GetPlayer(playerRef).transform.position;
-
 
         [Rpc]
         private void RPC_OnPlayerSpawnedInvoke(PlayerBase playerBase)
@@ -357,6 +363,12 @@ namespace Dev.Infrastructure
 
             // Debug.Log($"[RPC] Player spawned");
             PlayerBaseSpawned.OnNext(spawnEventContext);
+        }
+
+        private void LoadWeapon(PlayerCharacter playerCharacter)
+        {
+            var weaponSetupContext = new WeaponSetupContext(WeaponType.Rifle);
+            playerCharacter.WeaponController.Init(weaponSetupContext);
         }
     }
 }

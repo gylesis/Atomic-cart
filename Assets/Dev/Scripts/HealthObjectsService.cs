@@ -61,13 +61,13 @@ namespace Dev
         }
 
         public int GetHealth(NetworkId id)
-        {
+        {   
             if (HasData(id) == false)
             {
                 Debug.Log($"No data for object with id {id}");
                 return -1;
             }
-
+    
             return HealthData.First(x => x.ObjId == id).Health;
         }
 
@@ -90,9 +90,7 @@ namespace Dev
             CharacterClass playerCharacterClass = _playersDataService.GetPlayerCharacterClass(playerRef);
             CharacterData characterData = _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
 
-            PlayerCharacter playerCharacter = _playersDataService.GetPlayer(playerRef);
-
-            RPC_InternalRegisterObject(playerCharacter.Object, characterData.CharacterStats.Health);
+            RPC_InternalRegisterObject(playerRef.ToNetworkId(), characterData.CharacterStats.Health);
         }
             
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -112,23 +110,58 @@ namespace Dev
 
             Debug.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
         }
+        
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_InternalRegisterObject(NetworkId networkId, int health)
+        {   
+            if (HasData(networkId))
+            {
+                Debug.Log($"Trying to register already registered object");
+                return;
+            }
+
+            health = Mathf.Clamp(health, 0, UInt16.MaxValue); // to avoid uint overflow
+
+            ObjectWithHealthData healthData = new ObjectWithHealthData(networkId, (UInt16)health, (UInt16)health);
+
+            HealthData.Add(healthData);
+
+            //Debug.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
+        }
+        
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_UnregisterObject(NetworkObject networkObject)
         {
             if (Runner == null) return;
 
-            if (HasData(networkObject.Id))
+            NetworkId id = networkObject.Id;
+            
+            if (HasData(id))
             {
-                ObjectWithHealthData healthData = HealthData.First(x => x.ObjId == networkObject.Id);
+                ObjectWithHealthData healthData = HealthData.First(x => x.ObjId == id);
 
                 HealthData.Remove(healthData);
             }
         }
+        
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_UnregisterObject(NetworkId objId)
+        {
+            if (Runner == null) return;
+            
+            if (HasData(objId)) 
+            {
+                ObjectWithHealthData healthData = HealthData.First(x => x.ObjId == objId);
+
+                HealthData.Remove(healthData);
+            }
+        }
+       
 
         private bool HasData(NetworkId objectId) => HealthData.Any(x => x.ObjId == objectId);
-
-        public void ApplyDamage(ApplyDamageContext damageContext)
+    
+        public void ApplyDamage(ApplyDamageContext damageContext)   
         {
             bool isDamageFromServer = damageContext.IsFromServer;
             
@@ -145,8 +178,17 @@ namespace Dev
                 Debug.Log($"Object {victimObj.name} is not damagable, skipping {damage} damage", victimObj);
                 return;
             }
+            // target
+            bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
+            bool isBot = damagable.DamageId == DamagableType.Bot;
+            bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
+            bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
+            bool isPlayer = damagable.DamageId == DamagableType.Player;
 
-            NetworkId victimId = victimObj.Id;
+            
+            Color hintDamageColor = GetHintDamageColor(damagable.DamageId);
+            
+            NetworkId victimId = GetVictimId(isPlayer, victimObj);
 
             if (HasData(victimId) == false)
             {
@@ -155,15 +197,7 @@ namespace Dev
                     victimObj);
                 return;
             }
-
-            // target
-            bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
-            bool isBot = damagable.DamageId == DamagableType.Bot;
-            bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
-            bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
-            bool isPlayer = damagable.DamageId == DamagableType.Player;
-
-            Color hintDamageColor = GetHintDamageColor(damagable.DamageId);
+            
             
             if (isDamageFromServer == false)
             {
@@ -205,7 +239,7 @@ namespace Dev
                 damage = 0;
             }
 
-            int currentHealth = ApplyDamageInternal(victimObj, damage);
+            int currentHealth = ApplyDamageInternal(victimId, damage);
 
             if (isPlayer)
             {
@@ -245,6 +279,22 @@ namespace Dev
             }
         }
 
+        private static NetworkId GetVictimId(bool isPlayer, NetworkObject victimObj)
+        {
+            NetworkId victimId;
+
+            if (isPlayer)
+            {
+                victimId = victimObj.StateAuthority.ToNetworkId();
+            }
+            else
+            {
+                victimId = victimObj.Id;
+            }
+
+            return victimId;
+        }
+
         private Color GetHintDamageColor(DamagableType damagableType)
         {
             Color color;
@@ -268,9 +318,8 @@ namespace Dev
             return color;
         }
         
-        private int ApplyDamageInternal(NetworkObject victimObj, int damage)
+        private int ApplyDamageInternal(NetworkId victimId, int damage)
         {
-            NetworkId victimId = victimObj.Id;
             damage = Mathf.Clamp(damage, 0, UInt16.MaxValue); // to avoid uint overflow
 
             ObjectWithHealthData healthData = HealthData.First(x => x.ObjId == victimId);
@@ -403,7 +452,7 @@ namespace Dev
         
         public void GainHealthToPlayer(PlayerRef playerRef, int health)
         {
-            NetworkId playerId = _playersDataService.GetPlayer(playerRef).Object.Id;
+            NetworkId playerId = playerRef.ToNetworkId();
 
             GainHealthTo(playerId, health);
 
@@ -411,7 +460,7 @@ namespace Dev
         }
 
         private void GainHealthTo(NetworkId id, int health)
-        {   
+        {       
             ObjectWithHealthData healthData = HealthData.First(x => x.ObjId == id);
             int index = HealthData.IndexOf(healthData);
             ushort maxHealth = healthData.MaxHealth;

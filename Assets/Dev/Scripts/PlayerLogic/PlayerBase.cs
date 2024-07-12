@@ -13,7 +13,7 @@ namespace Dev.PlayerLogic
         public InputService InputService { get; private set; }
         public AbilityCastController AbilityCastController { get; private set; }
 
-        public CharacterClass CharacterClass => Character.CharacterClass;
+        [Networked] public CharacterClass CharacterClass { get; set; }
         public TeamSide TeamSide => Character.TeamSide;
         
         public PlayerController PlayerController { get; private set; }

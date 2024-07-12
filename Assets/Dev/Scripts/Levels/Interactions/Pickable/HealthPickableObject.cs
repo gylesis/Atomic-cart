@@ -1,6 +1,7 @@
 ﻿using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Fusion;
 using UnityEngine;
 using Zenject;
@@ -23,7 +24,7 @@ namespace Dev.Levels.Interactions.Pickable
         
         protected override void OnAutoInteraction(PlayerRef interactedPlayer)
         {
-            bool isFullHealth = _healthObjectsService.IsFullHealth(_playersDataService.GetPlayerCharacterId(interactedPlayer));
+            bool isFullHealth = _healthObjectsService.IsFullHealth(interactedPlayer.ToNetworkId());
 
             if (isFullHealth)
             {

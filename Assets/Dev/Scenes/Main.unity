@@ -6781,7 +6781,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1068517966, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: Flags
-      value: 264705
+      value: 133633
       objectReference: {fileID: 0}
     - target: {fileID: 1068517966, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: SortKey
@@ -6797,7 +6797,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 24591243461246021, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: Flags
-      value: 2561
+      value: 131073
       objectReference: {fileID: 0}
     - target: {fileID: 24591243461246021, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: SortKey
@@ -6933,7 +6933,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7369406235520552885, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: Flags
-      value: 2561
+      value: 131073
       objectReference: {fileID: 0}
     - target: {fileID: 7369406235520552885, guid: b7edace9aa985284183895bad1632a2d, type: 3}
       propertyPath: SortKey

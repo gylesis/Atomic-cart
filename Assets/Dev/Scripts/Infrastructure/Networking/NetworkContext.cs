@@ -1,7 +1,10 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using Fusion;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Dev.Infrastructure
 {
@@ -24,7 +27,7 @@ namespace Dev.Infrastructure
         {
             DependenciesContainer.Instance.Inject(gameObject);
         }
-        
+
         /// <summary>
         /// Invokes right after Zenject completed injection [Inject]
         /// </summary>
@@ -159,5 +162,23 @@ namespace Dev.Infrastructure
                 transform.localRotation = Quaternion.identity;
             }
         }
+
+
+#if UNITY_EDITOR
+        [ContextMenu(nameof(SetChildrenMasterClientObject))]
+        private void SetChildrenMasterClientObject()
+        {
+            NetworkObject[] childrens = transform.GetComponentsInChildren<NetworkObject>();
+
+            foreach (NetworkObject networkObject in childrens)
+            {
+                networkObject.Flags = NetworkObjectFlags.MasterClientObject | NetworkObjectFlags.V1;
+                EditorUtility.SetDirty(this);
+            }
+
+            Debug.Log($"For {childrens.Length} objects Master Client Object flag was set");
+        }
+
+#endif
     }
 }

@@ -62,10 +62,8 @@ namespace Dev.Weapons
         {
             if(HasStateAuthority == false) return;
 
-            await UniTask.Delay(200);
+            await UniTask.WaitUntil((() => _playerBase.Character != null)).AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
             
-            TeamSide team = _playerBase.TeamSide;
-
             SessionPlayer owner = _sessionStateService.GetSessionPlayer(_playerBase.Object.InputAuthority);
 
             _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret,  owner, _turretPrefab));

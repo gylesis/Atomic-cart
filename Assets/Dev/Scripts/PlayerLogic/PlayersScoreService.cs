@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Dev.BotsLogic;
 using Dev.Infrastructure;
+using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -70,9 +71,8 @@ namespace Dev.PlayerLogic
             
             PlayerRef playerRef = playerSpawnData.PlayerRef;
 
-            NetworkId id = _playersDataService.GetPlayerBase(playerRef).Object.Id;
-
-            var playerScoreData = new PlayerScoreData(_sessionStateService.GetSessionPlayer(id));
+            SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(playerRef.ToNetworkId());
+            var playerScoreData = new PlayerScoreData(sessionPlayer);
 
             playerScoreData.PlayerDeathCount = 0;
             playerScoreData.PlayerFragCount = 0;
@@ -87,10 +87,11 @@ namespace Dev.PlayerLogic
         {
             if(Runner.IsSharedModeMasterClient == false) return;
             
-            NetworkId id = _playersDataService.GetPlayerBase(playerRef).Object.Id;
+            NetworkId id = playerRef.ToNetworkId();
             
             PlayerScoreData playerScoreData = PlayerScoreList.FirstOrDefault(x => x.SessionPlayer.Id == id);
 
+            Debug.Log($"Remove player {playerRef}");
             PlayerScoreList.Remove(playerScoreData);
 
             RPC_UpdateScore();
@@ -150,6 +151,7 @@ namespace Dev.PlayerLogic
         [Rpc]
         private void RPC_UpdateScore()
         {
+            Debug.Log($"Update score");
             OnScoreUpdate.OnNext(Unit.Default);
         }
     }
