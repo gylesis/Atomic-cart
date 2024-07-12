@@ -72,6 +72,11 @@ namespace Dev.Infrastructure
                 Players.Remove(sessionPlayer);
             }
         }
+
+        public bool DoPlayerExist(PlayerRef playerRef)
+        {
+            return Players.Any(x => x.Owner == playerRef);
+        }
         
         
         public void SetEnemiesFreezeState(bool toFreeze)

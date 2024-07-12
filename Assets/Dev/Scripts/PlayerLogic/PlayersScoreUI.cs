@@ -20,10 +20,12 @@ namespace Dev.PlayerLogic
         private PlayersScoreService _playersScoreService;
 
         private List<PlayerScoreUI> _scoreUis = new List<PlayerScoreUI>();
+        private SessionStateService _sessionStateService;
 
         [Inject]
-        private void Init(PlayersScoreService playersScoreService)
+        private void Init(PlayersScoreService playersScoreService, SessionStateService sessionStateService)
         {
+            _sessionStateService = sessionStateService;
             _playersScoreService = playersScoreService;
         }
 
@@ -74,7 +76,20 @@ namespace Dev.PlayerLogic
                 }
             }
 
+            RemoveLeftPlayers();
+
             OrderScoreUI();
+        }
+
+        private void RemoveLeftPlayers()
+        {
+            var playerScoreUis = _scoreUis.Where(x => _sessionStateService.DoPlayerExist(x.SessionPlayer.Owner) == false).ToList();
+
+            foreach (PlayerScoreUI scoreUi in playerScoreUis)
+            {
+                _scoreUis.Remove(scoreUi);
+                Destroy(scoreUi.gameObject);
+            }
         }
 
         private Transform GetTeamUIParent(TeamSide teamSide)
