@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!1 &1503964216816281307
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,6 +503,7 @@ GameObject:
   - component: {fileID: 6340942788523308819}
   - component: {fileID: 7619175838533121882}
   - component: {fileID: 8337593156464237279}
+  - component: {fileID: 824267643430016442}
   m_Layer: 8
   m_Name: Bot
   m_TagString: Untagged
@@ -702,6 +703,18 @@ NavMeshAgent:
   m_BaseOffset: 0.74
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!210 &824267643430016442
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6354534433250160694}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
 --- !u!1 &7551077672319180125
 GameObject:
   m_ObjectHideFlags: 0

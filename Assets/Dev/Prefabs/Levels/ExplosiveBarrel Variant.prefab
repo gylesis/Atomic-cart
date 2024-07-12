@@ -116,6 +116,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1032416250689117151, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
+      propertyPath: m_SpriteSortPoint
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1414512925365783250, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -322,6 +326,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 483671901943567914, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
       insertIndex: -1
       addedObject: {fileID: 297986429838149905}
+    - targetCorrespondingSourceObject: {fileID: 483671901943567914, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3951322945308365583}
   m_SourcePrefab: {fileID: 100100000, guid: d700a0c96c3261d49ae243b2cb531544, type: 3}
 --- !u!1 &2588120078955889604 stripped
 GameObject:
@@ -397,3 +404,15 @@ MonoBehaviour:
   m_Center: {x: 0, y: -1.18, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffff
+--- !u!210 &3951322945308365583
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2588120078955889604}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
