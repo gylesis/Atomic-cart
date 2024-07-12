@@ -42,6 +42,10 @@ namespace Dev.PlayerLogic
         [Networked] private Vector2 LookDirection { get; set; }
         [Networked] private Vector2 MoveDirection { get; set; }
 
+        public Vector3 AimCrosshairPos => PlayerView.CrosshairPos;
+        
+        [Networked] public NetworkBool IsCastingMode { get; set; }
+        
         [Inject]
         private void Construct(PopUpService popUpService, JoysticksContainer joysticksContainer, InputService inputService, PlayerBase playerBase)
         {
@@ -158,7 +162,10 @@ namespace Dev.PlayerLogic
                     {
                         AbilityCastController castController = _playerBase.AbilityCastController;
 
-                        castController.CastAbility(_playerBase.Character.transform.position + (Vector3)LastLookDirection.normalized * 6);
+                        if (castController.AllowToCast)
+                        {
+                            castController.CastAbility(_playerBase.PlayerController.AimCrosshairPos);
+                        }
                     }
 
                     if (input.ToResetAbility)
@@ -246,7 +253,8 @@ namespace Dev.PlayerLogic
 
             Vector2 lookDirection = LookDirection;
 
-            if (LookDirection == Vector2.zero)
+            
+            if (lookDirection == Vector2.zero)
             {
                 IsPlayerAiming = false;
                 lookDirection = LastLookDirection;
@@ -257,12 +265,17 @@ namespace Dev.PlayerLogic
 
                 LastLookDirection = lookDirection;
 
-                var magnitude = lookDirection.sqrMagnitude;
-
-                if (magnitude >= _shootThreshold)
+                if (_playerBase.PlayerController.IsCastingMode == false)
                 {
-                    Shoot();
+                    var magnitude = lookDirection.sqrMagnitude;
+                    
+                    if (magnitude >= _shootThreshold)
+                    {
+                        Shoot();
+                    }
                 }
+                
+               
             }
 
 

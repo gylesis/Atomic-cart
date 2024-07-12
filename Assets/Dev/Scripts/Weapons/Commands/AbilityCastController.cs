@@ -64,7 +64,7 @@ namespace Dev.Weapons
 
             await UniTask.WaitUntil((() => _playerBase.Character != null)).AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
             
-            SessionPlayer owner = _sessionStateService.GetSessionPlayer(_playerBase.Object.InputAuthority);
+            SessionPlayer owner = _sessionStateService.GetSessionPlayer(_playerBase.Object.StateAuthority);
 
             _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret,  owner, _turretPrefab));
             _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, owner, _landminePrefab));

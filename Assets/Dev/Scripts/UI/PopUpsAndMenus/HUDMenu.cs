@@ -167,6 +167,9 @@ namespace Dev.UI.PopUpsAndMenus
         private void SetCastMode(bool isCasting)
         {
             _castAbilityButton.gameObject.SetActive(isCasting);
+            
+            if(_playerBase != null)
+                _playerBase.PlayerController.IsCastingMode = isCasting;
         }
 
         public void SetInteractionButtonState(bool enabled)

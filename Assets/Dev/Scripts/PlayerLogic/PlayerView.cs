@@ -22,6 +22,9 @@ namespace Dev.PlayerLogic
         private static readonly int Move = Animator.StringToHash("Move");
         private PlayerBase _playerBase;
 
+        public Vector3 CrosshairPos => _groundAimTransform.TransformVector(_groundAimTransform.position);
+        
+        
         [Networked]
         private Color TeamColor { get; set; }
 
@@ -64,6 +67,8 @@ namespace Dev.PlayerLogic
             {
                 _playerBase = PlayerBase.LocalPlayerBase;
             }
+            
+            if(_playerBase.Character == null) return;
 
             float crosshairColorTarget = _playerBase.PlayerController.IsPlayerAiming ? 1 : 0;
 
@@ -71,8 +76,17 @@ namespace Dev.PlayerLogic
             color.a = Mathf.Lerp(color.a, crosshairColorTarget, Runner.DeltaTime * 20);
             _crosshairSpriteRenderer.color = color;
 
-            Vector3 lookDirection = _playerBase.PlayerController.LastLookDirection.normalized;
+            Vector3 lookDirection;
 
+            if (_playerBase.PlayerController.IsCastingMode)
+            {
+                lookDirection = _playerBase.PlayerController.LastLookDirection;
+            }
+            else
+            {
+                lookDirection = _playerBase.PlayerController.LastLookDirection.normalized;
+            }
+            
             Weapon weapon = _playerBase.Character.WeaponController.CurrentWeapon;
             float aimDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(_playerBase.transform.position, weapon.ShootDirection, 
                 weapon.BulletMaxDistance, weapon.BulletHitOverlapRadius + 0.05f);
