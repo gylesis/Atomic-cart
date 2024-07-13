@@ -13,7 +13,8 @@ public class JoystickEditor : Editor
     private SerializedProperty snapY;
     protected SerializedProperty background;
     private SerializedProperty handle;
-
+    private SerializedProperty _shootThresholdImage;
+    
     protected Vector2 center = new Vector2(0.5f, 0.5f);
 
     protected virtual void OnEnable()
@@ -25,6 +26,11 @@ public class JoystickEditor : Editor
         snapY = serializedObject.FindProperty("snapY");
         background = serializedObject.FindProperty("background");
         handle = serializedObject.FindProperty("handle");
+        
+        if (target is AimJoystick)
+        {
+            _shootThresholdImage = serializedObject.FindProperty("_shootThresholdImage");
+        }
     }
 
     public override void OnInspectorGUI()
@@ -60,5 +66,10 @@ public class JoystickEditor : Editor
     {
         EditorGUILayout.ObjectField(background, new GUIContent("Background", "The background's RectTransform component."));
         EditorGUILayout.ObjectField(handle, new GUIContent("Handle", "The handle's RectTransform component."));
+
+        if (target is AimJoystick)
+        {
+            EditorGUILayout.ObjectField(_shootThresholdImage, new GUIContent("Shoot threshold image", "Line when shoot is happening"));
+        }
     }
 }

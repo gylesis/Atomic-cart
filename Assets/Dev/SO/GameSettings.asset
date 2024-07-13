@@ -14,11 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _timeAfterWinGame: 5
   _isFriendlyFireOn: 0
+  _botsTargetsSearchRadius: 15
+  _botsPerTeam: 2
+  _botsSearchForTargetsCooldown: 0.5
+  _botsChangeMoveDirectionCooldown: 5
+  _botsNearestPointsAmountToChoose: 5
   _cameraZoomModifier: 20
+  _cameraFollowSpeed: 2
   _weaponObstaclesDetectLayers:
     serializedVersion: 2
     m_Bits: 192
   _weaponHitDetectionOffset: 1.5
+  _shootThreshold: 0.267
   _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
   _grenadeFlyFunction:
     serializedVersion: 2
@@ -87,3 +94,4 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _firstLevelName: 1
+  _barrelsRespawnCooldown: 5

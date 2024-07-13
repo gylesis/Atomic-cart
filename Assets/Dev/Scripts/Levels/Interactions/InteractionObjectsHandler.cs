@@ -66,6 +66,8 @@ namespace Dev.Levels.Interactions
 
         private void OnPlayerZoneEntered(PlayerCharacter playerCharacter, InteractionObject interactionObject)
         {
+            if(playerCharacter == null) return; // because of changing player character/spawning while standing in zone
+
             PlayerRef playerRef = playerCharacter.Object.InputAuthority;
             
             if(Runner.LocalPlayer != playerRef) return;
@@ -75,6 +77,8 @@ namespace Dev.Levels.Interactions
 
         private void OnPlayerZoneExit(PlayerCharacter playerCharacter, InteractionObject interactionObject)
         {
+            if(playerCharacter == null) return; // because of changing player character/spawning while standing in zone
+            
             PlayerRef playerRef = playerCharacter.Object.InputAuthority;
 
             if(Runner.LocalPlayer != playerRef) return;

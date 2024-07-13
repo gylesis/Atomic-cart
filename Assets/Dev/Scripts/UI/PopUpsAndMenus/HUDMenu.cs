@@ -16,11 +16,10 @@ namespace Dev.UI.PopUpsAndMenus
 
         [SerializeField] private DefaultReactiveButton _interactionButton;
 
-        [SerializeField] private LongClickReactiveButton _castAbilityButton;
-
         [SerializeField] private DefaultReactiveButton _toggleCastModesButton;
 
-
+        [SerializeField] private LongClickReactiveButton _resetAbilityButton;
+        
         private PlayerBase _playerBase;
         private AbilityCastController _castController;
         private PlayersSpawner _playersSpawner;
@@ -29,23 +28,7 @@ namespace Dev.UI.PopUpsAndMenus
         public Subject<Unit> CastButtonClicked { get; } = new Subject<Unit>();
         public Subject<Unit> InteractiveButtonClicked { get; } = new Subject<Unit>();
 
-        private bool _isCastModeDefault = false;
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            _showTab.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnShowTabButtonClicked()));
-            _exitMenuButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitMenuButtonClicked()));
-            _interactionButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnInteractionButtonClicked()));
-
-            _toggleCastModesButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnToggleCastModesClicked()));
-            SetCastMode(_isCastModeDefault);
-            
-            _castAbilityButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnCastButtonClicked()));
-            _castAbilityButton.LongClick.TakeUntilDestroy(this)
-                .Subscribe((unit => OnCastButtonLongClicked()));
-        }
+        private bool IsCastingMode => _playerBase.PlayerController.IsCastingMode;
 
         [Inject]
         private void Construct(PlayersSpawner playersSpawner, JoysticksContainer joysticksContainer)
@@ -56,6 +39,18 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void Start()
         {
+            _showTab.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnShowTabButtonClicked()));
+            _exitMenuButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitMenuButtonClicked()));
+            _interactionButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnInteractionButtonClicked()));
+            
+            _resetAbilityButton.LongClick.TakeUntilDestroy(this).Subscribe((unit => OnResetAbilityButtonClicked()));
+            _resetAbilityButton.SetAllowToLongClick(true);
+
+            _toggleCastModesButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnToggleCastModesClicked()));
+            
+            _joysticksContainer.AimJoystick.PointerUpOrDown.TakeUntilDestroy(this)
+                .Subscribe((OnAimJoystickPointerUpOrDown));
+
             _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseSpawned));
             _playersSpawner.PlayerCharacterSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerCharacterSpawned));
         }
@@ -76,102 +71,98 @@ namespace Dev.UI.PopUpsAndMenus
 
             _castController = playerBase.AbilityCastController;
             _castController.AbilityRecharged.TakeUntilDestroy(this).Subscribe((OnAbilityRecharged));
-
-            SetLongClickAvailability();
+            
+            SetCastMode(IsCastingMode);
         }
 
         private void OnPlayerCharacterSpawned(PlayerSpawnEventContext context)
         {
-            SetLongClickAvailability();
-
-            SetCastButtonAvailability(context);
+            SetCastMode(IsCastingMode);
+            SetResetAbilityVisible(_castController.CurrentAbilityToCast, false);
         }
 
-        private void SetCastButtonAvailability(PlayerSpawnEventContext context)
-        {
-            switch (context.CharacterClass)
-            {
-                case CharacterClass.Soldier:
-                case CharacterClass.Engineer:
-                case CharacterClass.Bomber:
-                case CharacterClass.Marine:
-                    _castAbilityButton.Enable();
-                    break;
-                default:
-                    _castAbilityButton.Disable(); // for new character classes
-                    break;
-            }
-        }
-
-        private void OnCastButtonClicked()
+        private void CastAbility()
         {
             if (_castController.AllowToCast == false) return;
 
-            SetLongClickAvailability();
-
             CastButtonClicked.OnNext(Unit.Default);
 
+            SetResetAbilityVisible(_castController.CurrentAbilityToCast, true);
+            
             PlayerInput input = new PlayerInput();
             input.WithCast(true);
             
             _playerBase.InputService.SimulateInput(input);
             
+            return;
             OnToggleCastModesClicked();
         }
 
-        private void OnCastButtonLongClicked()
+        private void SetResetAbilityVisible(AbilityType abilityType, bool toCast)
         {
-            Debug.Log($"Long click");
-            _castAbilityButton.SetAllowToLongClick(false);
+            switch (abilityType)
+            {
+                case AbilityType.Landmine:
+                case AbilityType.Turret:
+                case AbilityType.TearGas:
+                    if (toCast)
+                    {
+                        _resetAbilityButton.Enable();
+                    }
+                    else
+                    {
+                        _resetAbilityButton.Disable();
+                    }
+                    break;
+                case AbilityType.MiniAirStrike:
+                    _resetAbilityButton.Disable();
+                    break;
+            }
+        }
+
+        private void OnResetAbilityButtonClicked()
+        {
+            Debug.Log($"Reset button clicked");
+            //_resetAbilityButton.SetAllowToLongClick(false);
 
             if (_castController.CurrentAbilityToCast == AbilityType.MiniAirStrike)
             {
                 return;
             }
 
-            _castAbilityButton.ResetProgressImage();
+            _resetAbilityButton.ResetProgressImage();
             _castController.ResetAbility();
         }
 
         private void OnAbilityRecharged(AbilityType abilityType)
         {
+            SetResetAbilityVisible(abilityType, false);
+            
             Debug.Log($"Ability recharged");
-
-            SetLongClickAvailability();
-        }
-
-        private void SetLongClickAvailability()
-        {
-            if (_castController == null) return;
-
-            AbilityType abilityType = _castController.CurrentAbilityToCast;
-
-            switch (abilityType)
-            {
-                case AbilityType.Turret:
-                case AbilityType.Landmine:
-                    _castAbilityButton.SetAllowToLongClick(true);
-                    break;
-                default:
-                    _castAbilityButton.SetAllowToLongClick(false);
-                    break;
-            }
         }
         
         private void OnToggleCastModesClicked()
         {
-            _isCastModeDefault = !_isCastModeDefault;
-            SetCastMode(_isCastModeDefault);
+            _playerBase.PlayerController.IsCastingMode = !IsCastingMode;
+            SetCastMode(IsCastingMode);
         }
 
         private void SetCastMode(bool isCasting)
         {
-            _castAbilityButton.gameObject.SetActive(isCasting);
+            _resetAbilityButton.gameObject.SetActive(isCasting);
             
-            if(_playerBase != null)
-                _playerBase.PlayerController.IsCastingMode = isCasting;
+            _joysticksContainer.AimJoystick.SetThresholdImageState(!isCasting);
         }
-
+        
+        private void OnAimJoystickPointerUpOrDown(bool isUp)
+        {
+            if(isUp == false) return;
+            
+            if(_playerBase.PlayerController.IsCastingMode == false) return;
+            
+            CastAbility();
+        }
+        
         public void SetInteractionButtonState(bool enabled)
         {
             if (enabled)

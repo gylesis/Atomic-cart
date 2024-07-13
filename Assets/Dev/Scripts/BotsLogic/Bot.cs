@@ -37,18 +37,16 @@ namespace Dev.BotsLogic
 
         [SerializeField] private float _moveDistance = 10;
         [SerializeField] private BotView _view;
-
         
         private Vector3 _movePointPos;
         private int _currentPointIndex = 0;
         private List<BotMovePoint> MovePoints => _botsController.LevelMovePoints;
-        [SerializeField] private List<BotMovePoint> MovePoints1;
 
         private TeamsService _teamsService;
         private GameSettings _gameSettings;
+        private BotsController _botsController;
 
         public bool Alive = true;
-        private BotsController _botsController;
 
         [Networked] private NetworkObject Target { get; set; }
         [Networked] private NetworkBool IsFrozen { get; set; }
@@ -68,8 +66,6 @@ namespace Dev.BotsLogic
         {
             BotData = botData;
 
-            MovePoints1 = _botsController.LevelMovePoints;
-            
             _weaponController.RPC_SetOwner(BotData.SessionPlayer);
         }
 

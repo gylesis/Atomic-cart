@@ -73,12 +73,12 @@ namespace Dev.UI.PopUpsAndMenus
                 if (_timer >= _holdSeconds)
                 {
                     _longPressCompleted = true;
-                    
+
                     _longClickDisposable?.Dispose();
                     _timer = _holdSeconds;
                 }
-
-                OnProgressUpdate(_timer);
+                
+                OnProgressUpdate(_timer / _holdSeconds);
             }));
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -40,6 +41,8 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     private Vector2 input = Vector2.zero;
 
+    public Subject<bool> PointerUpOrDown { get; } = new Subject<bool>();
+
     protected virtual void Start()
     {
         HandleRange = handleRange;
@@ -59,6 +62,7 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public virtual void OnPointerDown(PointerEventData eventData)
     {
+        PointerUpOrDown.OnNext(false);
         OnDrag(eventData);
     }
 
@@ -133,6 +137,8 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     {
         input = Vector2.zero;
         handle.anchoredPosition = Vector2.zero;
+        
+        PointerUpOrDown.OnNext(true);
     }
 
     protected Vector2 ScreenPointToAnchoredPosition(Vector2 screenPosition)

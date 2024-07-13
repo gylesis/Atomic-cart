@@ -24,7 +24,6 @@ namespace Dev.Infrastructure
         [SerializeField] private PlayerBase _playerBasePrefab;
 
         public Subject<PlayerSpawnEventContext> PlayerBaseSpawned { get; } = new Subject<PlayerSpawnEventContext>();
-
         public Subject<PlayerSpawnEventContext> PlayerCharacterSpawned { get; } =
             new Subject<PlayerSpawnEventContext>();
 
@@ -46,12 +45,14 @@ namespace Dev.Infrastructure
         private CharactersDataContainer _charactersDataContainer;
         private SessionStateService _sessionStateService;
         private HealthObjectsService _healthObjectsService;
+        private GameSettings _gameSettings;
 
         [Inject]
         private void Init(TeamsService teamsService, PopUpService popUpService,
                           GameStaticDataContainer gameStaticDataContainer, SessionStateService sessionStateService,
-                          HealthObjectsService healthObjectsService)
+                          HealthObjectsService healthObjectsService, GameSettings gameSettings)
         {
+            _gameSettings = gameSettings;
             _healthObjectsService = healthObjectsService;
             _sessionStateService = sessionStateService;
             _charactersDataContainer = gameStaticDataContainer.CharactersDataContainer;
@@ -103,13 +104,13 @@ namespace Dev.Infrastructure
             
             _healthObjectsService.RegisterPlayer(playerRef);
 
+            RPC_OnPlayerBaseSpawnedInvoke(playerBase);
+            
             await UniTask.Delay(500);
             
             PlayerCharacter playerCharacter = SpawnCharacter(playerRef, playerBase, characterClass);
 
             UpdatePlayerCharacter(playerCharacter, playerRef);
-
-            RPC_OnPlayerSpawnedInvoke(playerBase);
 
             //LoadWeapon(player);
         }
@@ -165,6 +166,7 @@ namespace Dev.Infrastructure
             RPC_AssignPlayerCharacter(playerRef, playerCharacter, characterClass);
             PlayersBase[playerRef].Character = playerCharacter;
             PlayersBase[playerRef].CharacterClass = characterClass;
+            PlayersBase[playerRef].PlayerController.IsCastingMode = false;
             
             playerBase.AbilityCastController.ResetAbility();
             SetAbilityType(playerBase, characterClass);
@@ -174,7 +176,7 @@ namespace Dev.Infrastructure
             Runner.SetPlayerObject(playerRef, playerNetObj);
 
             playerBase.PlayerController.Init(characterData.CharacterStats.MoveSpeed,
-                characterData.CharacterStats.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
+                _gameSettings.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
 
             playerBase.PlayerController.SetAllowToMove(true);
             playerBase.PlayerController.SetAllowToShoot(true);
@@ -354,7 +356,7 @@ namespace Dev.Infrastructure
         }
 
         [Rpc]
-        private void RPC_OnPlayerSpawnedInvoke(PlayerBase playerBase)
+        private void RPC_OnPlayerBaseSpawnedInvoke(PlayerBase playerBase)
         {
             PlayerRef playerRef = playerBase.Object.InputAuthority;
 

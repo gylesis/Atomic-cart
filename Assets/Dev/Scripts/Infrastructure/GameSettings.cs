@@ -24,6 +24,7 @@ namespace Dev.Infrastructure
         [SerializeField] private float _cameraFollowSpeed = 2f;
         [SerializeField] private LayerMask _weaponObstaclesDetectLayers;
         [SerializeField] private float _weaponHitDetectionOffset = 1;
+        [Range(0.1f,1f)] [SerializeField] private float _shootThreshold = 0.5f;
         
         [Header("Weapon")]
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
@@ -60,5 +61,6 @@ namespace Dev.Infrastructure
         public float WeaponHitDetectionOffset => _weaponHitDetectionOffset;
 
         public int TimeAfterWinGame => _timeAfterWinGame;
+        public float ShootThreshold => _shootThreshold;
     }
 }
