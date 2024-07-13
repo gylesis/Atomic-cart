@@ -187,6 +187,8 @@ namespace Dev.Infrastructure
             spawnEventContext.CharacterClass = characterClass;
             spawnEventContext.PlayerRef = playerRef;
             spawnEventContext.Transform = playerCharacter.transform;
+
+            SetCharacterTeamBannerColor(playerRef);
             
             PlayerCharacterSpawned.OnNext(spawnEventContext);
 
