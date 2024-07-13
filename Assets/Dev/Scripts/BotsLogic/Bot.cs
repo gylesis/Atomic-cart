@@ -6,6 +6,7 @@ using Dev.PlayerLogic;
 using Dev.Utils;
 using Dev.Weapons;
 using Dev.Weapons.Guns;
+using DG.Tweening;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -83,6 +84,16 @@ namespace Dev.BotsLogic
         [Rpc]
         public void RPC_OnDeath(bool isDead) // TODO bullshit
         {
+            if (isDead)
+            {
+                transform.DOScale(0, 0.5f);
+            }
+            else
+            {
+                transform.DOScale(1, 0.5f);
+            }
+            
+            Alive = !isDead;
             _collider.enabled = !isDead;
         }
     
@@ -214,7 +225,6 @@ namespace Dev.BotsLogic
                 return true;
             }
         }
-
 
         private void MoveToTarget()
         {

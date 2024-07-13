@@ -39,6 +39,8 @@ namespace Dev.CartLogic
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
         private TeamsService _teamsService;
 
+        private float _pushTime;
+        
         [Inject]
         private void Construct(TeamsService teamsService)
         {
@@ -128,7 +130,10 @@ namespace Dev.CartLogic
         {
             Vector3 direction = _nextPoint.transform.position - _currentPoint.transform.position;
             direction.Normalize();
-            _cart.transform.position += direction * _cartVelocity * Runner.DeltaTime;
+
+            float speed = _cartVelocity * Runner.DeltaTime;
+            
+            _cart.transform.position += direction * speed;
 
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 

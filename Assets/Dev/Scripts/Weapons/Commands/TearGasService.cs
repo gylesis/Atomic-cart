@@ -27,6 +27,7 @@ namespace Dev.Weapons
         private TearGas _tearGas;
         [Networked] private TickTimer _durationTimer { get; set; }
         [Networked] private TickTimer _damageTickTimer{ get; set; }
+        
         private NetworkRunner _localNetRunner;
 
         public Subject<Unit> DurationEnded { get; } = new Subject<Unit>();
@@ -35,8 +36,6 @@ namespace Dev.Weapons
         {
             _localNetRunner = networkRunner;
 
-            Debug.Log($"Called tear gas from player {networkRunner.LocalPlayer}, from team {owner.TeamSide}");
-            
             TearGasEffect tearGasEffect = FxController.Instance.SpawnEffectAt<TearGasEffect>("teargas", pos, destroyDelay: _duration);
 
             tearGasEffect.StartExpansion(_expansionRadius, _expansionTime + _effectHideDuration, (() =>
@@ -67,6 +66,8 @@ namespace Dev.Weapons
 
         private void OnToDestroy(Projectile projectile)
         {
+            projectile.RPC_DoScale(1, 0);
+            
             _localNetRunner.Despawn(projectile.Object);
         }
 

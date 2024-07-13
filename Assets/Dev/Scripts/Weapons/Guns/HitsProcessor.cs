@@ -188,20 +188,14 @@ namespace Dev.Weapons.Guns
 
         public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext)
         {
-            RPC_ProcessExplodeInternal(explodeContext);
-        }
-
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_ProcessExplodeInternal(ProcessExplodeContext context)
-        {
             NetworkRunner runner = Runner;
-            SessionPlayer owner = context.Owner;
-            bool isDamageFromServer = context.IsDamageFromServer;
-            TeamSide ownerTeamSide = context.OwnerTeamSide;
+            SessionPlayer owner = explodeContext.Owner;
+            bool isDamageFromServer = explodeContext.IsDamageFromServer;
+            TeamSide ownerTeamSide = explodeContext.OwnerTeamSide;
 
-            Vector3 pos = context.ExplosionPos;
-            float explosionRadius = context.ExplosionRadius;
-            int damage = context.Damage;
+            Vector3 pos = explodeContext.ExplosionPos;
+            float explosionRadius = explodeContext.ExplosionRadius;
+            int damage = explodeContext.Damage;
 
             var overlapSphere = Extensions.OverlapCircle(runner, pos, explosionRadius, out var colliders);
 
@@ -285,6 +279,7 @@ namespace Dev.Weapons.Guns
                 }
             }
         }
+
 
         private void OnExplode(NetworkObject networkObject, SessionPlayer shooter, DamagableType damagableType,
                                int damage, bool isDamageFromServer)

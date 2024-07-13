@@ -145,8 +145,7 @@ namespace Dev.BotsLogic
             Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
 
             bot.RPC_OnDeath(false);
-            bot.View.RPC_Scale(1);
-            bot.Alive = true;
+           // bot.View.RPC_Scale(1);
             bot.transform.position = spawnPos;
         }
 

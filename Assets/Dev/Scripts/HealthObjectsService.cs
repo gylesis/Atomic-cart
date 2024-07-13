@@ -355,9 +355,9 @@ namespace Dev
             dieContext.Victim = _sessionStateService.GetSessionPlayer(bot);
             dieContext.IsKilledByServer = isDamageFromServer;
             
-            bot.Alive = false;
-            bot.View.RPC_Scale(0);
-
+            //bot.View.RPC_Scale(0);
+            bot.RPC_OnDeath(true);
+            
             BotDied.OnNext(dieContext);
 
             //LoggerUI.Instance.Log($"Player {playerRef} is dead");
