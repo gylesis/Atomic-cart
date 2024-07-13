@@ -5379,7 +5379,8 @@ MonoBehaviour:
   _expansionRadius: 10
   _damagePerSecond: 25
   _duration: 4
-  _effectHideDuration: 1
+  _flyDuration: 0.5
+  _effectHideDuration: 0.5
   _secondsDamageTick: 1.5
 --- !u!114 &1812458421
 MonoBehaviour:

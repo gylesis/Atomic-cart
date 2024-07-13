@@ -69,7 +69,7 @@ namespace Dev.Weapons
             _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret,  owner, _turretPrefab));
             _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, owner, _landminePrefab));
             _castCommands.Add(new CallAirStrikeCommand(Runner, AbilityType.MiniAirStrike, owner, _airStrikeController));
-            _castCommands.Add(new ExplodeTearGasCommand(Runner, AbilityType.TearGas, owner, _tearGasService));
+            _castCommands.Add(new ExplodeTearGasCommand(Runner, AbilityType.TearGas, owner, _tearGasService, _playerBase));
             
             foreach (AbilityCastCommand castCommand in _castCommands)
             {

@@ -1,8 +1,10 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Weapons.Guns;
+using DG.Tweening;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -16,8 +18,7 @@ namespace Dev.Weapons
         [SerializeField] private float _expansionRadius = 10;
         [SerializeField] private int _damagePerSecond = 25;
         [SerializeField] private float _duration = 10;
-
-        [SerializeField] private float _effectHideDuration = 1;
+        [SerializeField] private float _flyDuration = 0.5f;
         
         /// <summary>
         /// Hello
@@ -32,15 +33,29 @@ namespace Dev.Weapons
 
         public Subject<Unit> DurationEnded { get; } = new Subject<Unit>();
         
-        public void ExplodeTearGas(NetworkRunner networkRunner, Vector3 pos, SessionPlayer owner)
+        public async void ExplodeTearGas(NetworkRunner networkRunner, Vector3 origin, Vector3 targetPos, SessionPlayer owner)
         {
             _localNetRunner = networkRunner;
 
-            TearGasEffect tearGasEffect = FxController.Instance.SpawnEffectAt<TearGasEffect>("teargas", pos, destroyDelay: _duration);
+            _tearGas = _localNetRunner.Spawn(_tearGasPrefab, position: origin, onBeforeSpawned: ((runner, o) =>
+            {
+                TearGas gas = o.GetComponent<TearGas>();
 
-            tearGasEffect.StartExpansion(_expansionRadius, _expansionTime + _effectHideDuration, (() =>
+                gas.ToDestroy.Take(1).Subscribe(OnToDestroy);
+                gas.RPC_SetOwner(owner);
+                gas.Init(Vector2.zero, 0, _damagePerSecond, _expansionRadius);
+            }));
+            
+            AnimateFly(targetPos);
+
+            await UniTask.Delay(TimeSpan.FromSeconds(_flyDuration),
+                cancellationToken: gameObject.GetCancellationTokenOnDestroy());
+            
+            TearGasEffect tearGasEffect = FxController.Instance.SpawnEffectAt<TearGasEffect>("teargas", targetPos, destroyDelay: _duration);
+
+            tearGasEffect.StartExpansion(_expansionRadius, (_duration + 1) * 0.5f, (() =>
             {   
-                tearGasEffect.Hide(_effectHideDuration);
+                tearGasEffect.Hide();
             }));
             
             _durationTimer = TickTimer.CreateFromSeconds(_localNetRunner ,_duration);
@@ -53,15 +68,12 @@ namespace Dev.Weapons
             }));
             
             _damageTickTimer = TickTimer.CreateFromSeconds(_localNetRunner, _secondsDamageTick);
+        }
 
-            _tearGas = _localNetRunner.Spawn(_tearGasPrefab, position: pos, onBeforeSpawned: ((runner, o) =>
-            {
-                TearGas gas = o.GetComponent<TearGas>();
-
-                gas.ToDestroy.Take(1).Subscribe(OnToDestroy);
-                gas.RPC_SetOwner(owner);
-                gas.Init(Vector2.zero, 0, _damagePerSecond, _expansionRadius);
-            }));
+        private void AnimateFly(Vector3 targetPos)
+        {
+            _tearGas.transform.DOMove(targetPos, _flyDuration);
+            _tearGas.transform.DOScale(Vector3.one * 1.2f, _flyDuration / 2).SetEase(Ease.InSine).OnComplete((() => _tearGas.transform.DOScale(Vector3.one, _flyDuration / 2).SetEase(Ease.OutSine)));
         }
 
         private void OnToDestroy(Projectile projectile)

@@ -9,9 +9,11 @@ namespace Dev.Weapons
     public class ExplodeTearGasCommand : AbilityCastCommand
     {
         private TearGasService _tearGasService;
+        private PlayerBase _playerBase;
 
-        public ExplodeTearGasCommand(NetworkRunner runner, AbilityType abilityType, SessionPlayer owner, TearGasService tearGasService) : base(runner, abilityType, owner)
+        public ExplodeTearGasCommand(NetworkRunner runner, AbilityType abilityType, SessionPlayer owner, TearGasService tearGasService, PlayerBase playerBase) : base(runner, abilityType, owner)
         {
+            _playerBase = playerBase;
             _tearGasService = tearGasService;
         }
 
@@ -19,7 +21,7 @@ namespace Dev.Weapons
         {
             base.Process(pos);
             
-            _tearGasService.ExplodeTearGas(_runner, pos, _owner);
+            _tearGasService.ExplodeTearGas(_runner, _playerBase.Character.transform.position, pos, _owner);
             _tearGasService.DurationEnded.Subscribe((unit => OnTearGasEnded()));
         }
 

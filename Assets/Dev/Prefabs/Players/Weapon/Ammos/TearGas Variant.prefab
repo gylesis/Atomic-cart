@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 734887948963446194, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.8
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 734887948963446194, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.8
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 734887948963446194, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.8
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 908989132282622331, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: m_IsActive
@@ -129,17 +129,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcd3bc60e9534cc08c7a285858904377, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _view: {fileID: 3399893455845410137}
   _networkRigidbody2D: {fileID: 1649544474922184638}
   _overlapRadius: 1
-  _hitMask:
-    serializedVersion: 2
-    m_Bits: 264
-  _checkOverlapWhileMoving: 0
-  _OwnerTeamSide: 0
+  _IsAlive:
+    _value: 1
 --- !u!114 &1649544474922184638 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 880675783536816808, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
