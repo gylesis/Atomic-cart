@@ -5037,7 +5037,27 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1466458761704203568, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4171667660458924660}
+    - targetCorrespondingSourceObject: {fileID: 3887251985986394188, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7842508503555232841}
   m_SourcePrefab: {fileID: 100100000, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+--- !u!1 &1600876256301578640 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3887251985986394188, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+  m_PrefabInstance: {fileID: 2577536098503811548}
+  m_PrefabAsset: {fileID: 0}
+--- !u!210 &7842508503555232841
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600876256301578640}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!4 &1600876256301578643 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3887251985986394191, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
@@ -5071,16 +5091,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab9bb44add1946c799b0c4507ad36b45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _view: {fileID: 1600876256301578643}
   _networkRigidbody2D: {fileID: 3458191227274449780}
   _overlapRadius: 5
-  _hitMask:
-    serializedVersion: 2
-    m_Bits: 8
-  _checkOverlapWhileMoving: 0
+  _IsAlive:
+    _value: 1
   _detonateSeconds: 2
   _searchRadius: 5
   _detonateRadius: 5

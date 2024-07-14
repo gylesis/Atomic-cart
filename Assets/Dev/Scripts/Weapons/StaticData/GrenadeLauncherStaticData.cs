@@ -7,6 +7,7 @@ namespace Dev.Weapons.StaticData
     {
         [SerializeField] private float _grenadeExplosionRadius = 3;
         [SerializeField] private float _grenadeFlyTime = 1;
+        [SerializeField] private float _grenadeDetonateTime = 1;
 
         [SerializeField] private AnimationCurve _grenadeFlyFunction;
         [SerializeField] private AnimationCurve _grenadeFlySizeFunction;
@@ -15,7 +16,7 @@ namespace Dev.Weapons.StaticData
         public AnimationCurve GrenadeFlySizeFunction => _grenadeFlySizeFunction;
         
         public float GrenadeExplosionRadius => _grenadeExplosionRadius;
-
         public float GrenadeFlyTime => _grenadeFlyTime;
+        public float GrenadeDetonateTime => _grenadeDetonateTime;
     }
-}
+}   

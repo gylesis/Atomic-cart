@@ -9,8 +9,10 @@ namespace Dev.Weapons.Guns
 {
     public class GrenadeLauncher : ProjectileWeapon<GrenadeLauncherStaticData>
     {
-        public float GrenadeExplosionRadius => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeExplosionRadius;
-        public float GrenadeFlyTime => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeFlyTime;
+        private float GrenadeExplosionRadius => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeExplosionRadius;
+        private float GrenadeFlyTime => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeFlyTime;
+        private float DetonateTime => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeDetonateTime;
+        
         
         public override void Shoot(Vector2 direction, float power = 1)
         {
@@ -26,7 +28,7 @@ namespace Dev.Weapons.Guns
                     Vector2 targetPos = (Vector2) transform.position + (direction * maxDistance);
 
                     projectile.Init(direction, ProjectileSpeed, Damage, GrenadeExplosionRadius,
-                          targetPos, GrenadeFlyTime);
+                          targetPos, GrenadeFlyTime, DetonateTime);
 
                     OnProjectileBeforeSpawned(projectile);
                 }); 

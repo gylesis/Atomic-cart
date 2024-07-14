@@ -1,6 +1,7 @@
 ﻿using System;
 using Dev.BotsLogic;
 using Dev.Effects;
+using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Utils;
 using Dev.Weapons.Guns;
@@ -9,6 +10,7 @@ using Fusion;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -41,7 +43,6 @@ namespace Dev.Weapons
             _detonateCircleSprite.transform.localScale = new Vector3(_detonateRadius,_detonateRadius,1);
         }
 
-
         public override void FixedUpdateNetwork()
         {
             if(HasStateAuthority == false) return;
@@ -50,48 +51,33 @@ namespace Dev.Weapons
             
             if (_detonateTimer.Expired(Runner))
             {
+                _detonateTimer = TickTimer.None;
                 Explode();
             }
             
             if(_hasAnyTarget) return;
             
-            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _searchRadius, out var colliders);
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Owner, _detonateRadius, -1, transform.position, false);
+            
+            _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext, Exploded);
 
-            if (overlapSphere)
+            void Exploded(NetworkObject victim, SessionPlayer owner, DamagableType damagableType, int damage, bool isDamageFromServer)
             {
-                foreach (Collider2D collider in colliders)
+                switch (damagableType)
                 {
-                    bool isBot = collider.TryGetComponent<Bot>(out var bot);
-                    bool isPlayer = collider.TryGetComponent<PlayerCharacter>(out var playerCharacter);
-
-                    if (isBot)
-                    {
-                        TeamSide targetTeam = bot.BotData.TeamSide;
-
-                        if (targetTeam != _ownerTeam)
-                        {
-                            StartDetonation();
-                            _hasAnyTarget = true;
-                            break;
-                        }
-
-                    }
-
-                    if (isPlayer)
-                    {
-                        TeamSide targetTeam = playerCharacter.TeamSide;
-
-                        if (targetTeam != _ownerTeam)
-                        {
-                            StartDetonation();
-                            _hasAnyTarget = true;
-                            break;
-                        }
-                    }
-                    
+                    case DamagableType.Bot:
+                    case DamagableType.Player:
+                        StartDetonation();
+                        _hasAnyTarget = true;
+                        break;
+                    case DamagableType.ObstacleWithHealth:
+                    case DamagableType.Obstacle:
+                    case DamagableType.DummyTarget:
+                    default:
+                        break;
                 }
             }
-            
+
         }
 
         private void Explode()
@@ -103,7 +89,7 @@ namespace Dev.Weapons
             
             FxController.Instance.SpawnEffectAt<Effect>("landmine_explosion", transform.position);
 
-            Observable.Timer(TimeSpan.FromSeconds(3)).TakeUntilDestroy(this).Subscribe((l =>
+            Observable.Timer(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
             {
                 ToDestroy.OnNext(this);
             }));

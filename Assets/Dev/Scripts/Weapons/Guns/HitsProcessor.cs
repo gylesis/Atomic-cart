@@ -186,9 +186,9 @@ namespace Dev.Weapons.Guns
             Hit.OnNext(hitContext);
         }
 
-        public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext)
-        {
-            NetworkRunner runner = Runner;
+        public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext, Action<NetworkObject, SessionPlayer, DamagableType, int, bool> onExploded = null)
+        {   
+            NetworkRunner runner = Runner;  
             SessionPlayer owner = explodeContext.Owner;
             bool isDamageFromServer = explodeContext.IsDamageFromServer;
             TeamSide ownerTeamSide = explodeContext.OwnerTeamSide;
@@ -203,7 +203,7 @@ namespace Dev.Weapons.Guns
 
             float maxDistance = (pos - (pos + Vector3.right * explosionRadius)).sqrMagnitude;
 
-            foreach (Collider2D collider in colliders)
+            foreach (Collider2D collider in colliders)  
             {
                 bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
 
@@ -219,6 +219,9 @@ namespace Dev.Weapons.Guns
                 float damagePower = 1 - distance / maxDistance;
                 damagePower = 1;
 
+                DamagableType damagableType = DamagableType.DummyTarget;
+                NetworkObject victim = null;
+                
                 //Debug.Log($"DMG power {damagePower}");
 
                 int totalDamage = (int)(damagePower * damage);
@@ -229,20 +232,16 @@ namespace Dev.Weapons.Guns
                 {
                     ObstacleWithHealth obstacle = (damagable as ObstacleWithHealth);
 
-                    OnExplode(obstacle.Object, owner, DamagableType.ObstacleWithHealth, totalDamage,
-                        isDamageFromServer);
-
-                    continue;
+                    victim = obstacle.Object;
+                    damagableType = DamagableType.ObstacleWithHealth;
                 }
 
                 if (isDummyTarget)
                 {
                     DummyTarget dummyTarget = damagable as DummyTarget;
 
-                    OnExplode(dummyTarget.Object, owner, DamagableType.DummyTarget, totalDamage,
-                        isDamageFromServer);
-
-                    continue;
+                    victim = dummyTarget.Object;
+                    damagableType = DamagableType.DummyTarget;
                 }
 
                 if (isPlayer)
@@ -257,10 +256,8 @@ namespace Dev.Weapons.Guns
 
                     if (ownerTeamSide == targetTeamSide) continue;
 
-                    OnExplode(playerCharacter.Object, owner, DamagableType.Player, totalDamage,
-                        isDamageFromServer);
-
-                    continue;
+                    victim = playerCharacter.Object;
+                    damagableType = DamagableType.Player;
                 }
 
                 if (isBot)
@@ -273,9 +270,23 @@ namespace Dev.Weapons.Guns
 
                     if (ownerTeamSide == targetTeamSide) continue;
 
-                    OnExplode(targetBot.Object, owner, DamagableType.Bot, totalDamage, isDamageFromServer);
+                    victim = targetBot.Object;
+                    damagableType = DamagableType.Player;
+                }
 
-                    continue;
+                if (victim != null)
+                {
+                    if (damage == -1)
+                    {
+                        Debug.Log($"Damage is -1, not applying damage, just returned callback");
+                        
+                        onExploded?.Invoke(victim, owner, damagableType, totalDamage, isDamageFromServer);
+                    }
+                    else
+                    {
+                        OnExplode(victim, owner, damagableType, totalDamage, isDamageFromServer);
+                    }
+                    
                 }
             }
         }
