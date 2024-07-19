@@ -13,11 +13,13 @@ namespace Dev.Utils
 
         private void Awake()
         {
-#if UNITY_EDITOR
+/*#if UNITY_EDITOR
             Application.targetFrameRate = -1;
 #else
             Application.targetFrameRate = _targetFPS;
-#endif
+#endif*/
+            
+            Application.targetFrameRate = 300;
         }
 
         private void OnGUI()

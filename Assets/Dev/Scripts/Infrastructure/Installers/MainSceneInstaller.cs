@@ -43,11 +43,12 @@ namespace Dev.Infrastructure
         [FormerlySerializedAs("_gamesState")] [SerializeField] private SessionStateService sessionStateService;
 
         [SerializeField] private PlayersScoreService _playersScoreService;
-        
+        [SerializeField] private KillerFeedNotifyService _killerFeedNotifyService;
         
         public override void InstallBindings()
         {
             Container.Bind<NetworkRunner>().FromInstance(FindObjectOfType<NetworkRunner>()).AsSingle();
+            Container.Bind<KillerFeedNotifyService>().FromInstance(_killerFeedNotifyService).AsSingle();
             
             Container.Bind<DependenciesContainer>().AsSingle().NonLazy();
 

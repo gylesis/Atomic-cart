@@ -15,4 +15,4 @@ MonoBehaviour:
   Name: SunCity
   MapType: 0
   MapIcon: {fileID: 21300000, guid: 363df524768d35b4d997d983d51bcf3b, type: 3}
-  Prefab: {fileID: 3257645878844647860, guid: 34fd3a038138b334cb1ce24fc00f718c, type: 3}
+  Prefab: {fileID: 3016026391094208099, guid: 598d3cecffe615040a1b8fda72e450d3, type: 3}

@@ -15,4 +15,4 @@ MonoBehaviour:
   Name: NightCity
   MapType: 0
   MapIcon: {fileID: 21300000, guid: f33eaefa325e3c14e8cb5c2608c2366c, type: 3}
-  Prefab: {fileID: 3016026391094208099, guid: 598d3cecffe615040a1b8fda72e450d3, type: 3}
+  Prefab: {fileID: 5860644363850734799, guid: 4028836a6a2bb534bb66494ada6618a9, type: 3}

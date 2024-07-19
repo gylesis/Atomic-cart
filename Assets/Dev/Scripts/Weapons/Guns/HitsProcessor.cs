@@ -29,7 +29,7 @@ namespace Dev.Weapons.Guns
         {
             NetworkRunner runner = Runner;
             SessionPlayer shooter = context.Owner;
-            bool isHitFromServer = context.IsHitFromServer;
+            bool isDamageFromServer = context.IsHitFromServer;
             TeamSide ownerTeamSide = context.OwnerTeamSide;
             bool isOwnerBot = context.IsOwnerBot;
 
@@ -62,11 +62,15 @@ namespace Dev.Weapons.Guns
                 if (isPlayer)
                 {
                     PlayerCharacter targetPlayer = damagable as PlayerCharacter;
-                    TeamSide targetTeamSide = targetPlayer.TeamSide;
 
                     //Debug.Log($"Hit to player {targetPlayerRef} from team {targetTeamSide}, by {owner} from team {ownerTeamSide}");
 
-                    if (ownerTeamSide == targetTeamSide) continue;
+                    if (isDamageFromServer == false)
+                    {
+                        TeamSide targetTeamSide = targetPlayer.TeamSide;
+                        
+                        if (ownerTeamSide == targetTeamSide) continue;
+                    }
 
                     hitObject = targetPlayer.Object;
                     break;
@@ -98,13 +102,15 @@ namespace Dev.Weapons.Guns
                 {
                     Bot targetBot = damagable as Bot;
 
-                    TeamSide botTeam = targetBot.BotTeamSide;
-
-                    if (ownerTeamSide != botTeam)
+                    if (isDamageFromServer == false)
                     {
-                        hitObject = targetBot.Object;
-                        break;
+                        TeamSide botTeam = targetBot.BotTeamSide;
+                        
+                        if (ownerTeamSide == botTeam) continue;
                     }
+                    
+                    hitObject = targetBot.Object;
+                    break;
                 }
             }
 
@@ -112,7 +118,7 @@ namespace Dev.Weapons.Guns
 
             if (isProjectileHitSomething)
             {
-                OnHit(hitObject, shooter, damage, damagableType, projectile is ExplosiveProjectile, isHitFromServer);
+                OnHit(hitObject, shooter, damage, damagableType, projectile is ExplosiveProjectile, isDamageFromServer);
                 projectile.ToDestroy.OnNext(projectile);
             }
         }
@@ -248,13 +254,15 @@ namespace Dev.Weapons.Guns
                 {
                     PlayerCharacter playerCharacter = damagable as PlayerCharacter;
 
-                    PlayerRef target = playerCharacter.Object.StateAuthority;
-
-                    TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(target);
-
                     //Debug.Log($"owner teamside {ownerTeamSide}, target team {targetTeamSide}");
 
-                    if (ownerTeamSide == targetTeamSide) continue;
+                    if (isDamageFromServer == false)
+                    {
+                        PlayerRef target = playerCharacter.Object.StateAuthority;
+                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(target);
+                        
+                        if (ownerTeamSide == targetTeamSide) continue;
+                    }
 
                     victim = playerCharacter.Object;
                     damagableType = DamagableType.Player;
@@ -266,9 +274,12 @@ namespace Dev.Weapons.Guns
 
                     Bot targetBot = damagable as Bot;
 
-                    TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetBot);
+                    if (isDamageFromServer == false)
+                    {
+                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetBot);
 
-                    if (ownerTeamSide == targetTeamSide) continue;
+                        if (ownerTeamSide == targetTeamSide) continue;
+                    }
 
                     victim = targetBot.Object;
                     damagableType = DamagableType.Player;

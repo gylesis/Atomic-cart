@@ -27,6 +27,7 @@ namespace Dev.BotsLogic
 
         [SerializeField] private WeaponController _weaponController;
         [SerializeField] private bool _allowToShoot = true;
+        [SerializeField] private bool _allowToMove = true;
 
         [SerializeField] private Rigidbody2D _rigidbody;
 
@@ -37,7 +38,7 @@ namespace Dev.BotsLogic
 
         [SerializeField] private float _moveDistance = 10;
         [SerializeField] private BotView _view;
-        
+
         private Vector3 _movePointPos;
         private int _currentPointIndex = 0;
         private List<BotMovePoint> MovePoints => _botsController.LevelMovePoints;
@@ -129,6 +130,8 @@ namespace Dev.BotsLogic
 
             if (IsFrozen) return;
 
+            if(_allowToMove == false) return;
+            
             if (Target != null)
             {
                 MoveToTarget();

@@ -336,7 +336,7 @@ namespace Dev
 
             HealthChanged.OnNext(data);
 
-            //Debug.Log($"Damage {damage} applied to {victimObj.name}", victimObj);
+            Debug.Log($"Damage {damage} applied");
 
             if (currentHealth <= 0)
             {
@@ -480,6 +480,7 @@ namespace Dev
         }
         
     }
+
 
     public struct ApplyDamageContext // TODO refactor
     {

@@ -9,6 +9,12 @@ namespace Dev.Levels
         [SerializeField] private float _explosionRadius;
 
         [SerializeField] private int _damage = 30;
+
+        [ContextMenu("Explode")]
+        private void Explode()
+        {
+            OnZeroHealth();
+        }
         
         public override void OnZeroHealth()
         {
@@ -32,4 +38,5 @@ namespace Dev.Levels
             Gizmos.DrawWireSphere(transform.position, _explosionRadius);
         }
     }
+
 }
