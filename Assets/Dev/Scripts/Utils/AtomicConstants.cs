@@ -1,4 +1,5 @@
-﻿using Dev.PlayerLogic;
+﻿using System.IO;
+using Dev.PlayerLogic;
 using UnityEngine;
 
 namespace Dev.Utils
@@ -21,9 +22,20 @@ namespace Dev.Utils
 
         public static class LogTags
         {
-            public static string Networking = "Networking";
+            public static string Networking = "[Networking]";
+            public static string Default = "[Default]";
+        }
+
+        public static class SaveLoad
+        {
+            public static string PlayerSaveKey = "player";
+#if UNITY_EDITOR
+            public static string LogSavePath = $"{Directory.GetCurrentDirectory()}";
+#else
+            public static string LogSavePath = $"{Application.persistentDataPath}";
+#endif
+            
         }
         
-
     }
 }

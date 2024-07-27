@@ -15,7 +15,6 @@ namespace Dev.UI
     public class MapLobbyUI : NetworkContext, INetworkRunnerCallbacks
     {
         [SerializeField] private ReadyUI[] _readyUis;
-        [SerializeField] private LobbyPlayer _lobbyPlayer;
 
         [Networked, Capacity(8)] public NetworkDictionary<PlayerRef, bool> ReadyStatesDictionary => default;
 
@@ -47,6 +46,7 @@ namespace Dev.UI
         {
             _popUpService = popUpService;
         }
+        
 
         public void SetReady(PlayerRef playerRef)
         {
@@ -84,16 +84,20 @@ namespace Dev.UI
         {
             PlayerManager.LoadingPlayers.Add(playerRef);
             PlayerManager.PlayersOnServer.Add(playerRef);
-
-            if (runner.IsSharedModeMasterClient)
+            
+            if (HasStateAuthority)
             {
                 ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == PlayerRef.None);
 
                 Debug.Log($"Player {playerRef} joined to lobby", readyUI);
-
+               
                 readyUI.RPC_AssignPlayer(playerRef);
 
                 ReadyStatesDictionary.Add(playerRef, false);
+            }
+            else
+            {
+                PlayersManager.Instance.RPC_Register(playerRef, AuthService.Nickname);
             }
 
             ReadyStatusUpdated.OnNext(Unit.Default);

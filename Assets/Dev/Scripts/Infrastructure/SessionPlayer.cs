@@ -1,5 +1,6 @@
 ﻿using Dev.PlayerLogic;
 using Fusion;
+using Newtonsoft.Json;
 
 namespace Dev.Infrastructure
 {

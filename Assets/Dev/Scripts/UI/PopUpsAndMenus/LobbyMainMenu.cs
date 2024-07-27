@@ -1,4 +1,5 @@
-﻿using UniRx;
+﻿using TMPro;
+using UniRx;
 using UnityEngine;
 
 namespace Dev.UI.PopUpsAndMenus
@@ -9,11 +10,15 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private DefaultReactiveButton _settingsButton;
         [SerializeField] private DefaultReactiveButton _exitButton;
 
+        [SerializeField] private TMP_Text _nicknameText;
+        
         protected override void Awake()
         {
             _playButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnPlayButtonClicked()));
             _settingsButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnSettingsButtonClicked()));
             _exitButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitButtonClicked()));
+            
+            Show();
         }
 
         private void OnPlayButtonClicked()
@@ -41,6 +46,13 @@ namespace Dev.UI.PopUpsAndMenus
                 settingsMenu.Hide();
                 Show();
             }));
+        }
+
+        public override void Show()
+        {
+            base.Show();
+
+            _nicknameText.text = $"{AuthService.Nickname}";
         }
 
         private void OnExitButtonClicked()

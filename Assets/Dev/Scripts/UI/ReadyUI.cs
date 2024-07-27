@@ -58,7 +58,7 @@ namespace Dev.UI
 
         private void UpdateNickname()
         {
-            _playerNicknameText.text = $"Player {PlayerRef.PlayerId}";
+            _playerNicknameText.text = $"{PlayersManager.Instance.GetNickname(PlayerRef)}";
         }
 
         [Rpc]

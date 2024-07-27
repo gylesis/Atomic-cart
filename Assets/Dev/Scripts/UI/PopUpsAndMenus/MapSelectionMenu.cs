@@ -85,7 +85,7 @@ namespace Dev.UI.PopUpsAndMenus
             {
                 Curtains.Instance.SetText("Something went wrong, returning back to menu!");
                 
-                MyLogger.Instance.LogError(AtomicConstants.LogTags.Networking,$"Failed to host lobby, reason: {gameResult.ErrorMessage}");
+                AtomicLogger.Err(AtomicConstants.LogTags.Networking,$"Failed to host lobby, reason: {gameResult.ErrorMessage}");
             }
             
         }

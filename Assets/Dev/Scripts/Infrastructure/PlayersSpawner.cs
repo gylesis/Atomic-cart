@@ -255,7 +255,7 @@ namespace Dev.Infrastructure
         {
             PlayersBase.Add(playerRef, playerBase);
             
-            _sessionStateService.RPC_AddPlayer(playerRef.ToNetworkId(), $"Player{Random.Range(10,99)}", false, _teamsService.GetUnitTeamSide(playerRef));
+            _sessionStateService.RPC_AddPlayer(playerRef.ToNetworkId(), $"{SaveLoadService.Instance.Profile.Nickname}", false, _teamsService.GetUnitTeamSide(playerRef));
         }
 
         private void SetCharacterTeamBannerColor(PlayerRef playerRef)

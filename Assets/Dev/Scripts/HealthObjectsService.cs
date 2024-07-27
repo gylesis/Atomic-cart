@@ -364,6 +364,8 @@ namespace Dev
 
             float respawnTime = 2;
 
+            SaveLoadService.Instance.AddKill(killer);
+            
             Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
             {
                 _botsController.RPC_RespawnBot(bot);
@@ -391,6 +393,9 @@ namespace Dev
 
             float respawnTime = 2;
 
+            SaveLoadService.Instance.AddDeath(_sessionStateService.GetSessionPlayer(victim));
+            SaveLoadService.Instance.AddKill(killer);
+            
             Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
             {
                 RestoreHealth(playerCharacter.Object, true);

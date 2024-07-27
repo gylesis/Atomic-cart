@@ -1,0 +1,9 @@
+
+[19:43:08][Default] DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.
+[19:43:08][Default] Start 1
+[19:43:08][Default] Start 2 
+[19:43:08][Default] Start 3
+[19:43:08][Default] from log 1
+[19:43:08][Default] from log 2
+[19:43:08][Default] from log 3
+[19:43:09][Default] No Google.VersionHandlerImpl DLL found to bootstrap

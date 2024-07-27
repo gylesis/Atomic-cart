@@ -22,7 +22,7 @@ namespace Dev.Infrastructure
             _botsController = botsController;
             _playersDataService = playersDataService;
         }
-        
+
         public SessionPlayer GetSessionPlayer(NetworkId id)
         {
             return Players.First(x => x.Id == id);

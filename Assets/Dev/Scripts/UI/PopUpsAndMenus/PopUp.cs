@@ -13,7 +13,7 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] protected CanvasGroup _canvasGroup;
         [SerializeField] protected DefaultReactiveButton _procceedButton;
 
-        [SerializeField] protected float _smoothFadeInOutDuration = 1f;
+        [SerializeField] protected float _smoothFadeInOutDuration = 0.1f;
 
         public bool IsRoot => _isRoot;
 

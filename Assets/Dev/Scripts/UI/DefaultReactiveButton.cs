@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using Dev.Utils;
 using UniRx;
 using UnityEngine;
@@ -14,6 +15,11 @@ namespace Dev.UI
     
         protected IDisposable _clickDisposable;
 
+        public async UniTask WaitForClick()
+        {
+            await _button.OnClickAsync();
+        }
+        
         private void Reset()
         {
             _canvasGroup = GetComponent<CanvasGroup>();
