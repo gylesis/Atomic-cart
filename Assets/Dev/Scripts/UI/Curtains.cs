@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Dev.Utils;
 using DG.Tweening;
 using TMPro;
 using UniRx;
@@ -9,90 +10,126 @@ using UnityEngine;
 
 namespace Dev.Infrastructure
 {
+    [DisallowMultipleComponent]
     public class Curtains : MonoBehaviour
     {
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private TMP_Text _text;
-        [SerializeField] private TMP_Text _loadingText;
-        
-        private CancellationToken _cancellationToken;
+
+        private CancellationToken _cancellationToken = new CancellationToken();
+        private IDisposable _animationDisposable;
+        private Color _defaultTextColor;
+        private StringBuilder _animationStringBuilder = new StringBuilder();
+        private StringBuilder _textBuilder = new StringBuilder();
 
         public static Curtains Instance;
 
-        private Color _defaultTextColor;
-
-        private StringBuilder _loadingTextString = new StringBuilder();
-        
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
-            
             Instance = this;
             _defaultTextColor = _text.color;
+        }
 
-            Observable.Interval(TimeSpan.FromSeconds(0.2f)).TakeUntilDestroy(this).Subscribe((l =>
+        public void AppendText(string text)
+        {
+            _textBuilder.Append($"\n{text}");
+        }
+
+        public void SetText(string text, bool withUpdateView = true, bool withStopDotAnimation = true)
+        {
+            _textBuilder.Clear();
+            _textBuilder.Append(text);
+            
+            if (withUpdateView)
             {
-                if(_canvasGroup.alpha == 0) return;
-                
-                _loadingTextString.Clear();
+                UpdateTextView();
+            }
 
-                _loadingTextString.Append("Loading");
-                
-                if (l % 3 == 0)
-                {
-                    _loadingTextString.Append("...");
-                }
-                else if (l % 2 == 0)
-                {
-                    _loadingTextString.Append("..");
-                }
-                else
-                {
-                    _loadingTextString.Append(".");
-                }
-
-                _loadingText.text = _loadingTextString.ToString();
-            }));
+            if (withStopDotAnimation)
+            {
+                StopDotAnimation();
+            }
         }
 
-        public void SetText(string text)
+        private void ResetText()
         {
-            _text.text = text;
+            SetText("");
+            SetTextColor(_defaultTextColor);
+            UpdateTextView();
         }
-        
-        public void SetText(string text, Color color)
+
+        private void UpdateTextView()
         {
-            _text.text = text;
+            _text.text = _textBuilder.ToString();
+        }
+
+        public void SetTextColor(Color color)
+        {
             _text.color = color;
         }
-        
+
         public async void Show(float showDuration = 1, float waitDuration = 0, Action onShow = null)
         {
-            if (_text.text == String.Empty)
-            {
-                _text.enabled = false;
-            }
-            else
-            {
-                _text.enabled = true;
-            }
-            
+            if (_textBuilder.Length > 0)
+                _text.text = _textBuilder.ToString();
+
+            _text.enabled = _textBuilder.Length > 0;
+
             _canvasGroup.interactable = true;
             _canvasGroup.blocksRaycasts = true;
-            
-            await _canvasGroup.DOFade(1, showDuration).AsyncWaitForCompletion().AsUniTask();
+
+            await _canvasGroup.DOFade(1, showDuration).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(_cancellationToken);
             await UniTask.Delay(TimeSpan.FromSeconds(waitDuration), cancellationToken: _cancellationToken);
-            
+
             onShow?.Invoke();
+        }
+
+        public void ShowWithDotAnimation(float showDuration = 1, float waitDuration = 0, Action onShow = null)
+        {
+            StopDotAnimation();
+
+            string originText = _textBuilder.ToString();
+
+            _animationDisposable = Observable.Interval(TimeSpan.FromSeconds(0.2f)).TakeUntilDestroy(this).Subscribe(
+                (l =>
+                {
+                    _animationStringBuilder.Clear();
+
+                    if (l % 3 == 2)
+                    {
+                        _animationStringBuilder.Append("...");
+                    }
+                    else if (l % 3 == 1)
+                    {
+                        _animationStringBuilder.Append("..");
+                    }
+                    else if (l % 3 == 0)
+                    {
+                        _animationStringBuilder.Append(".");
+                    }
+                    
+                    SetText($"{originText}{_animationStringBuilder}", true, false);
+                   
+                }));
+
+            Show(showDuration, waitDuration, onShow);
+        }
+
+        public void StopDotAnimation()
+        {
+            _animationDisposable?.Dispose();
         }
 
         public void Hide(float hideDuration = 1, Action onHide = null)
         {
+            StopDotAnimation();
+
             _canvasGroup.DOFade(0, hideDuration).OnComplete((() =>
-            {   
-                _text.color = _defaultTextColor;
-                _text.text = String.Empty;
+            {
+                ResetText();
                 onHide?.Invoke();
+                
             })).OnComplete((() =>
             {
                 _canvasGroup.blocksRaycasts = false;
@@ -102,12 +139,13 @@ namespace Dev.Infrastructure
 
         public async void HideWithDelay(float waitTime, float hideDuration = 1, Action onHide = null)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: _cancellationToken);    
+            await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: _cancellationToken);
             Hide(hideDuration, onHide);
-        }   
+        }
 
         private void OnDestroy()
         {
+            StopDotAnimation();
             _cancellationToken.ThrowIfCancellationRequested();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using UnityEngine;
@@ -18,24 +19,27 @@ namespace Dev
             _curtains = curtains;
         }
         
-        public async UniTask<bool> Check()
+        public async UniTask<bool> Check(CancellationToken cancellationToken)
         {
-            _curtains.SetText("Checking for internet...");
-            _curtains.Show(0);
-
             while (true)
             {
-                bool hasInternet = await CheckInternal(_nextInternetCheckDelay);
+                _curtains.SetText("Checking for internet");
+                _curtains.ShowWithDotAnimation(0);
+                
+                bool hasInternet = await CheckInternal(_nextInternetCheckDelay, cancellationToken);
 
-                if (hasInternet)
+                _curtains.StopDotAnimation();
+                
+                if (hasInternet == false)
                 {
-                    break;
-                }
-                else
-                {
-                    _curtains.SetText("<color=red>No internet connection.</color> Please connect to network");
+                    _curtains.SetText("No internet connection. Please connect to network");
+                    _curtains.SetTextColor(Color.red);
+                    
+                    continue;
                 }
                 
+                break;
+
             }
             
             _curtains.Hide();
@@ -43,11 +47,11 @@ namespace Dev
         }
 
 
-        private async UniTask<bool> CheckInternal(float nextTryDelay)
+        private async UniTask<bool> CheckInternal(float nextTryDelay, CancellationToken cancellationToken)
         {
             if (Application.internetReachability == NetworkReachability.NotReachable)
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(nextTryDelay));
+                await UniTask.Delay(TimeSpan.FromSeconds(nextTryDelay)).AttachExternalCancellation(cancellationToken);
                 return false;
             }
 

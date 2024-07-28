@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Dev.Utils;
 using Fusion;
 using Fusion.Photon.Realtime;
 using Fusion.Sockets;
@@ -20,8 +21,6 @@ namespace Dev.Infrastructure
 
         private Action _sessionJoined;
 
-        [SerializeField] private bool _hasInternet;
-        
         private async void Awake()
         {
             if (IsConnected)
@@ -29,127 +28,77 @@ namespace Dev.Infrastructure
                 Destroy(gameObject);
                 return;
             }
-           
+
+            if (SceneManager.GetActiveScene().name == "Main")
+            {
+                Connect();
+            }
+
             DontDestroyOnLoad(gameObject);
-
-            InternetCheckProcedure();
         }
 
-        private async void InternetCheckProcedure()
-        {   
-            bool hasInternetConnection = await CheckInternetConnection();
-    
-            if (hasInternetConnection)
-            {
-                IsConnected = true;
-                
-                if (SceneManager.GetActiveScene().name == "Bootstrap")
-                {
-                    LoadFromBootstrap();
-                }
-                else
-                {
-                    DefaultJoinToSessionLobby();
-                }
-            }
-            else
-            {
-                await UniTask.Delay(1000, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
-                
-                InternetCheckProcedure();
-            }
-            
-        }
-
-        private async UniTask<bool> CheckInternetConnection()
+        public void ConnectFromBootstrap()
         {
-            Curtains.Instance.Show();
-            Curtains.Instance.SetText("Checking internet connection...");
-
-            await UniTask.Delay(200, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
-
-            if (Application.internetReachability == NetworkReachability.NotReachable)
-            {
-                Curtains.Instance.SetText("No internet connection! Please configure internet connection!");
-                
-                await UniTask.Delay(500, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
-                return false;
-            }
-            
-            await UniTask.Delay(500, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
-
-            return true;
+            LoadFromBootstrap();
         }
-        
+
+        public void Connect()
+        {
+            DefaultJoinToSessionLobby();
+        }
+
         private async void DefaultJoinToSessionLobby()
         {
+            Curtains.Instance.SetText("Joining to servers");
+            Curtains.Instance.ShowWithDotAnimation();
+
+            IsConnected = true;
+
             _networkRunner = GetComponent<NetworkRunner>();
             _networkRunner.ProvideInput = true;
 
-            var authenticationValues = new AuthenticationValues();
-            authenticationValues.AddAuthParameter("hi", "228");
-            
-            var gameResult = await _networkRunner.JoinSessionLobby(SessionLobby.Shared, authentication: authenticationValues );
-            
+            StartGameResult gameResult = await _networkRunner.JoinSessionLobby(SessionLobby.Shared, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
             OnLobbyJoined(gameResult);
+
+            string msg;
             
             if (gameResult.Ok)
             {
-                Debug.Log($"Joined lobby");
+                msg = "Welcome!";
+                Curtains.Instance.HideWithDelay(1, 0.5f);
+                AtomicLogger.Log($"Joined lobby");
             }
             else
             {
-                Debug.LogError($"Failed to Start: {gameResult.ShutdownReason}, {gameResult.ErrorMessage}");
-                int a  = 2;
+                msg = "Failed to connect to servers";
+                AtomicLogger.Err($"Failed to Start: {gameResult.ShutdownReason}, {gameResult.ErrorMessage}"); // TODO add button to reconnect to photon lobby 
             }
+            
+            Curtains.Instance.SetText(msg);
         }
 
         private async void LoadFromBootstrap()
         {
-            Curtains.Instance.Show();
-            Curtains.Instance.SetText("Joining to servers");
-            
             Scene activeScene = SceneManager.GetActiveScene();
 
             DefaultJoinToSessionLobby();
-            
-            await SceneManager.LoadSceneAsync("Lobby", LoadSceneMode.Additive);
-            await SceneManager.UnloadSceneAsync(activeScene);
-            
-            AddLobbyJoinCallback((() =>
-            {
-                Curtains.Instance.SetText("Done!");
-                Curtains.Instance.HideWithDelay(1);
-            }));
+
+            await SceneManager.LoadSceneAsync("Lobby", LoadSceneMode.Additive).ToUniTask()
+                .AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
+            await SceneManager.UnloadSceneAsync(activeScene).ToUniTask()
+                .AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
         }
 
         private void AddLobbyJoinCallback(Action onSessionJoin)
         {
             _sessionJoined += onSessionJoin;
         }
-    
+
         private void OnLobbyJoined(StartGameResult gameResult)
         {
             _sessionJoined?.Invoke();
             _sessionJoined = null;
         }
-
-        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-            
-        }
-
-        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-        }
-
-        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
-
-        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
-
-        public void OnInput(NetworkRunner runner, NetworkInput input) { }
-
-        public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
 
         public async void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
@@ -159,15 +108,51 @@ namespace Dev.Infrastructure
             Curtains.Instance.Hide();
         }
 
-        public void OnConnectedToServer(NetworkRunner runner) { }
-        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
+        public void OnSceneLoadStart(NetworkRunner runner)
         {
+            AtomicLogger.Log("Scene load start");
+
+            Curtains.Instance.SetText("Loading world...");
+            Curtains.Instance.Show();
         }
+
+        public void OnSceneLoadDone(NetworkRunner runner)
+        {
+            AtomicLogger.Log("Scene load done");
+            Curtains.Instance.SetText("Finishing");
+            Curtains.Instance.HideWithDelay(1);
+        }
+
+        public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
+        {
+            AtomicLogger.Log($"Custom auth response");
+        }
+
+        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+        {
+            AtomicLogger.Log($"Host migration!!");
+        }
+
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+
+        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
+
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+
+        public void OnInput(NetworkRunner runner, NetworkInput input) { }
+
+        public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+
+        public void OnConnectedToServer(NetworkRunner runner) { }
+
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
 
         public void OnDisconnectedFromServer(NetworkRunner runner) { }
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
-            byte[] token) { }
+                                     byte[] token) { }
 
         public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
 
@@ -175,35 +160,11 @@ namespace Dev.Infrastructure
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
 
-        public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
-        {
-            Debug.Log($"Custom auth response");
-        }
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key,
+                                           ArraySegment<byte> data) { }
 
-        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
-        {
-            Debug.Log($"Host migration!!");
-        }
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
-        {
-        }
-
-        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-        {
-        }
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
-
-        public void OnSceneLoadStart(NetworkRunner runner)
-        {
-            Curtains.Instance.SetText("Loading world...");
-            Curtains.Instance.Show();
-        }
-
-        public void OnSceneLoadDone(NetworkRunner runner)
-        {
-            Curtains.Instance.SetText("Finishing");
-            Curtains.Instance.HideWithDelay(1);
-        }
     }
 }
