@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Dev.Utils;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
-using UnityEngine;
 
 namespace Dev
 {
@@ -10,43 +11,59 @@ namespace Dev
     {
         public static string Nickname;
 
-        public async Task Auth()
-        {
-            await UnityServices.InitializeAsync();
-            Debug.Log($"UGS initialized with state: {UnityServices.State}");
-
+        public async Task<bool> Auth()
+        {   
             AuthenticationService.Instance.SignedIn += OnSignedIn;
             AuthenticationService.Instance.SignInFailed += OnSignInFailed;
-
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            
+            try
+            {
+                await AuthenticationService.Instance.SignInWithUsernamePasswordAsync("gylesis", "qwertY1!");
+                return true;
+            }
+            catch (Exception e)
+            {
+                AtomicLogger.Ex(e.Message);
+                return false;
+            }
+           // await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
 
         public async Task UpdateNickname(string nickname)
         {
             if (string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName))
             {
-                Debug.Log($"Name is not assigned, setting player name");
+                AtomicLogger.Log($"Name is not assigned, setting player name", AtomicConstants.LogTags.Networking);
                 await AuthenticationService.Instance.UpdatePlayerNameAsync(nickname);
             }
-
+            
             Nickname = AuthenticationService.Instance.PlayerName;
         }
 
-        public bool IsNicknameNotSet() => string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName);
-
-        public void LinkWithUsernameAndPassword(string username, string password)
+        public bool IsNicknameNotSet => string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName);
+    
+        public async Task<bool> LinkWithUsernameAndPassword(string username, string password)
         {
-            AuthenticationService.Instance.AddUsernamePasswordAsync(username, password);
+            try
+            {
+                await AuthenticationService.Instance.AddUsernamePasswordAsync(username, password);
+                return true;
+            }
+            catch (Exception e)
+            {
+                AtomicLogger.Ex(e.Message);
+                return false;
+            }
         }
 
         private void OnSignedIn()
         {
-            Debug.Log($"Signed In");
+            AtomicLogger.Log($"Signed In");
         }
 
-        private void OnSignInFailed(RequestFailedException obj)
+        private void OnSignInFailed(RequestFailedException exception)
         {
-            Debug.Log($"Sign in Failed {obj}");
+            AtomicLogger.Log($"Sign in Failed {exception}");
         }
 
         public void Dispose()

@@ -11,7 +11,8 @@ namespace Dev.Infrastructure
         [Header("Game")]
         [SerializeField] private int _timeAfterWinGame = 5;
         [SerializeField] private bool _isFriendlyFireOn;
-
+        [SerializeField] private bool _saveLogsAfterQuit;
+        
         [Header("Bots")]
         [SerializeField] private float _botsTargetsSearchRadius = 15;
         [SerializeField] private int _botsPerTeam = 2;
@@ -44,6 +45,8 @@ namespace Dev.Infrastructure
         public float BotsChangeMoveDirectionCooldown => _botsChangeMoveDirectionCooldown;
         public int BotsNearestPointsAmountToChoose => _botsNearestPointsAmountToChoose;
 
+
+        public bool SaveLogsAfterQuit => _saveLogsAfterQuit;
 
         public WeaponStaticDataContainer WeaponStaticDataContainer => _weaponStaticDataContainer;
 

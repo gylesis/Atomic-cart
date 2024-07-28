@@ -83,12 +83,13 @@ namespace Dev.UI.PopUpsAndMenus
             return popUp;
         }
 
-        public void ShowPopUp<TPopUp>() where TPopUp : PopUp
+        public void ShowPopUp<TPopUp>(Action onSuccedBtnClicked = null) where TPopUp : PopUp
         {
             var tryGetPopUp = TryGetPopUp<TPopUp>(out var popUp);
 
             if (tryGetPopUp)
             {
+                popUp.OnSucceedButtonClicked(onSuccedBtnClicked);
                 popUp.Show();
             }
         }
@@ -99,6 +100,7 @@ namespace Dev.UI.PopUpsAndMenus
 
             if (tryGetPopUp)
             {
+                popUp.OnSucceedButtonClicked(null);
                 popUp.Hide();
             }
         }

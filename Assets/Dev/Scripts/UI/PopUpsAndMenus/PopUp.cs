@@ -36,7 +36,7 @@ namespace Dev.UI.PopUpsAndMenus
         public void OnSucceedButtonClicked(Action action)
         {
             _disposable?.Dispose();
-            _disposable = _procceedButton.Clicked.Subscribe((unit => action.Invoke()));
+            _disposable = _procceedButton.Clicked.Subscribe((unit => action?.Invoke()));
         }
 
         protected void SimulateSucceedButtonClick()

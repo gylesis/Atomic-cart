@@ -36,15 +36,11 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void OnSettingsButtonClicked()
         {
-            Hide();
-            PopUpService.TryGetPopUp<LobbySettingsMenu>(out var settingsMenu);
-            
-            settingsMenu.Show();
-            
-            settingsMenu.OnSucceedButtonClicked((() =>
+            PopUpService.HidePopUp<LobbyMainMenu>();
+            PopUpService.ShowPopUp<LobbySettingsMenu>((() =>
             {
-                settingsMenu.Hide();
-                Show();
+                PopUpService.HidePopUp<LobbySettingsMenu>();
+                PopUpService.ShowPopUp<LobbyMainMenu>();
             }));
         }
 

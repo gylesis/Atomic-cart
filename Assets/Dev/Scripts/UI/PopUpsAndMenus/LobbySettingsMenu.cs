@@ -6,26 +6,28 @@ namespace Dev.UI.PopUpsAndMenus
     public class LobbySettingsMenu : PopUp
     {
         [SerializeField] private DefaultReactiveButton _showStatsButton;
-
+        [SerializeField] private TextReactiveButton _showProfileSettingsButton;
+        
+        
         protected override void Awake()
         {
             base.Awake();
 
             _showStatsButton.Clicked.Subscribe((unit => OnShowStatButtonClicked())).AddTo(this);
+            _showProfileSettingsButton.Clicked.Subscribe((unit =>  PopUpService.ShowPopUp<ProfileSettingsMenu>((() => PopUpService.HidePopUp<ProfileSettingsMenu>())))).AddTo(this);
         }
 
         private void OnShowStatButtonClicked()
         {
-            PopUpService.TryGetPopUp<PlayerStatsMenu>(out var popUp);
-            
             PopUpService.ShowPopUp<PlayerStatsMenu>();
             PopUpService.HidePopUp<LobbySettingsMenu>();
             
-            popUp.OnSucceedButtonClicked((() =>
+            PopUpService.ShowPopUp<PlayerStatsMenu>((() =>
             {
                 PopUpService.HidePopUp<PlayerStatsMenu>();
                 PopUpService.ShowPopUp<LobbySettingsMenu>();
             }));
+           
         }
     }
 }   

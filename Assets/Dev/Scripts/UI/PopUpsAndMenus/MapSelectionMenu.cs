@@ -69,8 +69,8 @@ namespace Dev.UI.PopUpsAndMenus
         {
             Hide();
             
-            Curtains.Instance.SetText("Creating lobby...");
-            Curtains.Instance.Show();
+            Curtains.Instance.SetText("Creating lobby");
+            Curtains.Instance.ShowWithDotAnimation();
 
             StartGameResult gameResult = await _gameSessionBrowser.CreateSession(_selectedMap.MapName, _selectedMap.MapType);
 
@@ -84,7 +84,6 @@ namespace Dev.UI.PopUpsAndMenus
             else
             {
                 Curtains.Instance.SetText("Something went wrong, returning back to menu!");
-                
                 AtomicLogger.Err(AtomicConstants.LogTags.Networking,$"Failed to host lobby, reason: {gameResult.ErrorMessage}");
             }
             

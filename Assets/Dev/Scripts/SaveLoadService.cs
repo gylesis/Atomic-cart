@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dev.Infrastructure;
@@ -8,7 +7,6 @@ using Dev.Utils;
 using Newtonsoft.Json;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
-using UnityEngine;
 
 namespace Dev
 {
@@ -40,7 +38,7 @@ namespace Dev
             var task = CloudSaveService.Instance.Files.Player.LoadBytesAsync(PlayerSaveKey);
             await task;
 
-            Debug.Log($"Profile loaded");
+            AtomicLogger.Log($"Profile loaded");
             
             byte[] bytes = task.Result;
             string json = Encoding.Default.GetString(bytes);
@@ -57,6 +55,8 @@ namespace Dev
 
             Task saveTask = CloudSaveService.Instance.Files.Player.SaveAsync(PlayerSaveKey, bytes);
             await saveTask;
+            
+            AtomicLogger.Log($"Profile saved");
         }
 
         public void AddKill(SessionPlayer sessionPlayer)
