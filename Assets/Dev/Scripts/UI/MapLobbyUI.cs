@@ -18,7 +18,6 @@ namespace Dev.UI
 
         [Networked, Capacity(8)] public NetworkDictionary<PlayerRef, bool> ReadyStatesDictionary => default;
 
-        private PopUpService _popUpService;
         public Subject<Unit> ReadyStatusUpdated { get; } = new Subject<Unit>();
 
         private void Awake()
@@ -39,12 +38,6 @@ namespace Dev.UI
 
                 readyUI.RPC_SetReadyView(isReady);
             }
-        }
-
-        [Inject]
-        private void Init(PopUpService popUpService)
-        {
-            _popUpService = popUpService;
         }
         
 
@@ -121,8 +114,8 @@ namespace Dev.UI
 
         public void OnConnectedToServer(NetworkRunner runner)
         {
-            _popUpService.HidePopUp<LobbyPlayMenu>();
-            _popUpService.ShowPopUp<SessionMenu>();
+            PopUpService.Instance.HidePopUp<LobbyPlayMenu>();
+            PopUpService.Instance.ShowPopUp<SessionMenu>();
 
             Debug.Log($"{runner.LocalPlayer} Connected to server");
         }

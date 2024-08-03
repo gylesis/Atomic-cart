@@ -16,7 +16,6 @@ namespace Dev.PlayerLogic
 
         [SerializeField] private Color _localPlayerColor;
         
-        
         private PlayersScoreService _playersScoreService;
 
         private List<PlayerScoreUI> _scoreUis = new List<PlayerScoreUI>();

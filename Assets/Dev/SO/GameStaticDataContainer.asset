@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _charactersDataContainer: {fileID: 11400000, guid: b9885e7b526be5943b1cbcee28b272eb, type: 2}
   _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
+  _popUpsStaticDataContainer: {fileID: 11400000, guid: 30d814251de0cf541ab732a4c5d29145, type: 2}

@@ -1,9 +1,7 @@
-using System;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
-using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -16,7 +14,6 @@ namespace Dev.UI.PopUpsAndMenus
         
         private PlayerCharacterClassChangeService _playerCharacterClassChangeService;
         private NetworkRunner _networkRunner;
-
 
         protected override void Awake()
         {
@@ -38,8 +35,8 @@ namespace Dev.UI.PopUpsAndMenus
         {
             PopUpService.HidePopUp<InGameMenu>();
 
-            PopUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
-            
+            var characterChooseMenu = PopUpService.ShowPopUp<CharacterChooseMenu>();
+
             PopUpService.ClosePrevPopUps();
             
             characterChooseMenu.StartChoosingCharacter((characterClass =>
@@ -53,10 +50,9 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void OnExitButtonClicked()
         {
-            PopUpService.TryGetPopUp<DecidePopUp>(out var decidePopUp);
-
-            decidePopUp.Show();
-            decidePopUp.Init("Are you sure want to exit?", OnDecide);
+            var decidePopUp = PopUpService.ShowPopUp<DecidePopUp>();
+            
+            decidePopUp.SetTitle("Are you sure want to exit?", OnDecide);
 
             void OnDecide(bool isYes)
             {

@@ -1,6 +1,6 @@
+using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.Infrastructure
@@ -12,9 +12,14 @@ namespace Dev.Infrastructure
         [SerializeField] private Curtains _curtains;
 
         [SerializeField] private GameStaticDataContainer _gameStaticDataContainer;
+
+        [SerializeField] private Transform _popUpsParent;
+        
         
         public override void InstallBindings()
         {
+            Container.Bind<PopUpService>().FromNew().AsSingle().WithArguments(_popUpsParent).NonLazy();
+            
             Container.BindInterfacesAndSelfTo<AtomicLogger>().AsSingle().NonLazy();
             
             Container.Bind<InternetChecker>().AsSingle().NonLazy();
@@ -28,8 +33,8 @@ namespace Dev.Infrastructure
             Container.Bind<GameSettingProvider>().AsSingle().NonLazy();
             Container.Bind<MapsContainer>().FromInstance(_mapsContainer);
             Container.Bind<GameSettings>().FromInstance(_gameSettings).AsSingle();
+
+            Container.Bind<DiInjecter>().AsSingle().NonLazy();
         }
     }
-    
-    
 }

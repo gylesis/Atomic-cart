@@ -42,7 +42,7 @@ namespace Dev
 
             }
             
-            _curtains.Hide();
+            _curtains.Hide(0);
             return true;
         }
 

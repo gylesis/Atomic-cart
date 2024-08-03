@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using Dev.Utils;
 using DG.Tweening;
 using TMPro;
@@ -20,10 +21,11 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private Transform _centerTransform;
         
         private Action<bool> _onDecide;
+        private UniTaskCompletionSource<bool> _uniTaskCompletionSource;
 
         public bool Decision { get; private set; }
         
-        public void Init(string title, Action<bool> onDecide)
+        public void SetTitle(string title, Action<bool> onDecide = null)
         {
             _titleText.text = title;
             _onDecide = onDecide;
@@ -33,6 +35,7 @@ namespace Dev.UI.PopUpsAndMenus
         {
             base.Awake();
 
+            _uniTaskCompletionSource = new UniTaskCompletionSource<bool>();
             _yesButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnDecisionDecided(true)));
             _noButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnDecisionDecided(false)));
         }
@@ -42,9 +45,15 @@ namespace Dev.UI.PopUpsAndMenus
             Decision = isYes;
             
             _onDecide?.Invoke(isYes);
+            _uniTaskCompletionSource?.TrySetResult(isYes);
         }
 
-        public override void Show()
+        public UniTask<bool> WaitAnswer()
+        {
+            return _uniTaskCompletionSource.Task;
+        } 
+
+        public override void Show() 
         {
             _centerTransform.localScale = Vector3.zero;
             _canvasGroup.alpha = 1;

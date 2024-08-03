@@ -1,32 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Dev.Infrastructure;
 using UniRx;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Dev.UI.PopUpsAndMenus
 {
-    public class PopUpService : MonoBehaviour
+    public class PopUpService
     {
-        [SerializeField] private Transform _popUpsParent;
+        private Transform _linkedScenePopUpsParent;
+        private Transform _spawnedPopUpsParent;
 
-        private Dictionary<Type, PopUp> _spawnedPrefabs = new Dictionary<Type, PopUp>();
+        private Dictionary<Type, PopUp> _spawnedPopUps = new Dictionary<Type, PopUp>();
 
         public Subject<PopUpStateContext> PopUpStateChanged { get; } = new Subject<PopUpStateContext>();
 
         private Queue<PopUp> _popUpsChain = new Queue<PopUp>();
 
-        private void Awake()
+        private PopUpsStaticDataContainer _popUpsStaticDataContainer;
+        private DiInjecter _diInjecter;
+
+        private CompositeDisposable _disposable = new CompositeDisposable();
+
+        public static PopUpService Instance { get; private set; }
+
+        public List<Type> _scenePopUps = new ();
+        
+        private PopUpService(GameStaticDataContainer gameStaticDataContainer, DiInjecter diInjecter,
+                             Transform spawnedPopUpsParent)
         {
-            var popUps = _popUpsParent.GetComponentsInChildren<PopUp>();
+            _spawnedPopUpsParent = spawnedPopUpsParent;
+            _diInjecter = diInjecter;
+            _popUpsStaticDataContainer = gameStaticDataContainer.PopUpsStaticDataContainer;
+
+            Instance = this;
+        }
+
+        public void UpdateSceneLink(Transform linkedTransform)
+        {
+            //_diInjecter.InjectGameObject(linkedTransform.gameObject);
+
+            foreach (var type in _scenePopUps)
+            {
+                _spawnedPopUps.Remove(type);
+            }
+            
+            _linkedScenePopUpsParent = linkedTransform;
+            LinkPopUps();
+        }
+
+        private void LinkPopUps()
+        {
+            var popUps = _linkedScenePopUpsParent.GetComponentsInChildren<PopUp>();
 
             foreach (PopUp popUp in popUps)
             {
                 popUp.InitPopUpService(this);
                 Type type = popUp.GetType();
 
-                popUp.ShowAndHide.TakeUntilDestroy(this).Subscribe((b => OnPopUpStateChanged(type, b)));
-                _spawnedPrefabs.Add(type, popUp);
+                popUp.ShowAndHide.Subscribe((b => OnPopUpStateChanged(type, b))).AddTo(_disposable);
+                _spawnedPopUps.Add(type, popUp);
+                _scenePopUps.Add(type);
             }
         }
 
@@ -38,7 +73,7 @@ namespace Dev.UI.PopUpsAndMenus
 
             if (isOn)
             {
-                _popUpsChain.Enqueue(_spawnedPrefabs[type]);
+                _popUpsChain.Enqueue(_spawnedPopUps[type]);
             }
             else
             {
@@ -47,7 +82,6 @@ namespace Dev.UI.PopUpsAndMenus
                     _popUpsChain.Dequeue();
                 }
             }
-
 
             PopUpStateChanged.OnNext(stateContext);
         }
@@ -64,55 +98,68 @@ namespace Dev.UI.PopUpsAndMenus
             }
         }
 
-        public bool TryGetPopUp<TPopUp>(out TPopUp popUp) where TPopUp : PopUp
+        private void TryGetPopUp<TPopUp>(out TPopUp popUp) where TPopUp : PopUp
         {
-            popUp = null;
-
             Type popUpType = typeof(TPopUp);
 
-            if (_spawnedPrefabs.TryGetValue(popUpType, out PopUp prefab))
+            if (_spawnedPopUps.TryGetValue(popUpType, out var spawnedPopUp))
             {
-                popUp = prefab as TPopUp;
-                return popUp;
+                popUp = spawnedPopUp as TPopUp;
             }
-
-            _spawnedPrefabs.Add(typeof(TPopUp), popUp);
-
-            Debug.Log($"No such PopUp like {popUpType}");
-
-            return popUp;
+            else
+            {
+                popUp = SpawnPopUp<TPopUp>();
+                _spawnedPopUps.Add(popUpType, popUp);
+            }
         }
 
-        public void ShowPopUp<TPopUp>(Action onSuccedBtnClicked = null) where TPopUp : PopUp
+        public TPopUp ShowPopUp<TPopUp>(Action onSuccedBtnClicked = null) where TPopUp : PopUp
         {
-            var tryGetPopUp = TryGetPopUp<TPopUp>(out var popUp);
+            TryGetPopUp<TPopUp>(out var popUp);
 
-            if (tryGetPopUp)
-            {
-                popUp.OnSucceedButtonClicked(onSuccedBtnClicked);
-                popUp.Show();
-            }
+            popUp.OnSucceedButtonClicked(onSuccedBtnClicked);
+            popUp.Show();
+            return popUp;
         }
 
         public void HidePopUp<TPopUp>() where TPopUp : PopUp
         {
-            var tryGetPopUp = TryGetPopUp<TPopUp>(out var popUp);
+            TryGetPopUp<TPopUp>(out var popUp);
 
-            if (tryGetPopUp)
-            {
-                popUp.OnSucceedButtonClicked(null);
-                popUp.Hide();
-            }
+            popUp.OnSucceedButtonClicked(null);
+            popUp.Hide();
         }
+
+        public void HidePopUp(PopUp popUp)
+        {
+            popUp.OnSucceedButtonClicked(null);
+            popUp.Hide();
+        }
+
+        private TPopUp SpawnPopUp<TPopUp>() where TPopUp : PopUp
+        {
+            var popUp = Object.Instantiate(GetPrefab<TPopUp>(), _spawnedPopUpsParent);
+            popUp.InitPopUpService(this);
+            _diInjecter.InjectGameObject(popUp.gameObject);
+            return popUp;
+        }
+
+        private TPopUp GetPrefab<TPopUp>() where TPopUp : PopUp
+        {
+            return _popUpsStaticDataContainer.GetPrefab<TPopUp>();
+        }
+
+        private bool IsPopUpSpawned<TPopUp>() => _spawnedPopUps.ContainsKey(typeof(TPopUp));
 
         public void HideAllPopUps()
         {
-            foreach (var popUp in _spawnedPrefabs)
+            foreach (var popUp in _spawnedPopUps)
             {
                 popUp.Value.Hide();
             }
         }
     }
+
 
     public struct PopUpStateContext
     {

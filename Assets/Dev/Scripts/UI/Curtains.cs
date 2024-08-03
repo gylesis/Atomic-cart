@@ -4,6 +4,8 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Dev.Utils;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -16,13 +18,17 @@ namespace Dev.Infrastructure
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private TMP_Text _text;
 
-        private CancellationToken _cancellationToken = new CancellationToken();
         private IDisposable _animationDisposable;
         private Color _defaultTextColor;
         private StringBuilder _animationStringBuilder = new StringBuilder();
         private StringBuilder _textBuilder = new StringBuilder();
 
         public static Curtains Instance;
+        
+        private CancellationToken _showToken = new CancellationToken();
+        private CancellationToken _hideToken = new CancellationToken();
+        private TweenerCore<float, float, FloatOptions> _showTween;
+        private TweenerCore<float, float, FloatOptions> _hideTween;
 
         private void Awake()
         {
@@ -71,6 +77,12 @@ namespace Dev.Infrastructure
 
         public async void Show(float showDuration = 1, float waitDuration = 0, Action onShow = null)
         {
+            _showTween.Kill(true);
+            _hideTween.Kill(true);
+            
+            _hideToken.ThrowIfCancellationRequested();
+            _showToken.ThrowIfCancellationRequested();
+            
             if (_textBuilder.Length > 0)
                 _text.text = _textBuilder.ToString();
 
@@ -79,8 +91,9 @@ namespace Dev.Infrastructure
             _canvasGroup.interactable = true;
             _canvasGroup.blocksRaycasts = true;
 
-            await _canvasGroup.DOFade(1, showDuration).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(_cancellationToken);
-            await UniTask.Delay(TimeSpan.FromSeconds(waitDuration), cancellationToken: _cancellationToken);
+            _showTween = _canvasGroup.DOFade(1, showDuration);
+            await _showTween.AsyncWaitForCompletion();
+            await UniTask.Delay(TimeSpan.FromSeconds(waitDuration), cancellationToken: _showToken);
 
             onShow?.Invoke();
         }
@@ -123,9 +136,17 @@ namespace Dev.Infrastructure
 
         public void Hide(float hideDuration = 1, Action onHide = null)
         {
+            _showTween.Kill(true);
+            _hideTween.Kill(true);
+            
+            _hideToken.ThrowIfCancellationRequested();
+            _showToken.ThrowIfCancellationRequested();
+            
             StopDotAnimation();
 
-            _canvasGroup.DOFade(0, hideDuration).OnComplete((() =>
+            _hideTween = _canvasGroup.DOFade(0, hideDuration);
+            
+            _hideTween.OnComplete((() =>
             {
                 ResetText();
                 onHide?.Invoke();
@@ -134,19 +155,19 @@ namespace Dev.Infrastructure
             {
                 _canvasGroup.blocksRaycasts = false;
                 _canvasGroup.interactable = false;
-            }));
+            })).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(_hideToken);
         }
 
         public async void HideWithDelay(float waitTime, float hideDuration = 1, Action onHide = null)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: _cancellationToken);
+            await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: _showToken);
             Hide(hideDuration, onHide);
         }
 
         private void OnDestroy()
         {
             StopDotAnimation();
-            _cancellationToken.ThrowIfCancellationRequested();
+            _showToken.ThrowIfCancellationRequested();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using Dev.Effects;
 using Dev.Infrastructure;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Dev.Weapons.StaticData;
 using DG.Tweening;
@@ -67,7 +68,7 @@ namespace Dev.Weapons.Guns
         /// <param name="projectile"></param>
         protected virtual void OnProjectileBeforeSpawned(Projectile projectile) // auto destroy logic
         {
-            DependenciesContainer.Instance.Inject(projectile.gameObject);
+            DiInjecter.Instance.InjectGameObject(projectile.gameObject);
             
             projectile.RPC_SetOwner(Owner);
             

@@ -52,6 +52,7 @@ namespace Dev.Infrastructure
                           GameStaticDataContainer gameStaticDataContainer, SessionStateService sessionStateService,
                           HealthObjectsService healthObjectsService, GameSettings gameSettings)
         {
+            Debug.Log($"Inject");
             _gameSettings = gameSettings;
             _healthObjectsService = healthObjectsService;
             _sessionStateService = sessionStateService;
@@ -67,7 +68,7 @@ namespace Dev.Infrastructure
 
         private void GetCharacterClassAndSpawn(PlayerRef playerRef)
         {
-            _popUpService.TryGetPopUp<CharacterChooseMenu>(out var characterChooseMenu);
+            var characterChooseMenu = _popUpService.ShowPopUp<CharacterChooseMenu>();
 
             characterChooseMenu.StartChoosingCharacter((characterClass =>
             {
@@ -158,7 +159,7 @@ namespace Dev.Infrastructure
                     character.WeaponController.RPC_SetOwner(_sessionStateService.GetSessionPlayer(playerRef));
                     character.transform.parent = playerBase.transform;
 
-                    DependenciesContainer.Instance.Inject(o.gameObject);
+                    DiInjecter.Instance.InjectGameObject(o.gameObject);
                 });
 
             NetworkObject playerNetObj = playerCharacter.Object;
@@ -296,7 +297,7 @@ namespace Dev.Infrastructure
             CameraController cameraController = networkRunner.Spawn(_cameraControllerPrefab,
                 pos,
                 Quaternion.identity,
-                playerRef, onBeforeSpawned: (runner, o) => { DependenciesContainer.Instance.Inject(o.gameObject); });
+                playerRef, onBeforeSpawned: (runner, o) => { DiInjecter.Instance.InjectGameObject(o.gameObject); });
 
             cameraController.SetFollowState(true);
             cameraController.Object.RequestStateAuthority();

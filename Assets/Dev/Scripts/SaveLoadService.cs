@@ -31,6 +31,11 @@ namespace Dev
             {
                 Profile = new Profile();
                 Profile.Nickname = AuthService.Nickname;
+
+                await Save((profile =>
+                {
+                    profile.Nickname = Profile.Nickname;
+                }));
                 
                 return;
             }

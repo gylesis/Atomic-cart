@@ -1,5 +1,6 @@
 ﻿using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Dev.UI.PopUpsAndMenus;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace Dev.Weapons
             T isntance = _runner.Spawn(prefab: prefab, position: pos, inputAuthority: inputAuthority, onBeforeSpawned: (
                 (runner, o) =>
                 {
-                    DependenciesContainer.Instance.Inject(o.gameObject);
+                    DiInjecter.Instance.InjectGameObject(o.gameObject);
                     onBeforeSpawned(runner, o);
                 })).GetComponent<T>();
             

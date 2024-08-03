@@ -123,7 +123,7 @@ namespace Dev.Infrastructure
         [Rpc]
         private void RPC_ShowRestartNotification(string title, string description, int removeNotificationDelay)
         {
-            _popUpService.TryGetPopUp<NotificationPopUp>(out var notificationPopUp);
+            var notificationPopUp = _popUpService.ShowPopUp<NotificationPopUp>();
 
             notificationPopUp.Init(title, description, removeNotificationDelay);
             notificationPopUp.Show();

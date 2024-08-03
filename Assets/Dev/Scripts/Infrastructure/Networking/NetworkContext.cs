@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using Dev.UI.PopUpsAndMenus;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace Dev.Infrastructure
 
         protected virtual void LoadLateInjection()
         {
-            DependenciesContainer.Instance.Inject(gameObject);
+            DiInjecter.Instance.InjectGameObject(gameObject);
         }
 
         /// <summary>

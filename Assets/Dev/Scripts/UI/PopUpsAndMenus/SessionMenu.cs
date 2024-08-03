@@ -34,10 +34,10 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void OnExitButtonClicked()
         {
-            PopUpService.TryGetPopUp<DecidePopUp>(out var decidePopUp);
+            var decidePopUp = PopUpService.ShowPopUp<DecidePopUp>();
 
             decidePopUp.Show();
-            decidePopUp.Init("Are you sure want to exit?", OnDecide);
+            decidePopUp.SetTitle("Are you sure want to exit?", OnDecide);
 
             void OnDecide(bool isYes)
             {
@@ -57,7 +57,7 @@ namespace Dev.UI.PopUpsAndMenus
                     PlayerManager.PlayersOnServer.Clear();
                     PlayerManager.LoadingPlayers.Clear();
 
-                    SceneManager.LoadScene(0);
+                    SceneManager.LoadSceneAsync(SceneManager.GetSceneByName("Lobby").buildIndex);
                 }
             }
 

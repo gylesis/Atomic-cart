@@ -63,14 +63,14 @@ namespace Dev.UI.PopUpsAndMenus
 
         protected void EnableCanvasGroup()
         {
-            ShowAndHide.OnNext(false);
+            //ShowAndHide.OnNext(false);
             _canvasGroup.interactable = true;
             _canvasGroup.blocksRaycasts = true;
         }
 
         protected void DisableCanvasGroup()
         {
-            ShowAndHide.OnNext(true);
+            //ShowAndHide.OnNext(true);
             _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
         }

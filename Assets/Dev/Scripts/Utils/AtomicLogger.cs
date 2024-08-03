@@ -91,7 +91,7 @@ namespace Dev.Utils
 
         public static void Ex(string message, string tag = default, bool isSilent = false)
         {
-            if (tag == default)
+            if (tag == default) 
             {
                 tag = AtomicConstants.LogTags.Default;
             }

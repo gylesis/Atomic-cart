@@ -24,16 +24,13 @@ namespace Dev.UI.PopUpsAndMenus
         private void OnCreateSessionButtonClicked()
         {
             Hide();
-            
-            PopUpService.TryGetPopUp<MapSelectionMenu>(out var mapSelectionMenu);
-            
-            mapSelectionMenu.Show();
-            
-            mapSelectionMenu.OnSucceedButtonClicked((() =>
+
+            PopUpService.ShowPopUp<MapSelectionMenu>((() =>
             {
                 Show();
-                mapSelectionMenu.Hide();
+                PopUpService.HidePopUp<MapSelectionMenu>();
             }));
+
         }
 
         private void OnJoinSessionButtonClicked()

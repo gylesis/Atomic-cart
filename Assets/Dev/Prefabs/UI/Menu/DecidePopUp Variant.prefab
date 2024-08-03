@@ -596,7 +596,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2517265717965689408, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_SortingOrder
-      value: 17
+      value: 101
       objectReference: {fileID: 0}
     - target: {fileID: 2517265717965689408, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_OverrideSorting

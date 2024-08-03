@@ -4,6 +4,7 @@ using System.Linq;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
 using UniRx;
@@ -112,7 +113,7 @@ namespace Dev.BotsLogic
             {
                 var bot = o.GetComponent<Bot>();
 
-                DependenciesContainer.Instance.Inject(bot.gameObject);
+                DiInjecter.Instance.InjectGameObject(bot.gameObject);
                 
                 bot.View.RPC_SetTeamBannerColor(AtomicConstants.Teams.GetTeamColor(team));
                 

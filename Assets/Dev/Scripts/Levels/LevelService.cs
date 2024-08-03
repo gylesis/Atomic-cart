@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Dev.Infrastructure;
+using Dev.UI.PopUpsAndMenus;
 using Fusion;
 using UniRx;
 using Zenject;
@@ -37,7 +38,7 @@ namespace Dev.Levels
     
             Level level = Runner.Spawn(levelStaticData.Prefab, onBeforeSpawned: (runner, o) =>
             {
-                DependenciesContainer.Instance.Inject(o.gameObject);
+                DiInjecter.Instance.InjectGameObject(o.gameObject);
             });
             
             level.Object.ReleaseStateAuthority();

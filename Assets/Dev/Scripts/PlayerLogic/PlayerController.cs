@@ -17,7 +17,7 @@ namespace Dev.PlayerLogic
     {
         [SerializeField] private float _shiftSpeed = 2;
         [SerializeField] private float _dashTime = 0.5f;
-        
+
         private float _speed;
         private float _shootThreshold;
         private float _speedLowerSpeed;
@@ -28,14 +28,14 @@ namespace Dev.PlayerLogic
         private JoysticksContainer _joysticksContainer;
         private PlayerBase _playerBase;
         private InputService _inputService;
-        
+
         private PlayerCharacter PlayerCharacter => _playerBase.Character;
         private WeaponController _weaponController => PlayerCharacter.WeaponController;
         private PlayerView PlayerView => PlayerCharacter?.PlayerView;
 
         public bool AllowToMove { get; private set; } = true;
         public bool AllowToShoot { get; private set; } = true;
-        
+
         [Networked] private Vector2 LastMoveDirection { get; set; }
         [Networked] public Vector2 LastLookDirection { get; private set; }
         [Networked] public NetworkBool IsPlayerAiming { get; private set; }
@@ -43,11 +43,12 @@ namespace Dev.PlayerLogic
         [Networked] private Vector2 MoveDirection { get; set; }
 
         public Vector3 AimCrosshairPos => PlayerView.CrosshairPos;
-        
+
         [Networked] public NetworkBool IsCastingMode { get; set; }
-        
+
         [Inject]
-        private void Construct(PopUpService popUpService, JoysticksContainer joysticksContainer, InputService inputService, PlayerBase playerBase)
+        private void Construct(PopUpService popUpService, JoysticksContainer joysticksContainer,
+                               InputService inputService, PlayerBase playerBase)
         {
             _playerBase = playerBase;
             _inputService = inputService;
@@ -58,14 +59,11 @@ namespace Dev.PlayerLogic
         protected override void OnInjectCompleted()
         {
             base.OnInjectCompleted();
-            
-            bool tryGetPopUp = _popUpService.TryGetPopUp<HUDMenu>(out var hudMenu);
 
-            if (tryGetPopUp)
-            {
-                hudMenu.InteractiveButtonClicked.TakeUntilDestroy(this)
-                    .Subscribe((unit => OnInteractionButtonClicked()));
-            }
+            var hudMenu = _popUpService.ShowPopUp<HUDMenu>();
+
+            hudMenu.InteractiveButtonClicked.TakeUntilDestroy(this)
+                .Subscribe((unit => OnInteractionButtonClicked()));
 
             SetInteractionAction(null);
         }
@@ -86,15 +84,12 @@ namespace Dev.PlayerLogic
         {
             _onActionButtonPressed = onActionButtonPressed;
 
-            bool tryGetPopUp = _popUpService.TryGetPopUp<HUDMenu>(out var hudMenu);
+            var hudMenu = _popUpService.ShowPopUp<HUDMenu>();
 
-            if (tryGetPopUp)
-            {
-                hudMenu.InteractiveButtonClicked.TakeUntilDestroy(this)
-                    .Subscribe((unit => OnInteractionButtonClicked()));
+            hudMenu.InteractiveButtonClicked.TakeUntilDestroy(this)
+                .Subscribe((unit => OnInteractionButtonClicked()));
 
-                hudMenu.SetInteractionButtonState(onActionButtonPressed == null);
-            }
+            hudMenu.SetInteractionButtonState(onActionButtonPressed == null);
         }
 
         private void Shoot()
@@ -106,8 +101,8 @@ namespace Dev.PlayerLogic
         {
             if (HasStateAuthority == false) return;
 
-            if(PlayerCharacter == null) return;
-            
+            if (PlayerCharacter == null) return;
+
             foreach (PlayerInput input in _inputService.BufferedInputs)
             {
                 MoveDirection = input.MoveDirection;
@@ -253,7 +248,7 @@ namespace Dev.PlayerLogic
 
             Vector2 lookDirection = LookDirection;
 
-            
+
             if (lookDirection == Vector2.zero)
             {
                 IsPlayerAiming = false;
@@ -268,14 +263,12 @@ namespace Dev.PlayerLogic
                 if (_playerBase.PlayerController.IsCastingMode == false)
                 {
                     var magnitude = lookDirection.sqrMagnitude;
-                    
+
                     if (magnitude >= _shootThreshold)
                     {
                         Shoot();
                     }
                 }
-                
-               
             }
 
 

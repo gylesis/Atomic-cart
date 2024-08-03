@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
@@ -77,7 +78,7 @@ namespace Dev.Weapons
         {
             AirStrikeBomb bomb = _localNetRunner.Spawn(_airStrikeBombPrefab, spawnPos, onBeforeSpawned: (runner, o) =>
             {
-                DependenciesContainer.Instance.Inject(o.gameObject);
+                DiInjecter.Instance.InjectGameObject(o.gameObject);
 
                 AirStrikeBomb airStrikeBomb = o.GetComponent<AirStrikeBomb>();
                 airStrikeBomb.RPC_SetOwner(owner);

@@ -19,7 +19,7 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private DefaultReactiveButton _toggleCastModesButton;
 
         [SerializeField] private LongClickReactiveButton _resetAbilityButton;
-        
+
         private PlayerBase _playerBase;
         private AbilityCastController _castController;
         private PlayersSpawner _playersSpawner;
@@ -42,12 +42,12 @@ namespace Dev.UI.PopUpsAndMenus
             _showTab.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnShowTabButtonClicked()));
             _exitMenuButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitMenuButtonClicked()));
             _interactionButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnInteractionButtonClicked()));
-            
+
             _resetAbilityButton.LongClick.TakeUntilDestroy(this).Subscribe((unit => OnResetAbilityButtonClicked()));
             _resetAbilityButton.SetAllowToLongClick(true);
 
             _toggleCastModesButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnToggleCastModesClicked()));
-            
+
             _joysticksContainer.AimJoystick.PointerUpOrDown.TakeUntilDestroy(this)
                 .Subscribe((OnAimJoystickPointerUpOrDown));
 
@@ -71,7 +71,7 @@ namespace Dev.UI.PopUpsAndMenus
 
             _castController = playerBase.AbilityCastController;
             _castController.AbilityRecharged.TakeUntilDestroy(this).Subscribe((OnAbilityRecharged));
-            
+
             SetCastMode(IsCastingMode);
         }
 
@@ -88,12 +88,12 @@ namespace Dev.UI.PopUpsAndMenus
             CastButtonClicked.OnNext(Unit.Default);
 
             SetResetAbilityVisible(_castController.CurrentAbilityToCast, true);
-            
+
             PlayerInput input = new PlayerInput();
             input.WithCast(true);
-            
+
             _playerBase.InputService.SimulateInput(input);
-            
+
             return;
             OnToggleCastModesClicked();
         }
@@ -113,6 +113,7 @@ namespace Dev.UI.PopUpsAndMenus
                     {
                         _resetAbilityButton.Disable();
                     }
+
                     break;
                 case AbilityType.MiniAirStrike:
                     _resetAbilityButton.Disable();
@@ -137,10 +138,10 @@ namespace Dev.UI.PopUpsAndMenus
         private void OnAbilityRecharged(AbilityType abilityType)
         {
             SetResetAbilityVisible(abilityType, false);
-            
+
             Debug.Log($"Ability recharged");
         }
-        
+
         private void OnToggleCastModesClicked()
         {
             _playerBase.PlayerController.IsCastingMode = !IsCastingMode;
@@ -150,19 +151,19 @@ namespace Dev.UI.PopUpsAndMenus
         private void SetCastMode(bool isCasting)
         {
             _resetAbilityButton.gameObject.SetActive(isCasting);
-            
+
             _joysticksContainer.AimJoystick.SetThresholdImageState(!isCasting);
         }
-        
+
         private void OnAimJoystickPointerUpOrDown(bool isUp)
         {
-            if(isUp == false) return;
-            
-            if(_playerBase.PlayerController.IsCastingMode == false) return;
-            
+            if (isUp == false) return;
+
+            if (_playerBase.PlayerController.IsCastingMode == false) return;
+
             CastAbility();
         }
-        
+
         public void SetInteractionButtonState(bool enabled)
         {
             if (enabled)
@@ -182,34 +183,28 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void OnExitMenuButtonClicked()
         {
-            PopUpService.TryGetPopUp<InGameMenu>(out var exitPopUp);
-
-            Hide();
-            exitPopUp.Show();
-
-            exitPopUp.OnSucceedButtonClicked((() =>
+            PopUpService.ShowPopUp<InGameMenu>((() =>
             {
-                exitPopUp.Hide();
+                PopUpService.HidePopUp<InGameMenu>();
                 Show();
             }));
+
+            Hide();
         }
 
         private void OnShowTabButtonClicked()
         {
-            var tryGetPopUp = PopUpService.TryGetPopUp<PlayersScoreMenu>(out var playersScoreMenu);
+            var playersScoreMenu = PopUpService.ShowPopUp<PlayersScoreMenu>();
 
-            if (tryGetPopUp)
+            Hide();
+
+            playersScoreMenu.Show();
+
+            playersScoreMenu.OnSucceedButtonClicked((() =>
             {
-                Hide();
-
-                playersScoreMenu.Show();
-
-                playersScoreMenu.OnSucceedButtonClicked((() =>
-                {
-                    playersScoreMenu.Hide();
-                    Show();
-                }));
-            }
+                playersScoreMenu.Hide();
+                Show();
+            }));
         }
     }
 }

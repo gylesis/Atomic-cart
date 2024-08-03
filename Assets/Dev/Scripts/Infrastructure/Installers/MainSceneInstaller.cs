@@ -1,9 +1,7 @@
 ﻿using Dev.BotsLogic;
-using Dev.CartLogic;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
-using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Dev.Weapons;
 using Dev.Weapons.Guns;
@@ -22,7 +20,6 @@ namespace Dev.Infrastructure
         [SerializeField] private TeamsScoreService _teamsScoreService;
 
         [SerializeField] private WorldTextProvider _worldTextProvider;
-        [SerializeField] private PopUpService _popUpService;
         [SerializeField] private TimeService _timeService;
         [FormerlySerializedAs("_gameService")] [SerializeField] private GameStateService gameStateService;
 
@@ -50,8 +47,6 @@ namespace Dev.Infrastructure
             Container.Bind<NetworkRunner>().FromInstance(FindObjectOfType<NetworkRunner>()).AsSingle();
             Container.Bind<KillerFeedNotifyService>().FromInstance(_killerFeedNotifyService).AsSingle();
             
-            Container.Bind<DependenciesContainer>().AsSingle().NonLazy();
-
             Container.Bind<JoysticksContainer>().FromInstance(_joysticksContainer).AsSingle();
             
             Container.Bind<HealthObjectsService>().FromInstance(_healthObjectsService).AsSingle();
@@ -83,7 +78,6 @@ namespace Dev.Infrastructure
             Container.Bind<GameStateService>().FromInstance(gameStateService).AsSingle();
             Container.Bind<LevelService>().FromInstance(_levelService).AsSingle();
             Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
-            Container.Bind<PopUpService>().FromInstance(_popUpService).AsSingle();
             Container.Bind<TimeService>().FromInstance(_timeService).AsSingle();
             Container.Bind<TeamsService>().FromInstance(_teamsService).AsSingle();
             Container.Bind<TeamsScoreService>().FromInstance(_teamsScoreService).AsSingle();

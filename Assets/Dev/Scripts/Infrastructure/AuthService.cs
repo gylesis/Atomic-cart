@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Dev.Utils;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using UnityEngine;
 
 namespace Dev
 {
@@ -11,23 +13,105 @@ namespace Dev
     {
         public static string Nickname;
 
+        public string Token;
+        public string Error;
+
+        public static bool IsAuthorized { get; private set; }
+        
         public async Task<bool> Auth()
         {   
-            AuthenticationService.Instance.SignedIn += OnSignedIn;
-            AuthenticationService.Instance.SignInFailed += OnSignInFailed;
+            //await LoginGooglePlayGames();
+            //await SignInWithGooglePlayGamesAsync(Token);
+            
+            //AuthenticationService.Instance.SignedIn += OnSignedIn;
+            //AuthenticationService.Instance.SignInFailed += OnSignInFailed;
+
+            //return true;
             
             try
             {
-                await AuthenticationService.Instance.SignInWithUsernamePasswordAsync("gylesis", "qwertY1!");
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+                IsAuthorized = true;
+                
+                /*if (AuthenticationService.Instance.SessionTokenExists == false)
+                {
+                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                }
+                else
+                {
+                    string username = PlayerPrefs.GetString("username", "gylesis");
+                    string password = PlayerPrefs.GetString("pass", "qwertY1!");
+                    
+                    await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
+                }*/
+                
                 return true;
             }
             catch (Exception e)
             {
+                IsAuthorized = false;
                 AtomicLogger.Ex(e.Message);
                 return false;
             }
-           // await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
+        
+        public Task<bool> LoginGooglePlayGames()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            
+            PlayGamesPlatform.Instance.Authenticate((success) =>
+            {
+                if (success == SignInStatus.Success)
+                {
+                    AtomicLogger.Log("Login with Google Play games successful.");
+                    PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
+                    {
+                        Debug.Log("Authorization code: " + code);
+                        Token = code;
+                        // This token serves as an example to be used for SignInWithGooglePlayGames
+
+                        tcs.SetResult(true);
+                    });
+                }
+                else
+                {
+                    Error = "Failed to retrieve Google play games authorization code";
+                    AtomicLogger.Log("Login Unsuccessful");
+                    tcs.SetResult(false);
+                }
+            });
+            
+            return tcs.Task;
+        }
+        
+        
+        private async Task<bool> SignInWithGooglePlayGamesAsync(string authCode)
+        {
+            try
+            {   
+                await AuthenticationService.Instance.SignInWithGooglePlayGamesAsync(authCode);
+                Debug.Log($"PlayerID: {AuthenticationService.Instance.PlayerId}"); //Display the Unity Authentication PlayerID
+                Debug.Log("SignIn is successful.");
+                return true;
+            }
+            catch (AuthenticationException ex)
+            {
+                // Compare error code to AuthenticationErrorCodes
+                // Notify the player with the proper error message
+                AtomicLogger.Ex(ex.Message);
+                return false;
+            }
+            catch (RequestFailedException ex)
+            {
+                // Compare error code to CommonErrorCodes
+                // Notify the player with the proper error message
+                AtomicLogger.Ex(ex.Message);
+
+                return false;
+            }
+        }
+        
 
         public async Task UpdateNickname(string nickname)
         {
@@ -74,4 +158,5 @@ namespace Dev
             AuthenticationService.Instance.SignInFailed -= OnSignInFailed;
         }
     }
+    
 }
