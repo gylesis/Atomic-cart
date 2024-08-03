@@ -52,7 +52,6 @@ namespace Dev.Infrastructure
                           GameStaticDataContainer gameStaticDataContainer, SessionStateService sessionStateService,
                           HealthObjectsService healthObjectsService, GameSettings gameSettings)
         {
-            Debug.Log($"Inject");
             _gameSettings = gameSettings;
             _healthObjectsService = healthObjectsService;
             _sessionStateService = sessionStateService;
@@ -256,7 +255,7 @@ namespace Dev.Infrastructure
         {
             PlayersBase.Add(playerRef, playerBase);
             
-            _sessionStateService.RPC_AddPlayer(playerRef.ToNetworkId(), $"{SaveLoadService.Instance.Profile.Nickname}", false, _teamsService.GetUnitTeamSide(playerRef));
+            _sessionStateService.RPC_AddPlayer(playerRef.ToNetworkId(), $"{PlayersDataLinker.Instance.GetNickname(playerRef)}", false, _teamsService.GetUnitTeamSide(playerRef));
         }
 
         private void SetCharacterTeamBannerColor(PlayerRef playerRef)

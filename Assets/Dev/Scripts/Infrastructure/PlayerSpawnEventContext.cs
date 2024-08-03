@@ -10,4 +10,4 @@ namespace Dev.Infrastructure
         public PlayerRef PlayerRef;
         public Transform Transform;
     }
-}
+}   

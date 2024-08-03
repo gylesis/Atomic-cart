@@ -143,7 +143,7 @@ namespace Dev.PlayerLogic
                 PlayerScoreList.Set(index, playerScoreData);
             }
             
-            Debug.Log($"{killerName} killed {deadName}");
+            AtomicLogger.Log($"{killerName} killed {deadName}");
 
             RPC_UpdateScore();
         }
@@ -151,7 +151,6 @@ namespace Dev.PlayerLogic
         [Rpc]
         private void RPC_UpdateScore()
         {
-            Debug.Log($"Update score");
             OnScoreUpdate.OnNext(Unit.Default);
         }
     }

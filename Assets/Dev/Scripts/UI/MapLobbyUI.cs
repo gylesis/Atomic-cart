@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.UI.PopUpsAndMenus;
 using Fusion;
 using Fusion.Sockets;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 namespace Dev.UI
 {
@@ -37,10 +37,10 @@ namespace Dev.UI
                 ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == playerRef);
 
                 readyUI.RPC_SetReadyView(isReady);
+                readyUI.UpdateNickname();
             }
         }
         
-
         public void SetReady(PlayerRef playerRef)
         {
             NetworkBool wasReady = IsPlayerReady(playerRef);
@@ -78,19 +78,22 @@ namespace Dev.UI
             PlayerManager.LoadingPlayers.Add(playerRef);
             PlayerManager.PlayersOnServer.Add(playerRef);
             
-            if (HasStateAuthority)
+            if (Runner.IsSharedModeMasterClient)
             {
                 ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == PlayerRef.None);
 
                 Debug.Log($"Player {playerRef} joined to lobby", readyUI);
-               
-                readyUI.RPC_AssignPlayer(playerRef);
+
+                Observable.Timer(TimeSpan.FromSeconds(0.3f)).Subscribe((l =>
+                {
+                    readyUI.RPC_AssignPlayer(playerRef);
+                })).AddTo(this);
 
                 ReadyStatesDictionary.Add(playerRef, false);
             }
             else
             {
-                PlayersManager.Instance.RPC_Register(playerRef, AuthService.Nickname);
+                //PlayersManager.Instance.RPC_Register(playerRef, AuthService.Nickname);
             }
 
             ReadyStatusUpdated.OnNext(Unit.Default);

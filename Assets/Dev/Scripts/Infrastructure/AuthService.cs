@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Dev.Utils;
+#if !UNITY_STANDALONE_WIN
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+#endif
 using Unity.Services.Authentication;
-using Unity.Services.Core;
+using Unity.Services.Core;  
 using UnityEngine;
 
 namespace Dev
@@ -34,18 +37,6 @@ namespace Dev
 
                 IsAuthorized = true;
                 
-                /*if (AuthenticationService.Instance.SessionTokenExists == false)
-                {
-                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
-                }
-                else
-                {
-                    string username = PlayerPrefs.GetString("username", "gylesis");
-                    string password = PlayerPrefs.GetString("pass", "qwertY1!");
-                    
-                    await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
-                }*/
-                
                 return true;
             }
             catch (Exception e)
@@ -55,11 +46,12 @@ namespace Dev
                 return false;
             }
         }
-        
+
+#if !UNITY_STANDALONE_WIN
         public Task<bool> LoginGooglePlayGames()
         {
             var tcs = new TaskCompletionSource<bool>();
-            
+
             PlayGamesPlatform.Instance.Authenticate((success) =>
             {
                 if (success == SignInStatus.Success)
@@ -84,6 +76,7 @@ namespace Dev
             
             return tcs.Task;
         }
+#endif
         
         
         private async Task<bool> SignInWithGooglePlayGamesAsync(string authCode)
@@ -125,7 +118,12 @@ namespace Dev
         }
 
         public bool IsNicknameNotSet => string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName);
-    
+
+        public async UniTask DeleteAccount()
+        {
+            await AuthenticationService.Instance.DeleteAccountAsync();
+        }
+            
         public async Task<bool> LinkWithUsernameAndPassword(string username, string password)
         {
             try

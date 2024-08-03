@@ -4,6 +4,7 @@ using Fusion;
 using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 
 namespace Dev.UI.PopUpsAndMenus
 {
@@ -16,7 +17,14 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private MapLobbyUI _lobbyUI;
             
         private NetworkRunner _networkRunner;
+        private SceneLoader _sceneLoader;
 
+        [Inject]
+        private void Construct(SceneLoader sceneLoader)
+        {
+            _sceneLoader = sceneLoader;
+        }
+        
         protected override void Awake()
         {
             base.Awake();
@@ -37,8 +45,9 @@ namespace Dev.UI.PopUpsAndMenus
             var decidePopUp = PopUpService.ShowPopUp<DecidePopUp>();
 
             decidePopUp.Show();
-            decidePopUp.SetTitle("Are you sure want to exit?", OnDecide);
-
+            decidePopUp.SetTitle("Are you sure want to exit?");
+            decidePopUp.AddCallbackOnDecide(OnDecide);
+            
             void OnDecide(bool isYes)
             {
                 PopUpService.HidePopUp<DecidePopUp>();
@@ -57,7 +66,7 @@ namespace Dev.UI.PopUpsAndMenus
                     PlayerManager.PlayersOnServer.Clear();
                     PlayerManager.LoadingPlayers.Clear();
 
-                    SceneManager.LoadSceneAsync(SceneManager.GetSceneByName("Lobby").buildIndex);
+                    _sceneLoader.LoadSceneLocal("Lobby", LoadSceneMode.Single);
                 }
             }
 
@@ -106,9 +115,10 @@ namespace Dev.UI.PopUpsAndMenus
             {
                 ["map"] = oldProperties["map"],
                 ["mode"] = oldProperties["mode"],
-                ["status"] = (int)SessionStatus.InGame
-            };
-
+                ["status"] = (int)SessionStatus.InGame,
+               // ["profiles"]
+             };
+            
             _networkRunner.SessionInfo.UpdateCustomProperties(sessionProperties);
             await _networkRunner.LoadScene("Main", setActiveOnLoad: true);
         }

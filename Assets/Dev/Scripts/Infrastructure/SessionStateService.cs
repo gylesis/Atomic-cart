@@ -44,7 +44,7 @@ namespace Dev.Infrastructure
             SessionPlayer sessionPlayer = new SessionPlayer(id, name, isBot, teamSide, isBot ? PlayerRef.None : _playersDataService.GetPlayerBase(id).Object.InputAuthority);
             
             Players.Add(sessionPlayer);
-            Debug.Log($"Session player added {name}. Count {Players.Count}");
+           // Debug.Log($"Session player added {name}. Count {Players.Count}");
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

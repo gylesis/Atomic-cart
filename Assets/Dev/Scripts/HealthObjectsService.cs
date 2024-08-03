@@ -75,7 +75,7 @@ namespace Dev
         {
             if (HasData(id) == false)
             {
-                Debug.Log($"No data for object with id {id}");
+                AtomicLogger.Log($"No data for object with id {id}");
                 return false;
             }
 
@@ -108,7 +108,7 @@ namespace Dev
 
             HealthData.Add(healthData);
 
-            Debug.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
+            //AtomicLogger.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
         }
         
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -116,7 +116,7 @@ namespace Dev
         {   
             if (HasData(networkId))
             {
-                Debug.Log($"Trying to register already registered object");
+                AtomicLogger.Log($"Trying to register already registered object");
                 return;
             }
 
@@ -126,7 +126,7 @@ namespace Dev
 
             HealthData.Add(healthData);
 
-            //Debug.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
+            //AtomicLogger.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
         }
         
 
@@ -193,7 +193,7 @@ namespace Dev
             if (HasData(victimId) == false)
             {
                 Debug.Log("No Health Data presented for object {victimObj.name}, skipping {damage} damage. " +
-                          "Probably missed initialization",
+                                 "Probably missed initialization",
                     victimObj);
                 return;
             }
@@ -218,7 +218,7 @@ namespace Dev
 
                         if (victimTeamSide == shooterTeam)
                         {
-                            Debug.Log($"Damage from the same team, skipping damage");
+                            AtomicLogger.Log($"Damage from the same team, skipping damage");
                             return;
                         }
                     }
@@ -234,7 +234,7 @@ namespace Dev
             {
                 DummyTarget dummyTarget = damagable as DummyTarget;
 
-                Debug.Log($"Damage {damage} applied to dummy target {dummyTarget.name}");
+                //AtomicLogger.Log($"Damage {damage} applied to dummy target {dummyTarget.name}");
 
                 damage = 0;
             }
@@ -336,7 +336,7 @@ namespace Dev
 
             HealthChanged.OnNext(data);
 
-            Debug.Log($"Damage {damage} applied");
+            //AtomicLogger.Log($"Damage {damage} applied");
 
             if (currentHealth <= 0)
             {

@@ -22,17 +22,6 @@ namespace Dev.UI
             _canvasGroup.alpha = 0;
         }
 
-        protected override void CorrectState()
-        {
-            base.CorrectState();
-
-            if (PlayerRef != PlayerRef.None)
-            {
-                _canvasGroup.alpha = 1;
-                _playerNicknameText.text = $"Player {PlayerRef.PlayerId}";
-            }
-        }
-
         [Rpc]
         public void RPC_AssignPlayer(PlayerRef playerRef)
         {
@@ -56,14 +45,15 @@ namespace Dev.UI
              _canvasGroup.alpha = 0;
         }
 
-        private void UpdateNickname()
+        public void UpdateNickname()
         {
-            _playerNicknameText.text = $"{PlayersManager.Instance.GetNickname(PlayerRef)}";
+            _playerNicknameText.text = $"{PlayersDataLinker.Instance.GetNickname(PlayerRef)}";
         }
 
         [Rpc]
         public void RPC_SetReadyView(bool isReady)
         {
+            _canvasGroup.alpha = 1;
             _readyImage.color = isReady ? Color.green : Color.white  ;
         }
         

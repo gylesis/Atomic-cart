@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1161691534502274920}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1161691534502274922
 MonoBehaviour:
@@ -47,7 +47,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
-  _inputServicePrefab: {fileID: 1635452602249562799, guid: f7a4c767232407047baaa9b171c8cc8e, type: 3}
   _cameraControllerPrefab: {fileID: 9126124020303095820, guid: 94201544f6927c34aa5c7eb3f9ebb959, type: 3}
   _playerBasePrefab: {fileID: 4065643546084726696, guid: 3355f15df617eae42a11bfc06e3c3653, type: 3}
 --- !u!114 &1161691534502274921
@@ -64,7 +63,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3681440860
   ObjectInterest: 1
-  Flags: 2305
+  Flags: 264449
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1161691534502274922}

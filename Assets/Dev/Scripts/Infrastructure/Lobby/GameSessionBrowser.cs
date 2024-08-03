@@ -112,8 +112,6 @@ namespace Dev.Infrastructure
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
         {
-            if(Object == false) return;
-            
             int sessionsCount = sessionList.Count;
 
             if (sessionsCount == 0)

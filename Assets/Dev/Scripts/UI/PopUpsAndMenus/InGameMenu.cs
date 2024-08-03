@@ -52,7 +52,8 @@ namespace Dev.UI.PopUpsAndMenus
         {
             var decidePopUp = PopUpService.ShowPopUp<DecidePopUp>();
             
-            decidePopUp.SetTitle("Are you sure want to exit?", OnDecide);
+            decidePopUp.SetTitle("Are you sure want to exit?");
+            decidePopUp.AddCallbackOnDecide(OnDecide);
 
             void OnDecide(bool isYes)
             {

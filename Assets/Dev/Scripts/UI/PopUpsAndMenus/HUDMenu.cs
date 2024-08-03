@@ -65,7 +65,7 @@ namespace Dev.UI.PopUpsAndMenus
 
             if (runner.LocalPlayer != playerRef) return;
 
-            PlayerBase playerBase = _playersSpawner.GetPlayerBase(playerRef);
+            PlayerBase playerBase = context.Transform.GetComponent<PlayerBase>();
 
             _playerBase = playerBase;
 

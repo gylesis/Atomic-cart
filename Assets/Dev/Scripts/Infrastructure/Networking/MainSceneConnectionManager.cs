@@ -172,7 +172,7 @@ namespace Dev.Infrastructure
             RPC_OnSceneLoaded(player);
         }
 
-        [Rpc(InvokeLocal = true)]
+        [Rpc]
         private void RPC_OnSceneLoaded(PlayerRef playerRef)
         {
             PlayerManager.LoadingPlayers.Remove(playerRef);

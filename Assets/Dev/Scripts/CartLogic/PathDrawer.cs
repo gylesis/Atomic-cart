@@ -1,9 +1,10 @@
-﻿#if UNITY_EDITOR
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dev.Utils;
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -12,6 +13,7 @@ namespace Dev.CartLogic
 {
     public class PathDrawer : MonoBehaviour
     {
+#if UNITY_EDITOR
         [SerializeField] private bool _autoSaveSceneAfterDraw = false;
 
         [SerializeField] private RailPathStraight _railPrefab;
@@ -157,6 +159,8 @@ namespace Dev.CartLogic
                 EditorUtility.SetDirty(this);
             }
         }
+        
+#endif
+
     }
 }
-#endif

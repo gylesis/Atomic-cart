@@ -28,7 +28,7 @@ namespace Dev.Levels.Interactions.Pickable
 
             if (isFullHealth)
             {
-                Debug.Log($"Player has full hp, skipping health box");
+                //Debug.Log($"Player has full hp, skipping health box");
                 return;
             }
             
@@ -39,7 +39,7 @@ namespace Dev.Levels.Interactions.Pickable
 
             FxController.Instance.SpawnEffectAt<Effect>("picked_health", playerPos);
 
-            Debug.Log($"Player picked health for {_healthRestoreAmount}", gameObject);
+            //Debug.Log($"Player picked health for {_healthRestoreAmount}", gameObject);
         }
     }
 }

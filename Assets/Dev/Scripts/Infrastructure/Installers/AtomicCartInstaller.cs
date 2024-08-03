@@ -18,7 +18,8 @@ namespace Dev.Infrastructure
         
         public override void InstallBindings()
         {
-            Container.Bind<PopUpService>().FromNew().AsSingle().WithArguments(_popUpsParent).NonLazy();
+            Container.Bind<SceneLoader>().AsSingle().NonLazy();
+            Container.Bind<PopUpService>().AsSingle().WithArguments(_popUpsParent).NonLazy();
             
             Container.BindInterfacesAndSelfTo<AtomicLogger>().AsSingle().NonLazy();
             

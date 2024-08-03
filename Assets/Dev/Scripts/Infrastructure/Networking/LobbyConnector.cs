@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
 using Fusion.Photon.Realtime;
 using Fusion.Sockets;
+using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 
 namespace Dev.Infrastructure
 {
@@ -20,7 +23,15 @@ namespace Dev.Infrastructure
         public static bool IsConnected;
 
         private Action _sessionJoined;
+        private SceneLoader _sceneLoader;
 
+
+        [Inject]
+        private void Construct(SceneLoader sceneLoader)
+        {
+            _sceneLoader = sceneLoader;
+        }
+        
         private async void Awake()
         {
             if (IsConnected)
@@ -29,6 +40,8 @@ namespace Dev.Infrastructure
                 return;
             }
 
+            DiInjecter.Instance.InjectGameObject(gameObject);
+            
             if (SceneManager.GetActiveScene().name == "Main")
             {
                 Connect();
@@ -83,9 +96,9 @@ namespace Dev.Infrastructure
 
             DefaultJoinToSessionLobby();
 
-            await SceneManager.LoadSceneAsync("Lobby", LoadSceneMode.Additive).ToUniTask()
+            await _sceneLoader.LoadSceneLocal("Lobby", LoadSceneMode.Additive)
                 .AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
-            await SceneManager.UnloadSceneAsync(activeScene).ToUniTask()
+            await _sceneLoader.UnloadSceneLocal(activeScene.name)
                 .AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
         }
 

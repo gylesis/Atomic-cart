@@ -408,7 +408,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1115ddfa197742f598b53d7455d570dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
   _sessionUIViewPrefab: {fileID: 7823490509605671467, guid: b3612aca2796fed47947d10007dc41e1, type: 3}
