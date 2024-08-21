@@ -36,7 +36,7 @@ namespace Dev.UI
         }
 
         [Rpc]
-        public void RPC_RemovePlayerAssigment(PlayerRef playerRef)
+        public void RPC_RemovePlayerAssigment()
         {
              PlayerRef = PlayerRef.None;
              

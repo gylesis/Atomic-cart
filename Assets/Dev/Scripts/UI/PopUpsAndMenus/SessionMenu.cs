@@ -116,7 +116,6 @@ namespace Dev.UI.PopUpsAndMenus
                 ["map"] = oldProperties["map"],
                 ["mode"] = oldProperties["mode"],
                 ["status"] = (int)SessionStatus.InGame,
-               // ["profiles"]
              };
             
             _networkRunner.SessionInfo.UpdateCustomProperties(sessionProperties);

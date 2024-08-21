@@ -25,7 +25,8 @@ namespace Dev.Infrastructure
         private Action _sessionJoined;
         private SceneLoader _sceneLoader;
 
-
+        public static LobbyConnector Instance { get; private set; }
+        
         [Inject]
         private void Construct(SceneLoader sceneLoader)
         {
@@ -40,6 +41,8 @@ namespace Dev.Infrastructure
                 return;
             }
 
+            Instance = this;
+            
             DiInjecter.Instance.InjectGameObject(gameObject);
             
             if (SceneManager.GetActiveScene().name == "Main")

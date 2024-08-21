@@ -142,6 +142,11 @@ namespace Dev.BotsLogic
             }
         }
 
+        public override void Render()
+        {
+            _view.RPC_OnMove(_navMeshAgent.velocity.magnitude / _navMeshAgent.speed, Mathf.Sign(_navMeshAgent.velocity.x) < 0);
+        }
+
         private void SearchForTargets()
         {
             bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _gameSettings.BotsTargetsSearchRadius, out var colliders);

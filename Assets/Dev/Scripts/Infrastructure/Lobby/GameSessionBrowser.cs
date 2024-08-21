@@ -75,7 +75,7 @@ namespace Dev.Infrastructure
             _networkRunner.AddCallbacks(this);
 
             startGameArgs.GameMode = GameMode.Shared;
-            startGameArgs.SessionName = $"{levelName} : {mapType},{Guid.NewGuid()}";
+            startGameArgs.SessionName = $"{levelName} : {mapType}";
             startGameArgs.SceneManager = _networkRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
             Scene activeScene = SceneManager.GetActiveScene();
             startGameArgs.Scene = SceneRef.FromIndex(activeScene.buildIndex);

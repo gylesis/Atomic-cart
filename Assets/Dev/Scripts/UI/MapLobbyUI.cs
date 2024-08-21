@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.UI.PopUpsAndMenus;
 using Fusion;
@@ -22,7 +20,7 @@ namespace Dev.UI
 
         private void Awake()
         {
-            FindObjectOfType<NetworkRunner>().AddCallbacks(this);
+            LobbyConnector.Instance.NetworkRunner.AddCallbacks(this);
         }
 
         protected override void CorrectState()
@@ -106,9 +104,9 @@ namespace Dev.UI
 
             ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == PlayerRef.None);
 
-            Debug.Log($"Player {playerRef} joined to lobby", readyUI);
+            Debug.Log($"Player {playerRef} left lobby");
 
-            readyUI.RPC_RemovePlayerAssigment(playerRef);
+            readyUI.RPC_RemovePlayerAssigment();
 
             ReadyStatesDictionary.Remove(playerRef);
 

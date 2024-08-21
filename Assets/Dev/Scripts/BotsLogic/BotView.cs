@@ -8,6 +8,10 @@ namespace Dev.BotsLogic
     public class BotView : NetworkContext
     {
         [SerializeField] private SpriteRenderer _teamBanner;
+        [SerializeField] private Animator _animator;
+        [SerializeField] private SpriteRenderer _sprite;
+
+        private static readonly int Move = Animator.StringToHash("Move");
 
         [Networked] private Color TeamBannerColor { get; set; }
 
@@ -33,6 +37,20 @@ namespace Dev.BotsLogic
         public void RPC_Scale(float target)
         {
             transform.DOScale(target, 0.5f);
+        }
+        
+        
+        [Rpc]
+        public void RPC_OnMove(float velocity, bool isRight)
+        {
+            _animator.SetFloat(Move, velocity);
+
+            SetFlipSide(isRight);
+        }
+        
+        private void SetFlipSide(bool isRight)
+        {
+            _sprite.flipX = isRight;
         }
     }
 }

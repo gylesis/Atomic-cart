@@ -8,7 +8,6 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private DefaultReactiveButton _showStatsButton;
         [SerializeField] private TextReactiveButton _showProfileSettingsButton;
         
-        
         protected override void Awake()
         {
             base.Awake();

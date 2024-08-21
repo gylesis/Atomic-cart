@@ -556,6 +556,8 @@ MonoBehaviour:
   _IsActive:
     _value: 1
   _teamBanner: {fileID: 1503964216816281309}
+  _animator: {fileID: 254492412697934762}
+  _sprite: {fileID: 1503964216758374185}
 --- !u!114 &477778757597536696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -757,6 +759,7 @@ MonoBehaviour:
   _navMeshAgent: {fileID: 8337593156464237279}
   _weaponController: {fileID: 5160045293362288918}
   _allowToShoot: 1
+  _allowToMove: 1
   _rigidbody: {fileID: 6354534433250160690}
   _speed: 5
   _chaseSpeed: 2

@@ -126,13 +126,13 @@ namespace Dev.UI.PopUpsAndMenus
         {
             TryGetPopUp<TPopUp>(out var popUp);
 
-            popUp.OnSucceedButtonClicked(null);
+            //popUp.OnSucceedButtonClicked(null);
             popUp.Hide();
         }
 
         public void HidePopUp(PopUp popUp)
         {
-            popUp.OnSucceedButtonClicked(null);
+            //popUp.OnSucceedButtonClicked(null);
             popUp.Hide();
         }
 
