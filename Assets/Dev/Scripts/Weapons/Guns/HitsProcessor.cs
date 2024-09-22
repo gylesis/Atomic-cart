@@ -13,6 +13,8 @@ namespace Dev.Weapons.Guns
 {
     public class HitsProcessor : NetworkContext
     {
+        [Networked, Capacity(4)] private NetworkLinkedList<HitRecord> HitRecords { get; }
+        
         private HealthObjectsService _healthObjectsService;
         private TeamsService _teamsService;
 
@@ -123,51 +125,6 @@ namespace Dev.Weapons.Guns
             }
         }
 
-        public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius, PlayerRef originalObjectId)
-        {
-            var overlapSphere = Extensions.OverlapCircle(runner, pos, radius, out var colliders);
-
-            if (overlapSphere == false) return false;
-            
-            foreach (Collider2D cldr in colliders)
-            {
-                bool isDamagable = cldr.TryGetComponent<IDamageable>(out var damagable);
-
-                if (isDamagable)
-                {
-                    if (cldr.GetComponent<NetworkObject>().StateAuthority == originalObjectId)
-                        return false;
-                    
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-        
-        public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius, NetworkId originalObjectId)
-        {
-            var overlapSphere = Extensions.OverlapCircle(runner, pos, radius, out var colliders);
-
-            if (overlapSphere == false) return false;
-            
-            foreach (Collider2D cldr in colliders)
-            {
-                bool isDamagable = cldr.TryGetComponent<IDamageable>(out var damagable);
-
-                if (isDamagable)
-                {
-                    if (cldr.GetComponent<NetworkObject>().Id == originalObjectId)
-                        return false;
-                    
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-        
-
         private void OnHit(NetworkObject networkObject, SessionPlayer shooter, int damage, DamagableType damagableType,
                            bool isExplosionProjectile, bool isHitFromServer)
         {
@@ -191,6 +148,51 @@ namespace Dev.Weapons.Guns
 
             Hit.OnNext(hitContext);
         }
+
+        public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius, PlayerRef originalObjectId)
+        {
+            var overlapSphere = Extensions.OverlapCircle(runner, pos, radius, out var colliders);
+
+            if (overlapSphere == false) return false;
+            
+            foreach (Collider2D cldr in colliders)
+            {
+                bool isDamagable = cldr.TryGetComponent<IDamageable>(out var damagable);
+
+                if (isDamagable)
+                {
+                    if (cldr.GetComponent<NetworkObject>().StateAuthority == originalObjectId)
+                        return false;
+                    
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius, NetworkId originalObjectId)
+        {
+            var overlapSphere = Extensions.OverlapCircle(runner, pos, radius, out var colliders);
+
+            if (overlapSphere == false) return false;
+            
+            foreach (Collider2D cldr in colliders)
+            {
+                bool isDamagable = cldr.TryGetComponent<IDamageable>(out var damagable);
+
+                if (isDamagable)
+                {
+                    if (cldr.GetComponent<NetworkObject>().Id == originalObjectId)
+                        return false;
+                    
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
 
         public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext, Action<NetworkObject, SessionPlayer, DamagableType, int, bool> onExploded = null)
         {   
@@ -319,5 +321,20 @@ namespace Dev.Weapons.Guns
                 _healthObjectsService.ApplyDamage(damageContext);
             }
         }
+        
+        
+        
+        /*public void OnHit(SessionPlayer owner, SessionPlayer victim, float damage, DateTime time)
+        {
+            HitRecord hitRecord = new HitRecord(owner, victim, damage, time.ToFileTime(), false);
+            HitRecords.Add(hitRecord);
+        }
+
+        public void OnServerHit(SessionPlayer victim, float damage, DateTime time)
+        {
+            HitRecord hitRecord = new HitRecord(SessionPlayer.Default, victim, damage, time.ToFileTime(), true);
+            HitRecords.Add(hitRecord);
+        }*/
+        
     }
 }

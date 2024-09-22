@@ -155,14 +155,15 @@ namespace Dev.Infrastructure
                 quaternion.identity, playerRef, onBeforeSpawned: (runner, o) =>
                 {
                     PlayerCharacter character = o.GetComponent<PlayerCharacter>();
-                    character.WeaponController.RPC_SetOwner(_sessionStateService.GetSessionPlayer(playerRef));
+                    SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(playerRef); 
+                    character.WeaponController.RPC_SetOwner(sessionPlayer);
                     character.transform.parent = playerBase.transform;
 
                     DiInjecter.Instance.InjectGameObject(o.gameObject);
                 });
 
             NetworkObject playerNetObj = playerCharacter.Object;
-
+            
             RPC_AssignPlayerCharacter(playerRef, playerCharacter, characterClass);
             PlayersBase[playerRef].Character = playerCharacter;
             PlayersBase[playerRef].CharacterClass = characterClass;
@@ -250,12 +251,13 @@ namespace Dev.Infrastructure
             cameraController.SetFollowState(true);
         }
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        [Rpc]
         private void RPC_AddPlayer(PlayerRef playerRef, PlayerBase playerBase)
         {
             PlayersBase.Add(playerRef, playerBase);
             
-            _sessionStateService.RPC_AddPlayer(playerRef.ToNetworkId(), $"{PlayersDataLinker.Instance.GetNickname(playerRef)}", false, _teamsService.GetUnitTeamSide(playerRef));
+            //_sessionStateService.AddPlayer(playerRef.ToNetworkId(), $"{PlayersLocalDataLinker.Instance.GetNickname(playerRef)}", false, _teamsService.GetUnitTeamSide(playerRef));
+            _sessionStateService.AddPlayer(playerRef.ToNetworkId(), $"{AuthService.Nickname}", false, _teamsService.GetUnitTeamSide(playerRef));
         }
 
         private void SetCharacterTeamBannerColor(PlayerRef playerRef)

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Dev
 {
-    public class KillerFeedNotify : MonoBehaviour
+    public class KillerFeedNotifyView : MonoBehaviour
     {
         [SerializeField] private TMP_Text _killerText;
         [SerializeField] private TMP_Text _victimText;

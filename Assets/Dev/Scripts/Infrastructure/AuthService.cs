@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Dev.Utils;
@@ -7,14 +8,15 @@ using GooglePlayGames;
 using GooglePlayGames.BasicApi;
 #endif
 using Unity.Services.Authentication;
-using Unity.Services.Core;  
-using UnityEngine;
+using Unity.Services.Core;
+using Debug = UnityEngine.Debug;
+using Random = System.Random;
 
 namespace Dev
 {
     public class AuthService : IDisposable
     {
-        public static string Nickname;
+        public static string Nickname = $"Player{new Random(Process.GetCurrentProcess().Id).Next().ToString().Substring(0,4)}";
 
         public string Token;
         public string Error;

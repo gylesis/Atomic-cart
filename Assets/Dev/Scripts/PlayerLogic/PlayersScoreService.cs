@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Dev.BotsLogic;
 using Dev.Infrastructure;
@@ -38,8 +39,46 @@ namespace Dev.PlayerLogic
             _botsController.BotSpawned.TakeUntilDestroy(this).Subscribe((OnBotSpawned));
             _botsController.BotDeSpawned.TakeUntilDestroy(this).Subscribe((OnBotDespawned));
             
-            _healthObjectsService.PlayerDied.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
-            _healthObjectsService.BotDied.TakeUntilDestroy(this).Subscribe(UpdateTableScore);
+            _healthObjectsService.PlayerDied.TakeUntilDestroy(this).Subscribe(OnUnitDied);
+            _healthObjectsService.BotDied.TakeUntilDestroy(this).Subscribe(OnUnitDied);
+        }
+
+        private void OnUnitDied(UnitDieContext context)
+        {
+            if(HasStateAuthority == false) return;
+             
+            SessionPlayer victim = context.Victim;
+            TrySetScoreData(victim, (data =>
+            {
+                data.PlayerDeathCount += 1;
+                return data;
+            }));
+
+            if (context.IsKilledByServer == false)
+            {
+                TrySetScoreData(context.Killer, (data =>
+                {
+                    data.PlayerFragCount += 1;
+                    return data;
+                }));
+                
+                SaveLoadService.Instance.AddKill(context.Killer);
+            }
+            
+            RPC_UpdateScore();
+        }
+
+        private bool TrySetScoreData(SessionPlayer sessionPlayer, Func<PlayerScoreData, PlayerScoreData> action)
+        { 
+            if(PlayerScoreList.Any(x => x.SessionPlayer.Id == sessionPlayer.Id) == false) return false;
+            
+            PlayerScoreData playerScoreData = PlayerScoreList.FirstOrDefault(x => x.SessionPlayer.Id == sessionPlayer.Id);
+            int index = PlayerScoreList.IndexOf(playerScoreData);
+
+            playerScoreData = action(playerScoreData);
+            PlayerScoreList.Set(index, playerScoreData);
+            
+            return true;
         }
 
         private void OnBotSpawned(Bot bot)
@@ -93,57 +132,6 @@ namespace Dev.PlayerLogic
 
             Debug.Log($"Remove player {playerRef}");
             PlayerScoreList.Remove(playerScoreData);
-
-            RPC_UpdateScore();
-        }
-
-        private void UpdateTableScore(UnitDieContext context)
-        {
-            SessionPlayer killerPlayer = context.Killer;
-            SessionPlayer deadPlayer = context.Victim;
-            
-            bool killedByServer = context.IsKilledByServer;
-            
-            string killerName;
-
-            if (killedByServer)
-            {
-                killerName = "Server";
-            }
-            else
-            {
-                killerName = killerPlayer.Name;
-            }
-            
-            string deadName = deadPlayer.Name;
-
-            for (var index = 0; index < PlayerScoreList.Count; index++)
-            {
-                PlayerScoreData playerScoreData = PlayerScoreList[index];
-                
-                if (playerScoreData.SessionPlayer.Id == deadPlayer.Id)
-                {
-                    var playerDeathCount = playerScoreData.PlayerDeathCount;
-                    playerDeathCount++;
-
-                    playerScoreData.PlayerDeathCount = playerDeathCount;
-                }
-
-                if (killedByServer == false)
-                {
-                    if (playerScoreData.SessionPlayer.Id == killerPlayer.Id)
-                    {
-                        var playerFragCount = playerScoreData.PlayerFragCount;
-                        playerFragCount++;
-                        
-                        playerScoreData.PlayerFragCount = playerFragCount;
-                    }
-                }
-                
-                PlayerScoreList.Set(index, playerScoreData);
-            }
-            
-            AtomicLogger.Log($"{killerName} killed {deadName}");
 
             RPC_UpdateScore();
         }

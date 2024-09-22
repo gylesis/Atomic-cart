@@ -7,13 +7,13 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class PlayersDataLinker : NetworkContext
+    public class PlayersLocalDataLinker : NetworkContext
     {
         [Networked, Capacity(10)] public NetworkLinkedList<PlayerData> Players { get; }
 
         private List<PlayerData> _localData = new List<PlayerData>();
 
-        public static PlayersDataLinker Instance { get; private set; }
+        public static PlayersLocalDataLinker Instance { get; private set; }
 
         private SceneLoader _sceneLoader;
 
@@ -43,16 +43,15 @@ namespace Dev.Infrastructure
             //transform.parent = FindObjectOfType<LobbyConnector>().transform;
         }
 
-        private void OnSceneLoaded(string sceneName)
+        private void OnSceneLoaded(string sceneName) // load
         {
-            if (HasStateAuthority)
+            if (HasStateAuthority == false) return;
+            
+            if (sceneName == "Main")
             {
-                if (sceneName == "Main")
+                foreach (var playerData in _localData)
                 {
-                    foreach (var playerData in _localData)
-                    {
-                        RPC_Register(playerData.PlayerRef, playerData.Nickname.ToString());
-                    }
+                    RPC_Register(playerData.PlayerRef, playerData.Nickname.ToString());
                 }
             }
         }
@@ -75,7 +74,7 @@ namespace Dev.Infrastructure
             Debug.Log($"Registered {nickname} for {playerRef}");
             
             Players.Add(playerData);
-            _localData.Add(playerData);
+            //_localData.Add(playerData);
         }
 
         public string GetNickname(PlayerRef playerRef)

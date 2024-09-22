@@ -8,6 +8,7 @@ using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Dev.Infrastructure
 {
@@ -160,7 +161,8 @@ namespace Dev.Infrastructure
 
             if (runner.IsSharedModeMasterClient)
             {
-                LevelService.Instance.LoadLevel(LobbyConnector.Instance.NetworkRunner.SessionInfo.Properties["map"]);
+                LevelService.Instance.LoadLevel("NightCity");
+               // LevelService.Instance.LoadLevel(LobbyConnector.Instance.NetworkRunner.SessionInfo.Properties["map"]);
 
                 //await Task.Delay(2000); // TODO wait until all players load the scene
             }

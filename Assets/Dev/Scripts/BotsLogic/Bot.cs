@@ -55,6 +55,7 @@ namespace Dev.BotsLogic
 
         public BotView View => _view;
         public TeamSide BotTeamSide => BotData.TeamSide;
+        public NavMeshAgent NavMeshAgent => _navMeshAgent;
 
         protected override void Awake()
         {
@@ -266,7 +267,6 @@ namespace Dev.BotsLogic
             _navMeshAgent.speed = speed;
             _navMeshAgent.SetDestination(movePos);
         }
-
 
         public static implicit operator int(Bot bot)
         {

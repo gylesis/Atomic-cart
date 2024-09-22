@@ -15,7 +15,7 @@ namespace Dev.PlayerLogic
         [SerializeField] private TMP_Text _redScoreText;
 
         private TeamsService _teamsService;
-        private CartPathService _cartPathService;
+        private CartService _cartService;
 
         [Networked] private TeamScoreData BlueTeamScoreData { get; set; }
         [Networked] private TeamScoreData RedTeamScoreData { get; set; }
@@ -46,8 +46,8 @@ namespace Dev.PlayerLogic
         private void OnLevelLoaded(Level level)
         {
             Debug.Log($"Level loaded");
-            _cartPathService = level.CartPathService;
-            level.CartPathService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
+            _cartService = level.CartService;
+            level.CartService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
         }
 
         private void OnPointReached()
@@ -55,7 +55,7 @@ namespace Dev.PlayerLogic
             if (Runner.IsSharedModeMasterClient == false) return;
             
             Debug.Log($"On point reached");
-            TeamSide teamToCapturePoints = _cartPathService.TeamToCapturePoints;
+            TeamSide teamToCapturePoints = _cartService.TeamToCapturePoints;
 
             EvaluateTeamScore(teamToCapturePoints);
         }

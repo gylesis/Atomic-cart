@@ -2984,7 +2984,7 @@ MonoBehaviour:
   - {fileID: 1463463830104481815}
   - {fileID: 2224381235068098487}
   - {fileID: 4806339305828839878}
-  _teamToCapturePoints: 1
+  _teamToCapturePoints: 2
 --- !u!1 &5999036624702591022
 GameObject:
   m_ObjectHideFlags: 0
@@ -3654,7 +3654,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 370f6d2adc21479eb3d6b01510b615ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cartPathService: {fileID: 3096882834798291034}
+  cartService: {fileID: 3096882834798291034}
 --- !u!1 &7866587280925291748
 GameObject:
   m_ObjectHideFlags: 0

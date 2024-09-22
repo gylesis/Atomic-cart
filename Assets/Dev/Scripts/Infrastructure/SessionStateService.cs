@@ -38,15 +38,23 @@ namespace Dev.Infrastructure
             return Players.First(x => x.Id == bot.Object.Id);
         }
         
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        [Rpc]
         public void RPC_AddPlayer(NetworkId id, string name, bool isBot, TeamSide teamSide)
         {
             SessionPlayer sessionPlayer = new SessionPlayer(id, name, isBot, teamSide, isBot ? PlayerRef.None : _playersDataService.GetPlayerBase(id).Object.InputAuthority);
             
             Players.Add(sessionPlayer);
-           // Debug.Log($"Session player added {name}. Count {Players.Count}");
+            Debug.Log($"[RPC] Session player added {name}. Count {Players.Count}");
         }
-
+        
+        public void AddPlayer(NetworkId id, string name, bool isBot, TeamSide teamSide)
+        {
+            SessionPlayer sessionPlayer = new SessionPlayer(id, name, isBot, teamSide, isBot ? PlayerRef.None : _playersDataService.GetPlayerBase(id).Object.InputAuthority);
+            
+            Players.Add(sessionPlayer);
+            Debug.Log($"Session player added {name}. Count {Players.Count}");
+        }
+        
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_ChangePlayerId(PlayerRef playerRef, NetworkId newId)
         {

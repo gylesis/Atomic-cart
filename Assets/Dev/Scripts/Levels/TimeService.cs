@@ -42,7 +42,7 @@ namespace Dev.Levels
 
         private void OnLevelLoaded(Level level)
         {
-            level.CartPathService.PointReached.TakeUntilDestroy(this).Subscribe(OnControlPoint);
+            level.CartService.PointReached.TakeUntilDestroy(this).Subscribe(OnControlPoint);
         }
 
         public void SetPauseState(bool isPause)

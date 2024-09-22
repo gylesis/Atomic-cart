@@ -349,17 +349,13 @@ namespace Dev
         private void OnBotHealthZero(Bot bot, SessionPlayer killer, bool isDamageFromServer)
         {
             bot.RPC_OnDeath(true);
-            
-            var dieContext = new UnitDieContext();
-            dieContext.Killer = killer;
-            dieContext.Victim = _sessionStateService.GetSessionPlayer(bot);
-            dieContext.IsKilledByServer = isDamageFromServer;
-            
+
+            SessionPlayer botSessionPlayer = _sessionStateService.GetSessionPlayer(bot);
+
             //bot.View.RPC_Scale(0);
             bot.RPC_OnDeath(true);
-            
-            BotDied.OnNext(dieContext);
 
+            RPC_OnBotDeath(killer, botSessionPlayer, isDamageFromServer);
             //LoggerUI.Instance.Log($"Player {playerRef} is dead");
 
             float respawnTime = 2;
@@ -371,6 +367,17 @@ namespace Dev
                 _botsController.RPC_RespawnBot(bot);
             }));
         }
+
+        [Rpc]
+        private void RPC_OnBotDeath(SessionPlayer killer, SessionPlayer victim, bool isDamageFromServer )
+        {
+            var dieContext = new UnitDieContext();
+            dieContext.Killer = killer;
+            dieContext.Victim = victim;
+            dieContext.IsKilledByServer = isDamageFromServer;
+            
+            BotDied.OnNext(dieContext);
+        }
         
         private void OnPlayerHealthZero(PlayerRef victim, SessionPlayer killer, bool isKilledByServer)
         {
@@ -381,26 +388,32 @@ namespace Dev
 
             playerBase.PlayerController.SetAllowToMove(false);
             playerBase.PlayerController.SetAllowToShoot(false);
-
-            var dieContext = new UnitDieContext();
-            dieContext.Killer = killer;
-            dieContext.Victim = _sessionStateService.GetSessionPlayer(victim);
-            dieContext.IsKilledByServer = isKilledByServer;
-
-            PlayerDied.OnNext(dieContext);       
-
+            
+            RPC_PlayerDied(killer, victim, isKilledByServer);
+            
             //LoggerUI.Instance.Log($"Player {playerRef} is dead");
 
             float respawnTime = 2;
 
             SaveLoadService.Instance.AddDeath(_sessionStateService.GetSessionPlayer(victim));
-            SaveLoadService.Instance.AddKill(killer);
             
+           
             Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
             {
                 RestoreHealth(playerCharacter.Object, true);
                 _playersDataService.PlayersSpawner.RespawnPlayerCharacter(victim);
             }));
+        }
+
+        [Rpc(Channel = RpcChannel.Reliable)]
+        private void RPC_PlayerDied(SessionPlayer killer, PlayerRef victim, bool isKilledByServer)
+        {
+            var dieContext = new UnitDieContext();
+            dieContext.Killer = killer;
+            dieContext.Victim = _sessionStateService.GetSessionPlayer(victim);
+            dieContext.IsKilledByServer = isKilledByServer;
+            
+            PlayerDied.OnNext(dieContext);       
         }
 
         private void OnObstacleZeroHealth(ObstacleWithHealth obstacle)

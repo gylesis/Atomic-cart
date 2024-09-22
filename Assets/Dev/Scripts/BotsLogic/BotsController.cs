@@ -7,8 +7,10 @@ using Dev.PlayerLogic;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
+using NavMeshPlus.Components;
 using UniRx;
 using UnityEngine;
+using UnityEngine.AI;
 using Zenject;
 
 namespace Dev.BotsLogic
@@ -144,10 +146,12 @@ namespace Dev.BotsLogic
             TeamSide teamSide = bot.BotTeamSide;
             
             Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
-
-            bot.RPC_OnDeath(false);
-           // bot.View.RPC_Scale(1);
+           
+            bot.NavMeshAgent.nextPosition = spawnPos;
             bot.transform.position = spawnPos;
+            bot.NavMeshAgent.ResetPath();
+            
+            bot.RPC_OnDeath(false);
         }
 
         public void DespawnBot(Bot bot, bool spawnAfterDeath = true, float despawnDelay = 1) // TODO refactor, need to make pool of bots

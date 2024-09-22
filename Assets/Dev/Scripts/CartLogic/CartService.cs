@@ -10,7 +10,7 @@ using Zenject;
 
 namespace Dev.CartLogic
 {
-    public class CartPathService : NetworkContext
+    public class CartService : NetworkContext
     {
         [Header("Cart Settings")] [SerializeField]
         private float _cartVelocity = 2f;
@@ -67,6 +67,33 @@ namespace Dev.CartLogic
             
             ResetCart();
         }
+        
+        private void OnCartZoneEntered(PlayerRef playerRef)
+        {
+            _playersInsideCartZone.Add(playerRef);
+
+            AllowToMove = !IsCartBlocked();
+        }
+
+        private void OnCartZoneExit(PlayerRef playerRef)
+        {
+            _playersInsideCartZone.Remove(playerRef);
+
+            AllowToMove = !IsCartBlocked();
+
+            if (_playersInsideCartZone.Count == 0)
+            {
+                AllowToMove = false;
+            }
+        }
+        
+        private void OnPlayerLeft(PlayerRef playerRef)
+        {
+            if (_playersInsideCartZone.Contains(playerRef))
+            {
+                OnCartZoneExit(playerRef);
+            }
+        }
 
         private void HighlightControlPoints()
         {
@@ -80,14 +107,6 @@ namespace Dev.CartLogic
                 {
                     pathPoint.View.gameObject.SetActive(false);
                 }
-            }
-        }
-        
-        private void OnPlayerLeft(PlayerRef playerRef)
-        {
-            if (_playersInsideCartZone.Contains(playerRef))
-            {
-                OnCartZoneExit(playerRef);
             }
         }
 
@@ -124,7 +143,6 @@ namespace Dev.CartLogic
                 SetNewPoints(_currentPointIndex);
             }
         }
-
 
         private void MoveCartAlongPoints()
         {
@@ -181,25 +199,6 @@ namespace Dev.CartLogic
             }
 
             return false;
-        }
-
-        private void OnCartZoneEntered(PlayerRef playerRef)
-        {
-            _playersInsideCartZone.Add(playerRef);
-
-            AllowToMove = !IsCartBlocked();
-        }
-
-        private void OnCartZoneExit(PlayerRef playerRef)
-        {
-            _playersInsideCartZone.Remove(playerRef);
-
-            AllowToMove = !IsCartBlocked();
-
-            if (_playersInsideCartZone.Count == 0)
-            {
-                AllowToMove = false;
-            }
         }
 
         private void OnDrawGizmos()

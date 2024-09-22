@@ -21,7 +21,7 @@ namespace Dev.Infrastructure
 
         private bool _teamsSwapHappened;
 
-        private CartPathService _cartPathService;
+        private CartService _cartService;
         private LevelService _levelService;
         private SessionStateService _sessionStateService;
 
@@ -51,15 +51,15 @@ namespace Dev.Infrastructure
 
         private void OnLevelLoaded(Level level)
         {
-            level.CartPathService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
-            _cartPathService = level.CartPathService;
+            level.CartService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
+            _cartService = level.CartService;
         }
 
         private void OnPointReached()
         {
             if (Runner.IsSharedModeMasterClient == false) return;
             
-            if (_cartPathService.IsOnLastPoint == false) return;
+            if (_cartService.IsOnLastPoint == false) return;
 
             _timeService.SetPauseState(true);
 
@@ -74,7 +74,7 @@ namespace Dev.Infrastructure
                 }));
 
                 string title = $"Restarting game";
-                TeamSide teamToCapturePoints = _cartPathService.TeamToCapturePoints;
+                TeamSide teamToCapturePoints = _cartService.TeamToCapturePoints;
                 string colorTag = teamToCapturePoints == TeamSide.Red ? "red" : "blue";
                 string description =
                     $"Team <color={colorTag}>{teamToCapturePoints}</color> captured all control points";
@@ -112,7 +112,7 @@ namespace Dev.Infrastructure
             RestartGame(_gameSettings.TimeAfterWinGame);
 
             string title = $"Restarting game";
-            TeamSide teamToCapturePoints = _cartPathService.TeamToCapturePoints;
+            TeamSide teamToCapturePoints = _cartService.TeamToCapturePoints;
             string colorTag = teamToCapturePoints == TeamSide.Red ? "red" : "blue";
             string description = $"Team <color={colorTag}>{teamToCapturePoints}</color> captured all control points";
             int timeAfterWinGame = _gameSettings.TimeAfterWinGame;
@@ -145,7 +145,7 @@ namespace Dev.Infrastructure
             Observable.Timer(TimeSpan.FromSeconds(delay)).Subscribe((l =>
             {
                 onRestarted?.Invoke();
-                _cartPathService.ResetCart();
+                _cartService.ResetCart();
                 _sessionStateService.RespawnAllPlayers();
                 _sessionStateService.SetEnemiesFreezeState(false);
                 _timeService.ResetTimer();

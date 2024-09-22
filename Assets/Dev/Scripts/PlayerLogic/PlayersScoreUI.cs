@@ -37,14 +37,13 @@ namespace Dev.PlayerLogic
 
         private void OnScoreUpdated()
         {
-            UpdateScores(_playersScoreService.PlayerScoreList.ToArray());
+            UpdateScores(_playersScoreService.PlayerScoreList);
         }
-
-        private void UpdateScores(PlayerScoreData[] scoreDatas)
+    
+        private void UpdateScores(IEnumerable<PlayerScoreData> scoreDatas)
         {
-            for (var index = 0; index < scoreDatas.Length; index++)
+            foreach (var scoreData in scoreDatas)
             {
-                PlayerScoreData scoreData = scoreDatas[index];
                 SessionPlayer sessionPlayer = scoreData.SessionPlayer;
                 TeamSide teamSide = sessionPlayer.TeamSide;
 
@@ -53,7 +52,7 @@ namespace Dev.PlayerLogic
                 if (scoreUI != null)
                 {
                     scoreUI.UpdateData(scoreData.PlayerFragCount, scoreData.PlayerDeathCount);
-                   // scoreUI.InitNickname(scoreData.SessionPlayer.Name);  // TODO make on change nickname event
+                    // scoreUI.InitNickname(scoreData.SessionPlayer.Name);  // TODO make on change nickname event
                 }
                 else
                 {

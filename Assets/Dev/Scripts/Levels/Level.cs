@@ -25,14 +25,14 @@ namespace Dev.Levels
         private List<InteractionObject> _interactionObjects;
         private List<BotMovePoint> _botMovePoints;
 
-        private CartPathService _cartPathService;
+        private CartService _cartService;
         
         public List<InteractionObject> InteractionObjects => _interactionObjects;
         public List<Obstacle> Obstacles => _obstacles;
 
         public List<BotMovePoint> BotMovePoints => _botMovePoints;
 
-        public CartPathService CartPathService => _cartPathService;
+        public CartService CartService => _cartService;
 
         private void Awake()
         {
@@ -46,9 +46,9 @@ namespace Dev.Levels
         }
 
         [Inject]
-        private void Construct(CartPathService cartPathService)
+        private void Construct(CartService cartService)
         {
-            _cartPathService = cartPathService;
+            _cartService = cartService;
         }
 
         public List<SpawnPoint> GetSpawnPointsByTeam(TeamSide teamSide)

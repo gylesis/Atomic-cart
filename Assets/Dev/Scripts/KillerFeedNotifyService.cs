@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev
 {
     public class KillerFeedNotifyService : MonoBehaviour
     {
-        [SerializeField] private KillerFeedNotify _killerFeedNotify;
+        [FormerlySerializedAs("_killerFeedNotify")] [SerializeField] private KillerFeedNotifyView killerFeedNotifyView;
         [SerializeField] private Transform _parent;
 
         public void Notify(string killer, string victim)
         {
-            KillerFeedNotify killerFeedNotify = Instantiate(_killerFeedNotify, _parent);
-            killerFeedNotify.Setup(killer, victim);
+            KillerFeedNotifyView killerFeedNotifyView = Instantiate(this.killerFeedNotifyView, _parent);
+            killerFeedNotifyView.Setup(killer, victim);
 
-            Destroy(killerFeedNotify.gameObject, 5);
+            Destroy(killerFeedNotifyView.gameObject, 5);
         }
     }
 }

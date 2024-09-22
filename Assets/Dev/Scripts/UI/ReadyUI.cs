@@ -47,7 +47,8 @@ namespace Dev.UI
 
         public void UpdateNickname()
         {
-            _playerNicknameText.text = $"{PlayersDataLinker.Instance.GetNickname(PlayerRef)}";
+            //_playerNicknameText.text = $"{PlayersLocalDataLinker.Instance.GetNickname(PlayerRef)}";
+            _playerNicknameText.text = $"{AuthService.Nickname}";
         }
 
         [Rpc]
