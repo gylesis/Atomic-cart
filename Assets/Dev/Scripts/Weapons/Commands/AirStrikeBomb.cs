@@ -7,7 +7,7 @@ namespace Dev.Weapons
     {
         protected override bool CheckForHitsWhileMoving => false;
         
-        public void StartDetonate()
+        public void Detonate()
         {
             ExplodeAndDealDamage(_explosionRadius);  
             

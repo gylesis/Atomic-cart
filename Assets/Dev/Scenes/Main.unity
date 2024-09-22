@@ -5929,7 +5929,7 @@ MonoBehaviour:
   _miniAirStrikeBombCount: 10
   _miniAirStrikeRadius: 15
   _cooldownBeforeNextBomb: 0.5
-  _explosionRadius: 0
+  _explosionRadius: 3
   _miniAirStrikeDamage: 50
   _IsBusy:
     _value: 0

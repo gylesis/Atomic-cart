@@ -97,7 +97,6 @@ namespace Dev.Levels.Interactions
             
             if (isOn)
             {
-
                 if (interactionObject.IsAutoActive)
                 {
                     onInteraction = null;

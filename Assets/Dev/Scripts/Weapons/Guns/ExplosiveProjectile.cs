@@ -58,7 +58,7 @@ namespace Dev.Weapons.Guns
         }
 
 #if UNITY_EDITOR
-        protected virtual void OnDrawGizmosSelected()
+        protected override void OnDrawGizmos()
         {
             var position = transform.position;
             

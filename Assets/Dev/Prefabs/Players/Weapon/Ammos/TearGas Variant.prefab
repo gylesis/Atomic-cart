@@ -131,6 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
+  _needToRenderCollisionPrediction: 0
   _view: {fileID: 3399893455845410137}
   _networkRigidbody2D: {fileID: 1649544474922184638}
   _overlapRadius: 1

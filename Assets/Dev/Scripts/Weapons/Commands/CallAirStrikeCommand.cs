@@ -1,4 +1,5 @@
-﻿using Dev.Infrastructure;
+﻿using Cysharp.Threading.Tasks;
+using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Fusion;
 using UniRx;
@@ -21,7 +22,7 @@ namespace Dev.Weapons
 
             _airStrikeController.AirstrikeCompleted.Take(1).Subscribe((unit => OnAirStrikeCompleted()));
             
-            _airStrikeController.CallMiniAirStrike(_runner, pos, _owner);
+            _airStrikeController.CallMiniAirStrike(_runner, pos, _owner).Forget();
         }
 
         private void OnAirStrikeCompleted()

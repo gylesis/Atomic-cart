@@ -121,8 +121,7 @@ namespace Dev.BotsLogic
                 
                 _teamsService.RPC_AssignForTeam(bot, team);
 
-                string id = $"{bot.GetHashCode()}";
-                id = $"{id[^3]}{id[^2]}{id[^1]}";
+                string id = $"{bot.GetHashCode().ToString().PadRight(3)}";
                 
                 _sessionStateService.RPC_AddPlayer(bot.Object.Id, $"Bot{id}", true, team);
 

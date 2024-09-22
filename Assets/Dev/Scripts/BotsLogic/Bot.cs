@@ -101,19 +101,21 @@ namespace Dev.BotsLogic
 
             ChangeMoveDirection();
 
-            Observable.Interval(TimeSpan.FromSeconds(_gameSettings.BotsSearchForTargetsCooldown)).TakeUntilDestroy(this)
+            Observable
+                .Interval(TimeSpan.FromSeconds(_gameSettings.BotsSearchForTargetsCooldown))
+                .SkipWhile((l => HasStateAuthority == false))
+                .TakeUntilDestroy(this)
                 .Subscribe((l =>
                 {
-                    if (HasStateAuthority == false) return;
-
                     SearchForTargets();
                 }));
 
-            Observable.Interval(TimeSpan.FromSeconds(_gameSettings.BotsChangeMoveDirectionCooldown))
-                .TakeUntilDestroy(this).Subscribe((l =>
+            Observable
+                .Interval(TimeSpan.FromSeconds(_gameSettings.BotsChangeMoveDirectionCooldown))
+                .SkipWhile((l => HasStateAuthority == false))
+                .TakeUntilDestroy(this)
+                .Subscribe((l =>
                 {
-                    if (HasStateAuthority == false) return;
-
                     ChangeMoveDirection();
                 }));
         }
@@ -272,5 +274,13 @@ namespace Dev.BotsLogic
         {
             return (int)bot.Object.Id.Raw;
         }
+        
+        public class BotStateController
+        {
+        
+        }
     }
+
+
+    
 }

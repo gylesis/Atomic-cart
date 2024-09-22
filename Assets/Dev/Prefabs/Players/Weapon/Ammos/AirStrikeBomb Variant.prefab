@@ -45,6 +45,10 @@ PrefabInstance:
       value: 4001133790
       objectReference: {fileID: 0}
     - target: {fileID: 1466458761704203570, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
+      propertyPath: NestedObjects.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1466458761704203570, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
       value: 3
       objectReference: {fileID: 0}
@@ -136,18 +140,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eae354d0ea8e4ba888dfec4232a8381f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setStateAuthorityNeutralOnSpawned: 0
   _IsActive:
     _value: 1
+  _needToRenderCollisionPrediction: 0
   _view: {fileID: 7466749108769988330}
   _networkRigidbody2D: {fileID: 6797543861436920845}
   _overlapRadius: 5
-  _hitMask:
-    serializedVersion: 2
-    m_Bits: 264
-  _checkOverlapWhileMoving: 0
-  _OwnerTeamSide: 0
-  _explosionRadius: 2
+  _IsAlive:
+    _value: 1
 --- !u!114 &6797543861436920845 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 880675783536816808, guid: 1c2ac174be51edc4ba2baaf38c19509a, type: 3}

@@ -1,4 +1,5 @@
-﻿using Dev.BotsLogic;
+﻿using System;
+using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
@@ -13,6 +14,8 @@ namespace Dev.Weapons.Guns
     [RequireComponent(typeof(NetworkRigidbody2D))]
     public abstract class Projectile : NetworkContext
     {
+        [SerializeField] private bool _needToRenderCollisionPrediction = true;
+        
         [SerializeField] protected Transform _view;
         [SerializeField] protected NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] protected float _overlapRadius = 1f;
@@ -126,6 +129,8 @@ namespace Dev.Weapons.Guns
         {
             if (IsProxy == false) return;
 
+            if(_needToRenderCollisionPrediction == false) return;
+            
             if (Owner.IsBot)
             {
                 bool hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Id);
@@ -156,6 +161,11 @@ namespace Dev.Weapons.Guns
         protected virtual void OnBotHit(Bot bot) { }
         
         protected virtual void OnDummyHit(DummyTarget dummyTarget) { }
+
+        protected virtual void OnDrawGizmosSelected()
+        {
+            
+        }
 
         protected virtual void OnDrawGizmos()
         {

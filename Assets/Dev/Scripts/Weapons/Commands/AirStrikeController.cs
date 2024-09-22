@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.UI.PopUpsAndMenus;
+using Dev.Utils;
 using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
@@ -35,17 +37,19 @@ namespace Dev.Weapons
         private Dictionary<int, AirStrikeMarker> _markers = new Dictionary<int, AirStrikeMarker>();
         private NetworkRunner _localNetRunner;
 
-        public async void CallMiniAirStrike(NetworkRunner networkRunner, Vector3 pos, SessionPlayer owner)
+        public async UniTask CallMiniAirStrike(NetworkRunner networkRunner, Vector3 pos, SessionPlayer owner)
         {
             _localNetRunner = networkRunner;
-                
+            
             if (IsBusy) return;
 
             IsBusy = true;
-
+            _markers.Clear();
             _miniAirStrikeExplosionBombCount = _miniAirStrikeBombCount;
 
             Vector3[] poses = new Vector3[_miniAirStrikeBombCount];
+
+            float waitTimeForMarker = 0.05f;
             
             for (int index = 0; index < _miniAirStrikeBombCount; index++)
             {
@@ -54,17 +58,21 @@ namespace Dev.Weapons
                 
                 SpawnMarker(index, spawnPos);
                 
-                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+                await UniTask.Delay(TimeSpan.FromSeconds(waitTimeForMarker), cancellationToken: gameObject.GetCancellationTokenOnDestroy());
             }
+            
+            await UniTask.Delay(TimeSpan.FromSeconds(waitTimeForMarker * _miniAirStrikeBombCount / 2), cancellationToken: gameObject.GetCancellationTokenOnDestroy());
 
             for (int index = 0; index < _miniAirStrikeBombCount; index++)
             {
                 Vector3 spawnPos = poses[index];
 
-                SpawnAirStrikeBomb(index, spawnPos, owner, 1.5f);
+                SpawnAirStrikeBomb(index, spawnPos, owner, 1.5f).Forget();
 
-                await UniTask.Delay(TimeSpan.FromSeconds(_cooldownBeforeNextBomb));
+                await UniTask.Delay(TimeSpan.FromSeconds(_cooldownBeforeNextBomb), cancellationToken: gameObject.GetCancellationTokenOnDestroy());
             }
+            
+            
         }
 
         private void SpawnMarker(int index, Vector3 spawnPos)
@@ -74,9 +82,9 @@ namespace Dev.Weapons
             _markers.Add(index, marker);
         }
 
-        private void SpawnAirStrikeBomb(int index, Vector3 spawnPos, SessionPlayer owner, float detonateDelay)
+        private async UniTask SpawnAirStrikeBomb(int index, Vector3 spawnPos, SessionPlayer owner, float detonateDelay)
         {
-            AirStrikeBomb bomb = _localNetRunner.Spawn(_airStrikeBombPrefab, spawnPos, onBeforeSpawned: (runner, o) =>
+            AirStrikeBomb bomb = _localNetRunner.Spawn(_airStrikeBombPrefab, spawnPos, null,  _localNetRunner.LocalPlayer, onBeforeSpawned: (runner, o) =>
             {
                 DiInjecter.Instance.InjectGameObject(o.gameObject);
 
@@ -93,12 +101,11 @@ namespace Dev.Weapons
             bomb.ToDestroy.Take(1).Subscribe((OnToDestroy));
             bomb.transform.DOScale(1, 0.8f);
 
-            Observable.Timer(TimeSpan.FromSeconds(detonateDelay)).TakeUntilDestroy(this).Subscribe((l =>
-            {
-                _markers[index].Hide();
-                _markers.Remove(index);
-                bomb.StartDetonate();
-            }));
+            await UniTask.Delay(TimeSpan.FromSeconds(detonateDelay), cancellationToken: gameObject.GetCancellationTokenOnDestroy());
+            
+            _markers[index].Hide();
+            _markers.Remove(index);
+            bomb.Detonate();
         }
 
         private void OnToDestroy(Projectile projectile)

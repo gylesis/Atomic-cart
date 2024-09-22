@@ -157,10 +157,8 @@ namespace Dev.PlayerLogic
                     {
                         AbilityCastController castController = _playerBase.AbilityCastController;
 
-                        if (castController.AllowToCast)
-                        {
-                            castController.CastAbility(_playerBase.PlayerController.AimCrosshairPos);
-                        }
+                        if (castController.AllowToCast) 
+                            castController.TryCastAbility(_playerBase.PlayerController.AimCrosshairPos);
                     }
 
                     if (input.ToResetAbility)

@@ -16,7 +16,7 @@ namespace Dev
 {
     public class AuthService : IDisposable
     {
-        public static string Nickname = $"Player{new Random(Process.GetCurrentProcess().Id).Next().ToString().Substring(0,4)}";
+        public static string Nickname = $"Player";
 
         public string Token;
         public string Error;

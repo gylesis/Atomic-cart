@@ -3,6 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -77,8 +78,14 @@ namespace Dev.Weapons
             }
         }
 
-        public void CastAbility(Vector3 pos)
+        public void TryCastAbility(Vector3 pos)
         {
+            if (AllowToCast == false)
+            {
+                AtomicLogger.Log("Not Allowed to cast ability");
+                return;
+            }
+            
             ResetAbility();
 
             AbilityCastCommand command = GetCommand(CurrentAbilityToCast);
@@ -88,7 +95,7 @@ namespace Dev.Weapons
             
             _currentCastCommand = command;
         }
-
+        
         public void ResetAbility()
         {
             if(_castCommands.Count == 0) return;
