@@ -100,9 +100,14 @@ namespace Dev.PlayerLogic
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
-
             if (PlayerCharacter == null) return;
 
+            if (_inputService.BufferedInputs.Count == 0)
+            {
+                LookDirection = Vector2.zero;
+            }
+            
+            
             foreach (PlayerInput input in _inputService.BufferedInputs)
             {
                 MoveDirection = input.MoveDirection;
@@ -246,7 +251,6 @@ namespace Dev.PlayerLogic
 
             Vector2 lookDirection = LookDirection;
 
-
             if (lookDirection == Vector2.zero)
             {
                 IsPlayerAiming = false;
@@ -268,7 +272,6 @@ namespace Dev.PlayerLogic
                     }
                 }
             }
-
 
             _weaponController.AimWeaponTowards(lookDirection);
         }
