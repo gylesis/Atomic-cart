@@ -591,6 +591,8 @@ GameObject:
   - component: {fileID: 7619175838533121882}
   - component: {fileID: 8337593156464237279}
   - component: {fileID: 824267643430016442}
+  - component: {fileID: 3687546403976166507}
+  - component: {fileID: 1622161069983046174}
   m_Layer: 8
   m_Name: Bot
   m_TagString: Untagged
@@ -769,6 +771,9 @@ MonoBehaviour:
   _moveDistance: 50
   _view: {fileID: 6428500650265862553}
   Alive: 1
+  _Target: {fileID: 0}
+  _IsFrozen:
+    _value: 0
 --- !u!195 &8337593156464237279
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -803,6 +808,36 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_SortAtRoot: 1
+--- !u!114 &3687546403976166507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6354534433250160694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: 1622161069983046174}
+  _installerPrefabs: []
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!114 &1622161069983046174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6354534433250160694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6084fda0f37448cbba7fa86094ce20e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7551077672319180125
 GameObject:
   m_ObjectHideFlags: 0

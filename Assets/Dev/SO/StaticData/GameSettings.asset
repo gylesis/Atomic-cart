@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _timeAfterWinGame: 5
   _isFriendlyFireOn: 0
-  _botsTargetsSearchRadius: 15
-  _botsPerTeam: 2
-  _botsSearchForTargetsCooldown: 0.5
-  _botsChangeMoveDirectionCooldown: 5
-  _botsNearestPointsAmountToChoose: 5
+  _saveLogsAfterQuit: 0
+  _botsConfig: {fileID: 11400000, guid: c51c82455b2a4bf408bf820658849260, type: 2}
   _cameraZoomModifier: 20
   _cameraFollowSpeed: 2
   _weaponObstaclesDetectLayers:

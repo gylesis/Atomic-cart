@@ -1,7 +1,6 @@
 ﻿using Dev.Utils;
 using Dev.Weapons.StaticData;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Dev.Infrastructure
 {
@@ -13,37 +12,33 @@ namespace Dev.Infrastructure
         [SerializeField] private bool _isFriendlyFireOn;
         [SerializeField] private bool _saveLogsAfterQuit;
         
-        [Header("Bots")]
-        [SerializeField] private float _botsTargetsSearchRadius = 15;
-        [SerializeField] private int _botsPerTeam = 2;
-        [SerializeField] private float _botsSearchForTargetsCooldown = 0.5f;
-        [SerializeField] private float _botsChangeMoveDirectionCooldown = 5;
-        [SerializeField] private int _botsNearestPointsAmountToChoose = 5;
-            
+        [Header("Bots")] 
+        [SerializeField] private BotsConfig _botsConfig;
+
         [Header("Player")] 
         [SerializeField] private float _cameraZoomModifier = 15f;
+
         [SerializeField] private float _cameraFollowSpeed = 2f;
         [SerializeField] private LayerMask _weaponObstaclesDetectLayers;
         [SerializeField] private float _weaponHitDetectionOffset = 1;
         [Range(0.1f,1f)] [SerializeField] private float _shootThreshold = 0.5f;
-        
+
         [Header("Weapon")]
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
+
         [SerializeField] private AnimationCurve _grenadeFlyFunction;
         [SerializeField] private AnimationCurve _grenadeFlySizeFunction;
-        
+
         [Header("Debug")]
         [SerializeField] private MapName _firstLevelName;
+
 
         [SerializeField] private float _barrelsRespawnCooldown = 5f;
 
         public float BarrelsRespawnCooldown => _barrelsRespawnCooldown;
+        public BotsConfig BotsConfig => _botsConfig;
 
-        public int BotsPerTeam => _botsPerTeam;
-        public float BotsTargetsSearchRadius => _botsTargetsSearchRadius;
-        public float BotsSearchForTargetsCooldown => _botsSearchForTargetsCooldown;
-        public float BotsChangeMoveDirectionCooldown => _botsChangeMoveDirectionCooldown;
-        public int BotsNearestPointsAmountToChoose => _botsNearestPointsAmountToChoose;
+        
 
 
         public bool SaveLogsAfterQuit => _saveLogsAfterQuit;

@@ -111,7 +111,6 @@ namespace Dev.Weapons
 
             WeaponParent.transform.up = direction;
 
-
             float scaleSign = 1;
 
             if (direction.x < 0)

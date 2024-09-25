@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dev.Utils;
 using UniRx;
 
 namespace Dev.Infrastructure
@@ -8,73 +9,106 @@ namespace Dev.Infrastructure
     public class StateMachine<TState> where TState : IState
     {
         private readonly Dictionary<Type, TState> _states;
-        private IState _current;
+        private IState _currentState;
 
         public Subject<string> Changed = new Subject<string>();
+        public int CurrentStateId => _states.Values.ToList().IndexOf(_states[_currentState.GetType()]);
+
+        private List<Transition> _transitions = new List<Transition>();
+        
 
         public StateMachine(params TState[] states)
         {
             _states = states.ToDictionary(x => x.GetType());
         }
 
-        public void ChangeState<TChangeState>() where TChangeState : TState
+        public void ChangeState<TChangeState>(bool withOverride = false) where TChangeState : TState
         {
+           // if ((_currentState != null && typeof(TChangeState) == _currentState.GetType()) || !withOverride) return;
+
             TState state = _states[typeof(TChangeState)];
-            _current?.Exit();
+            
+            _currentState?.Exit();
 
             Changed.OnNext(typeof(TState).ToString());
 
-//            Debug.Log($"Changed state to {state.GetType()}");
+            AtomicLogger.Log($"Changed state to {state.GetType()}");
 
-            _current = state;
-
-            _current?.Enter();
+            _currentState = state;
+ 
+            _currentState?.Enter();
         }
 
-        public int CurrentStateId => _states.Values.ToList().IndexOf(_states[_current.GetType()]);
+        public void FixedNetworkTick()
+        {
+            if(_currentState is IFixedNetworkTickState state)
+                state.FixedNetworkTick();
+        }
+
+        public void Tick()
+        {
+            if(_currentState is ITickState tickState)
+                tickState.Tick();
+                
+          
+            /*foreach (var transition in _transitions)
+            {
+                if(transition.ToStateType == _currentState) continue;
+                
+                if(transition.IsSucceed() && transition.Priority == int.MaxValue)
+                    ChangeState(transition.ToStateType);
+            }*/
+        }
 
         public void Exit()
         {
-            _current?.Exit();
-            _current = null;
+            _currentState?.Exit();
+            _currentState = null;
         }
 
+        public void AddTransition(Transition transition)
+        {
+            _transitions.Add(transition);
+        }
+        
         public void ReEnterState<TChangeState>() where TChangeState : TState
         {
             TState state = _states[typeof(TChangeState)];
-            _current?.Exit();
+            _currentState?.Exit();
 
             // Debug.Log($"ReEnter state to {state.GetType()}");
 
-            _current = state;
+            _currentState = state;
 
-            _current?.Enter();
+            _currentState?.Enter();
         }
 
         public void ChangeState(IState state)
         {
-            if (state == _current) return;
+            if (state == _currentState) return;
 
             //Debug.Log($"Changed state to {state.GetType()}");
 
-            _current?.Exit();
+            _currentState?.Exit();
 
-            _current = (TState)state;
+            _currentState = (TState)state;
 
-            _current?.Enter();
+            _currentState?.Enter();
         }
     }
 
     public struct Transition
     {
-        public IState To { get; }
-
+        public Type ToStateType { get; }
+        public int Priority { get; }
+        
         private readonly Func<bool> _condition;
 
-        public Transition(IState to, Func<bool> condition)
-        {
+        public Transition(Type toStateType, Func<bool> condition, int priority)
+        {   
+            Priority = priority;
             _condition = condition;
-            To = to;
+            ToStateType = toStateType;
         }
 
         public bool IsSucceed()

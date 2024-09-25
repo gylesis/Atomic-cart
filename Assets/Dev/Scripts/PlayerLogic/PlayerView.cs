@@ -76,16 +76,7 @@ namespace Dev.PlayerLogic
             color.a = Mathf.Lerp(color.a, crosshairColorTarget, Runner.DeltaTime * 20);
             _crosshairSpriteRenderer.color = color;
 
-            Vector3 lookDirection;
-
-            if (_playerBase.PlayerController.IsCastingMode)
-            {
-                lookDirection = _playerBase.PlayerController.LastLookDirection;
-            }
-            else
-            {
-                lookDirection = _playerBase.PlayerController.LastLookDirection.normalized;
-            }
+            Vector3 lookDirection = _playerBase.PlayerController.IsCastingMode ? _playerBase.PlayerController.LastLookDirection : _playerBase.PlayerController.LastLookDirection.normalized;
             
             Weapon weapon = _playerBase.Character.WeaponController.CurrentWeapon;
             float aimDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(_playerBase.transform.position, weapon.ShootDirection, 

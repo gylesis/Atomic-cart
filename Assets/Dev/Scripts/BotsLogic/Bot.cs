@@ -12,6 +12,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace Dev.BotsLogic
@@ -39,24 +40,40 @@ namespace Dev.BotsLogic
         [SerializeField] private float _moveDistance = 10;
         [SerializeField] private BotView _view;
 
-        private Vector3 _movePointPos;
         private int _currentPointIndex = 0;
-        private List<BotMovePoint> MovePoints => _botsController.LevelMovePoints;
+        public List<BotMovePoint> MovePoints => _botsController.LevelMovePoints;
 
-        private TeamsService _teamsService;
-        private GameSettings _gameSettings;
         private BotsController _botsController;
+        private BotStateController _botStateController;
 
         public bool Alive = true;
+        private GameSettings _gameSettings;
+        private SessionStateService _sessionStateService;
 
-        [Networked] private NetworkObject Target { get; set; }
-        [Networked] private NetworkBool IsFrozen { get; set; }
+        [Networked] public NetworkObject Target { get; set; }
+        [Networked] public NetworkBool IsFrozen { get; set; }
         [Networked] public BotData BotData { get; private set; }
 
+
+        public SessionPlayer TargetSessionPlayer => Target != null ? _sessionStateService.GetSessionPlayer(Target.Id) : default(SessionPlayer);
+        
+        public Vector3 RandomMovePointPos { get; private set; }
+        public WeaponController WeaponController => _weaponController;
+        public bool AllowToShoot => _allowToShoot;
+        public Rigidbody2D Rigidbody => _rigidbody;
+        public float Speed => _speed;
+        public float ChaseSpeed => _chaseSpeed;
+
+        public bool AllowToMove => _allowToMove;
         public BotView View => _view;
         public TeamSide BotTeamSide => BotData.TeamSide;
         public NavMeshAgent NavMeshAgent => _navMeshAgent;
 
+        public BotStateController BotStateController => _botStateController;
+
+        public Vector2 DirectionToTarget => (Target.transform.position - transform.position).normalized;
+        public Vector2 DirectionToMovePos => (RandomMovePointPos - transform.position).normalized;
+        
         protected override void Awake()
         {
             base.Awake();
@@ -67,59 +84,27 @@ namespace Dev.BotsLogic
         public void Init(BotData botData)
         {
             BotData = botData;
-
             _weaponController.RPC_SetOwner(BotData.SessionPlayer);
         }
 
         [Inject]
-        private void Construct(TeamsService teamsService, GameSettings gameSettings, BotsController botsController)
+        private void Construct(BotsController botsController, BotStateController botStateController, GameSettings gameSettings, SessionStateService sessionStateService)
         {
-            _botsController = botsController;
+            _sessionStateService = sessionStateService;
             _gameSettings = gameSettings;
-            _teamsService = teamsService;
+            _botStateController = botStateController;
+            _botsController = botsController;
         }
 
         [Rpc]
         public void RPC_OnDeath(bool isDead) // TODO bullshit
         {
-            if (isDead)
-            {
-                transform.DOScale(0, 0.5f);
-            }
-            else
-            {
-                transform.DOScale(1, 0.5f);
-            }
-            
+            transform.DOScale(isDead ? 0 : 1, 0.5f);
+
             Alive = !isDead;
             _collider.enabled = !isDead;
         }
     
-        public override void Spawned()
-        {
-            base.Spawned();
-
-            ChangeMoveDirection();
-
-            Observable
-                .Interval(TimeSpan.FromSeconds(_gameSettings.BotsSearchForTargetsCooldown))
-                .SkipWhile((l => HasStateAuthority == false))
-                .TakeUntilDestroy(this)
-                .Subscribe((l =>
-                {
-                    SearchForTargets();
-                }));
-
-            Observable
-                .Interval(TimeSpan.FromSeconds(_gameSettings.BotsChangeMoveDirectionCooldown))
-                .SkipWhile((l => HasStateAuthority == false))
-                .TakeUntilDestroy(this)
-                .Subscribe((l =>
-                {
-                    ChangeMoveDirection();
-                }));
-        }
-
         public void SetFreezeState(bool toFreeze)
         {
             IsFrozen = toFreeze;
@@ -129,84 +114,25 @@ namespace Dev.BotsLogic
         {
             if (HasStateAuthority == false) return;
 
-            if (Alive == false) return;
-
-            if (IsFrozen) return;
-
-            if(_allowToMove == false) return;
-            
-            if (Target != null)
-            {
-                MoveToTarget();
-            }
-            else
-            {
-                Move(_movePointPos, _speed);
-            }
+            _botStateController.FixedNetworkTick();
         }
-
-        public override void Render()
+        
+        public void ChangeMoveDirection()
         {
-            _view.RPC_OnMove(_navMeshAgent.velocity.magnitude / _navMeshAgent.speed, Mathf.Sign(_navMeshAgent.velocity.x) < 0);
+            if (HasStateAuthority == false) return;
+
+            var movePoints = MovePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude)
+                .ToList();
+
+            int maxPoints = _gameSettings.BotsConfig.BotsNearestPointsAmountToChoose;
+            int index = Math.Clamp(Random.Range(0, maxPoints), 0, movePoints.Count());
+
+            BotMovePoint movePoint = movePoints[index];
+
+            RandomMovePointPos = movePoint.transform.position;
         }
-
-        private void SearchForTargets()
-        {
-            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _gameSettings.BotsTargetsSearchRadius, out var colliders);
-
-            bool targetFound = false;
-
-            if (overlapSphere)
-            {
-                foreach (Collider2D collider in colliders)
-                {
-                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
-
-                    if (isDamagable == false) continue;
-
-                    bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
-                    bool isBot = damagable.DamageId == DamagableType.Bot;
-                    bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
-                    bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
-                    bool isPlayer = damagable.DamageId == DamagableType.Player;
-
-                    if (isBot)
-                    {
-                        Bot bot = damagable as Bot;
-
-                        TeamSide botSide = _teamsService.GetUnitTeamSide(bot);
-
-                        if (TryAssignTarget(bot.Object, botSide))
-                        {
-                            targetFound = true;
-                            break;
-                        }
-                    }
-
-                    if (isPlayer)
-                    {
-                        PlayerCharacter playerCharacter = damagable as PlayerCharacter;
-
-                        TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerCharacter.Object.InputAuthority);
-
-                        if (playerTeamSide != BotTeamSide)
-                        {
-                            targetFound = true;
-
-                            if (TryAssignTarget(playerCharacter.Object, playerTeamSide))
-                                break;
-                        }
-                    }
-                }
-            }
-
-            if (targetFound == false)
-            {
-                Target = null;
-            }
-        }
-
-        private bool TryAssignTarget(NetworkObject potentialTarget, TeamSide targetTeam)
+        
+        public bool TryAssignTarget(NetworkObject potentialTarget, TeamSide targetTeam)
         {
             if (targetTeam == BotTeamSide) return false;
 
@@ -232,55 +158,105 @@ namespace Dev.BotsLogic
                 return true;
             }
         }
+        
+        public bool TryFindNearTarget()
+        {
+            bool overlapSphere = Extensions.OverlapCircle(_botStateController.NetworkRunner, transform.position, _gameSettings.BotsConfig.BotsTargetsSearchRadius, out var colliders);
 
-        private void MoveToTarget()
+            bool targetFound = false;
+
+            if (overlapSphere)
+            {
+                foreach (Collider2D collider in colliders)
+                {
+                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
+
+                    if (isDamagable == false) continue;
+
+                    bool isDummyTarget = damagable.DamageId == DamagableType.DummyTarget;
+                    bool isBot = damagable.DamageId == DamagableType.Bot;
+                    bool isStaticObstacle = damagable.DamageId == DamagableType.Obstacle;
+                    bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
+                    bool isPlayer = damagable.DamageId == DamagableType.Player;
+
+                    if (isBot)
+                    {
+                        Bot bot = damagable as Bot;
+
+                        TeamSide botSide = _botStateController.TeamsService.GetUnitTeamSide(bot);
+
+                        if (TryAssignTarget(bot.Object, botSide))
+                        {
+                            targetFound = true;
+                            break;
+                        }
+                    }
+
+                    if (isPlayer)
+                    {
+                        PlayerCharacter playerCharacter = damagable as PlayerCharacter;
+
+                        TeamSide playerTeamSide = _botStateController.TeamsService.GetUnitTeamSide(playerCharacter.Object.InputAuthority);
+
+                        if (playerTeamSide != BotTeamSide)
+                        {
+                            targetFound = true;
+
+                            if (TryAssignTarget(playerCharacter.Object, playerTeamSide))
+                                break;
+                        }
+                    }
+                }
+            }
+
+            if (targetFound == false)
+            {
+                Target = null;
+            }
+            
+            return targetFound;
+        }
+        
+        public void MoveTowardsTarget()
         {
             Vector3 direction = (Target.transform.position - transform.position).normalized;
             Vector3 movePos = transform.position + direction;
 
             Move(movePos, _chaseSpeed);
+        }
 
+        public void AimWeaponTowards(Vector2 direction)
+        {
             _weaponController.AimWeaponTowards(direction);
-
-            if (_allowToShoot)
-            {
-                _weaponController.TryToFire(direction);
-            }
         }
 
-        private void ChangeMoveDirection()
+        public void Move(Vector3 movePos)
         {
-            if (HasStateAuthority == false) return;
-
-            var movePoints = MovePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude)
-                .ToList();
-
-            int maxPoints = _gameSettings.BotsNearestPointsAmountToChoose;
-            int index = Math.Clamp(Random.Range(0, maxPoints), 0, movePoints.Count());
-
-            BotMovePoint movePoint = movePoints[index];
-
-            _movePointPos = movePoint.transform.position;
+            Move(movePos, Speed);
         }
-
-        private void Move(Vector3 movePos, float speed)
+        
+        public void Move(Vector3 movePos, float speed)
         {
-            //_rigidbody.position = Vector3.MoveTowards(transform.position, movePos, Runner.DeltaTime * speed);
             _navMeshAgent.speed = speed;
             _navMeshAgent.SetDestination(movePos);
+        }
+
+        public override void Render()
+        {
+            if(HasStateAuthority == false) return;
+            
+            _view.RPC_OnMove(_navMeshAgent.velocity.magnitude / _navMeshAgent.speed, Mathf.Sign(_navMeshAgent.velocity.x) < 0);
         }
 
         public static implicit operator int(Bot bot)
         {
             return (int)bot.Object.Id.Raw;
         }
-        
-        public class BotStateController
+
+        private void OnDestroy()
         {
-        
+            _botStateController.StateMachine.Exit();
         }
+        
     }
-
-
-    
 }
