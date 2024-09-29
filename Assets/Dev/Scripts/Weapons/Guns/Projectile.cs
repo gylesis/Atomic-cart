@@ -130,28 +130,16 @@ namespace Dev.Weapons.Guns
             if (IsProxy == false) return;
 
             if(_needToRenderCollisionPrediction == false) return;
+
+            bool hitSomething = false;
             
             if (Owner.IsBot)
-            {
-                bool hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Id);
-             
-                if (hitSomething)
-                {
-                    SetViewStateLocal(false);
-                }
-            }
+                hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Id);
             else
-            {
-                bool hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Owner);
-             
-                if (hitSomething)
-                {
-                    SetViewStateLocal(false);
-                }
-            }
+                hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Owner);
             
-            
-            
+            if (hitSomething) 
+                SetViewStateLocal(false);
         }
 
         protected virtual void OnObstacleHit(Obstacle obstacle) { }

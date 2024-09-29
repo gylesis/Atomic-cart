@@ -27,6 +27,10 @@ namespace Dev.Weapons.Guns
             _healthObjectsService = healthObjectsService;
         }
 
+        /// <summary>
+        /// Used for processing projectile hit logic
+        /// </summary>
+        /// <param name="context"></param>
         public void ProcessHitCollision(ProcessHitCollisionContext context)
         {
             NetworkRunner runner = Runner;
@@ -149,6 +153,15 @@ namespace Dev.Weapons.Guns
             Hit.OnNext(hitContext);
         }
 
+       
+        /// <summary>
+        /// Used for processing collision excluding collision check owner
+        /// </summary>
+        /// <param name="runner"></param>
+        /// <param name="pos"></param>
+        /// <param name="radius"></param>
+        /// <param name="originalObjectId"></param>
+        /// <returns></returns>
         public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius, PlayerRef originalObjectId)
         {
             var overlapSphere = Extensions.OverlapCircle(runner, pos, radius, out var colliders);
@@ -170,7 +183,15 @@ namespace Dev.Weapons.Guns
             
             return false;
         }
-
+        
+        /// <summary>
+        /// Used for processing collision excluding collision check owner
+        /// </summary>
+        /// <param name="runner"></param>
+        /// <param name="pos"></param>
+        /// <param name="radius"></param>
+        /// <param name="originalObjectId"></param>
+        /// <returns></returns>
         public bool ProcessCollision(NetworkRunner runner, Vector3 pos, float radius, NetworkId originalObjectId)
         {
             var overlapSphere = Extensions.OverlapCircle(runner, pos, radius, out var colliders);
@@ -194,6 +215,11 @@ namespace Dev.Weapons.Guns
         }
 
 
+        /// <summary>
+        /// Used for processing explosion and hit logic at the same time
+        /// </summary>
+        /// <param name="explodeContext"></param>
+        /// <param name="onExploded"></param>
         public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext, Action<NetworkObject, SessionPlayer, DamagableType, int, bool> onExploded = null)
         {   
             NetworkRunner runner = Runner;  
@@ -205,15 +231,15 @@ namespace Dev.Weapons.Guns
             float explosionRadius = explodeContext.ExplosionRadius;
             int damage = explodeContext.Damage;
 
-            var overlapSphere = Extensions.OverlapCircle(runner, pos, explosionRadius, out var colliders);
+            var overlapSphere = Extensions.OverlapCircleWithWalls(runner, pos, explosionRadius, out var targets);
 
             if (overlapSphere == false) return;
 
             float maxDistance = (pos - (pos + Vector3.right * explosionRadius)).sqrMagnitude;
 
-            foreach (Collider2D collider in colliders)  
+            foreach (Collider2D target in targets)  
             {
-                bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
+                bool isDamagable = target.TryGetComponent<IDamageable>(out var damagable);
 
                 if (isDamagable == false) continue;
 
@@ -223,7 +249,7 @@ namespace Dev.Weapons.Guns
                 bool isObstacleWithHealth = damagable.DamageId == DamagableType.ObstacleWithHealth;
                 bool isPlayer = damagable.DamageId == DamagableType.Player;
 
-                float distance = (collider.transform.position - pos).sqrMagnitude;
+                float distance = (target.transform.position - pos).sqrMagnitude;
                 float damagePower = 1 - distance / maxDistance;
                 damagePower = 1;
 
@@ -260,8 +286,8 @@ namespace Dev.Weapons.Guns
 
                     if (isDamageFromServer == false)
                     {
-                        PlayerRef target = playerCharacter.Object.StateAuthority;
-                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(target);
+                        PlayerRef targetPlayer = playerCharacter.Object.StateAuthority;
+                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetPlayer);
                         
                         if (ownerTeamSide == targetTeamSide) continue;
                     }
@@ -323,7 +349,7 @@ namespace Dev.Weapons.Guns
         }
         
         
-        
+        // TODO save hit history
         /*public void OnHit(SessionPlayer owner, SessionPlayer victim, float damage, DateTime time)
         {
             HitRecord hitRecord = new HitRecord(owner, victim, damage, time.ToFileTime(), false);

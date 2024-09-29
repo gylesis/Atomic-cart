@@ -56,15 +56,15 @@ namespace Dev.Weapons
         
         private void SearchForTargets()
         {
-            bool overlapSphere = Extensions.OverlapCircle(Runner, transform.position, _detectionRadius, out var colliders);
+            bool overlapSphere = Extensions.OverlapCircleWithWalls(Runner, transform.position, _detectionRadius, out var targets);
 
             bool targetFound = false;
             
             if (overlapSphere)
             {
-                foreach (Collider2D collider in colliders)
+                foreach (Collider2D target in targets)
                 {
-                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
+                    bool isDamagable = target.TryGetComponent<IDamageable>(out var damagable);
                     
                     if(isDamagable == false) continue;
                     

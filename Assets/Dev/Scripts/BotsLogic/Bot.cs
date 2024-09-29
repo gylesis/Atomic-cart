@@ -161,15 +161,15 @@ namespace Dev.BotsLogic
         
         public bool TryFindNearTarget()
         {
-            bool overlapSphere = Extensions.OverlapCircle(_botStateController.NetworkRunner, transform.position, _gameSettings.BotsConfig.BotsTargetsSearchRadius, out var colliders);
+            bool overlapSphere = Extensions.OverlapCircleWithWalls(_botStateController.NetworkRunner, transform.position, _gameSettings.BotsConfig.BotsTargetsSearchRadius, out var targets);
 
             bool targetFound = false;
 
             if (overlapSphere)
             {
-                foreach (Collider2D collider in colliders)
+                foreach (Collider2D target in targets)
                 {
-                    bool isDamagable = collider.TryGetComponent<IDamageable>(out var damagable);
+                    bool isDamagable = target.TryGetComponent<IDamageable>(out var damagable);
 
                     if (isDamagable == false) continue;
 
@@ -209,10 +209,8 @@ namespace Dev.BotsLogic
                 }
             }
 
-            if (targetFound == false)
-            {
+            if (targetFound == false) 
                 Target = null;
-            }
             
             return targetFound;
         }

@@ -161,6 +161,67 @@ namespace Dev.Utils
             return colliders.Count > 0;
         }
 
+
+        public static bool OverlapCircleWithWalls(NetworkRunner runner, Vector2 pos, float radius, out List<Collider2D> targets)
+        {
+            targets = new List<Collider2D>();
+            
+            bool hasAnyTargets = OverlapCircle(runner, pos, radius, out var potentialTargets);
+            if (hasAnyTargets == false) return false;
+
+            var physics = runner.GetPhysicsScene2D();
+            
+            var contactFilter = new ContactFilter2D();
+            // contactFilter2D.layerMask = layerMask;
+            contactFilter.useTriggers = true;
+
+            RaycastHit2D[] hits = new RaycastHit2D[10];
+            
+            foreach (var target in potentialTargets)
+            {
+                if (!target.TryGetComponent<IDamageable>(out var damageable)) continue;
+                if(damageable.DamageId == DamagableType.Obstacle) continue;
+                
+                Vector2 direction = ((Vector2)target.transform.position - pos).normalized;
+
+                int circleCast = physics.CircleCast(pos, 0.05f, direction, radius, contactFilter, hits);
+                bool hasWallOnPath = false;
+                
+                foreach (var hit in hits.OrderBy(x => x.distance))
+                {
+                    Collider2D hitCollider = hit.collider;
+                    if (hitCollider == null) continue;
+                    
+                    var tryGetComponent = hitCollider.TryGetComponent<IDamageable>(out var dmgl);
+
+                    if (tryGetComponent == false) continue; 
+                    if (hitCollider == target) break;
+                        
+                    if (dmgl.DamageId is DamagableType.Obstacle)
+                    {
+                        Debug.Log($"Can't get {target.name} because of wall", hitCollider);
+                        hasWallOnPath = true;
+                        break;
+                    }
+                }
+                
+                if (!hasWallOnPath)
+                {
+                    targets.Add(target);
+                    Debug.DrawRay(pos, direction * radius, Color.blue, 1);
+                    Debug.Log($"Success hit {target.transform.name}", target.gameObject);
+                }
+                else
+                {
+                    if(circleCast > 0)
+                        Debug.DrawLine(pos, hits[0].point, Color.yellow, 1);
+                }
+
+            }
+
+            return targets.Count > 0;
+        }
+
         public static void SetAlpha(this Image image, float targetAlpha)
         {
             Color color = image.color;
