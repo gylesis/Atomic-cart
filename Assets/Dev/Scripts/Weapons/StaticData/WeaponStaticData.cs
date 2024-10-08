@@ -1,6 +1,7 @@
 ﻿using System;
 using Dev.Weapons.Guns;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Dev.Weapons.StaticData
@@ -14,6 +15,12 @@ namespace Dev.Weapons.StaticData
         [SerializeField] protected float _cooldown = 1f;
         [SerializeField] private int _minDamage = 8;
         [SerializeField] private int _maxDamage = 12;
+
+        [SerializeField] private string _fireSound = "ak_fire";
+        [SerializeField] private string _hitSound = "ak_hit";
+
+        public string FireSound => _fireSound;
+        public string HitSound => _hitSound;
 
         public Type SystemType => _weaponPrefab.GetType();
         

@@ -146,6 +146,7 @@ MonoBehaviour:
   _view: {fileID: 7466749108769988330}
   _networkRigidbody2D: {fileID: 6797543861436920845}
   _overlapRadius: 5
+  _hitSoundType: 
   _IsAlive:
     _value: 1
 --- !u!114 &6797543861436920845 stripped

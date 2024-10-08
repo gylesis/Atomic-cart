@@ -57,7 +57,7 @@ namespace Dev.BotsLogic
 
         public SessionPlayer TargetSessionPlayer => Target != null ? _sessionStateService.GetSessionPlayer(Target.Id) : default(SessionPlayer);
         
-        public Vector3 RandomMovePointPos { get; private set; }
+        public Vector3 RandomMovePointPos { get; set; }
         public WeaponController WeaponController => _weaponController;
         public bool AllowToShoot => _allowToShoot;
         public Rigidbody2D Rigidbody => _rigidbody;
@@ -117,7 +117,7 @@ namespace Dev.BotsLogic
             _botStateController.FixedNetworkTick();
         }
         
-        public void ChangeMoveDirection()
+        public void SetRandomMovePos()
         {
             if (HasStateAuthority == false) return;
 
@@ -161,7 +161,7 @@ namespace Dev.BotsLogic
         
         public bool TryFindNearTarget()
         {
-            bool overlapSphere = Extensions.OverlapCircleWithWalls(_botStateController.NetworkRunner, transform.position, _gameSettings.BotsConfig.BotsTargetsSearchRadius, out var targets);
+            bool overlapSphere = Extensions.OverlapCircleExcludeWalls(_botStateController.NetworkRunner, transform.position, _gameSettings.BotsConfig.BotsTargetsSearchRadius, out var targets);
 
             bool targetFound = false;
 

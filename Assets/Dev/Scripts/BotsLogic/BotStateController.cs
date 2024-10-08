@@ -44,7 +44,7 @@ namespace Dev.BotsLogic
             
             _stateMachine.ChangeState<PatrolBotState>();
             
-            _bot.ChangeMoveDirection();
+            _bot.SetRandomMovePos();
         }
 
         public void FixedNetworkTick()

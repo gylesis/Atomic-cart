@@ -13,7 +13,7 @@ namespace Dev
         [ContextMenu("Test")]
         private void Hit()
         {
-            Extensions.OverlapCircleWithWalls(Runner, _pos.position, _radius, out var collider);
+            Extensions.OverlapCircleExcludeWalls(Runner, _pos.position, _radius, out var collider);
         }
 
         public override void Render()

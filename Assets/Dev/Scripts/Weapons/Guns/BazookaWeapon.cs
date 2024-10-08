@@ -11,8 +11,8 @@ namespace Dev.Weapons.Guns
 {
     public class BazookaWeapon : ProjectileWeapon<BazookaStaticData>
     {
-        public float ExplosionRadius => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<BazookaStaticData>().ExplosionRadius;
-        public float FirePushPower =>  GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData<BazookaStaticData>().FirePushPower;
+        public float ExplosionRadius => Data.ExplosionRadius;
+        public float FirePushPower => Data.FirePushPower;
 
         public override void Shoot(Vector2 direction, float power = 1)
         {

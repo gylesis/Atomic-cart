@@ -21,9 +21,9 @@ namespace Dev.Weapons.Guns
         public WeaponType WeaponType => _weaponType;
         public virtual bool AllowToShoot => CooldownTimer.ExpiredOrNotRunning(Runner);
 
-        public float BulletMaxDistance => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).BulletMaxDistance;
-        public float Cooldown => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).Cooldown;
-        public int Damage => GameSettingProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).Damage;
+        public float BulletMaxDistance => GameSettingsProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).BulletMaxDistance;
+        public float Cooldown => GameSettingsProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).Cooldown;
+        public int Damage => GameSettingsProvider.GameSettings.WeaponStaticDataContainer.GetData(_weaponType).Damage;
 
         public Vector2 ShootPos => _shootPoint.position;
         public Transform ShootPoint => _shootPoint;

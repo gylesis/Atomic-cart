@@ -3,6 +3,7 @@ using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
+using Dev.Sounds;
 using Dev.Utils;
 using Fusion;
 using UniRx;
@@ -17,12 +18,14 @@ namespace Dev.Weapons.Guns
         
         private HealthObjectsService _healthObjectsService;
         private TeamsService _teamsService;
+        private PlayersDataService _playersDataService;
 
         public Subject<HitContext> Hit { get; } = new();
 
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, TeamsService teamsService)
+        private void Construct(HealthObjectsService healthObjectsService, TeamsService teamsService, PlayersDataService playersDataService)
         {
+            _playersDataService = playersDataService;
             _teamsService = teamsService;
             _healthObjectsService = healthObjectsService;
         }
@@ -31,7 +34,7 @@ namespace Dev.Weapons.Guns
         /// Used for processing projectile hit logic
         /// </summary>
         /// <param name="context"></param>
-        public void ProcessHitCollision(ProcessHitCollisionContext context)
+        public void ProcessHit(ProcessHitCollisionContext context)
         {
             NetworkRunner runner = Runner;
             SessionPlayer shooter = context.Owner;
@@ -48,6 +51,7 @@ namespace Dev.Weapons.Guns
             if (overlapSphere == false) return;
 
             Projectile projectile = Runner.FindObject(context.ProjectileId).GetComponent<Projectile>();
+            
             NetworkObject hitObject = null;
             DamagableType damagableType = DamagableType.DummyTarget;
 
@@ -125,6 +129,8 @@ namespace Dev.Weapons.Guns
             if (isProjectileHitSomething)
             {
                 OnHit(hitObject, shooter, damage, damagableType, projectile is ExplosiveProjectile, isDamageFromServer);
+
+                RPC_PlaySound(projectile.HitSoundType, projectile.transform.position, 40);
                 projectile.ToDestroy.OnNext(projectile);
             }
         }
@@ -151,6 +157,13 @@ namespace Dev.Weapons.Guns
             hitContext.DamagableType = damagableType;
 
             Hit.OnNext(hitContext);
+        }
+
+        
+        [Rpc(Channel = RpcChannel.Reliable)]
+        private void RPC_PlaySound(NetworkString<_16> soundType, Vector3 at, float radius)
+        {
+            SoundController.Instance.PlaySoundAt(soundType.ToString(), at, radius);
         }
 
        
@@ -231,7 +244,7 @@ namespace Dev.Weapons.Guns
             float explosionRadius = explodeContext.ExplosionRadius;
             int damage = explodeContext.Damage;
 
-            var overlapSphere = Extensions.OverlapCircleWithWalls(runner, pos, explosionRadius, out var targets);
+            var overlapSphere = Extensions.OverlapCircleExcludeWalls(runner, pos, explosionRadius, out var targets);
 
             if (overlapSphere == false) return;
 
@@ -315,6 +328,8 @@ namespace Dev.Weapons.Guns
 
                 if (victim != null)
                 {
+                    RPC_PlaySound("explosion", victim.transform.position, 40);
+                    
                     if (damage == -1)
                     {
                         Debug.Log($"Damage is -1, not applying damage, just returned callback");

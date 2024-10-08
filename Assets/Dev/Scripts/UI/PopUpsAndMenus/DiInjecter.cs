@@ -31,6 +31,8 @@ namespace Dev.UI.PopUpsAndMenus
         {
             if(_objects.Contains(gameObject.GetInstanceID())) return;
 
+            if(SceneDiContainer == null) return; // it means its ProjectContext
+            
             gameObject.OnDestroyAsObservable().Subscribe((unit => _objects.Remove(gameObject.GetInstanceID())));
             _objects.Add(gameObject.GetInstanceID());
             SceneDiContainer.InjectGameObject(gameObject);

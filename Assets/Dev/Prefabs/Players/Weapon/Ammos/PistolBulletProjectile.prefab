@@ -155,10 +155,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
+  _needToRenderCollisionPrediction: 1
   _view: {fileID: 6733854969783652827}
   _networkRigidbody2D: {fileID: 7258104449176091452}
   _overlapRadius: 0.45
-  _hitMask:
-    serializedVersion: 2
-    m_Bits: 200
-  _collideWhileMoving: 1
+  _hitSoundType: pistol_hit
+  _IsAlive:
+    _value: 1

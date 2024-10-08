@@ -67,7 +67,7 @@ namespace Dev.Weapons.Guns
             float remainingTime = FlyTimer.RemainingTime(Runner).Value;
 
             float t = 1 - (remainingTime / FlyTargetTime);
-            float value = GameSettingProvider.GameSettings.GrenadeFlyFunction.Evaluate(t);
+            float value = GameSettingsProvider.GameSettings.GrenadeFlyFunction.Evaluate(t);
 
             Vector2 pos = Vector2.Lerp(_originPos, _targetPos, value);
 
@@ -82,7 +82,7 @@ namespace Dev.Weapons.Guns
 
             float t = 1 - (remainingTime / FlyTargetTime);
 
-            float sizeValue = GameSettingProvider.GameSettings.GrenadeFlySizeFunction.Evaluate(t);
+            float sizeValue = GameSettingsProvider.GameSettings.GrenadeFlySizeFunction.Evaluate(t);
 
             View.localScale = Vector3.Lerp(OriginSize, TargetSize, sizeValue);
         }

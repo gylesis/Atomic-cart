@@ -10,7 +10,10 @@ namespace Dev.Infrastructure
         [SerializeField] private float _botsSearchForTargetsCooldown = 0.25f;
         [SerializeField] private float _botsChangeMoveDirectionCooldown = 5;
         [SerializeField] private int _botsNearestPointsAmountToChoose = 5;
-        
+        [SerializeField] private int _pointsPoolAmount = 5;
+
+
+        public int PointsPoolAmount => _pointsPoolAmount;
         public int BotsPerTeam => _botsPerTeam;
         public float BotsTargetsSearchRadius => _botsTargetsSearchRadius;
         public float BotsSearchForTargetsCooldown => _botsSearchForTargetsCooldown;

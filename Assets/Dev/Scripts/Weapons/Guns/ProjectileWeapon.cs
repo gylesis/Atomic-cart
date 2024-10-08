@@ -2,6 +2,7 @@
 using System.Linq;
 using Dev.Effects;
 using Dev.Infrastructure;
+using Dev.Sounds;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Dev.Weapons.StaticData;
@@ -15,11 +16,14 @@ namespace Dev.Weapons.Guns
     //[OrderAfter(typeof(Projectile))]
     public abstract class ProjectileWeapon<TProjectileType> : Weapon where TProjectileType : ProjectileStaticData
     {
-        public float ProjectileSpeed => GameSettingProvider.GameSettings.WeaponStaticDataContainer
-            .GetData<TProjectileType>().ProjectileSpeed;
+        [SerializeField] private float _soundRadius = 40;
 
-        public Projectile ProjectilePrefab => GameSettingProvider.GameSettings.WeaponStaticDataContainer
-            .GetData<TProjectileType>().ProjectilePrefab;
+        public TProjectileType Data => GameSettingsProvider.GameSettings.WeaponStaticDataContainer
+            .GetData<TProjectileType>();
+        
+        public float ProjectileSpeed => Data.ProjectileSpeed;
+
+        public Projectile ProjectilePrefab => Data.ProjectilePrefab;
 
         protected List<SpawnedProjectileContext> _aliveProjectiles = new List<SpawnedProjectileContext>();
 
@@ -75,6 +79,8 @@ namespace Dev.Weapons.Guns
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
             projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 5);
 
+            RPC_PlaySound(Data.FireSound, projectile.transform.position, 40);
+            
             var projectileContext = new SpawnedProjectileContext();
             projectileContext.Projectile = projectile;
             projectileContext.Origin = projectile.transform.position;
@@ -106,6 +112,7 @@ namespace Dev.Weapons.Guns
         /// <param name="projectile"></param>
         protected virtual void OnProjectileExpired(Projectile projectile)
         {
+            SpawnSoundOnDestroyProjectile(projectile);
             SpawnVFXOnDestroyProjectile(projectile);
             DestroyProjectile(projectile);
         }
@@ -154,6 +161,17 @@ namespace Dev.Weapons.Guns
         protected virtual void SpawnVFXOnDestroyProjectile(Projectile projectile)
         {
             FxController.Instance.SpawnEffectAt<Effect>("bullet_explosion", projectile.transform.position);
+        }
+
+        protected virtual void SpawnSoundOnDestroyProjectile(Projectile projectile)
+        {
+            RPC_PlaySound(Data.HitSound, projectile.transform.position, _soundRadius);
+        }
+        
+        [Rpc(Channel = RpcChannel.Reliable)]
+        private void RPC_PlaySound(NetworkString<_16> soundType, Vector3 at, float radius)
+        {
+            SoundController.Instance.PlaySoundAt(soundType.ToString(), at, radius);
         }
     }
 

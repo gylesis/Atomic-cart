@@ -15,18 +15,18 @@ namespace Dev.Weapons.Guns
     public abstract class Projectile : NetworkContext
     {
         [SerializeField] private bool _needToRenderCollisionPrediction = true;
-        
+
         [SerializeField] protected Transform _view;
         [SerializeField] protected NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] protected float _overlapRadius = 1f;
-
+        [SerializeField] private string _hitSoundType = "ak_hit";
+        
         /// <summary>
         /// Do projectile need to register collision while flying?
         /// </summary>
         protected abstract bool CheckForHitsWhileMoving { get; }
-        
+
         protected HitsProcessor _hitsProcessor;
-        
         [Networked] private Vector2 MoveDirection { get; set; }
         [Networked] private float Force { get; set; }
         [Networked] protected int Damage { get; set; }
@@ -34,14 +34,15 @@ namespace Dev.Weapons.Guns
         [Networked] public TickTimer DestroyTimer { get; set; }
 
         [Networked] public NetworkBool IsAlive { get; set; } = true;
-        
+
         public Transform View => _view;
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
+        public string HitSoundType => _hitSoundType;
 
         [Inject]
         private void Construct(HitsProcessor hitsProcessor)
-        {   
+        {
             _hitsProcessor = hitsProcessor;
         }
 
@@ -59,7 +60,7 @@ namespace Dev.Weapons.Guns
         }
 
         public void Init(Vector2 moveDirection, float force, int damage)
-        {   
+        {
             Damage = damage;
             Force = force;
             MoveDirection = moveDirection;
@@ -91,27 +92,28 @@ namespace Dev.Weapons.Guns
         }
 
         [Rpc]
-        public void RPC_SetViewState(bool isEnabled)    
+        public void RPC_SetViewState(bool isEnabled)
         {
             _view.gameObject.SetActive(isEnabled);
         }
-        
-        public void SetViewStateLocal(bool isEnabled)    
+
+        public void SetViewStateLocal(bool isEnabled)
         {
             _view.gameObject.SetActive(isEnabled);
         }
-    
+
         public override void FixedUpdateNetwork()
         {
-            if(Object == null) return;
-            
-            if(IsAlive == false) return;
-            
+            if (Object == null) return;
+
+            if (IsAlive == false) return;
+
             if (CheckForHitsWhileMoving)
             {
-                ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Object.Id, transform.position, _overlapRadius, Damage, false, Owner);
+                ProcessHitCollisionContext hitCollisionContext =
+                    new ProcessHitCollisionContext(Object.Id, transform.position, _overlapRadius, Damage, false, Owner);
 
-                _hitsProcessor.ProcessHitCollision(hitCollisionContext);
+                _hitsProcessor.ProcessHit(hitCollisionContext);
             }
 
             transform.position = Vector3.MoveTowards(transform.position, transform.position + (Vector3)MoveDirection,
@@ -129,16 +131,16 @@ namespace Dev.Weapons.Guns
         {
             if (IsProxy == false) return;
 
-            if(_needToRenderCollisionPrediction == false) return;
+            if (_needToRenderCollisionPrediction == false) return;
 
             bool hitSomething = false;
-            
+
             if (Owner.IsBot)
                 hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Id);
             else
                 hitSomething = _hitsProcessor.ProcessCollision(Runner, transform.position, _overlapRadius, Owner.Owner);
-            
-            if (hitSomething) 
+
+            if (hitSomething)
                 SetViewStateLocal(false);
         }
 
@@ -147,13 +149,10 @@ namespace Dev.Weapons.Guns
         protected virtual void OnPlayerHit(PlayerCharacter playerCharacter) { }
 
         protected virtual void OnBotHit(Bot bot) { }
-        
+
         protected virtual void OnDummyHit(DummyTarget dummyTarget) { }
 
-        protected virtual void OnDrawGizmosSelected()
-        {
-            
-        }
+        protected virtual void OnDrawGizmosSelected() { }
 
         protected virtual void OnDrawGizmos()
         {

@@ -1,3 +1,4 @@
+using Dev.Sounds;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using UnityEngine;
@@ -10,7 +11,8 @@ namespace Dev.Infrastructure
         [SerializeField] private GameSettings _gameSettings;
         [SerializeField] private MapsContainer _mapsContainer;
         [SerializeField] private Curtains _curtains;
-
+        [SerializeField] private SoundStaticDataContainer _soundStaticDataContainer;
+        
         [SerializeField] private GameStaticDataContainer _gameStaticDataContainer;
 
         [SerializeField] private Transform _popUpsParent;
@@ -20,6 +22,8 @@ namespace Dev.Infrastructure
         {
             Container.Bind<SceneLoader>().AsSingle().NonLazy();
             Container.Bind<PopUpService>().AsSingle().WithArguments(_popUpsParent).NonLazy();
+
+            Container.Bind<SoundStaticDataContainer>().FromInstance(_soundStaticDataContainer).AsSingle().WhenInjectedInto<SoundController>();
             
             Container.BindInterfacesAndSelfTo<AtomicLogger>().AsSingle().NonLazy();
             
@@ -31,7 +35,7 @@ namespace Dev.Infrastructure
             Container.Bind<GameStaticDataContainer>().FromInstance(_gameStaticDataContainer).AsSingle();
             
             Container.Bind<Curtains>().FromInstance(_curtains).AsSingle();
-            Container.Bind<GameSettingProvider>().AsSingle().NonLazy();
+            Container.Bind<GameSettingsProvider>().AsSingle().NonLazy();
             Container.Bind<MapsContainer>().FromInstance(_mapsContainer);
             Container.Bind<GameSettings>().FromInstance(_gameSettings).AsSingle();
 

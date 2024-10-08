@@ -27,7 +27,7 @@ namespace Dev.Utils
             public static float GetBulletMaxDistanceClampedByWalls(Vector2 originPos, Vector2 shootDirection,
                                                                    float bulletMaxDistance, float bulletOverlapRadius)
             {
-                GameSettings gameSettings = GameSettingProvider.GameSettings;
+                GameSettings gameSettings = GameSettingsProvider.GameSettings;
 
                 RaycastHit2D raycast = Physics2D.CircleCast(originPos, bulletOverlapRadius, shootDirection,
                     bulletMaxDistance, gameSettings.WeaponObstaclesDetectLayers);
@@ -162,7 +162,7 @@ namespace Dev.Utils
         }
 
 
-        public static bool OverlapCircleWithWalls(NetworkRunner runner, Vector2 pos, float radius, out List<Collider2D> targets)
+        public static bool OverlapCircleExcludeWalls(NetworkRunner runner, Vector2 pos, float radius, out List<Collider2D> targets)
         {
             targets = new List<Collider2D>();
             
@@ -199,7 +199,7 @@ namespace Dev.Utils
                         
                     if (dmgl.DamageId is DamagableType.Obstacle)
                     {
-                        Debug.Log($"Can't get {target.name} because of wall", hitCollider);
+                        //AtomicLogger.Log($"Can't get {target.name} because of wall", hitCollider);
                         hasWallOnPath = true;
                         break;
                     }
@@ -208,13 +208,13 @@ namespace Dev.Utils
                 if (!hasWallOnPath)
                 {
                     targets.Add(target);
-                    Debug.DrawRay(pos, direction * radius, Color.blue, 1);
-                    Debug.Log($"Success hit {target.transform.name}", target.gameObject);
+                    //Debug.DrawRay(pos, direction * radius, Color.blue, 1);
+                    //AtomicLogger.Log($"Success hit {target.transform.name}", target.gameObject);
                 }
                 else
                 {
-                    if(circleCast > 0)
-                        Debug.DrawLine(pos, hits[0].point, Color.yellow, 1);
+                    //if(circleCast > 0)
+                        //Debug.DrawLine(pos, hits[0].point, Color.yellow, 1);
                 }
 
             }
