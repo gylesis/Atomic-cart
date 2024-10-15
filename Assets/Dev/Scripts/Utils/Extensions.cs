@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
@@ -42,6 +44,32 @@ namespace Dev.Utils
                 return distance;
             }
 
+            public static Vector2 GetAimPosClampedByWalls(Vector2 originPos, Vector2 direction, float bulletMaxDistance, float bulletOverlapRadius)
+            {
+                var contactFilter = new ContactFilter2D();
+
+                RaycastHit2D[] hits = new RaycastHit2D[10];
+
+                Physics2D.defaultPhysicsScene.CircleCast(originPos, bulletOverlapRadius, direction, bulletMaxDistance, contactFilter, hits);
+
+                Vector2 targetPos = originPos;
+                
+                foreach (var hit in hits.OrderBy(x => x.distance))
+                {
+                    if (hit.collider == null) continue;
+                    
+                    Vector2 hitPoint = hit.point;
+
+                    if ((hitPoint - originPos).sqrMagnitude < GameSettingsProvider.GameSettings.Radius) continue;
+                    
+                    targetPos = hitPoint - direction * GameSettingsProvider.GameSettings.WeaponHitDetectionOffset;
+                    break;
+                }   
+
+                return targetPos;
+            }
+
+
             public static Vector3 GetSpawnPosByTeam(TeamSide teamSide)
             {
                 var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(teamSide);
@@ -49,20 +77,22 @@ namespace Dev.Utils
                 SpawnPoint spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
                 return spawnPoint.transform.position;
-            }   
-
+            }
         }
-        
+
         public static NetworkId ToNetworkId(this PlayerRef playerRef)
         {
             return new NetworkId
             {
-                Raw = (uint)Mathf.Clamp(playerRef.GetHashCode(), 0 , uint.MaxValue)
+                Raw = (uint)Mathf.Clamp(playerRef.GetHashCode(), 0, uint.MaxValue)
             };
         }
-        
-        
-        
+
+        public static void Delay(float seconds, CancellationToken token, Action onContinue)
+        {
+            UniTask.Delay(TimeSpan.FromSeconds(seconds), cancellationToken: token)
+                .ContinueWith(onContinue).Forget();
+        }
 
         public static async Task<object> InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)
         {
@@ -72,16 +102,14 @@ namespace Dev.Utils
             return resultProperty.GetValue(task);
         }
 
-        public static void Rotate2D(this Transform transform, Vector2 targetPos)
+        public static void RotateTo(this Transform transform, Vector2 targetPos)
         {
             Vector2 direction = ((Vector3)targetPos - transform.position).normalized;
 
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            if (angle < 0)
-            {
+            if (angle < 0) 
                 angle += 360;
-            }
 
             Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
 
@@ -150,7 +178,7 @@ namespace Dev.Utils
         public static bool OverlapCircle(NetworkRunner runner, Vector3 pos, float radius,
                                          out List<Collider2D> colliders)
         {
-            colliders = new List<Collider2D>(); 
+            colliders = new List<Collider2D>();
 
             var contactFilter2D = new ContactFilter2D();
             // contactFilter2D.layerMask = layerMask;
@@ -162,41 +190,42 @@ namespace Dev.Utils
         }
 
 
-        public static bool OverlapCircleExcludeWalls(NetworkRunner runner, Vector2 pos, float radius, out List<Collider2D> targets)
+        public static bool OverlapCircleExcludeWalls(NetworkRunner runner, Vector2 pos, float radius,
+                                                     out List<Collider2D> targets)
         {
             targets = new List<Collider2D>();
-            
+
             bool hasAnyTargets = OverlapCircle(runner, pos, radius, out var potentialTargets);
             if (hasAnyTargets == false) return false;
 
             var physics = runner.GetPhysicsScene2D();
-            
+
             var contactFilter = new ContactFilter2D();
             // contactFilter2D.layerMask = layerMask;
             contactFilter.useTriggers = true;
 
             RaycastHit2D[] hits = new RaycastHit2D[10];
-            
+
             foreach (var target in potentialTargets)
             {
                 if (!target.TryGetComponent<IDamageable>(out var damageable)) continue;
-                if(damageable.DamageId == DamagableType.Obstacle) continue;
-                
+                if (damageable.DamageId == DamagableType.Obstacle) continue;
+
                 Vector2 direction = ((Vector2)target.transform.position - pos).normalized;
 
-                int circleCast = physics.CircleCast(pos, 0.05f, direction, radius, contactFilter, hits);
+                physics.CircleCast(pos, 0.05f, direction, radius, contactFilter, hits);
                 bool hasWallOnPath = false;
-                
+
                 foreach (var hit in hits.OrderBy(x => x.distance))
                 {
                     Collider2D hitCollider = hit.collider;
                     if (hitCollider == null) continue;
-                    
+
                     var tryGetComponent = hitCollider.TryGetComponent<IDamageable>(out var dmgl);
 
-                    if (tryGetComponent == false) continue; 
+                    if (tryGetComponent == false) continue;
                     if (hitCollider == target) break;
-                        
+
                     if (dmgl.DamageId is DamagableType.Obstacle)
                     {
                         //AtomicLogger.Log($"Can't get {target.name} because of wall", hitCollider);
@@ -204,7 +233,7 @@ namespace Dev.Utils
                         break;
                     }
                 }
-                
+
                 if (!hasWallOnPath)
                 {
                     targets.Add(target);
@@ -214,9 +243,8 @@ namespace Dev.Utils
                 else
                 {
                     //if(circleCast > 0)
-                        //Debug.DrawLine(pos, hits[0].point, Color.yellow, 1);
+                    //Debug.DrawLine(pos, hits[0].point, Color.yellow, 1);
                 }
-
             }
 
             return targets.Count > 0;

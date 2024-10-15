@@ -32,6 +32,7 @@ namespace Dev.Utils
             ApplicationOnlogMessageReceived(AtomicConstants.LogTags.Default, msg, type, true);
         }
 
+        [HideInCallstack]
         private static void ApplicationOnlogMessageReceived(string tag, string msg, LogType type, bool isSilent = false)
         {
             string log = $"{tag} {msg}";
@@ -69,6 +70,7 @@ namespace Dev.Utils
             _isLogging = true;
         }
 
+        [HideInCallstack]
         public static void Log(string message, string tag = default, bool isSilent = false)
         {
             if (tag == default)
@@ -79,6 +81,7 @@ namespace Dev.Utils
             ApplicationOnlogMessageReceived(tag, message, LogType.Log, isSilent);
         }
 
+        [HideInCallstack]
         public static void Err(string message, string tag = default, bool isSilent = false)
         {
             if (tag == default)
@@ -89,6 +92,7 @@ namespace Dev.Utils
             ApplicationOnlogMessageReceived(tag, message, LogType.Error, isSilent);
         }
 
+        [HideInCallstack]
         public static void Ex(string message, string tag = default, bool isSilent = false)
         {
             if (tag == default) 

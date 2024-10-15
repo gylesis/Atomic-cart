@@ -10,7 +10,6 @@ namespace Dev.Weapons.Guns
         public SessionPlayer Owner { get; private set; }
         public bool IsHitFromServer { get; private set; }
         public bool IsOwnerBot => Owner.IsBot;
-        public TeamSide OwnerTeamSide => Owner.TeamSide;
         public Vector3 OverlapPos { get; private set; }
         public float Radius { get; private set; }
         public int Damage { get; private set; }

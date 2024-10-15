@@ -1,7 +1,5 @@
-using System;
 using Dev.Infrastructure;
-using Fusion;
-using UniRx;
+using Dev.Utils;
 using UnityEngine;
 
 namespace Dev.Effects
@@ -9,7 +7,8 @@ namespace Dev.Effects
     public class FxController : NetworkContext
     {
         [SerializeField] private FxContainer _fxContainer;
-
+        [SerializeField] private Transform _effectsParent;
+        
         public static FxController Instance { get; private set; }
 
         private void Awake()
@@ -24,22 +23,33 @@ namespace Dev.Effects
             }
         }
 
-        public TEffectType SpawnEffectAt<TEffectType>(string effectName, Vector3 pos, Quaternion rotation = default, float destroyDelay = 4) where TEffectType : Effect
+        public TEffectType SpawnEffectAt<TEffectType>(string effectName, Vector3 pos, float destroyDelay = 4) where TEffectType : Effect
         {
             var hasEffect = _fxContainer.TryGetEffectDataByName(effectName, out var effectPrefab);
 
             if (hasEffect)
             {   
-                Effect effect = Runner.Spawn(effectPrefab, pos, rotation, Runner.LocalPlayer);
-
-                Observable.Timer(TimeSpan.FromSeconds(destroyDelay)).TakeUntilDestroy(this).Subscribe((l => { Runner.Despawn(effect.Object); }));
-                
+                Effect effect = Runner.Spawn(effectPrefab, pos, default, Runner.LocalPlayer);
+                effect.transform.parent = _effectsParent;
+                Extensions.Delay(destroyDelay, destroyCancellationToken, (() => Runner.Despawn(effect.Object)));
                 return effect as TEffectType;
-                
             }
 
             return null;
-        }   
+        }
+
+        /*[Rpc(Channel = RpcChannel.Reliable)]
+        private void RPC_SpawnEffect(string effectName, Vector3 pos, float destroyDelay)
+        {   
+            var hasEffect = _fxContainer.TryGetEffectDataByName(effectName, out var effectPrefab);
+
+            if (hasEffect)
+            {   
+                Effect effect = Runner.Spawn(effectPrefab, pos, default, Runner.LocalPlayer);
+                Extensions.Delay(destroyDelay, destroyCancellationToken, (() => Runner.Despawn(effect.Object)));
+                return effect as TEffectType;
+            }
+        }*/
 
         /*public Effect SpawnEffectAt(string effectName, Transform parent, Quaternion rotation = default)
         {

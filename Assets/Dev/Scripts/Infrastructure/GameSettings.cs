@@ -21,8 +21,9 @@ namespace Dev.Infrastructure
         [SerializeField] private float _cameraFollowSpeed = 2f;
         [SerializeField] private LayerMask _weaponObstaclesDetectLayers;
         [SerializeField] private float _weaponHitDetectionOffset = 1;
-        [Range(0.1f,1f)] [SerializeField] private float _shootThreshold = 0.5f;
-
+        [Range(0.1f, 1f)] [SerializeField] private float _shootThreshold = 0.5f;
+        
+        
         [Header("Weapon")]
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
 
@@ -38,8 +39,7 @@ namespace Dev.Infrastructure
         public float BarrelsRespawnCooldown => _barrelsRespawnCooldown;
         public BotsConfig BotsConfig => _botsConfig;
 
-        
-
+        public float Radius = 1;
 
         public bool SaveLogsAfterQuit => _saveLogsAfterQuit;
 

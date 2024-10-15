@@ -6,6 +6,7 @@ using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.CartLogic
@@ -20,9 +21,9 @@ namespace Dev.CartLogic
         [Space] [SerializeField] private Cart _cart;
         [SerializeField] private List<CartPathPoint> _pathPoints;
 
-        [SerializeField] private TeamSide _teamToCapturePoints = TeamSide.Red;
+        [SerializeField] private TeamSide dragTeamSide = TeamSide.Red;
 
-        public TeamSide TeamToCapturePoints => _teamToCapturePoints;
+        public TeamSide DragTeamSide => dragTeamSide;
 
         private CartPathPoint _currentPoint;
         private CartPathPoint _nextPoint;
@@ -37,14 +38,14 @@ namespace Dev.CartLogic
         public Subject<Unit> PointReached { get; } = new Subject<Unit>();
 
         private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
-        private TeamsService _teamsService;
 
         private float _pushTime;
-        
+        private SessionStateService _sessionStateService;
+
         [Inject]
-        private void Construct(TeamsService teamsService)
+        private void Construct(SessionStateService sessionStateService)
         {
-            _teamsService = teamsService;
+            _sessionStateService = sessionStateService;
         }
         
         [ContextMenu(nameof(UpdatePath))]
@@ -113,7 +114,7 @@ namespace Dev.CartLogic
         private void InitCart()
         {
             _cart.transform.position = _currentPoint.transform.position;
-            _cart.transform.Rotate2D(_nextPoint.transform.position);
+            _cart.transform.RotateTo(_nextPoint.transform.position);
         }
 
         public void ResetCart()
@@ -193,9 +194,15 @@ namespace Dev.CartLogic
         {
             foreach (var playerRef in _playersInsideCartZone)
             {
-                TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerRef);
+                var hasTeam = _sessionStateService.TryGetPlayerTeam(playerRef, out var playerTeamSide);
 
-                if (playerTeamSide != _teamToCapturePoints) return true;
+                if (hasTeam == false)
+                {
+                    AtomicLogger.Err($"Player {playerRef} doesn't have team");
+                    continue;
+                }
+                
+                if (playerTeamSide != dragTeamSide) return true;
             }
 
             return false;

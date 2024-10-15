@@ -65,7 +65,7 @@ namespace Dev.Weapons
 
             await UniTask.WaitUntil((() => _playerBase.Character != null)).AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
             
-            SessionPlayer owner = _sessionStateService.GetSessionPlayer(_playerBase.Object.StateAuthority);
+            SessionPlayer owner = _sessionStateService.GetSessionPlayer(_playerBase.Object.StateAuthority.ToNetworkId());
 
             _castCommands.Add(new PlaceTurretCastCommand(Runner, AbilityType.Turret,  owner, _turretPrefab));
             _castCommands.Add(new CastLandmineCommand(Runner, AbilityType.Landmine, owner, _landminePrefab));
@@ -89,6 +89,9 @@ namespace Dev.Weapons
             ResetAbility();
 
             AbilityCastCommand command = GetCommand(CurrentAbilityToCast);
+            
+            
+            
             command.Process(pos);
 
             Debug.Log($"About to cast {CurrentAbilityToCast}");

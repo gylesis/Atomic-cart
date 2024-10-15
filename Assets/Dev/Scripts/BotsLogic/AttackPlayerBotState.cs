@@ -1,6 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
+using Fusion;
 using UniRx;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace Dev.BotsLogic
 
         private StateMachine<IBotState> StateMachine => _bot.BotStateController.StateMachine;
 
-        private CompositeDisposable _compositeDisposable = new CompositeDisposable();
+        private TickTimer _tickTimer;
 
         public AttackPlayerBotState(Bot bot)
         {
@@ -23,35 +24,32 @@ namespace Dev.BotsLogic
 
         public void Enter()
         {
-            Observable
-                .Interval(TimeSpan.FromSeconds(BotsConfig.BotsSearchForTargetsCooldown))
-                .SkipWhile((l => HasStateAuthority == false))
-                .Subscribe((l =>
-                {
-                    if (_bot.TryFindNearTarget() == false) 
-                        StateMachine.ChangeState<PatrolBotState>();
-                    
-                })).AddTo(_compositeDisposable);
+            _tickTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.BotsSearchForTargetsCooldown);
         }
 
         public void Tick() { }
 
         public void FixedNetworkTick()
         {
-            if(_bot.Target == null) return;
-            
+            if (_tickTimer.ExpiredOrNotRunning(_bot.Runner))
+            {
+                _tickTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.BotsSearchForTargetsCooldown);
+
+                if (_bot.TryFindNearTarget() == false)
+                    StateMachine.ChangeState<PatrolBotState>();
+            }
+           
+            if (_bot.Target == null) return;
+
             Vector3 direction = (_bot.Target.transform.position - _bot.transform.position).normalized;
-            
+
             _bot.AimWeaponTowards(direction);
             _bot.MoveTowardsTarget();
 
-            if (_bot.AllowToShoot) 
+            if (_bot.AllowToShoot)
                 _bot.WeaponController.TryToFire();
         }
 
-        public void Exit()
-        {
-            _compositeDisposable?.Clear();
-        }
+        public void Exit() { }
     }
 }

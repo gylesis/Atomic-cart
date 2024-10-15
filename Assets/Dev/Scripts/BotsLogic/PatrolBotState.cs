@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
+using Fusion;
 using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -18,60 +19,63 @@ namespace Dev.BotsLogic
 
         List<BotMovePoint> _usedPoints = new List<BotMovePoint>();
 
-        private int _currentPointIndex = 0;
         private BotMovePoint _currentMovePoint;
-        private List<BotMovePoint> _movePoints => _bot.MovePoints;
-            
+
         public PatrolBotState(Bot bot)
         {
             _bot = bot;
         }
 
-        private CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private Vector2 _botDirectionToMovePos;
+
+        private TickTimer _searchForTargetsTimer;
+        private TickTimer _changeMoveDirectionTimer;
 
         public void Enter()
         {
             SetRandomMovePos();
-            
+
             _botDirectionToMovePos = _bot.DirectionToMovePos;
-            
-            Observable
-                .Interval(TimeSpan.FromSeconds(BotsConfig.BotsSearchForTargetsCooldown))
-                .SkipWhile((l => HasStateAuthority == false))
-                .Subscribe((l =>
-                {
-                    var foundTarget = _bot.TryFindNearTarget();
 
-                    if (foundTarget)
-                        BotStateMachine.ChangeState<AttackPlayerBotState>();
-                })).AddTo(_compositeDisposable);
+            ResetSearchForTargetsTimer();
+            ResetSearchChangeDirectionTimer();
+        }
 
-            Observable
-                .Interval(TimeSpan.FromSeconds(BotsConfig.BotsChangeMoveDirectionCooldown))
-                .SkipWhile((l => HasStateAuthority == false))
-                .Subscribe((l =>
-                {
-                    SetRandomMovePos();
-                })).AddTo(_compositeDisposable);
+        private void ResetSearchForTargetsTimer()
+        {
+            _searchForTargetsTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.BotsSearchForTargetsCooldown);
+        }
+
+        private void ResetSearchChangeDirectionTimer()
+        {
+            _changeMoveDirectionTimer =
+                TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.BotsChangeMoveDirectionCooldown);
         }
 
         public void FixedNetworkTick()
         {
-            if(_currentMovePoint == null)
+            if (_searchForTargetsTimer.ExpiredOrNotRunning(_bot.Runner))
+            {
+                ResetSearchForTargetsTimer();
+                var foundTarget = _bot.TryFindNearTarget();
+
+                if (foundTarget)
+                    BotStateMachine.ChangeState<AttackPlayerBotState>();
+            }
+
+            if (_changeMoveDirectionTimer.ExpiredOrNotRunning(_bot.Runner))
+            {
+                ResetSearchChangeDirectionTimer();
                 SetRandomMovePos();
-            
+            }
+
+            if (_currentMovePoint == null)
+                SetRandomMovePos();
+
             _bot.Move(_currentMovePoint.transform.position);
         }
 
-        public void Tick()
-        {
-            Vector2 direction = Vector2.Lerp(_botDirectionToMovePos, _bot.DirectionToMovePos, Time.deltaTime);
-            _bot.AimWeaponTowards(direction);
-            
-            if(Time.frameCount % 10 == 0)
-                _botDirectionToMovePos = _bot.DirectionToMovePos;
-        }
+        public void Tick() { }
 
         private void SetRandomMovePos()
         {
@@ -86,19 +90,15 @@ namespace Dev.BotsLogic
             int pointIndex = Random.Range(0, maxPoints);
             pointIndex = Math.Clamp(pointIndex, 0, allPointsCount);
 
-            _currentPointIndex = pointIndex;
             _currentMovePoint = movePoints[pointIndex];
             _bot.RandomMovePointPos = _currentMovePoint.transform.position;
 
-            if (_usedPoints.Count > BotsConfig.PointsPoolAmount) 
+            if (_usedPoints.Count > BotsConfig.PointsPoolAmount)
                 _usedPoints.RemoveAt(0);
 
             _usedPoints.Add(_currentMovePoint);
         }
 
-        public void Exit()
-        {
-            _compositeDisposable?.Clear();
-        }
+        public void Exit() { }
     }
 }

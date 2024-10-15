@@ -54,7 +54,6 @@ namespace Dev.BotsLogic
         [Networked] public NetworkBool IsFrozen { get; set; }
         [Networked] public BotData BotData { get; private set; }
 
-
         public SessionPlayer TargetSessionPlayer => Target != null ? _sessionStateService.GetSessionPlayer(Target.Id) : default(SessionPlayer);
         
         public Vector3 RandomMovePointPos { get; set; }
@@ -66,7 +65,6 @@ namespace Dev.BotsLogic
 
         public bool AllowToMove => _allowToMove;
         public BotView View => _view;
-        public TeamSide BotTeamSide => BotData.TeamSide;
         public NavMeshAgent NavMeshAgent => _navMeshAgent;
 
         public BotStateController BotStateController => _botStateController;
@@ -81,10 +79,12 @@ namespace Dev.BotsLogic
             _navMeshAgent.updateRotation = false;
         }
 
-        public void Init(BotData botData)
+        public void Init(BotData botData, TeamSide teamSide)
         {
             BotData = botData;
             _weaponController.RPC_SetOwner(BotData.SessionPlayer);
+            
+            UpdateTeam(teamSide);
         }
 
         [Inject]
@@ -96,13 +96,24 @@ namespace Dev.BotsLogic
             _botsController = botsController;
         }
 
+        public override void Spawned()
+        {
+            base.Spawned();
+            _botStateController.NetworkSpawned();
+        }
+
         [Rpc]
         public void RPC_OnDeath(bool isDead) // TODO bullshit
         {
             transform.DOScale(isDead ? 0 : 1, 0.5f);
 
+            _allowToMove = !isDead;
+            _allowToShoot = !isDead;
+            
             Alive = !isDead;
             _collider.enabled = !isDead;
+
+            _navMeshAgent.isStopped = isDead;
         }
     
         public void SetFreezeState(bool toFreeze)
@@ -115,6 +126,23 @@ namespace Dev.BotsLogic
             if (HasStateAuthority == false) return;
 
             _botStateController.FixedNetworkTick();
+        }
+
+        public TeamSide GetTeamSide()
+        {
+            var hasTeam = _sessionStateService.TryGetPlayerTeam(BotData.SessionPlayer, out TeamSide teamSide);
+
+            if (!hasTeam)
+            {
+                AtomicLogger.Err(hasTeam.ErrorMessage);
+            }
+
+            return teamSide;
+        }
+        
+        public void UpdateTeam(TeamSide teamSide)
+        {
+            _view.RPC_SetTeamBannerColor(AtomicConstants.Teams.GetTeamColor(teamSide));
         }
         
         public void SetRandomMovePos()
@@ -134,7 +162,7 @@ namespace Dev.BotsLogic
         
         public bool TryAssignTarget(NetworkObject potentialTarget, TeamSide targetTeam)
         {
-            if (targetTeam == BotTeamSide) return false;
+            if (targetTeam == GetTeamSide()) return false;
 
             if (Target != null)
             {
@@ -183,8 +211,14 @@ namespace Dev.BotsLogic
                     {
                         Bot bot = damagable as Bot;
 
-                        TeamSide botSide = _botStateController.TeamsService.GetUnitTeamSide(bot);
+                        var hasTeam = _botStateController.TeamsService.TryGetUnitTeamSide(bot.BotData.SessionPlayer, out var botSide);
 
+                        if (!hasTeam)
+                        {
+                            AtomicLogger.Err($"Bot {bot.BotData.SessionPlayer.Id} does not have a team");
+                            continue;
+                        }
+                        
                         if (TryAssignTarget(bot.Object, botSide))
                         {
                             targetFound = true;
@@ -196,9 +230,15 @@ namespace Dev.BotsLogic
                     {
                         PlayerCharacter playerCharacter = damagable as PlayerCharacter;
 
-                        TeamSide playerTeamSide = _botStateController.TeamsService.GetUnitTeamSide(playerCharacter.Object.InputAuthority);
+                        var hasTeam = _botStateController.TeamsService.TryGetUnitTeamSide(playerCharacter.Object.InputAuthority, out var playerTeamSide);
 
-                        if (playerTeamSide != BotTeamSide)
+                        if (!hasTeam)
+                        {
+                            AtomicLogger.Err($"Player {playerCharacter.Id} does not have a team");
+                            continue;
+                        }
+                        
+                        if (playerTeamSide != GetTeamSide())
                         {
                             targetFound = true;
 

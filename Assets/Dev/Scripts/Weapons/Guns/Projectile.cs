@@ -20,19 +20,19 @@ namespace Dev.Weapons.Guns
         [SerializeField] protected NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] protected float _overlapRadius = 1f;
         [SerializeField] private string _hitSoundType = "ak_hit";
-        
+
+        protected HitsProcessor _hitsProcessor;
+
         /// <summary>
         /// Do projectile need to register collision while flying?
         /// </summary>
         protected abstract bool CheckForHitsWhileMoving { get; }
 
-        protected HitsProcessor _hitsProcessor;
         [Networked] private Vector2 MoveDirection { get; set; }
         [Networked] private float Force { get; set; }
         [Networked] protected int Damage { get; set; }
         [Networked] protected SessionPlayer Owner { get; set; }
         [Networked] public TickTimer DestroyTimer { get; set; }
-
         [Networked] public NetworkBool IsAlive { get; set; } = true;
 
         public Transform View => _view;
@@ -108,6 +108,8 @@ namespace Dev.Weapons.Guns
 
             if (IsAlive == false) return;
 
+            if (HasStateAuthority == false) return;
+            
             if (CheckForHitsWhileMoving)
             {
                 ProcessHitCollisionContext hitCollisionContext =

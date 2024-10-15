@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Dev.BotsLogic
 {
-    public class BotStateController : ITickable, IInitializable
+    public class BotStateController : ITickable
     {
         private Bot _bot;
         private StateMachine<IBotState> _stateMachine;
@@ -31,24 +31,18 @@ namespace Dev.BotsLogic
             _stateMachine = new StateMachine<IBotState>(botStates);
         }
 
-        public void Initialize()
+        public void NetworkSpawned()
         {
-            /*Transition transition = new Transition(typeof(AttackPlayerBotState), (() =>
-            {
-                
-                
-                return false;
-            } ), int.MaxValue);
-            
-            _stateMachine.AddTransition(transition);*/
+            if(HasStateAuthority == false) return;
             
             _stateMachine.ChangeState<PatrolBotState>();
-            
             _bot.SetRandomMovePos();
         }
 
         public void FixedNetworkTick()
         {
+            if(_bot.Alive == false) return;
+            
             _stateMachine.FixedNetworkTick();
         }
 

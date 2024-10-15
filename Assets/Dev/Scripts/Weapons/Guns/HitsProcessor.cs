@@ -17,17 +17,17 @@ namespace Dev.Weapons.Guns
         [Networked, Capacity(4)] private NetworkLinkedList<HitRecord> HitRecords { get; }
         
         private HealthObjectsService _healthObjectsService;
-        private TeamsService _teamsService;
         private PlayersDataService _playersDataService;
+        private SessionStateService _sessionStateService;
 
         public Subject<HitContext> Hit { get; } = new();
 
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, TeamsService teamsService, PlayersDataService playersDataService)
+        private void Construct(HealthObjectsService healthObjectsService, SessionStateService sessionStateService, PlayersDataService playersDataService)
         {
+            _sessionStateService = sessionStateService;
             _playersDataService = playersDataService;
-            _teamsService = teamsService;
-            _healthObjectsService = healthObjectsService;
+            _healthObjectsService = healthObjectsService;   
         }
 
         /// <summary>
@@ -39,7 +39,17 @@ namespace Dev.Weapons.Guns
             NetworkRunner runner = Runner;
             SessionPlayer shooter = context.Owner;
             bool isDamageFromServer = context.IsHitFromServer;
-            TeamSide ownerTeamSide = context.OwnerTeamSide;
+            TeamSide ownerTeamSide;
+            {
+                var hasTeam = _sessionStateService.TryGetPlayerTeam(shooter, out ownerTeamSide);
+
+                if (hasTeam == false)
+                {
+                    AtomicLogger.Err(hasTeam.ErrorMessage);
+                    return;
+                }
+            }
+
             bool isOwnerBot = context.IsOwnerBot;
 
             Vector3 pos = context.OverlapPos;
@@ -77,7 +87,13 @@ namespace Dev.Weapons.Guns
 
                     if (isDamageFromServer == false)
                     {
-                        TeamSide targetTeamSide = targetPlayer.TeamSide;
+                        var hasTeam = _sessionStateService.TryGetPlayerTeam(targetPlayer, out var targetTeamSide);
+
+                        if (hasTeam == false)
+                        {
+                            AtomicLogger.Err(hasTeam.ErrorMessage);
+                            return;
+                        }
                         
                         if (ownerTeamSide == targetTeamSide) continue;
                     }
@@ -114,7 +130,13 @@ namespace Dev.Weapons.Guns
 
                     if (isDamageFromServer == false)
                     {
-                        TeamSide botTeam = targetBot.BotTeamSide;
+                        var hasTeam = _sessionStateService.TryGetPlayerTeam(targetBot.BotData.SessionPlayer, out var botTeam);
+                        
+                        if (hasTeam == false)
+                        {
+                            AtomicLogger.Err(hasTeam.ErrorMessage);
+                            return;
+                        }
                         
                         if (ownerTeamSide == botTeam) continue;
                     }
@@ -238,8 +260,17 @@ namespace Dev.Weapons.Guns
             NetworkRunner runner = Runner;  
             SessionPlayer owner = explodeContext.Owner;
             bool isDamageFromServer = explodeContext.IsDamageFromServer;
-            TeamSide ownerTeamSide = explodeContext.OwnerTeamSide;
+            TeamSide ownerTeamSide;
+            {
+                var hasTeam = _sessionStateService.TryGetPlayerTeam(owner, out ownerTeamSide);
 
+                if (hasTeam == false)
+                {
+                    return;
+                }
+            }
+            
+            
             Vector3 pos = explodeContext.ExplosionPos;
             float explosionRadius = explodeContext.ExplosionRadius;
             int damage = explodeContext.Damage;
@@ -300,9 +331,9 @@ namespace Dev.Weapons.Guns
                     if (isDamageFromServer == false)
                     {
                         PlayerRef targetPlayer = playerCharacter.Object.StateAuthority;
-                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetPlayer);
+                        var hasTeam = _sessionStateService.TryGetPlayerTeam(targetPlayer, out TeamSide targetTeamSide);
                         
-                        if (ownerTeamSide == targetTeamSide) continue;
+                        if (hasTeam.IsError && ownerTeamSide == targetTeamSide) continue;
                     }
 
                     victim = playerCharacter.Object;
@@ -317,9 +348,9 @@ namespace Dev.Weapons.Guns
 
                     if (isDamageFromServer == false)
                     {
-                        TeamSide targetTeamSide = _teamsService.GetUnitTeamSide(targetBot);
+                        var hasTeam = _sessionStateService.TryGetPlayerTeam(targetBot.BotData.SessionPlayer, out TeamSide targetTeamSide);
 
-                        if (ownerTeamSide == targetTeamSide) continue;
+                        if (hasTeam.IsError && ownerTeamSide == targetTeamSide) continue;
                     }
 
                     victim = targetBot.Object;

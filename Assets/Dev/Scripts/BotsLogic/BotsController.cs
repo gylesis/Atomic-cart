@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
@@ -7,10 +6,8 @@ using Dev.PlayerLogic;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
-using NavMeshPlus.Components;
 using UniRx;
 using UnityEngine;
-using UnityEngine.AI;
 using Zenject;
 
 namespace Dev.BotsLogic
@@ -22,8 +19,7 @@ namespace Dev.BotsLogic
         private List<BotMovePoint> _levelMovePoints;
 
         private TeamsService _teamsService;
-        private GameSettings _gameSettings;
-        private GameStateService _gameStateService;
+        private GameSettings _gameSettings; 
         private SessionStateService _sessionStateService;
         private HealthObjectsService _healthObjectsService;
 
@@ -42,33 +38,12 @@ namespace Dev.BotsLogic
         }
 
         [Inject]
-        private void Construct(TeamsService teamsService, GameSettings gameSettings, GameStateService gameStateService, SessionStateService sessionStateService, HealthObjectsService healthObjectsService)
+        private void Construct(TeamsService teamsService, GameSettings gameSettings, SessionStateService sessionStateService, HealthObjectsService healthObjectsService)
         {
             _healthObjectsService = healthObjectsService;
             _sessionStateService = sessionStateService;
-            _gameStateService = gameStateService;
             _gameSettings = gameSettings;
             _teamsService = teamsService;
-        }
-
-        protected override void OnInjectCompleted()
-        {
-            base.OnInjectCompleted();
-
-            _gameStateService.GameRestarted.Subscribe((unit => OnGameRestarted()));
-        }
-
-        private void OnGameRestarted()
-        {
-            if (Runner.IsSharedModeMasterClient == false) return;
-
-            for (var index = AliveBots.Count - 1; index >= 0; index--)
-            {
-                var bot = AliveBots[index];
-                RPC_RespawnBot(bot);
-            }
-            
-            SetupBots();
         }
 
         protected override void CorrectState()
@@ -117,21 +92,18 @@ namespace Dev.BotsLogic
 
                 DiInjecter.Instance.InjectGameObject(bot.gameObject);
                 
-                bot.View.RPC_SetTeamBannerColor(AtomicConstants.Teams.GetTeamColor(team));
-                
-                _teamsService.RPC_AssignForTeam(bot, team);
+                _teamsService.RPC_AssignForTeam(new TeamMember(bot), team);
 
                 string id = $"{bot.GetHashCode()}";
                 id = $"{id[^4]}{id[^3]}{id[^2]}{id[^1]}";
                 
-                _sessionStateService.RPC_AddPlayer(bot.Object.Id, $"Bot{id}", true, team);
-
+                _sessionStateService.RPC_AddPlayer(bot.Object.Id, $"Bot{id}", true);
                 _healthObjectsService.RegisterObject(bot.Object, 100);
                 
                 SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(bot);
                 
                 var botData = new BotData(sessionPlayer, CharacterClass.Engineer);
-                bot.Init(botData);
+                bot.Init(botData, team);
             });
                 
             AliveBots.Add(bot);
@@ -143,7 +115,7 @@ namespace Dev.BotsLogic
         {   
             _healthObjectsService.RestoreHealth(bot.Object);
             
-            TeamSide teamSide = bot.BotTeamSide;
+            TeamSide teamSide = bot.GetTeamSide();
             
             Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
            
@@ -157,13 +129,19 @@ namespace Dev.BotsLogic
         public void DespawnBot(Bot bot, bool spawnAfterDeath = true, float despawnDelay = 1) // TODO refactor, need to make pool of bots
         {
             _sessionStateService.RPC_RemovePlayer(bot.Object.Id);
-            TeamSide teamSide = bot.BotData.TeamSide;
-                
+            var hasTeam = _sessionStateService.TryGetPlayerTeam(bot.BotData.SessionPlayer, out var teamSide);
+
+            if (!hasTeam)
+            {
+                AtomicLogger.Err(hasTeam.ErrorMessage);
+                return;
+            }
+
             BotDeSpawned.OnNext(bot);  
             
-            _teamsService.RPC_RemoveFromTeam(bot);
+            _teamsService.RPC_RemoveFromTeam(bot.Object);
 
-            Observable.Timer(TimeSpan.FromSeconds(despawnDelay)).Subscribe((l =>
+            Extensions.Delay(despawnDelay, destroyCancellationToken, () =>
             {
                 _healthObjectsService.RPC_UnregisterObject(bot.Object);
                 
@@ -173,9 +151,8 @@ namespace Dev.BotsLogic
                 if (spawnAfterDeath)
                 {
                     SpawnBot(teamSide); // TODO
-                }
-            }));
-
+                } 
+            });
         }
 
         public Bot GetBot(NetworkId id)

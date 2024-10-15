@@ -81,7 +81,12 @@ namespace Dev.PlayerLogic
             Weapon weapon = _playerBase.Character.WeaponController.CurrentWeapon;
             float aimDistance = Extensions.AtomicCart.GetBulletMaxDistanceClampedByWalls(_playerBase.transform.position, weapon.ShootDirection, 
                 weapon.BulletMaxDistance, weapon.BulletHitOverlapRadius + 0.05f);
-
+            
+            /*
+            Vector2 target = Extensions.AtomicCart.GetAimPosClampedByWalls(_playerBase.transform.position, weapon.ShootDirection, 
+                weapon.BulletMaxDistance, weapon.BulletHitOverlapRadius + 0.05f);
+                */
+            
             Vector3 targetPos = Vector3.zero + lookDirection * aimDistance;
             
             _groundAimTransform.localPosition = Vector3.Lerp(_groundAimTransform.localPosition,

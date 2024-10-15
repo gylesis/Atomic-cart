@@ -3,6 +3,7 @@ using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using UnityEngine;
 using Zenject;
+using LogType = Fusion.LogType;
 
 namespace Dev.Infrastructure
 {
@@ -20,6 +21,8 @@ namespace Dev.Infrastructure
         
         public override void InstallBindings()
         {
+            Fusion.Log.LogLevel = (LogType)UnityEngine.LogType.Error;
+            
             Container.Bind<SceneLoader>().AsSingle().NonLazy();
             Container.Bind<PopUpService>().AsSingle().WithArguments(_popUpsParent).NonLazy();
 

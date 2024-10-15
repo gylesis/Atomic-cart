@@ -25,24 +25,31 @@ namespace Dev.Weapons
         private TickTimer _directionChooseTimer;
         private Vector2 _direction;
 
-        private TeamsService _teamsService;
-        
+        private SessionStateService _sessionStateService;
+
         [Networked] private NetworkObject Target { get; set; }
 
         public Subject<Unit> ToDie { get; } = new Subject<Unit>();
         private bool HasTarget => Target != null;
         
         [Inject]
-        private void Construct(TeamsService teamsService)
+        private void Construct(SessionStateService sessionStateService)
         {
-            _teamsService = teamsService;
+            _sessionStateService = sessionStateService;
         }
         
         public void Init(SessionPlayer owner)
         {
             _owner = owner;
-            _ownerTeamSide = _owner.TeamSide;
+            var hasTeam = _sessionStateService.TryGetPlayerTeam(owner, out _ownerTeamSide);
 
+            if (hasTeam == false)
+            {
+                AtomicLogger.Err(hasTeam.ErrorMessage);
+                Runner.Despawn(Object);
+                return;
+            }
+            
             _weaponController.RPC_SetOwner(_owner);
             
             Observable.Interval(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
@@ -51,7 +58,6 @@ namespace Dev.Weapons
                 
                 SearchForTargets();
             }));
-            
         }
         
         private void SearchForTargets()
@@ -78,8 +84,14 @@ namespace Dev.Weapons
                     {
                         Bot bot = damagable as Bot;
 
-                        TeamSide botSide = _teamsService.GetUnitTeamSide(bot);
+                        var hasTeam = _sessionStateService.TryGetPlayerTeam(bot.BotData.SessionPlayer, out var botSide);
 
+                        if (hasTeam == false)
+                        {
+                            AtomicLogger.Err(hasTeam.ErrorMessage);
+                            continue;
+                        }
+                        
                         if (TryAssignTarget(bot.Object, botSide))
                         {
                             targetFound = true;
@@ -92,8 +104,14 @@ namespace Dev.Weapons
                     {
                         PlayerCharacter playerCharacter = damagable as PlayerCharacter;
                         
-                        TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerCharacter.Object.InputAuthority);
+                        var hasTeam = _sessionStateService.TryGetPlayerTeam(playerCharacter, out var playerTeamSide);
 
+                        if (hasTeam == false)
+                        {
+                            AtomicLogger.Err(hasTeam.ErrorMessage);
+                            continue;
+                        }
+                        
                         if (TryAssignTarget(playerCharacter.Object, playerTeamSide))
                         {
                             targetFound = true;

@@ -26,7 +26,6 @@ namespace Dev.Weapons
         public Transform WeaponParent => _weaponParent;
         public int WeaponsAmount => Weapons.Count;
         public Vector3 Direction => WeaponParent.up;
-        public TeamSide OwnerTeamSide => Owner.TeamSide;
         public bool HasAnyWeapon => Weapons.Count > 0 && CurrentWeapon != null;
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();
 

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Dev.Infrastructure
 {
-    public struct SessionPlayer : INetworkStruct
+    public struct SessionPlayer : INetworkStruct // the problem in what if some value will be changed somewhere outside  
     {
         private static readonly SessionPlayer @default = new SessionPlayer();
         
@@ -12,6 +12,7 @@ namespace Dev.Infrastructure
             
         [Networked]
         public NetworkId Id { get; private set; }
+        
 
         [Networked]
         private NetworkString<_16> InternalName { get;  set; }
@@ -22,19 +23,21 @@ namespace Dev.Infrastructure
         public NetworkBool IsBot { get; private set; }
         
         [Networked]
-        public TeamSide TeamSide { get; private set; }
-        
-        [Networked]
         public PlayerRef Owner { get; private set; }
 
-        public SessionPlayer(NetworkId id, string name, bool isBot, TeamSide teamSide, PlayerRef owner)
+        public SessionPlayer(NetworkId id, string name, bool isBot, PlayerRef owner)
         {   
             IsBot = isBot;
-            TeamSide = teamSide;
             Owner = owner;
             InternalName = name;    
             Id = id;
         }
+
+    }
+
+    public static class SessionPlayerExtensions
+    {
+        
     }
 
 }

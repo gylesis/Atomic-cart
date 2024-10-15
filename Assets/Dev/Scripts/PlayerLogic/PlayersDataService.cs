@@ -27,7 +27,7 @@ namespace Dev.PlayerLogic
         
         public string GetNickname(PlayerRef playerRef)
         {
-            return _sessionStateService.GetSessionPlayer(playerRef).Name;
+            return _sessionStateService.GetSessionPlayer(playerRef.ToNetworkId()).Name;
         }
         
         public PlayerCharacter GetPlayer(PlayerRef playerRef)

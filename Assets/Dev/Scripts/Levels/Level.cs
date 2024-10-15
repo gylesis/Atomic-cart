@@ -5,6 +5,7 @@ using Dev.CartLogic;
 using Dev.Infrastructure;
 using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using UnityEngine;
 using Zenject;
 
@@ -59,9 +60,10 @@ namespace Dev.Levels
                     return _blueTeamSpawnPoints;
                 case TeamSide.Red:
                     return _redTeamSpawnPoints;
+                default:
+                    AtomicLogger.Err("Unknown team side");
+                    return _redTeamSpawnPoints;
             }
-
-            return null;
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Dev.PlayerLogic
             if (Runner.IsSharedModeMasterClient == false) return;
             
             Debug.Log($"On point reached");
-            TeamSide teamToCapturePoints = _cartService.TeamToCapturePoints;
+            TeamSide teamToCapturePoints = _cartService.DragTeamSide;
 
             EvaluateTeamScore(teamToCapturePoints);
         }
@@ -104,19 +104,19 @@ namespace Dev.PlayerLogic
             SetTeamScore(TeamSide.Red, blueTeamScore);
         }
 
-        public TeamScoreData GetWonTeam()
+        public TeamSide GetWonTeam()
         {
             if (BlueTeamScoreData.Score > RedTeamScoreData.Score)
             {
-                return BlueTeamScoreData;
+                return BlueTeamScoreData.Team;
             }
             else if (RedTeamScoreData.Score > BlueTeamScoreData.Score)
             {
-                return RedTeamScoreData;
+                return RedTeamScoreData.Team;
             }
             else
             {
-                return RedTeamScoreData; // TODO what if draw
+                return RedTeamScoreData.Team; // TODO what if draw
             }
         }
 

@@ -91,7 +91,7 @@ namespace Dev.Sounds
             audioSource.spatialBlend = 1;
             audioSource.maxDistance = radius;
             
-            Observable.Timer(TimeSpan.FromSeconds(audioSource.clip.length)).Subscribe(_ => _soundPool.Release(audioSource)).AddTo(this);
+            Extensions.Delay(audioSource.clip.length, destroyCancellationToken, () => _soundPool.Release(audioSource));
         }
         
     }

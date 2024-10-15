@@ -139,7 +139,7 @@ namespace Dev.CartLogic
                         PrefabUtility.InstantiatePrefab(_railPrefab) as RailPathStraight;
                     
                     subRailPathStraight.transform.position = subRailSpawnPos;
-                    subRailPathStraight.transform.Rotate2D(cartPathPoint.transform.position);
+                    subRailPathStraight.transform.RotateTo(cartPathPoint.transform.position);
                     subRailPathStraight.transform.parent = _railsParent;
 
                     _rails.Add(subRailPathStraight);

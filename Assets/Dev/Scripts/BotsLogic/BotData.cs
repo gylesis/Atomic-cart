@@ -12,8 +12,6 @@ namespace Dev.BotsLogic
         [Networked]
         public CharacterClass CharacterClass { get; private set; }
 
-        public TeamSide TeamSide => SessionPlayer.TeamSide;
-
         public BotData(SessionPlayer sessionPlayer, CharacterClass characterClass)
         {
             SessionPlayer = sessionPlayer;

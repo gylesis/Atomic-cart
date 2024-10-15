@@ -15,15 +15,13 @@ namespace Dev.Weapons
         public Subject<AbilityType> AbilityRecharged { get; } = new Subject<AbilityType>();
         
         protected NetworkRunner _runner;
-        protected TeamSide TeamSide => _owner.TeamSide;
-        
         protected SessionPlayer _owner;
 
         protected AbilityCastCommand(NetworkRunner runner, AbilityType abilityType, SessionPlayer owner)
         {
             _owner = owner;
-            AbilityType = abilityType;
             _runner = runner;
+            AbilityType = abilityType;
         }
 
         protected T Spawn<T>(T prefab, Vector3 pos, PlayerRef inputAuthority, NetworkRunner.OnBeforeSpawned onBeforeSpawned) where T : NetworkContext

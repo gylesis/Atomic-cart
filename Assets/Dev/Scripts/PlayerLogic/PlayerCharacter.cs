@@ -21,17 +21,12 @@ namespace Dev.PlayerLogic
         public Collider2D Collider2D => _collider2D;
         public Rigidbody2D Rigidbody => _rigidbody2D;
         public WeaponController WeaponController => _weaponController;
-
-        public float ShootThreshold => _shootThreshold;
-
+        
         [Networked] private NetworkBool IsDead { get; set; }
+        [Networked] public CharacterClass CharacterClass { get; private set; }
         
         public static PlayerCharacter LocalPlayerCharacter;
-        
-        
-        [Networked] public CharacterClass CharacterClass { get; private set; }
-        [Networked] public TeamSide TeamSide { get; private set; }
-        
+
         public override void Spawned()
         {
             if (HasStateAuthority)
@@ -41,9 +36,8 @@ namespace Dev.PlayerLogic
         }
         
         [Rpc]
-        public void RPC_Init(CharacterClass characterClass, TeamSide teamSide)
+        public void RPC_Init(CharacterClass characterClass)
         {
-            TeamSide = teamSide;
             CharacterClass = characterClass;
         }
 
@@ -69,5 +63,11 @@ namespace Dev.PlayerLogic
         
         
         public DamagableType DamageId => DamagableType.Player;
+
+
+        public static implicit operator PlayerRef(PlayerCharacter playerCharacter)
+        {
+            return playerCharacter.Object.InputAuthority;
+        }
     }
 }   

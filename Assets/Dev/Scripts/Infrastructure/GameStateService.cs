@@ -4,6 +4,7 @@ using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
+using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -45,62 +46,54 @@ namespace Dev.Infrastructure
         {
             base.OnInjectCompleted();
             
-            _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
-            _timeService.GameTimeRanOut.TakeUntilDestroy(this).Subscribe((unit => OnGameTimeRanOut()));
+            _levelService.LevelLoaded.Subscribe(OnLevelLoaded).AddTo(this);
+            _timeService.GameTimeRanOut.Subscribe(unit => OnGameTimeRanOut()).AddTo(this);
         }
 
         private void OnLevelLoaded(Level level)
         {
-            level.CartService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
+            level.CartService.PointReached.Subscribe(unit => OnPointReached()).AddTo(level);
             _cartService = level.CartService;
         }
 
         private void OnPointReached()
         {
             if (Runner.IsSharedModeMasterClient == false) return;
-            
             if (_cartService.IsOnLastPoint == false) return;
 
             _timeService.SetPauseState(true);
 
-            if (_teamsSwapHappened == false)
+            TeamSide teamToCapturePoints = _cartService.DragTeamSide;
+            string colorTag = teamToCapturePoints == TeamSide.Red ? "red" : "blue";
+            
+            string title = _teamsSwapHappened ? "End of the game" : "Restarting game";
+            string description = _teamsSwapHappened ? $"Team <color={colorTag}>{_teamsScoreService.GetWonTeam()}</color> most scored!" : $"Team <color={colorTag}>{teamToCapturePoints}</color> captured all control points";
+            
+            int timeAfterWinGame = _gameSettings.TimeAfterWinGame;
+
+            Action onRestarted;
+            
+            if (_teamsSwapHappened)
             {
-                RestartGame(_gameSettings.TimeAfterWinGame, (() =>
+                onRestarted = () =>
+                {
+                    _teamsSwapHappened = false;
+                    _teamsScoreService.ResetScores();
+                };
+            }
+            else
+            {
+                onRestarted = () =>
                 {
                     _teamsSwapHappened = true;
 
                     _teamsScoreService.SwapTeamScores();
                     _teamsService.SwapTeams();
-                }));
-
-                string title = $"Restarting game";
-                TeamSide teamToCapturePoints = _cartService.TeamToCapturePoints;
-                string colorTag = teamToCapturePoints == TeamSide.Red ? "red" : "blue";
-                string description =
-                    $"Team <color={colorTag}>{teamToCapturePoints}</color> captured all control points";
-                int timeAfterWinGame = _gameSettings.TimeAfterWinGame;
-
-                RPC_ShowRestartNotification(title, description, timeAfterWinGame);
+                };
             }
-            else
-            {
-                RestartGame(_gameSettings.TimeAfterWinGame, (() =>
-                {
-                    _teamsSwapHappened = false;
-                    _teamsScoreService.ResetScores();
-                }));
 
-
-                TeamScoreData wonTeamScoreData = _teamsScoreService.GetWonTeam();
-                TeamSide wonTeam = wonTeamScoreData.Team;
-
-                string title = $"End of the game";
-                string colorTag = wonTeam == TeamSide.Red ? "red" : "blue";
-                string description = $"Team <color={colorTag}>{wonTeam}</color> most scored!";
-                int timeAfterWinGame = _gameSettings.TimeAfterWinGame;
-
-                RPC_ShowRestartNotification(title, description, timeAfterWinGame);
-            }
+            RestartGame(timeAfterWinGame, onRestarted);
+            RPC_ShowRestartNotification(title, description, timeAfterWinGame);
         }
 
 
@@ -108,11 +101,32 @@ namespace Dev.Infrastructure
         private void SimulateReachLastPoint()
         {
             _timeService.SetPauseState(true);
+            
+            Action onRestarted;
+            
+            if (_teamsSwapHappened)
+            {
+                onRestarted = () =>
+                {
+                    _teamsSwapHappened = false;
+                    _teamsScoreService.ResetScores();
+                };
+            }
+            else
+            {
+                onRestarted = () =>
+                {
+                    _teamsSwapHappened = true;
 
-            RestartGame(_gameSettings.TimeAfterWinGame);
+                    _teamsScoreService.SwapTeamScores();
+                    _teamsService.SwapTeams();
+                };
+            }
+            
+            RestartGame(_gameSettings.TimeAfterWinGame, onRestarted);
 
             string title = $"Restarting game";
-            TeamSide teamToCapturePoints = _cartService.TeamToCapturePoints;
+            TeamSide teamToCapturePoints = _cartService.DragTeamSide;
             string colorTag = teamToCapturePoints == TeamSide.Red ? "red" : "blue";
             string description = $"Team <color={colorTag}>{teamToCapturePoints}</color> captured all control points";
             int timeAfterWinGame = _gameSettings.TimeAfterWinGame;
@@ -142,7 +156,7 @@ namespace Dev.Infrastructure
 
         private void RestartGame(float delay = 0, Action onRestarted = null)
         {
-            Observable.Timer(TimeSpan.FromSeconds(delay)).Subscribe((l =>
+            Extensions.Delay(delay, destroyCancellationToken, (() =>
             {
                 onRestarted?.Invoke();
                 _cartService.ResetCart();
@@ -153,8 +167,8 @@ namespace Dev.Infrastructure
                 
                 GameRestarted.OnNext(Unit.Default);
             }));
+          
         }
-
        
     }
 }

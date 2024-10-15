@@ -14,7 +14,6 @@ namespace Dev.PlayerLogic
         public AbilityCastController AbilityCastController { get; private set; }
 
         [Networked] public CharacterClass CharacterClass { get; set; }
-        public TeamSide TeamSide => Character.TeamSide;
         
         public PlayerController PlayerController { get; private set; }
         

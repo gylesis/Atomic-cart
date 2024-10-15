@@ -92,3 +92,4 @@ MonoBehaviour:
     m_RotationOrder: 4
   _firstLevelName: 1
   _barrelsRespawnCooldown: 5
+  Radius: 2

@@ -169,10 +169,8 @@ namespace Dev.Infrastructure
             }
             
             PlayerRef player = runner.LocalPlayer;
-            
             _playersSpawner.ChooseCharacterClass(player);
-
-            RPC_OnSceneLoaded(player);
+            PlayerManager.LoadingPlayers.Remove(player);
         }
 
         [Rpc]

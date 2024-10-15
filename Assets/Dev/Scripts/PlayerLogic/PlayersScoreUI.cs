@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
+using Dev.Utils;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -15,7 +16,7 @@ namespace Dev.PlayerLogic
         [SerializeField] private PlayerScoreUI _playerScoreUIPrefab;
 
         [SerializeField] private Color _localPlayerColor;
-        
+
         private PlayersScoreService _playersScoreService;
 
         private List<PlayerScoreUI> _scoreUis = new List<PlayerScoreUI>();
@@ -39,13 +40,19 @@ namespace Dev.PlayerLogic
         {
             UpdateScores(_playersScoreService.PlayerScoreList);
         }
-    
+
         private void UpdateScores(IEnumerable<PlayerScoreData> scoreDatas)
         {
             foreach (var scoreData in scoreDatas)
             {
                 SessionPlayer sessionPlayer = scoreData.SessionPlayer;
-                TeamSide teamSide = sessionPlayer.TeamSide;
+                Result hasTeamResult = _sessionStateService.TryGetPlayerTeam(sessionPlayer, out TeamSide teamSide);
+
+                if (hasTeamResult == false)
+                {
+                    AtomicLogger.Err(hasTeamResult.ErrorMessage);
+                    continue;
+                }
 
                 PlayerScoreUI scoreUI = _scoreUis.FirstOrDefault(x => x.SessionPlayer.Id == sessionPlayer.Id);
 
@@ -64,7 +71,7 @@ namespace Dev.PlayerLogic
                 }
 
                 scoreUI.SetHighlightColor(Color.clear);
-                
+
                 if (sessionPlayer.IsBot == false)
                 {
                     if (sessionPlayer.Owner == Runner.LocalPlayer)
@@ -81,7 +88,8 @@ namespace Dev.PlayerLogic
 
         private void RemoveLeftPlayers()
         {
-            var playerScoreUis = _scoreUis.Where(x => _sessionStateService.DoPlayerExist(x.SessionPlayer.Owner) == false).ToList();
+            var playerScoreUis = _scoreUis
+                .Where(x => _sessionStateService.DoPlayerExist(x.SessionPlayer.Owner) == false).ToList();
 
             foreach (PlayerScoreUI scoreUi in playerScoreUis)
             {
@@ -104,24 +112,36 @@ namespace Dev.PlayerLogic
 
         private void OrderScoreUI()
         {
-            var blueScoresUI = _scoreUis.Where(x => x.SessionPlayer.TeamSide == TeamSide.Blue).OrderByDescending(x => x.Kills).ThenBy(x => x.Deaths).ToList();
-            var redScoresUI = _scoreUis.Where(x => x.SessionPlayer.TeamSide == TeamSide.Red).OrderByDescending(x => x.Kills).ThenBy(x => x.Deaths).ToList();
-            
+            var blueScoresUI = GetScoreUis(TeamSide.Blue);
+            var redScoresUI = GetScoreUis(TeamSide.Red);
+
             for (var index = 0; index < blueScoresUI.Count; index++)
             {
                 PlayerScoreUI scoreUI = blueScoresUI[index];
-                
+
                 scoreUI.transform.SetSiblingIndex(index);
             }
-            
+
             for (var index = 0; index < redScoresUI.Count; index++)
             {
                 PlayerScoreUI scoreUI = redScoresUI[index];
-                
+
                 scoreUI.transform.SetSiblingIndex(index);
             }
-            
         }
-        
+
+
+        private List<PlayerScoreUI> GetScoreUis(TeamSide targetTeam)
+        {
+            return _scoreUis
+                .Where(x =>
+                {
+                    var hasTeam = _sessionStateService.TryGetPlayerTeam(x.SessionPlayer, out TeamSide teamSide);
+                    return hasTeam && teamSide == targetTeam;
+                })
+                .OrderByDescending(x => x.Kills)
+                .ThenBy(x => x.Deaths)
+                .ToList();
+        }
     }
 }

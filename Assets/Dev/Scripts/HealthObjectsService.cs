@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
@@ -17,7 +18,6 @@ namespace Dev
     public class HealthObjectsService : NetworkContext
     {
         private GameSettings _gameSettings;
-        private TeamsService _teamsService;
         private WorldTextProvider _worldTextProvider;
         private PlayersDataService _playersDataService;
         private GameStaticDataContainer _gameStaticDataContainer;
@@ -34,7 +34,7 @@ namespace Dev
 
 
         [Inject]
-        private void Construct(GameSettings gameSettings, TeamsService teamsService,
+        private void Construct(GameSettings gameSettings,
                                WorldTextProvider worldTextProvider, PlayersDataService playersDataService,
                                GameStaticDataContainer gameStaticDataContainer, BotsController botsController,
                                SessionStateService sessionStateService)
@@ -44,7 +44,6 @@ namespace Dev
             _gameStaticDataContainer = gameStaticDataContainer;
             _playersDataService = playersDataService;
             _worldTextProvider = worldTextProvider;
-            _teamsService = teamsService;
             _gameSettings = gameSettings;
         }
 
@@ -166,10 +165,21 @@ namespace Dev
             bool isDamageFromServer = damageContext.IsFromServer;
             
             NetworkObject victimObj = damageContext.VictimObj;
-            TeamSide shooterTeam = damageContext.Shooter.TeamSide;
+            SessionPlayer shooter = damageContext.Shooter;
+            
+            TeamSide shooterTeam;
+            {
+                var hasTeam = _sessionStateService.TryGetPlayerTeam(shooter, out shooterTeam);
+
+                if (hasTeam == false)
+                {
+                    AtomicLogger.Err(hasTeam.ToString());
+                    return;
+                }
+            }
+
             int damage = damageContext.Damage;
-            SessionPlayer shooter = damageContext.Shooter;  
-            bool isOwnerBot = damageContext.Shooter.IsBot;
+            bool isOwnerBot = shooter.IsBot;
 
             bool isTargetDamagable = victimObj.TryGetComponent<IDamageable>(out var damagable);
 
@@ -192,36 +202,26 @@ namespace Dev
 
             if (HasData(victimId) == false)
             {
-                Debug.Log("No Health Data presented for object {victimObj.name}, skipping {damage} damage. " +
-                                 "Probably missed initialization",
-                    victimObj);
+                AtomicLogger.Log($"No Health Data presented for object {victimObj.name}, skipping {damage} damage. " +
+                                 "Probably missed initialization");
                 return;
             }
             
             
-            if (isDamageFromServer == false)
+            if (!_gameSettings.IsFriendlyFireOn && !isDamageFromServer && (isPlayer || isBot))
             {
-                if (isPlayer || isBot) //
+                var hasTeam = isBot ? _sessionStateService.TryGetPlayerTeam(victimId, out var victimTeamSide) : _sessionStateService.TryGetPlayerTeam(victimObj.StateAuthority, out victimTeamSide);
+
+                if (!hasTeam)
                 {
-                    if (_gameSettings.IsFriendlyFireOn == false)
-                    {
-                        TeamSide victimTeamSide;
-
-                        if (isBot)
-                        {
-                            victimTeamSide = _teamsService.GetUnitTeamSide(victimId);
-                        }
-                        else
-                        {
-                            victimTeamSide = _teamsService.GetUnitTeamSide(victimObj.StateAuthority);
-                        }
-
-                        if (victimTeamSide == shooterTeam)
-                        {
-                            AtomicLogger.Log($"Damage from the same team, skipping damage");
-                            return;
-                        }
-                    }
+                    AtomicLogger.Err(hasTeam.ErrorMessage);
+                    return;
+                }
+                            
+                if (victimTeamSide == shooterTeam)
+                {
+                    AtomicLogger.Log($"Damage from the same team, skipping damage");
+                    return;
                 }
             }
 
@@ -348,24 +348,18 @@ namespace Dev
 
         private void OnBotHealthZero(Bot bot, SessionPlayer killer, bool isDamageFromServer)
         {
-            bot.RPC_OnDeath(true);
-
             SessionPlayer botSessionPlayer = _sessionStateService.GetSessionPlayer(bot);
 
-            //bot.View.RPC_Scale(0);
             bot.RPC_OnDeath(true);
 
             RPC_OnBotDeath(killer, botSessionPlayer, isDamageFromServer);
-            //LoggerUI.Instance.Log($"Player {playerRef} is dead");
+            //AtomicLogger.Log($"Player {killer.Name} is dead");
 
             float respawnTime = 2;
 
             SaveLoadService.Instance.AddKill(killer);
-            
-            Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
-            {
-                _botsController.RPC_RespawnBot(bot);
-            }));
+
+            Extensions.Delay(respawnTime, destroyCancellationToken, () => _botsController.RPC_RespawnBot(bot));
         }
 
         [Rpc]
@@ -395,14 +389,13 @@ namespace Dev
 
             float respawnTime = 2;
 
-            SaveLoadService.Instance.AddDeath(_sessionStateService.GetSessionPlayer(victim));
+            SaveLoadService.Instance.AddDeath(_sessionStateService.GetSessionPlayer(victim.ToNetworkId()));
             
-           
-            Observable.Timer(TimeSpan.FromSeconds(respawnTime)).Subscribe((l =>
+            Extensions.Delay(respawnTime, destroyCancellationToken, () =>
             {
                 RestoreHealth(playerCharacter.Object, true);
                 _playersDataService.PlayersSpawner.RespawnPlayerCharacter(victim);
-            }));
+            });
         }
 
         [Rpc(Channel = RpcChannel.Reliable)]
@@ -410,7 +403,7 @@ namespace Dev
         {
             var dieContext = new UnitDieContext();
             dieContext.Killer = killer;
-            dieContext.Victim = _sessionStateService.GetSessionPlayer(victim);
+            dieContext.Victim = _sessionStateService.GetSessionPlayer(victim.ToNetworkId());
             dieContext.IsKilledByServer = isKilledByServer;
             
             PlayerDied.OnNext(dieContext);       
@@ -420,10 +413,7 @@ namespace Dev
         {
             obstacle.OnZeroHealth();
 
-            Observable.Timer(TimeSpan.FromSeconds(_gameSettings.BarrelsRespawnCooldown)).Subscribe((l =>
-            {
-                RestoreObstacle(obstacle);
-            }));
+            Extensions.Delay(_gameSettings.BarrelsRespawnCooldown, destroyCancellationToken, () => RestoreObstacle(obstacle));
         }
         
         public void RestoreHealth(NetworkObject networkObject, bool isPlayer = false, bool isBot = false)

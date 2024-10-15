@@ -122,7 +122,7 @@ namespace Dev.Infrastructure
                 NetworkId id = playerRef.ToNetworkId();
 
                 _sessionStateService.RPC_RemovePlayer(id);
-                _teamsService.RPC_RemoveFromTeam(playerRef);
+                _teamsService.RPC_RemoveFromTeam(playerRef.ToNetworkId());
                 _healthObjectsService.RPC_UnregisterObject(id);
                 PlayersBase.Remove(playerRef);
                 
@@ -148,14 +148,21 @@ namespace Dev.Infrastructure
         {
             CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(characterClass);
 
-            TeamSide teamSide = _teamsService.GetUnitTeamSide(playerRef);
+            var hasTeam = _sessionStateService.TryGetPlayerTeam(playerRef, out var teamSide);
+
+            if (!hasTeam)
+            {
+                AtomicLogger.Err(hasTeam.ErrorMessage);
+                return null;
+            }
+            
             Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
 
             PlayerCharacter playerCharacter = Runner.Spawn(characterData.PlayerCharacterPrefab, spawnPos,
                 quaternion.identity, playerRef, onBeforeSpawned: (runner, o) =>
                 {
                     PlayerCharacter character = o.GetComponent<PlayerCharacter>();
-                    SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(playerRef); 
+                    SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(playerRef.ToNetworkId()); 
                     character.WeaponController.RPC_SetOwner(sessionPlayer);
                     character.transform.parent = playerBase.transform;
 
@@ -182,7 +189,7 @@ namespace Dev.Infrastructure
             playerBase.PlayerController.SetAllowToMove(true);
             playerBase.PlayerController.SetAllowToShoot(true);
 
-            playerCharacter.RPC_Init(characterClass, teamSide);
+            playerCharacter.RPC_Init(characterClass);
 
             UpdatePlayerCharacter(playerCharacter, playerRef);
 
@@ -257,40 +264,33 @@ namespace Dev.Infrastructure
             PlayersBase.Add(playerRef, playerBase);
             
             //_sessionStateService.AddPlayer(playerRef.ToNetworkId(), $"{PlayersLocalDataLinker.Instance.GetNickname(playerRef)}", false, _teamsService.GetUnitTeamSide(playerRef));
-            _sessionStateService.AddPlayer(playerRef.ToNetworkId(), $"{AuthService.Nickname}", false, _teamsService.GetUnitTeamSide(playerRef));
+            _sessionStateService.AddPlayer(playerRef.ToNetworkId(), $"{AuthService.Nickname}", false);
         }
 
         private void SetCharacterTeamBannerColor(PlayerRef playerRef)
         {
-            TeamSide teamSide = _teamsService.GetUnitTeamSide(playerRef);
+            var hasTeam = _sessionStateService.TryGetPlayerTeam(playerRef, out var teamSide);
 
+            if (!hasTeam)
+            {
+                AtomicLogger.Err(hasTeam.ErrorMessage);
+                return;
+            }
+            
             GetPlayer(playerRef).PlayerView.RPC_SetTeamColor(AtomicConstants.Teams.GetTeamColor(teamSide));
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPC_AssignTeam(PlayerRef playerRef)
         {
-            bool doPlayerHasTeam = _teamsService.DoPlayerHasTeam(playerRef);
-
-            if (doPlayerHasTeam) return;
-
-            TeamSide newTeamForPlayer;
-
             int redTeamMembersCount = _teamsService.GetTeamMembersCount(TeamSide.Red);
             int blueTeamMembersCount = _teamsService.GetTeamMembersCount(TeamSide.Blue);
 
-            if (redTeamMembersCount > blueTeamMembersCount)
-            {
-                newTeamForPlayer = TeamSide.Blue;
-            }
-            else
-            {
-                newTeamForPlayer = TeamSide.Red;
-            }
+            var newTeamForPlayer = redTeamMembersCount > blueTeamMembersCount ? TeamSide.Blue : TeamSide.Red;
 
             Debug.Log($"Assigning team {newTeamForPlayer} for player {playerRef}");
 
-            _teamsService.RPC_AssignForTeam(playerRef, newTeamForPlayer);
+            _teamsService.RPC_AssignForTeam(new TeamMember(playerRef), newTeamForPlayer);
         }
 
         private void SetCamera(PlayerRef playerRef, Vector3 pos, NetworkRunner networkRunner)
@@ -310,7 +310,14 @@ namespace Dev.Infrastructure
             Debug.Log($"Respawn player {playerRef}");
             _healthObjectsService.RestorePlayerHealth(playerRef);
 
-            TeamSide playerTeamSide = _teamsService.GetUnitTeamSide(playerRef);
+            var hasTeam = _sessionStateService.TryGetPlayerTeam(playerRef, out var playerTeamSide);
+
+            if (!hasTeam)
+            {
+                AtomicLogger.Err(hasTeam.ErrorMessage);
+                return;
+            }
+            
 
             var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(playerTeamSide);
 

@@ -26,6 +26,7 @@ namespace Dev.BotsLogic
         public void RPC_SetTeamBannerColor(Color color)
         {
             TeamBannerColor = color;
+            UpdateTeamBannerColor();
         }
 
         private void UpdateTeamBannerColor()
