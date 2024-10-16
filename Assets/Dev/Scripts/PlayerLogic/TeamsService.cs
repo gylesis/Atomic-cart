@@ -12,10 +12,6 @@ namespace Dev.PlayerLogic
         private SessionStateService _sessionStateService;
         [Networked, Capacity(2)] private NetworkLinkedList<Team> Teams { get; }
 
-        // public Team RedTeam => _teams.First(x => x.TeamSide == TeamSide.Red);
-        // public Team BlueTeam => _teams.First(x => x.TeamSide == TeamSide.Blue);
-
-
         [Inject]
         private void Construct(SessionStateService sessionStateService)
         {
@@ -24,7 +20,7 @@ namespace Dev.PlayerLogic
 
         public override void Spawned()
         {
-            //Debug.Log($"SDFs");
+            base.Spawned();
             
             if (Runner.IsSharedModeMasterClient == false) return;
 
@@ -47,9 +43,7 @@ namespace Dev.PlayerLogic
                 var hasPlayer = team.HasTeamMember(memberId);
 
                 if (hasPlayer)
-                {
                     return team;
-                }
             }
 
             Debug.Log($"Didnt found team for {memberId}");

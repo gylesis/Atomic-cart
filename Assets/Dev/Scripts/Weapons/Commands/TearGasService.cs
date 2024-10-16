@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
@@ -47,9 +48,9 @@ namespace Dev.Weapons
             }));
             
             AnimateFly(targetPos);
-
+            
             await UniTask.Delay(TimeSpan.FromSeconds(_flyDuration),
-                cancellationToken: gameObject.GetCancellationTokenOnDestroy());
+                cancellationToken: destroyCancellationToken);
             
             TearGasEffect tearGasEffect = FxController.Instance.SpawnEffectAt<TearGasEffect>("teargas", targetPos, destroyDelay: _duration);
 
@@ -60,12 +61,12 @@ namespace Dev.Weapons
             
             _durationTimer = TickTimer.CreateFromSeconds(_localNetRunner ,_duration);
 
-            Observable.Timer(TimeSpan.FromSeconds(_duration)).TakeUntilDestroy(this).Subscribe((l =>
+            Extensions.Delay(_duration, destroyCancellationToken, () =>
             {
                 DurationEnded.OnNext(Unit.Default);
                 _tearGas.ToDestroy.OnNext(_tearGas);
                 _tearGas = null;
-            }));
+            });
             
             _damageTickTimer = TickTimer.CreateFromSeconds(_localNetRunner, _secondsDamageTick);
         }

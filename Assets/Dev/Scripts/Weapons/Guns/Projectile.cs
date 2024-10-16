@@ -1,8 +1,8 @@
-﻿using System;
-using Dev.BotsLogic;
+﻿using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
+using Dev.Sounds;
 using Fusion;
 using Fusion.Addons.Physics;
 using UniRx;
@@ -19,7 +19,6 @@ namespace Dev.Weapons.Guns
         [SerializeField] protected Transform _view;
         [SerializeField] protected NetworkRigidbody2D _networkRigidbody2D;
         [SerializeField] protected float _overlapRadius = 1f;
-        [SerializeField] private string _hitSoundType = "ak_hit";
 
         protected HitsProcessor _hitsProcessor;
 
@@ -38,7 +37,6 @@ namespace Dev.Weapons.Guns
         public Transform View => _view;
         public Subject<Projectile> ToDestroy { get; } = new Subject<Projectile>();
         public float OverlapRadius => _overlapRadius;
-        public string HitSoundType => _hitSoundType;
 
         [Inject]
         private void Construct(HitsProcessor hitsProcessor)
@@ -50,7 +48,7 @@ namespace Dev.Weapons.Guns
         {
             base.OnInjectCompleted();
 
-            _hitsProcessor.Hit.TakeUntilDestroy(this).Subscribe((OnHit));
+            _hitsProcessor.Hit.Subscribe(OnHit).AddTo(this);
         }
 
         [Rpc]
@@ -112,8 +110,7 @@ namespace Dev.Weapons.Guns
             
             if (CheckForHitsWhileMoving)
             {
-                ProcessHitCollisionContext hitCollisionContext =
-                    new ProcessHitCollisionContext(Object.Id, transform.position, _overlapRadius, Damage, false, Owner);
+                ProcessHitCollisionContext hitCollisionContext = new ProcessHitCollisionContext(Object.Id, transform.position, _overlapRadius, Damage, false, Owner);
 
                 _hitsProcessor.ProcessHit(hitCollisionContext);
             }
@@ -146,14 +143,37 @@ namespace Dev.Weapons.Guns
                 SetViewStateLocal(false);
         }
 
-        protected virtual void OnObstacleHit(Obstacle obstacle) { }
+        protected virtual void OnObstacleHit(Obstacle obstacle)
+        {
+            PlayDefaultHitSound(obstacle.transform.position);
+        }
 
-        protected virtual void OnPlayerHit(PlayerCharacter playerCharacter) { }
+        protected virtual void OnPlayerHit(PlayerCharacter playerCharacter)
+        {
+            PlayDefaultHitSound(playerCharacter.transform.position);
+        }
 
-        protected virtual void OnBotHit(Bot bot) { }
+        protected virtual void OnBotHit(Bot bot)
+        {
+            PlayDefaultHitSound(bot.transform.position);
+        }
 
-        protected virtual void OnDummyHit(DummyTarget dummyTarget) { }
+        protected virtual void OnDummyHit(DummyTarget dummyTarget)
+        {
+            PlayDefaultHitSound(dummyTarget.transform.position);
+        }
 
+        protected virtual void PlayDefaultHitSound(Vector3 position)
+        {
+            RPC_PlaySound("ak_hit", position, 40);
+        }
+           
+        [Rpc(Channel = RpcChannel.Reliable)]
+        protected void RPC_PlaySound(NetworkString<_16> soundType, Vector3 at, float radius)
+        {
+            //SoundController.Instance.PlaySoundAt(soundType.ToString(), at, radius);
+        }
+        
         protected virtual void OnDrawGizmosSelected() { }
 
         protected virtual void OnDrawGizmos()

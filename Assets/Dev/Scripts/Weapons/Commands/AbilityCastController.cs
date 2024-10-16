@@ -59,8 +59,10 @@ namespace Dev.Weapons
             CurrentAbilityToCast = abilityType;
         }
 
-        public async override void Spawned()
+        public override async void Spawned()
         {
+            base.Spawned();
+            
             if(HasStateAuthority == false) return;
 
             await UniTask.WaitUntil((() => _playerBase.Character != null)).AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());

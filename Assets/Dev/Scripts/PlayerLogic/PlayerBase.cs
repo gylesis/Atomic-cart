@@ -21,10 +21,10 @@ namespace Dev.PlayerLogic
         
         public override void Spawned()
         {
-            if (HasStateAuthority)
-            {
+            base.Spawned();
+            
+            if (HasStateAuthority) 
                 LocalPlayerBase = this;
-            }
         }   
       
         

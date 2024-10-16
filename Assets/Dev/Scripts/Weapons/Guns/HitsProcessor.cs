@@ -19,12 +19,15 @@ namespace Dev.Weapons.Guns
         private HealthObjectsService _healthObjectsService;
         private PlayersDataService _playersDataService;
         private SessionStateService _sessionStateService;
+        private GameSettings _gameSettings;
 
         public Subject<HitContext> Hit { get; } = new();
+        public Subject<HitContext> Explode { get; } = new();
 
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, SessionStateService sessionStateService, PlayersDataService playersDataService)
+        private void Construct(HealthObjectsService healthObjectsService, SessionStateService sessionStateService, PlayersDataService playersDataService, GameSettings gameSettings)
         {
+            _gameSettings = gameSettings;
             _sessionStateService = sessionStateService;
             _playersDataService = playersDataService;
             _healthObjectsService = healthObjectsService;   
@@ -151,8 +154,7 @@ namespace Dev.Weapons.Guns
             if (isProjectileHitSomething)
             {
                 OnHit(hitObject, shooter, damage, damagableType, projectile is ExplosiveProjectile, isDamageFromServer);
-
-                RPC_PlaySound(projectile.HitSoundType, projectile.transform.position, 40);
+                
                 projectile.ToDestroy.OnNext(projectile);
             }
         }
@@ -181,14 +183,7 @@ namespace Dev.Weapons.Guns
             Hit.OnNext(hitContext);
         }
 
-        
-        [Rpc(Channel = RpcChannel.Reliable)]
-        private void RPC_PlaySound(NetworkString<_16> soundType, Vector3 at, float radius)
-        {
-            SoundController.Instance.PlaySoundAt(soundType.ToString(), at, radius);
-        }
-
-       
+      
         /// <summary>
         /// Used for processing collision excluding collision check owner
         /// </summary>
@@ -359,13 +354,11 @@ namespace Dev.Weapons.Guns
 
                 if (victim != null)
                 {
-                    RPC_PlaySound("explosion", victim.transform.position, 40);
-                    
                     if (damage == -1)
                     {
                         Debug.Log($"Damage is -1, not applying damage, just returned callback");
                         
-                        onExploded?.Invoke(victim, owner, damagableType, totalDamage, isDamageFromServer);
+                        onExploded?.Invoke(victim, owner, damagableType, totalDamage, isDamageFromServer); // refactor
                     }
                     else
                     {
@@ -392,6 +385,12 @@ namespace Dev.Weapons.Guns
                 //Debug.Log($"Damage from explosion");
                 _healthObjectsService.ApplyDamage(damageContext);
             }
+            
+            HitContext hitContext = new HitContext();
+            hitContext.GameObject = networkObject.gameObject;
+            hitContext.DamagableType = damagableType;
+
+            Explode.OnNext(hitContext);
         }
         
         

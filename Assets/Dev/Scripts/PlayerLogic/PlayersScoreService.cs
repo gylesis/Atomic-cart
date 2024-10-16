@@ -33,6 +33,8 @@ namespace Dev.PlayerLogic
 
         public override void Spawned()
         {
+            base.Spawned();
+            
             _playersDataService.PlayersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
             _playersDataService.PlayersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 

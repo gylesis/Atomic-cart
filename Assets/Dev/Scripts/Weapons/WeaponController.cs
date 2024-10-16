@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Dev.Weapons.Guns;
 using Dev.Weapons.StaticData;
 using Fusion;
@@ -19,7 +20,7 @@ namespace Dev.Weapons
        // private WeaponProvider _weaponProvider;
        
         public bool AllowToShoot { get; private set; } = true;
-        [HideInInspector, CanBeNull, Networked] public Weapon CurrentWeapon { get; set; }
+        [HideInInspector, Networked] public Weapon CurrentWeapon { get; set; }
         [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
         [Networked] public SessionPlayer Owner { get; private set; }
         [Networked] public NetworkBool TeamWasSet { get; private set; }
@@ -36,19 +37,17 @@ namespace Dev.Weapons
 
         public override void Spawned()
         {
+            base.Spawned();
+            
             if (HasStateAuthority == false) return;
 
             Weapon weapon = WeaponParent.GetComponentInChildren<Weapon>();
 
-            if (weapon != null)
-            {
+            if (weapon != null) 
                 RPC_AddWeapon(weapon, true);
-            }
 
-            foreach (Weapon weap in Weapons)
-            {
+            foreach (Weapon weap in Weapons) 
                 weap.transform.parent = WeaponParent;
-            }
 
             //_weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
@@ -59,7 +58,6 @@ namespace Dev.Weapons
             Owner = owner;
             TeamWasSet = true;
         }
-
 
         public bool HasWeapon(WeaponType weaponType)
         {
@@ -99,26 +97,15 @@ namespace Dev.Weapons
 
         public void AimWeaponTowards(Vector2 direction)
         {
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-            if (angle < 0)
-            {
-                angle += 360;
-            }
-
-            Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
-
-            WeaponParent.transform.up = direction;
-
+            WeaponParent.RotateTowardsDirection(direction);
+            
             float scaleSign = 1;
 
-            if (direction.x < 0)
-            {
+            if (direction.x < 0) 
                 scaleSign = -1;
-            }
 
             var localScale = CurrentWeapon.View.localScale;
-            localScale.x = scaleSign;
+            localScale.y = scaleSign;
 
             CurrentWeapon.View.localScale = localScale;
         }

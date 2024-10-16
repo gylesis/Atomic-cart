@@ -115,6 +115,20 @@ namespace Dev.Utils
 
             transform.rotation = targetRotation;
         }
+        
+        public static void RotateTowardsDirection(this Transform transform, Vector2 direction)
+        {
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            if (angle < 0) 
+                angle += 360;
+
+            Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+
+            transform.rotation = targetRotation;
+        }
+        
+        
 
         public static int GetRandom(int maxNum, params int[] expectNums)
         {

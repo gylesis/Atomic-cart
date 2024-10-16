@@ -47,23 +47,66 @@ namespace Dev
             _gameSettings = gameSettings;
         }
 
-        public void RegisterObject(NetworkObject networkObject, int health)
+        public void RegisterObject(NetworkId networkId, int health)
         {
-            if (Runner.IsSharedModeMasterClient == false) return;
-
-            RPC_InternalRegisterObject(networkObject, health);
+            RPC_InternalRegisterObject(networkId, health);
         }
 
+        public void UnRegisterObject(NetworkId networkId)
+        {
+            RPC_UnregisterObject(networkId);
+        }
+        
         public void RegisterPlayer(PlayerRef playerRef)
         {
             RPC_RegisterPlayerInternal(playerRef);
+        }
+        
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_RegisterPlayerInternal(PlayerRef playerRef)
+        {
+            CharacterClass playerCharacterClass = _playersDataService.GetPlayerCharacterClass(playerRef);
+            CharacterData characterData = _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
+
+            RPC_InternalRegisterObject(playerRef.ToNetworkId(), characterData.CharacterStats.Health);
+        }
+            
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_InternalRegisterObject(NetworkId networkId, int health)
+        {   
+            if (HasData(networkId))
+            {
+                AtomicLogger.Log($"Trying to register already registered object");
+                return;
+            }
+
+            health = Mathf.Clamp(health, 0, UInt16.MaxValue); // to avoid uint overflow
+
+            ObjectWithHealthData healthData = new ObjectWithHealthData(networkId, (UInt16)health, (UInt16)health);
+
+            HealthData.Add(healthData);
+
+            //AtomicLogger.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
+        }
+    
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_UnregisterObject(NetworkId objId)
+        {
+            if (Runner == null) return;
+            
+            if (HasData(objId)) 
+            {
+                ObjectWithHealthData healthData = HealthData.First(x => x.ObjId == objId);
+
+                HealthData.Remove(healthData);
+            }
         }
 
         public int GetHealth(NetworkId id)
         {   
             if (HasData(id) == false)
             {
-                Debug.Log($"No data for object with id {id}");
+                AtomicLogger.Log($"No data for object with id {id}");
                 return -1;
             }
     
@@ -83,81 +126,6 @@ namespace Dev
             return data.Health == data.MaxHealth;
         }
         
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_RegisterPlayerInternal(PlayerRef playerRef)
-        {
-            CharacterClass playerCharacterClass = _playersDataService.GetPlayerCharacterClass(playerRef);
-            CharacterData characterData = _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
-
-            RPC_InternalRegisterObject(playerRef.ToNetworkId(), characterData.CharacterStats.Health);
-        }
-            
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_InternalRegisterObject(NetworkObject networkObject, int health)
-        {
-            if (HasData(networkObject.Id))
-            {
-                Debug.Log($"Trying to register already registered object", networkObject);
-                return;
-            }
-
-            health = Mathf.Clamp(health, 0, UInt16.MaxValue); // to avoid uint overflow
-
-            ObjectWithHealthData healthData = new ObjectWithHealthData(networkObject.Id, (UInt16)health, (UInt16)health);
-
-            HealthData.Add(healthData);
-
-            //AtomicLogger.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
-        }
-        
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_InternalRegisterObject(NetworkId networkId, int health)
-        {   
-            if (HasData(networkId))
-            {
-                AtomicLogger.Log($"Trying to register already registered object");
-                return;
-            }
-
-            health = Mathf.Clamp(health, 0, UInt16.MaxValue); // to avoid uint overflow
-
-            ObjectWithHealthData healthData = new ObjectWithHealthData(networkId, (UInt16)health, (UInt16)health);
-
-            HealthData.Add(healthData);
-
-            //AtomicLogger.Log($"Registering health object {networkObject.name}, total count {HealthData.Count}", networkObject);
-        }
-        
-
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_UnregisterObject(NetworkObject networkObject)
-        {
-            if (Runner == null) return;
-
-            NetworkId id = networkObject.Id;
-            
-            if (HasData(id))
-            {
-                ObjectWithHealthData healthData = HealthData.First(x => x.ObjId == id);
-
-                HealthData.Remove(healthData);
-            }
-        }
-        
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_UnregisterObject(NetworkId objId)
-        {
-            if (Runner == null) return;
-            
-            if (HasData(objId)) 
-            {
-                ObjectWithHealthData healthData = HealthData.First(x => x.ObjId == objId);
-
-                HealthData.Remove(healthData);
-            }
-        }
-       
-
         private bool HasData(NetworkId objectId) => HealthData.Any(x => x.ObjId == objectId);
     
         public void ApplyDamage(ApplyDamageContext damageContext)   
@@ -281,17 +249,7 @@ namespace Dev
 
         private static NetworkId GetVictimId(bool isPlayer, NetworkObject victimObj)
         {
-            NetworkId victimId;
-
-            if (isPlayer)
-            {
-                victimId = victimObj.StateAuthority.ToNetworkId();
-            }
-            else
-            {
-                victimId = victimObj.Id;
-            }
-
+            var victimId = isPlayer ? victimObj.StateAuthority.ToNetworkId() : victimObj.Id;
             return victimId;
         }
 

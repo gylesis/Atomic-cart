@@ -18,25 +18,25 @@ MonoBehaviour:
     Volume: 5
   - SoundType: ak_fire
     AudioClip: {fileID: 8300000, guid: d826c2150a2b4514ca8634b2eb861810, type: 3}
-    Volume: 15
+    Volume: 12
   - SoundType: explosion
     AudioClip: {fileID: 8300000, guid: d80e1ce7dd0b5ad42973a696864b2146, type: 3}
     Volume: 20
   - SoundType: teargas
     AudioClip: {fileID: 8300000, guid: c5fbe8772b819be4699f5c548a060d7c, type: 3}
-    Volume: 30
+    Volume: 15
   - SoundType: grenade_launcher
     AudioClip: {fileID: 8300000, guid: 097748a4ea0ddd14a8d62d476e2d2776, type: 3}
-    Volume: 30
+    Volume: 15
   - SoundType: bazooka_fire
     AudioClip: {fileID: 8300000, guid: 40e98d37ce318c4498039195e576618d, type: 3}
-    Volume: 30
+    Volume: 10
   - SoundType: bazooka_hit
     AudioClip: {fileID: 8300000, guid: d80e1ce7dd0b5ad42973a696864b2146, type: 3}
-    Volume: 30
+    Volume: 8
   - SoundType: pistol_hit
     AudioClip: {fileID: 8300000, guid: 4dc01f23c543b394ab39e25e1421368a, type: 3}
-    Volume: 30
+    Volume: 15
   - SoundType: pistol_fire
     AudioClip: {fileID: 8300000, guid: d826c2150a2b4514ca8634b2eb861810, type: 3}
-    Volume: 30
+    Volume: 10

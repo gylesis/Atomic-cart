@@ -27,7 +27,7 @@ namespace Dev.Weapons.Guns
 
         public Vector2 ShootPos => _shootPoint.position;
         public Transform ShootPoint => _shootPoint;
-        public Vector2 ShootDirection => transform.up;
+        public Vector2 ShootDirection => transform.right;
 
         public float BulletHitOverlapRadius { get; protected set; } = 0.5f;
         

@@ -36,13 +36,13 @@ namespace Dev.Weapons
 
         private bool _exploding;
 
-        protected override void Awake()
-        {
-            base.Awake();
 
+        protected override void LoadLateInjection()
+        {
+            base.LoadLateInjection();
             _detonateCircleSprite.transform.localScale = new Vector3(_detonateRadius,_detonateRadius,1);
         }
-
+        
         public override void FixedUpdateNetwork()
         {
             if(HasStateAuthority == false) return;
@@ -59,7 +59,7 @@ namespace Dev.Weapons
             
             ProcessExplodeContext explodeContext = new ProcessExplodeContext(Owner, _detonateRadius, -1, transform.position, false);
             
-            _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext, Exploded);
+            _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext, Exploded); // TODO remove Exploded callback and make other method for simulating explode
 
             void Exploded(NetworkObject victim, SessionPlayer owner, DamagableType damagableType, int damage, bool isDamageFromServer)
             {
@@ -87,12 +87,13 @@ namespace Dev.Weapons
 
             _view.DOScale(0, 0.5f);
             
-            FxController.Instance.SpawnEffectAt<Effect>("landmine_explosion", transform.position);
+            Extensions.Delay(0.5f, destroyCancellationToken, () => ToDestroy.OnNext(this));
+        }
 
-            Observable.Timer(TimeSpan.FromSeconds(0.5f)).TakeUntilDestroy(this).Subscribe((l =>
-            {
-                ToDestroy.OnNext(this);
-            }));
+        protected override void OnExplode(HitContext context)
+        {
+            FxController.Instance.SpawnEffectAt<Effect>("landmine_explosion", transform.position);
+            base.OnExplode(context);
         }
 
         private void StartDetonation()

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Dev.Infrastructure;
+using Fusion;
 using UniRx;
 using Zenject;
 
@@ -26,8 +27,8 @@ namespace Dev.Levels
         {
             base.OnInjectCompleted();
             
-            _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
-            _gameStateService.GameRestarted.TakeUntilDestroy(this).Subscribe((unit => OnGameRestarted()));
+            _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe(OnLevelLoaded);
+            _gameStateService.GameRestarted.TakeUntilDestroy(this).Subscribe(unit => OnGameRestarted());
         }
 
         private void OnLevelLoaded(Level level)
@@ -36,10 +37,8 @@ namespace Dev.Levels
             
             foreach (Obstacle obstacle in Obstacles)
             {
-                if (obstacle is ObstacleWithHealth obstacleWithHealth)
-                {
-                    _healthObjectsService.RegisterObject(obstacle.Object, obstacleWithHealth.Health);
-                }
+                if (obstacle is ObstacleWithHealth obstacleWithHealth) 
+                    _healthObjectsService.RegisterObject(obstacleWithHealth.Object.Id, obstacleWithHealth.Health);
             }
         }
 
@@ -49,10 +48,19 @@ namespace Dev.Levels
             
             foreach (Obstacle obstacle in Obstacles)
             {
-                if (obstacle is ObstacleWithHealth obstacleWithHealth)
-                {
+                if (obstacle is ObstacleWithHealth obstacleWithHealth) 
                     _healthObjectsService.RestoreObstacle(obstacleWithHealth);
-                }
+            }
+        }
+
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            if(runner.IsSharedModeMasterClient == false || _levelService.CurrentLevel == null) return;
+
+            foreach (var obstacle in _levelService.CurrentLevel.Obstacles)
+            {
+                if (obstacle is ObstacleWithHealth) 
+                    _healthObjectsService.UnRegisterObject(obstacle.Object.Id);
             }
         }
     }

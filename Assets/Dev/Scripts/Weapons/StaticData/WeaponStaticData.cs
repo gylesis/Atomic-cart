@@ -32,8 +32,7 @@ namespace Dev.Weapons.StaticData
         public float Cooldown => _cooldown;
 
         public int Damage => Random.Range(_minDamage, _maxDamage + 1);
+
     }
-    
-    
     
 }

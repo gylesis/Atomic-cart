@@ -29,6 +29,8 @@ namespace Dev.PlayerLogic
 
         public override void Spawned()
         {
+            base.Spawned();
+            
             LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
             
             if (HasStateAuthority == false)

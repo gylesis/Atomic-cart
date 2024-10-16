@@ -15,11 +15,10 @@ namespace Dev.Levels
             _healthObjectsService = healthObjectsService;
         }
 
-        protected override void OnInjectCompleted()
+        public override void Spawned()
         {
-            base.OnInjectCompleted();
-            
-            _healthObjectsService.RegisterObject(Object, 999);
+            base.Spawned();
+            _healthObjectsService.RegisterObject(Object.Id, 999);
         }
     }
 }

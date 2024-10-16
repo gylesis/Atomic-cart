@@ -73,11 +73,11 @@ namespace Dev.Infrastructure
             {
                 SpawnPlayerByCharacter(characterClass, playerRef, Runner);
 
-                Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe((l =>
+                Extensions.Delay(0.5f, destroyCancellationToken, () =>
                 {
                     _popUpService.HidePopUp<CharacterChooseMenu>();
                     _popUpService.ShowPopUp<HUDMenu>();
-                }));
+                });
             }));
         }
 
@@ -85,7 +85,6 @@ namespace Dev.Infrastructure
                                             NetworkRunner networkRunner)
         {
             Debug.Log($"Player {playerRef} chose {characterClass}");
-
             SpawnPlayer(playerRef, characterClass, networkRunner);
         }
 
@@ -123,7 +122,7 @@ namespace Dev.Infrastructure
 
                 _sessionStateService.RPC_RemovePlayer(id);
                 _teamsService.RPC_RemoveFromTeam(playerRef.ToNetworkId());
-                _healthObjectsService.RPC_UnregisterObject(id);
+                _healthObjectsService.UnRegisterObject(id);
                 PlayersBase.Remove(playerRef);
                 
                 PlayerBaseDeSpawned.OnNext(playerRef);
@@ -221,8 +220,6 @@ namespace Dev.Infrastructure
             SetCharacterTeamBannerColor(playerRef);
         }
         
-       
-
         private static void SetAbilityType(PlayerBase playerBase, CharacterClass characterClass)
         {
             AbilityType abilityType;
@@ -317,7 +314,6 @@ namespace Dev.Infrastructure
                 AtomicLogger.Err(hasTeam.ErrorMessage);
                 return;
             }
-            
 
             var spawnPoints = LevelService.Instance.CurrentLevel.GetSpawnPointsByTeam(playerTeamSide);
 
@@ -328,14 +324,14 @@ namespace Dev.Infrastructure
 
             PlayerBase playerBase = GetPlayerBase(playerRef);
 
-            Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe((l =>
+            Extensions.Delay(0.5f, destroyCancellationToken, () =>
             {
                 playerCharacter.RPC_ResetAfterDeath();
 
                 playerBase.PlayerController.SetAllowToMove(true);
                 playerBase.PlayerController.SetAllowToShoot(true);
-            }));
-
+            });
+            
             SetCharacterTeamBannerColor(playerRef);
         }
 
@@ -358,8 +354,7 @@ namespace Dev.Infrastructure
         {
             List<NetworkObject> playerService = _playerServices[playerRef];
 
-            CameraController cameraController = playerService.First(x => x.GetComponent<CameraController>() != null)
-                .GetComponent<CameraController>();
+            CameraController cameraController = playerService.First(x => x.GetComponent<CameraController>() != null).GetComponent<CameraController>();
 
             return cameraController;
         }

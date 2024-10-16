@@ -25,13 +25,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 487771405634186604}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.3, y: 1.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5643736420937599800}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7172777516410045045
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -178,11 +178,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7974832153973915057, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.178
+      value: 2.075
       objectReference: {fileID: 0}
     - target: {fileID: 7974832153973915057, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.989
+      value: 0.187
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -217,6 +217,7 @@ MonoBehaviour:
   _weaponType: 1
   _shootPoint: {fileID: 8329106418942572176}
   _view: {fileID: 5643736420937599800}
+  _soundRadius: 40
 --- !u!4 &5643736420937599800 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6010108543459295257, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}

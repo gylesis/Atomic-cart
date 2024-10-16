@@ -25,23 +25,13 @@ namespace Dev.Levels
             _healthObjectsService = healthObjectsService;
         }
 
-        public override void Spawned()
-        {
-            base.Spawned();
-
-            if (Runner.IsSharedModeMasterClient)
-            {
-                _healthObjectsService.RegisterObject(Object, _health);
-            }
-        }
-
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
             base.Despawned(runner, hasState);
             
             if (Runner.IsSharedModeMasterClient)
             {
-                _healthObjectsService.RPC_UnregisterObject(Object);
+                _healthObjectsService.UnRegisterObject(Object.Id);
             }
         }
 

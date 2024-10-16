@@ -9,10 +9,13 @@ namespace Dev.Weapons
         
         public void DealDamage()
         {
-            //Debug.Log($"Deal damage from tear gas with radius {_explosionRadius}");
             ExplodeAndDealDamage(_explosionRadius);  
         }
 
+        protected override void OnExplode(HitContext context)
+        {
+            //RPC_PlaySound("teargas", transform.position, 40);
+        }
 
         protected override void OnDrawGizmos()
         {

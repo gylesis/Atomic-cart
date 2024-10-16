@@ -1,6 +1,7 @@
 ﻿using Dev.BotsLogic;
 using Dev.Levels;
 using Dev.PlayerLogic;
+using UniRx;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -19,6 +20,17 @@ namespace Dev.Weapons.Guns
             Init(moveDirection, force, damage);
         }
 
+        protected override void LoadLateInjection()
+        {
+            base.LoadLateInjection();
+            _hitsProcessor.Explode.Subscribe(OnExplode).AddTo(this);
+        }
+
+        protected virtual void OnExplode(HitContext context)
+        {
+            RPC_PlaySound("explosion", transform.position, 40);
+        }
+        
         public void SetExplosionRadius(float explosionRadius)
         {
             _explosionRadius = explosionRadius;
@@ -26,32 +38,28 @@ namespace Dev.Weapons.Guns
         
         protected override void OnPlayerHit(PlayerCharacter playerCharacter)
         {
-            base.OnPlayerHit(playerCharacter);
             ExplodeAndDealDamage(_explosionRadius);
         }
 
         protected override void OnBotHit(Bot bot)
         {
-            base.OnBotHit(bot);
             ExplodeAndDealDamage(_explosionRadius);
         }
 
         protected override void OnDummyHit(DummyTarget dummyTarget)
         {
-            base.OnDummyHit(dummyTarget);
             ExplodeAndDealDamage(_explosionRadius);
         }
 
         protected override void OnObstacleHit(Obstacle obstacle)
         {
-            base.OnObstacleHit(obstacle);
             ExplodeAndDealDamage(_explosionRadius);
         }
 
         protected void ExplodeAndDealDamage(float explosionRadius)
         {   
             Vector3 pos = transform.position;   
-
+            
             ProcessExplodeContext explodeContext = new ProcessExplodeContext(Owner, explosionRadius, Damage, pos, false);
             
             _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);

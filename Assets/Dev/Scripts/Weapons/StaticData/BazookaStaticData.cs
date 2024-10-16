@@ -12,4 +12,5 @@ namespace Dev.Weapons.StaticData
 
         public float FirePushPower => _firePushPower;
     }
+    
 }

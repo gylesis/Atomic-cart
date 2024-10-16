@@ -1,7 +1,4 @@
-﻿
-using UnityEngine;
-
-namespace Dev.Infrastructure
+﻿namespace Dev.Infrastructure
 {
     public class GameSettingsProvider
     {

@@ -1,6 +1,4 @@
-﻿using System;
-using Dev.Utils;
-using UniRx;
+﻿using Dev.Utils;
 using UnityEngine;
 using UnityEngine.Pool;
 using Zenject;
@@ -9,7 +7,7 @@ namespace Dev.Sounds
 {
     public class SoundController : MonoBehaviour
     {
-        [SerializeField] private AudioSource[] _audioSources;
+        [SerializeField] private AudioSource _audioSource;
         [SerializeField] private AudioSource _systemSoundSource;
         [SerializeField] private Transform _soundsParent;
             
@@ -22,18 +20,28 @@ namespace Dev.Sounds
         private void Construct(SoundStaticDataContainer soundStaticDataContainer)
         {
             _soundStaticDataContainer = soundStaticDataContainer;
+        }
+
+        private void Start()
+        {
             Instance = this;
-            _soundPool = new ObjectPool<AudioSource>(CreateFunc, actionOnRelease: ActionOnRelease, defaultCapacity: 8);
+            _soundPool = new ObjectPool<AudioSource>(CreateFunc, actionOnRelease: ActionOnRelease, actionOnGet: ActionOnGet, defaultCapacity: 8);
+        }
+
+        private void ActionOnGet(AudioSource audioSource)
+        {
+            audioSource.gameObject.SetActive(true);
         }
 
         private void ActionOnRelease(AudioSource audioSource)
         {
             audioSource.Stop();
+            audioSource.gameObject.SetActive(false);
         }
 
         private AudioSource CreateFunc()
         {
-            AudioSource prev = _audioSources[0];
+            AudioSource prev = _audioSource;
             
             AudioSource instance = Instantiate(prev, _soundsParent);
             instance.playOnAwake = false;

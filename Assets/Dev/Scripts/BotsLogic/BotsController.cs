@@ -98,7 +98,7 @@ namespace Dev.BotsLogic
                 id = $"{id[^4]}{id[^3]}{id[^2]}{id[^1]}";
                 
                 _sessionStateService.RPC_AddPlayer(bot.Object.Id, $"Bot{id}", true);
-                _healthObjectsService.RegisterObject(bot.Object, 100);
+                _healthObjectsService.RegisterObject(bot.Object.Id, 100);
                 
                 SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(bot);
                 
@@ -143,7 +143,7 @@ namespace Dev.BotsLogic
 
             Extensions.Delay(despawnDelay, destroyCancellationToken, () =>
             {
-                _healthObjectsService.RPC_UnregisterObject(bot.Object);
+                _healthObjectsService.UnRegisterObject(bot.Object.Id);
                 
                 AliveBots.Remove(bot);
                 Runner.Despawn(bot.Object);

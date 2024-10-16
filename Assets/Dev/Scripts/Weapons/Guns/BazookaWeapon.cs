@@ -14,6 +14,7 @@ namespace Dev.Weapons.Guns
         public float ExplosionRadius => Data.ExplosionRadius;
         public float FirePushPower => Data.FirePushPower;
 
+
         public override void Shoot(Vector2 direction, float power = 1)
         {
             //PushForcePlayer(direction);

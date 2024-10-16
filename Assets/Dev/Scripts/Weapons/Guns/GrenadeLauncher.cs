@@ -9,9 +9,9 @@ namespace Dev.Weapons.Guns
 {
     public class GrenadeLauncher : ProjectileWeapon<GrenadeLauncherStaticData>
     {
-        private float GrenadeExplosionRadius => GameSettingsProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeExplosionRadius;
-        private float GrenadeFlyTime => GameSettingsProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeFlyTime;
-        private float DetonateTime => GameSettingsProvider.GameSettings.WeaponStaticDataContainer.GetData<GrenadeLauncherStaticData>().GrenadeDetonateTime;
+        private float GrenadeExplosionRadius => Data.GrenadeExplosionRadius;
+        private float GrenadeFlyTime => Data.GrenadeFlyTime;
+        private float DetonateTime => Data.GrenadeDetonateTime;
         
         
         public override void Shoot(Vector2 direction, float power = 1)

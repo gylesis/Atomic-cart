@@ -24,6 +24,8 @@ namespace Dev
         
         public override void Spawned()
         {
+            base.Spawned();
+            
             if (HasStateAuthority)
             {
                 _cameraService.SetMainCameraState(false);

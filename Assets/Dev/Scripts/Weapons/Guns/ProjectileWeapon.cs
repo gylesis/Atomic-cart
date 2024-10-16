@@ -18,14 +18,20 @@ namespace Dev.Weapons.Guns
     {
         [SerializeField] private float _soundRadius = 40;
 
-        public TProjectileType Data => GameSettingsProvider.GameSettings.WeaponStaticDataContainer
-            .GetData<TProjectileType>();
+        public TProjectileType Data { get; protected set; }
         
         public float ProjectileSpeed => Data.ProjectileSpeed;
 
         public Projectile ProjectilePrefab => Data.ProjectilePrefab;
 
         protected List<SpawnedProjectileContext> _aliveProjectiles = new List<SpawnedProjectileContext>();
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            Data = GameSettingsProvider.GameSettings.WeaponStaticDataContainer.GetData<TProjectileType>();
+        }
 
         public override void FixedUpdateNetwork()
         {
@@ -112,7 +118,6 @@ namespace Dev.Weapons.Guns
         /// <param name="projectile"></param>
         protected virtual void OnProjectileExpired(Projectile projectile)
         {
-            SpawnSoundOnDestroyProjectile(projectile);
             SpawnVFXOnDestroyProjectile(projectile);
             DestroyProjectile(projectile);
         }
@@ -138,6 +143,8 @@ namespace Dev.Weapons.Guns
         /// <param name="projectile"></param>
         private void DestroyProjectile(Projectile projectile, float delay = 0)
         {
+            SpawnSoundOnDestroyProjectile(projectile);
+            
             DOVirtual.DelayedCall(delay, () =>
             {
                 var exists = _aliveProjectiles.Exists(x => x.Projectile == projectile);
