@@ -1,3 +1,4 @@
+using System;
 using Dev.Sounds;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
@@ -31,7 +32,8 @@ namespace Dev.Infrastructure
             Container.BindInterfacesAndSelfTo<AtomicLogger>().AsSingle().NonLazy();
             
             Container.Bind<InternetChecker>().AsSingle().NonLazy();
-            
+
+            BindSaveLoadScheme();
             Container.Bind<SaveLoadService>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<AuthService>().AsSingle().NonLazy();
             
@@ -43,6 +45,18 @@ namespace Dev.Infrastructure
             Container.Bind<GameSettings>().FromInstance(_gameSettings).AsSingle();
 
             Container.Bind<DiInjecter>().AsSingle().NonLazy();
+        }
+
+        private void BindSaveLoadScheme()
+        {
+            if (_gameSettings.IsDebugMode)
+            {
+                Container.Bind<SaveLoadService.ISaveLoadScheme>().To<SaveLoadService.LocalSaveLoadScheme>().WhenInjectedInto<SaveLoadService>();
+            }
+            else
+            {
+                Container.Bind<SaveLoadService.ISaveLoadScheme>().To<SaveLoadService.CloudSaveLoadScheme>().WhenInjectedInto<SaveLoadService>();
+            }
         }
     }
 }

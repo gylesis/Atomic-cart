@@ -78,9 +78,8 @@ namespace Dev.Infrastructure
             bot = _botsController.GetBot(sessionPlayer.Id);
             return bot != null;
         }
-        
-        [Rpc]
-        public void RPC_AddPlayer(NetworkId id, string name, bool isBot)
+
+        public void AddPlayer(NetworkId id, string name, bool isBot)
         {
             SessionPlayer sessionPlayer = new SessionPlayer(id, name, isBot, isBot ? PlayerRef.None : _playersDataService.GetPlayerBase(id).Object.InputAuthority);
             
@@ -88,45 +87,15 @@ namespace Dev.Infrastructure
             Debug.Log($"[RPC] Session player added {name}. Count {Players.Count}");
         }
         
-        public void AddPlayer(NetworkId id, string name, bool isBot)
+        public void RemovePlayer(NetworkId id)
         {
-            SessionPlayer sessionPlayer = new SessionPlayer(id, name, isBot, isBot ? PlayerRef.None : _playersDataService.GetPlayerBase(id).Object.InputAuthority);
-            
-            Players.Add(sessionPlayer);
-            Debug.Log($"Session player added {name}. Count {Players.Count}");
+            RPC_RemovePlayer(id);
         }
         
-        /*[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_ChangePlayerId(PlayerRef playerRef, NetworkId newId)
-        {
-            SessionPlayer sessionPlayer = GetSessionPlayer(playerRef);
-    
-            SessionPlayer newSessionPlayer = new SessionPlayer(newId, sessionPlayer.Name, sessionPlayer.IsBot, sessionPlayer.TeamSide,
-                sessionPlayer.Owner);
-
-            SessionPlayer player = Players.First(x => x.Owner == playerRef);
-
-            Players.Set(Players.IndexOf(player), newSessionPlayer);
-        } */  
-
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_RemovePlayer(NetworkId id)
-        {
-            bool hasPlayer = Players.Any(x => x.Id == id);
-
-            if (hasPlayer)
-            {
-                SessionPlayer sessionPlayer = Players.FirstOrDefault(x => x.Id == id);
-
-                Players.Remove(sessionPlayer);
-            }
-        }
-
         public bool DoPlayerExist(PlayerRef playerRef)
         {
             return Players.Any(x => x.Owner == playerRef);
         }
-        
         
         public void SetEnemiesFreezeState(bool toFreeze)
         {
@@ -168,7 +137,29 @@ namespace Dev.Infrastructure
                     _playersDataService.PlayersSpawner.RespawnPlayerCharacter(player.Object.InputAuthority);
                 }
             }
-            
         }
+        
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_AddPlayer(NetworkId id, string name, bool isBot)
+        {
+            SessionPlayer sessionPlayer = new SessionPlayer(id, name, isBot, isBot ? PlayerRef.None : _playersDataService.GetPlayerBase(id).Object.InputAuthority);
+            
+            Players.Add(sessionPlayer);
+            Debug.Log($"[RPC] Session player added {name}. Count {Players.Count}");
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_RemovePlayer(NetworkId id)
+        {
+            bool hasPlayer = Players.Any(x => x.Id == id);
+
+            if (hasPlayer)
+            {
+                SessionPlayer sessionPlayer = Players.FirstOrDefault(x => x.Id == id);
+
+                Players.Remove(sessionPlayer);
+            }
+        }
+        
     }
 }

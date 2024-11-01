@@ -37,7 +37,7 @@ namespace Dev.Infrastructure
         [SerializeField] private AirStrikeController _airStrikeController;
         [SerializeField] private TearGasService _tearGasService;
 
-        [FormerlySerializedAs("_gamesState")] [SerializeField] private SessionStateService sessionStateService;
+        [SerializeField] private SessionStateService _sessionStateService;
 
         [SerializeField] private PlayersScoreService _playersScoreService;
         [SerializeField] private KillerFeedNotifyService _killerFeedNotifyService;
@@ -59,7 +59,7 @@ namespace Dev.Infrastructure
 
             Container.Bind<WorldTextProvider>().FromInstance(_worldTextProvider).AsSingle();
 
-            Container.Bind<SessionStateService>().FromInstance(sessionStateService).AsSingle();
+            Container.Bind<SessionStateService>().FromInstance(_sessionStateService).AsSingle();
             Container.Bind<PlayersScoreService>().FromInstance(_playersScoreService).AsSingle();
             
             BindPlayer();

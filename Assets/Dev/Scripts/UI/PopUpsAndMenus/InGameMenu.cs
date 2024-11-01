@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Fusion;
@@ -11,6 +12,7 @@ namespace Dev.UI.PopUpsAndMenus
     {
         [SerializeField] private DefaultReactiveButton _exitButton;
         [SerializeField] private TextReactiveButton _changeCharacterClassButton;
+        [SerializeField] private DefaultReactiveButton _settingsButton;
         
         private PlayerCharacterClassChangeService _playerCharacterClassChangeService;
         private NetworkRunner _networkRunner;
@@ -19,8 +21,17 @@ namespace Dev.UI.PopUpsAndMenus
         {
             base.Awake();
 
-            _exitButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitButtonClicked()));
-            _changeCharacterClassButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnChangeCharacterClassButtonClicked()));
+            _settingsButton.Clicked.Subscribe((unit => OnSettingsButtonClicked())).AddTo(this);
+            _exitButton.Clicked.Subscribe(unit => OnExitButtonClicked().Forget()).AddTo(this);
+            _changeCharacterClassButton.Clicked.Subscribe(unit => OnChangeCharacterClassButtonClicked()).AddTo(this);
+
+            _procceedButton.Clicked.Subscribe((unit => OnResumeButtonClicked())).AddTo(this);
+        }
+
+        private void OnResumeButtonClicked()
+        {
+            PopUpService.HidePopUp(this);
+            PopUpService.ShowPopUp<HUDMenu>();
         }
 
         [Inject]
@@ -29,7 +40,6 @@ namespace Dev.UI.PopUpsAndMenus
             _networkRunner = networkRunner;
             _playerCharacterClassChangeService = playerCharacterClassChangeService;
         }
-        
 
         private void OnChangeCharacterClassButtonClicked()
         {
@@ -48,23 +58,28 @@ namespace Dev.UI.PopUpsAndMenus
             
         }
 
-        private void OnExitButtonClicked()
+        private void OnSettingsButtonClicked()
+        {
+            PopUpService.HidePopUp(this);
+            PopUpService.ShowPopUp<SettingsMenu>((() =>
+            {
+                PopUpService.ShowPopUp<InGameMenu>();
+                PopUpService.HidePopUp<SettingsMenu>();
+            }));
+        }
+
+        private async UniTask OnExitButtonClicked()
         {
             var decidePopUp = PopUpService.ShowPopUp<DecidePopUp>();
             
             decidePopUp.SetTitle("Are you sure want to exit?");
-            decidePopUp.AddCallbackOnDecide(OnDecide);
 
-            void OnDecide(bool isYes)
-            {
-                PopUpService.HidePopUp<DecidePopUp>();
+            bool answer = await decidePopUp.WaitAnswer();
 
-                if (isYes)
-                {
-                    MainSceneConnectionManager.Instance.Disconnect();
-                }
-            }
+            PopUpService.HidePopUp<DecidePopUp>();
 
+            if (answer) 
+                MainSceneConnectionManager.Instance.Disconnect();
         }
     }
 }

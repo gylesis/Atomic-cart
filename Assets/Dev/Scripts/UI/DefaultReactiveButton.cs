@@ -37,6 +37,11 @@ namespace Dev.UI
                 .Subscribe((_ => { Clicked.OnNext(Unit.Default); }));
         }
 
+        public void IsInteractable(bool value)
+        {
+            _canvasGroup.interactable = value;
+        }
+
         public virtual void Enable()
         {
             _canvasGroup.interactable = true;

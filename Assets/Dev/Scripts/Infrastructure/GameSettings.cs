@@ -32,9 +32,11 @@ namespace Dev.Infrastructure
 
         [Header("Debug")]
         [SerializeField] private MapName _firstLevelName;
-
+        [SerializeField] private bool _isDebugMode;
 
         [SerializeField] private float _barrelsRespawnCooldown = 5f;
+
+        public bool IsDebugMode => _isDebugMode;
 
         public float BarrelsRespawnCooldown => _barrelsRespawnCooldown;
         public BotsConfig BotsConfig => _botsConfig;

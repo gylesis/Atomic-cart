@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dev.Levels;
-using Dev.Sounds;
 using Dev.UI.PopUpsAndMenus;
+using Dev.Utils;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
-using Random = UnityEngine.Random;
 
 namespace Dev.Infrastructure
 {
@@ -23,7 +22,7 @@ namespace Dev.Infrastructure
 
         public static MainSceneConnectionManager Instance { get; private set; }
 
-        private void Awake()
+        protected override void Awake()
         {
             if (Instance != null)
             {
@@ -93,20 +92,19 @@ namespace Dev.Infrastructure
 
         public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
 
-        public async void
-            OnPlayerJoined(NetworkRunner runner,
-                           PlayerRef player) // for new player after lobby started. invokes if game starts from Lobby
+        // for new player after lobby started. invokes if game starts from Lobby
+        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
         {
-            Debug.Log($"Someone's late connection to the game {player}");
+            AtomicLogger.Log($"Someone's late connection to the game {player}");
         }
 
-        public async void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
-            Debug.Log($"On Player Left");
+            AtomicLogger.Log($"On Player Left");
 
             if (runner.IsSharedModeMasterClient)
             {
-                Debug.Log($"Despawning player");
+                AtomicLogger.Log($"Despawning player");
                 _playersSpawner.DespawnPlayer(player, true);
             }
         }
@@ -117,14 +115,14 @@ namespace Dev.Infrastructure
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
-            Debug.Log($"On Shutdown: {shutdownReason}");
+            AtomicLogger.Log($"On Shutdown: {shutdownReason}");
         }
 
         public async void OnConnectedToServer(NetworkRunner runner) // invokes if game starts from Main scene
         {
             PlayerRef playerRef = runner.LocalPlayer;
 
-            Debug.Log($"Someone connected to the game, Spawning player... {playerRef}");
+            AtomicLogger.Log($"Someone connected to the game, Spawning player... {playerRef}");
 
             await Task.Delay(2000);
 
@@ -146,7 +144,7 @@ namespace Dev.Infrastructure
 
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
         {
-            Debug.Log($"On Host migration");
+            AtomicLogger.Log($"On Host migration");
         }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key,
@@ -158,18 +156,25 @@ namespace Dev.Infrastructure
 
         public async void OnSceneLoadDone(NetworkRunner runner)
         {
-            Debug.Log($"OnSceneLoadDone");
+            AtomicLogger.Log($"OnSceneLoadDone");
 
             if (runner.IsSharedModeMasterClient)
             {
-                LevelService.Instance.LoadLevel("NightCity");
-               // LevelService.Instance.LoadLevel(LobbyConnector.Instance.NetworkRunner.SessionInfo.Properties["map"]);
-
-                //await Task.Delay(2000); // TODO wait until all players load the scene
+                if (_gameSettings.IsDebugMode)
+                {
+                    await SaveLoadService.Instance.Load();
+                    LevelService.Instance.LoadLevel("NightCity");
+                }
+                else
+                {
+                     LevelService.Instance.LoadLevel(LobbyConnector.Instance.NetworkRunner.SessionInfo.Properties["map"]);
+                     await Task.Delay(2000); // TODO wait until all players load the scene
+                }
+                
             }
             
             PlayerRef player = runner.LocalPlayer;
-            _playersSpawner.ChooseCharacterClass(player);
+            _playersSpawner.AskCharacterAndSpawn(player);
             PlayerManager.LoadingPlayers.Remove(player);
         }
 

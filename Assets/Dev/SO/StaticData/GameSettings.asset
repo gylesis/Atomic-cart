@@ -91,5 +91,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _firstLevelName: 1
+  _isDebugMode: 0
   _barrelsRespawnCooldown: 5
   Radius: 2

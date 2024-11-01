@@ -15,24 +15,12 @@ namespace Dev.Levels
         public int Health => _health;
         public override DamagableType DamageId => DamagableType.ObstacleWithHealth;
 
-        protected HealthObjectsService _healthObjectsService;
         protected HitsProcessor _hitsProcessor;
 
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, HitsProcessor hitsProcessor)
+        private void Construct(HitsProcessor hitsProcessor)
         {
             _hitsProcessor = hitsProcessor;
-            _healthObjectsService = healthObjectsService;
-        }
-
-        public override void Despawned(NetworkRunner runner, bool hasState)
-        {
-            base.Despawned(runner, hasState);
-            
-            if (Runner.IsSharedModeMasterClient)
-            {
-                _healthObjectsService.UnRegisterObject(Object.Id);
-            }
         }
 
         protected override void CorrectState()

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Dev.Infrastructure;
 using Fusion;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 namespace Dev.Levels
@@ -55,7 +57,9 @@ namespace Dev.Levels
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
-            if(runner.IsSharedModeMasterClient == false || _levelService.CurrentLevel == null) return;
+            Debug.Log($"Players {runner.ActivePlayers.Count()}");
+                
+            if(runner.IsSharedModeMasterClient || _levelService.CurrentLevel == null) return;
 
             foreach (var obstacle in _levelService.CurrentLevel.Obstacles)
             {

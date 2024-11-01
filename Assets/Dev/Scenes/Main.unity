@@ -436,74 +436,6 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 54623241}
---- !u!1 &90873901
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 90873904}
-  - component: {fileID: 90873903}
-  - component: {fileID: 90873902}
-  m_Layer: 0
-  m_Name: Test
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &90873902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 90873901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95a396da23964daba633740e01c1c4e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _IsActive:
-    _value: 1
-  _pos: {fileID: 90873904}
-  _radius: 15
-  _cast: 0
---- !u!114 &90873903
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 90873901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 2566173847
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 90873902}
---- !u!4 &90873904
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 90873901}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -28.81, y: 5.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &101580042
 GameObject:
   m_ObjectHideFlags: 0
@@ -3101,7 +3033,7 @@ MonoBehaviour:
   _hitsProcessor: {fileID: 1690248805}
   _airStrikeController: {fileID: 1928949168}
   _tearGasService: {fileID: 1812458420}
-  sessionStateService: {fileID: 1354313790}
+  _sessionStateService: {fileID: 1354313790}
   _playersScoreService: {fileID: 790960263}
   _killerFeedNotifyService: {fileID: 949676877}
 --- !u!1 &1090329512
@@ -5414,8 +5346,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2021044896}
-  - component: {fileID: 2021044895}
-  - component: {fileID: 2021044897}
   m_Layer: 0
   m_Name: Artillery_explosion
   m_TagString: Untagged
@@ -5423,23 +5353,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &2021044895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2021044894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95a396da23964daba633740e01c1c4e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _IsActive:
-    _value: 1
-  _pos: {fileID: 0}
-  _radius: 2
-  _cast: 0
 --- !u!4 &2021044896
 Transform:
   m_ObjectHideFlags: 0
@@ -5450,7 +5363,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -71.33, y: -9.94, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1090329513}
@@ -5458,24 +5371,6 @@ Transform:
   - {fileID: 274015266}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2021044897
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2021044894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 412637662
-  ObjectInterest: 1
-  Flags: 1
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 2021044895}
 --- !u!1 &2082067706
 GameObject:
   m_ObjectHideFlags: 0
@@ -6597,4 +6492,3 @@ SceneRoots:
   - {fileID: 1395464432}
   - {fileID: 2021044896}
   - {fileID: 219659063}
-  - {fileID: 90873904}

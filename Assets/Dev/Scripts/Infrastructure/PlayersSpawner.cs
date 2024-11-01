@@ -30,12 +30,12 @@ namespace Dev.Infrastructure
         public Subject<PlayerRef> CharacterDeSpawned { get; } = new Subject<PlayerRef>();
         public Subject<PlayerRef> PlayerBaseDeSpawned { get; } = new Subject<PlayerRef>();
 
-        [Networked, Capacity(10)] private NetworkDictionary<PlayerRef, PlayerBase> PlayersBase { get; }
+        [Networked, Capacity(10)] private NetworkDictionary<PlayerRef, PlayerBase> PlayersBaseDictionary { get; }
 
-        public List<PlayerCharacter> PlayersCharacters => PlayersBase.Select(x => x.Value.Character).ToList();
-        public List<PlayerBase> PlayersBases => PlayersBase.Select(x => x.Value).ToList();
+        public List<PlayerCharacter> PlayersCharacters => PlayersBaseDictionary.Select(x => x.Value.Character).ToList();
+        public List<PlayerBase> PlayersBases => PlayersBaseDictionary.Select(x => x.Value).ToList();
 
-        public int PlayersCount => PlayersBase.Count;
+        public int PlayersCount => PlayersBaseDictionary.Count;
 
         private Dictionary<PlayerRef, List<NetworkObject>> _playerServices =
             new Dictionary<PlayerRef, List<NetworkObject>>();
@@ -60,18 +60,13 @@ namespace Dev.Infrastructure
             _teamsService = teamsService;
         }
 
-        public void ChooseCharacterClass(PlayerRef playerRef)
-        {
-            GetCharacterClassAndSpawn(playerRef);
-        }
-
-        private void GetCharacterClassAndSpawn(PlayerRef playerRef)
+        public void AskCharacterAndSpawn(PlayerRef playerRef)
         {
             var characterChooseMenu = _popUpService.ShowPopUp<CharacterChooseMenu>();
 
             characterChooseMenu.StartChoosingCharacter((characterClass =>
             {
-                SpawnPlayerByCharacter(characterClass, playerRef, Runner);
+                SpawnByCharacter(characterClass, playerRef, Runner);
 
                 Extensions.Delay(0.5f, destroyCancellationToken, () =>
                 {
@@ -81,7 +76,7 @@ namespace Dev.Infrastructure
             }));
         }
 
-        private void SpawnPlayerByCharacter(CharacterClass characterClass, PlayerRef playerRef,
+        private void SpawnByCharacter(CharacterClass characterClass, PlayerRef playerRef,
                                             NetworkRunner networkRunner)
         {
             Debug.Log($"Player {playerRef} chose {characterClass}");
@@ -99,7 +94,7 @@ namespace Dev.Infrastructure
             playerBase.Object.AssignInputAuthority(playerRef);
             playerBase.CharacterClass = characterClass;
             
-            RPC_AddPlayer(playerRef, playerBase);
+            RPC_AddPlayer(playerRef, SaveLoadService.Instance.Profile.Nickname, playerBase);
             
             _healthObjectsService.RegisterPlayer(playerRef);
 
@@ -120,22 +115,22 @@ namespace Dev.Infrastructure
             {
                 NetworkId id = playerRef.ToNetworkId();
 
-                _sessionStateService.RPC_RemovePlayer(id);
+                _sessionStateService.RemovePlayer(id);
                 _teamsService.RPC_RemoveFromTeam(playerRef.ToNetworkId());
                 _healthObjectsService.UnRegisterObject(id);
-                PlayersBase.Remove(playerRef);
+                PlayersBaseDictionary.Remove(playerRef);
                 
                 PlayerBaseDeSpawned.OnNext(playerRef);
             }
             else
             {
-                PlayerCharacter playerCharacter = PlayersBase[playerRef].Character;
+                PlayerCharacter playerCharacter = PlayersBaseDictionary[playerRef].Character;
 
-                //_healthObjectsService.RPC_UnregisterObject(playerCharacter.Object); // TODO
+                //_healthObjectsService.UnRegisterObject(playerCharacter.Object); // TODO
                 
                 Runner.Despawn(playerCharacter.Object);
 
-                PlayersBase[playerRef].Character = null;
+                PlayersBaseDictionary[playerRef].Character = null;
                 CharacterDeSpawned.OnNext(playerRef);
             }
 
@@ -171,9 +166,9 @@ namespace Dev.Infrastructure
             NetworkObject playerNetObj = playerCharacter.Object;
             
             RPC_AssignPlayerCharacter(playerRef, playerCharacter, characterClass);
-            PlayersBase[playerRef].Character = playerCharacter;
-            PlayersBase[playerRef].CharacterClass = characterClass;
-            PlayersBase[playerRef].PlayerController.IsCastingMode = false;
+            PlayersBaseDictionary[playerRef].Character = playerCharacter;
+            PlayersBaseDictionary[playerRef].CharacterClass = characterClass;
+            PlayersBaseDictionary[playerRef].PlayerController.IsCastingMode = false;
             
             playerBase.AbilityCastController.ResetAbility();
             SetAbilityType(playerBase, characterClass);
@@ -208,14 +203,14 @@ namespace Dev.Infrastructure
         private void RPC_AssignPlayerCharacter(PlayerRef playerRef, PlayerCharacter playerCharacter,
                                                CharacterClass characterClass)
         {
-            PlayersBase[playerRef].Character = playerCharacter;
-            PlayersBase[playerRef].CharacterClass = characterClass;
+            PlayersBaseDictionary[playerRef].Character = playerCharacter;
+            PlayersBaseDictionary[playerRef].CharacterClass = characterClass;
         }
 
         public void ChangePlayerCharacter(PlayerRef playerRef, CharacterClass newCharacterClass)
         {   
             DespawnPlayer(playerRef, false);
-            PlayerCharacter playerCharacter = SpawnCharacter(playerRef, PlayersBase[playerRef], newCharacterClass);
+            PlayerCharacter playerCharacter = SpawnCharacter(playerRef, PlayersBaseDictionary[playerRef], newCharacterClass);
             UpdatePlayerCharacter(playerCharacter, playerRef);
             SetCharacterTeamBannerColor(playerRef);
         }
@@ -256,12 +251,11 @@ namespace Dev.Infrastructure
         }
 
         [Rpc]
-        private void RPC_AddPlayer(PlayerRef playerRef, PlayerBase playerBase)
+        private void RPC_AddPlayer(PlayerRef playerRef, string nickname, PlayerBase playerBase)
         {
-            PlayersBase.Add(playerRef, playerBase);
+            PlayersBaseDictionary.Add(playerRef, playerBase);
             
-            //_sessionStateService.AddPlayer(playerRef.ToNetworkId(), $"{PlayersLocalDataLinker.Instance.GetNickname(playerRef)}", false, _teamsService.GetUnitTeamSide(playerRef));
-            _sessionStateService.AddPlayer(playerRef.ToNetworkId(), $"{AuthService.Nickname}", false);
+            _sessionStateService.AddPlayer(playerRef.ToNetworkId(), $"{nickname}", false);
         }
 
         private void SetCharacterTeamBannerColor(PlayerRef playerRef)
@@ -342,12 +336,12 @@ namespace Dev.Infrastructure
 
         public PlayerBase GetPlayerBase(PlayerRef playerRef)
         {
-            return PlayersBase[playerRef];
+            return PlayersBaseDictionary[playerRef];
         }
 
         public PlayerBase GetPlayerBase(NetworkId id)
         {
-            return PlayersBase.First(x => x.Value.Object.StateAuthority.ToNetworkId() == id).Value;
+            return PlayersBaseDictionary.First(x => x.Value.Object.StateAuthority.ToNetworkId() == id).Value;
         }
 
         public CameraController GetPlayerCameraController(PlayerRef playerRef)

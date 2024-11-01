@@ -24,7 +24,7 @@ MonoBehaviour:
   _projectilePrefab: {fileID: 1232863737919391639, guid: 1fc8abe7c0163ce429ccb687612f4a0e, type: 3}
   _grenadeExplosionRadius: 3
   _grenadeFlyTime: 1
-  _grenadeDetonateTime: 0.5
+  _grenadeDetonateTime: 0.3
   _grenadeFlyFunction:
     serializedVersion: 2
     m_Curve:

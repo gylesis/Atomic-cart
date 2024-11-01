@@ -97,7 +97,7 @@ namespace Dev.BotsLogic
                 string id = $"{bot.GetHashCode()}";
                 id = $"{id[^4]}{id[^3]}{id[^2]}{id[^1]}";
                 
-                _sessionStateService.RPC_AddPlayer(bot.Object.Id, $"Bot{id}", true);
+                _sessionStateService.AddPlayer(bot.Object.Id, $"Bot{id}", true);
                 _healthObjectsService.RegisterObject(bot.Object.Id, 100);
                 
                 SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(bot);
@@ -128,7 +128,7 @@ namespace Dev.BotsLogic
 
         public void DespawnBot(Bot bot, bool spawnAfterDeath = true, float despawnDelay = 1) // TODO refactor, need to make pool of bots
         {
-            _sessionStateService.RPC_RemovePlayer(bot.Object.Id);
+            _sessionStateService.RemovePlayer(bot.Object.Id);
             var hasTeam = _sessionStateService.TryGetPlayerTeam(bot.BotData.SessionPlayer, out var teamSide);
 
             if (!hasTeam)

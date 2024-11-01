@@ -1,8 +1,13 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.UI;
 using Dev.Utils;
 using TMPro;
+using Unity.Services.Authentication;
+using Unity.Services.CloudSave;
+using Unity.Services.CloudSave.Models;
+using Unity.Services.CloudSave.Models.Data.Player;
 using Unity.Services.Core;
 using UnityEngine;
 using Zenject;
@@ -37,29 +42,19 @@ namespace Dev
             Curtains.Instance.SetText("Initializing services");
             Curtains.Instance.ShowWithDotAnimation(0);
 
-            await UnityServices.InitializeAsync();
-            AtomicLogger.Log($"UGS initialized with state: {UnityServices.State}", AtomicConstants.LogTags.Networking);
-
-            Curtains.Instance.SetText("Authorizing");
-            Curtains.Instance.ShowWithDotAnimation(0);
-            
-            await _authService.Auth();
-            
-            /*DecidePopUp decidePopUp = PopUpService.Instance.ShowPopUp<DecidePopUp>();
-            decidePopUp.SetTitle("Sign in anonymosly?");
-            bool answer = await decidePopUp.WaitAnswer();
-
-            PopUpService.Instance.HidePopUp(decidePopUp);
-            
-            if (answer)
+            if (UnityServices.State == ServicesInitializationState.Uninitialized)
             {
+                await UnityServices.InitializeAsync();
+                AtomicLogger.Log($"UGS initialized with state: {UnityServices.State}", AtomicConstants.LogTags.Networking);
+
+                Curtains.Instance.SetText("Authorizing");
+                Curtains.Instance.ShowWithDotAnimation(0);
+
                 await _authService.Auth();
+                await _saveLoadService.Load();
             }
-            else
-            {
-                Application.Quit();
-                return;
-            }*/
+           
+            AtomicLogger.Log($"Player ID {AuthenticationService.Instance.PlayerId}", AtomicConstants.LogTags.Networking);
 
             if (_authService.IsNicknameNotSet)
             {
@@ -81,19 +76,12 @@ namespace Dev
                 _nicknameInput.interactable = false;
                 _login.gameObject.SetActive(false);
                 
-                await _authService.UpdateNickname(_nicknameInput.text);
-               
-            }
-            else
-            {
-                await _authService.UpdateNickname(default);
+                await _authService.UpdateNickname(_nicknameInput.text.Trim());
             }
 
-            _nicknameInput.text = $"{AuthService.Nickname}";
+            _nicknameInput.text = $"{SaveLoadService.Instance.Profile.Nickname}";
             
             Curtains.Instance.SetText("Loading data...");
-
-            await _saveLoadService.Load().AsUniTask().AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
 
             LobbyConnector lobbyConnector = Instantiate(_lobbyConnector);
             lobbyConnector.ConnectFromBootstrap();

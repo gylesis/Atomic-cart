@@ -9,6 +9,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
+using Zenject;
 
 namespace Dev.Infrastructure
 {
@@ -27,6 +28,7 @@ namespace Dev.Infrastructure
 
         private List<SessionUIView> _sessionUIViews = new List<SessionUIView>(8);
         private NetworkRunner _networkRunner;
+        private AuthService _authService;
 
         private void Awake()
         {
@@ -35,6 +37,12 @@ namespace Dev.Infrastructure
             
             _sessionUIViewPool =
                 new ObjectPool<SessionUIView>(CreateFunc, ActionOnGet, ActionOnRelease);
+        }
+
+        [Inject]
+        private void Construct(AuthService authService)
+        {
+            _authService = authService;
         }
 
         private void ActionOnRelease(SessionUIView sessionUIView)
@@ -75,7 +83,7 @@ namespace Dev.Infrastructure
             _networkRunner.AddCallbacks(this);
 
             startGameArgs.GameMode = GameMode.Shared;
-            startGameArgs.SessionName = $"{levelName} : {mapType}";
+            startGameArgs.SessionName = $"{SaveLoadService.Instance.Profile.Nickname}";
             startGameArgs.SceneManager = _networkRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
             Scene activeScene = SceneManager.GetActiveScene();
             startGameArgs.Scene = SceneRef.FromIndex(activeScene.buildIndex);

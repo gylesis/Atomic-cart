@@ -68,6 +68,8 @@ namespace Dev.Weapons.Guns
 
         private void OnHit(HitContext hitContext)
         {
+            if(Object.IsValid == false) return;
+            
             if (hitContext.DamagableType is DamagableType.Obstacle or DamagableType.ObstacleWithHealth)
             {
                 OnObstacleHit(hitContext.GameObject.GetComponent<Obstacle>());

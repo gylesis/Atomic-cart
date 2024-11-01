@@ -317,7 +317,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929973, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Alpha
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8569760701012929973, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
       propertyPath: m_Interactable
@@ -453,6 +453,7 @@ MonoBehaviour:
   _smoothFadeInOutDuration: 0.2
   _exitButton: {fileID: 8885389197734655940}
   _changeCharacterClassButton: {fileID: 6020718266384095505}
+  _settingsButton: {fileID: 1989162088735261222}
 --- !u!224 &7339744565891935010 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8569760701012929979, guid: cf95be09c01307c4e9b41d29c57582e3, type: 3}
@@ -887,3 +888,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6289920138761549047, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
   m_PrefabInstance: {fileID: 6892388851944744517}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1989162088735261222 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4916878860130853987, guid: 703724ee26e2f9845b52864283b48df0, type: 3}
+  m_PrefabInstance: {fileID: 6892388851944744517}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3619c3b94ccb453696d0b3c256b92f2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

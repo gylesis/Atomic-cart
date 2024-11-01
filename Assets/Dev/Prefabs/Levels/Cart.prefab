@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d04d67a09e7c022478b5da6f9bdf1f71, type: 3}
   m_Color: {r: 0.3494126, g: 0.49056602, b: 0.460047, a: 1}
   m_FlipX: 0
@@ -316,9 +316,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1155065645
-  m_SortingLayer: 1
-  m_SortingOrder: 4
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d77f3ca7178c0e149ac079a651309751, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -376,6 +376,7 @@ GameObject:
   - component: {fileID: 8355606218816091895}
   - component: {fileID: 2810621541859984698}
   - component: {fileID: 1434391499781424851}
+  - component: {fileID: 2599041139878733459}
   m_Layer: 7
   m_Name: Cart
   m_TagString: Untagged
@@ -420,6 +421,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 8355606218816091895}
   - {fileID: 2810621541859984698}
+  - {fileID: 2599041139878733459}
 --- !u!114 &8355606218816091895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -496,6 +498,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 7.26, y: 4.8}
   m_EdgeRadius: 0
+--- !u!114 &2599041139878733459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8415427501277948316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 630d944947444ffaa34e4a21e57aa4de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _IsActive:
+    _value: 1
 --- !u!1001 &3560366976303904644
 PrefabInstance:
   m_ObjectHideFlags: 0

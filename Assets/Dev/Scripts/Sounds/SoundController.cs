@@ -13,12 +13,20 @@ namespace Dev.Sounds
             
         private SoundStaticDataContainer _soundStaticDataContainer;
         private ObjectPool<AudioSource> _soundPool;
+        private SaveLoadService _saveLoadService;
 
         public static SoundController Instance { get; private set; }
         
+        private float SoundVolume => _saveLoadService.Profile.AdditionalSoundVolume;
+        private float MusicVolume => _saveLoadService.Profile.MusicVolume;
+
+        private bool IsMuted => _saveLoadService.Profile.IsVolumeMuted;
+        
+        
         [Inject]
-        private void Construct(SoundStaticDataContainer soundStaticDataContainer)
+        private void Construct(SoundStaticDataContainer soundStaticDataContainer, SaveLoadService saveLoadService)
         {
+            _saveLoadService = saveLoadService;
             _soundStaticDataContainer = soundStaticDataContainer;
         }
 
@@ -26,6 +34,20 @@ namespace Dev.Sounds
         {
             Instance = this;
             _soundPool = new ObjectPool<AudioSource>(CreateFunc, actionOnRelease: ActionOnRelease, actionOnGet: ActionOnGet, defaultCapacity: 8);
+        }
+
+        private AudioSource CreateFunc()
+        {
+            AudioSource prev = _audioSource;
+            
+            AudioSource instance = Instantiate(prev, _soundsParent);
+            instance.playOnAwake = false;
+            instance.loop = false;
+            instance.volume = 0.2f;
+            instance.clip = null;
+            instance.mute = IsMuted;
+            
+            return instance;
         }
 
         private void ActionOnGet(AudioSource audioSource)
@@ -39,45 +61,11 @@ namespace Dev.Sounds
             audioSource.gameObject.SetActive(false);
         }
 
-        private AudioSource CreateFunc()
-        {
-            AudioSource prev = _audioSource;
-            
-            AudioSource instance = Instantiate(prev, _soundsParent);
-            instance.playOnAwake = false;
-            instance.loop = false;
-            instance.volume = 0.2f;
-            instance.clip = null;
-            instance.mute = false;
-            
-            return instance;
-        }
-
         public void PlaySoundAt(string soundType, Vector3 pos, float radius, bool isLocal = false)
         {
             Play(soundType, pos, radius);
         }
 
-        public void PlaySystemSound(string soundType)
-        {
-            var hasSound = _soundStaticDataContainer.TryGetSoundStaticData(soundType, out var soundStaticData);
-
-            if (hasSound == false)
-            {
-                AtomicLogger.Err($"No Sound Data for {soundType}");
-                return;
-            }
-
-            var audioClip = soundStaticData.AudioClip;
-            
-            var audioSource = _systemSoundSource;
-            audioSource.clip = audioClip;
-            audioSource.loop = false;
-            audioSource.volume = soundStaticData.Volume / 100f;
-            audioSource.spatialBlend = 0;
-            audioSource.Play();
-        }
-        
         private void Play(string soundType, Vector3 pos = default, float radius = 25)
         {
             var hasSound = _soundStaticDataContainer.TryGetSoundStaticData(soundType, out var soundStaticData);
@@ -95,9 +83,10 @@ namespace Dev.Sounds
             audioSource.clip = audioClip;
             audioSource.Play();
             audioSource.loop = false;
-            audioSource.volume = soundStaticData.Volume / 100f;
+            audioSource.volume = soundStaticData.Volume / 100f * SoundVolume;
             audioSource.spatialBlend = 1;
             audioSource.maxDistance = radius;
+            audioSource.mute = IsMuted;
             
             Extensions.Delay(audioSource.clip.length, destroyCancellationToken, () => _soundPool.Release(audioSource));
         }

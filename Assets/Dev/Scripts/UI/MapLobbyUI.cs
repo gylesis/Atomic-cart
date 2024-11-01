@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
 using Dev.UI.PopUpsAndMenus;
+using Dev.Utils;
 using Fusion;
 using Fusion.Sockets;
 using UniRx;
+using Unity.Services.Authentication;
 using UnityEngine;
+using Zenject;
 
 namespace Dev.UI
 {
@@ -23,10 +26,20 @@ namespace Dev.UI
             LobbyConnector.Instance.NetworkRunner.AddCallbacks(this);
         }
 
+        public override void Spawned()
+        {
+            UnityDataLinker.Instance.RPC_Add(Runner.LocalPlayer, AuthenticationService.Instance.PlayerId);
+            base.Spawned();
+        }
+
         protected override void CorrectState()
         {
             base.CorrectState();
+            UpdateState();
+        }
 
+        private void UpdateState()
+        {
             foreach (var valuePair in ReadyStatesDictionary)
             {
                 bool isReady = valuePair.Value;
@@ -54,6 +67,7 @@ namespace Dev.UI
             ReadyStatesDictionary.Set(playerRef, isReady);
 
             ReadyStatusUpdated.OnNext(Unit.Default);
+            UpdateState();
         }
 
         public bool IsPlayerReady(PlayerRef playerRef)
@@ -75,6 +89,8 @@ namespace Dev.UI
         {
             PlayerManager.LoadingPlayers.Add(playerRef);
             PlayerManager.PlayersOnServer.Add(playerRef);
+
+            Debug.Log($"Player joined");
             
             if (Runner.IsSharedModeMasterClient)
             {
@@ -82,18 +98,18 @@ namespace Dev.UI
 
                 Debug.Log($"Player {playerRef} joined to lobby", readyUI);
 
-                Observable.Timer(TimeSpan.FromSeconds(0.3f)).Subscribe((l =>
+                Extensions.Delay(0.5f, destroyCancellationToken, () =>
                 {
                     readyUI.RPC_AssignPlayer(playerRef);
-                })).AddTo(this);
-
+                });
+               
                 ReadyStatesDictionary.Add(playerRef, false);
             }
             else
             {
                 //PlayersManager.Instance.RPC_Register(playerRef, AuthService.Nickname);
             }
-
+            
             ReadyStatusUpdated.OnNext(Unit.Default);
         }
 

@@ -45,11 +45,6 @@ namespace Dev.UI.PopUpsAndMenus
             _descriptionText.text = description;
         }
 
-        public void AddCallbackOnDecide(Action<bool> onDecide)
-        {
-            _onDecide = onDecide;
-        }
-
         private void OnDecisionDecided(bool isYes)
         {
             _onDecide?.Invoke(isYes);

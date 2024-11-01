@@ -167,13 +167,9 @@ namespace Dev.UI.PopUpsAndMenus
         public void SetInteractionButtonState(bool enabled)
         {
             if (enabled)
-            {
                 _interactionButton.Disable();
-            }
             else
-            {
                 _interactionButton.Enable();
-            }
         }
 
         private void OnInteractionButtonClicked()
@@ -183,12 +179,7 @@ namespace Dev.UI.PopUpsAndMenus
 
         private void OnExitMenuButtonClicked()
         {
-            PopUpService.ShowPopUp<InGameMenu>((() =>
-            {
-                PopUpService.HidePopUp<InGameMenu>();
-                Show();
-            }));
-
+            PopUpService.ShowPopUp<InGameMenu>();
             Hide();
         }
 

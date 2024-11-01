@@ -7,7 +7,7 @@ namespace Dev.Editor
 {
     public static class Builder
     {
-        [MenuItem("Builder/OpenBuildFolder")]
+        [MenuItem("Tools/Builder/OpenBuildFolder")]
         public static void OpenBuildFolder()
         {
             string basePath = @"E:\Dev\Unity\Projects\Site\atomic cart\Builds";

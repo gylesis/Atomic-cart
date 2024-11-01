@@ -1,5 +1,4 @@
-﻿using System;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using DG.Tweening;
 using Fusion;
 using TMPro;
@@ -47,8 +46,8 @@ namespace Dev.UI
 
         public void UpdateNickname()
         {
-            //_playerNicknameText.text = $"{PlayersLocalDataLinker.Instance.GetNickname(PlayerRef)}";
-            _playerNicknameText.text = $"{AuthService.Nickname}";
+            //_playerNicknameText.text = $"{SaveLoadService.Instance.Profile.Nickname}";
+            _playerNicknameText.text = $"{UnityDataLinker.Instance.GetNickname(PlayerRef)}";
         }
 
         [Rpc]
