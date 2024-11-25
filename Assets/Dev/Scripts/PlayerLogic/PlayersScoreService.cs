@@ -35,8 +35,8 @@ namespace Dev.PlayerLogic
         {
             base.Spawned();
             
-            _playersDataService.PlayersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
-            _playersDataService.PlayersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
+            _playersDataService.PlayersSpawner.BaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersDataService.PlayersSpawner.BaseDespawned.TakeUntilDestroy(this).Subscribe((OnPlayerDespawned));
 
             _botsController.BotSpawned.TakeUntilDestroy(this).Subscribe((OnBotSpawned));
             _botsController.BotDeSpawned.TakeUntilDestroy(this).Subscribe((OnBotDespawned));

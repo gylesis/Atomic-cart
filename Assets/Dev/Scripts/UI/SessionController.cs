@@ -1,86 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
 using Fusion.Sockets;
 using UniRx;
-using Unity.Services.Authentication;
 using UnityEngine;
 using Zenject;
 
 namespace Dev.UI
 {
-    public class MapLobbyUI : NetworkContext, INetworkRunnerCallbacks
+    public class SessionController : NetworkContext, INetworkRunnerCallbacks
     {
-        [SerializeField] private ReadyUI[] _readyUis;
-
-        [Networked, Capacity(8)] public NetworkDictionary<PlayerRef, bool> ReadyStatesDictionary => default;
-
+        [Networked, Capacity(8)] public NetworkDictionary<PlayerRef, bool> SessionPlayerReadyStatuses => default;
         public Subject<Unit> ReadyStatusUpdated { get; } = new Subject<Unit>();
 
-        private void Awake()
+        public Subject<PlayerRef> PlayerJoinedSession { get; } = new Subject<PlayerRef>();
+        public Subject<PlayerRef> PlayerLeftSession { get; } = new Subject<PlayerRef>();
+
+        private AuthService _authService;
+
+        protected override async void Awake()
         {
-            LobbyConnector.Instance.NetworkRunner.AddCallbacks(this);
+            base.Awake();
+
+            LobbyConnector lobbyConnector = await LobbyConnector.WaitForInitialization();
+            await UniTask.WaitUntil(() => lobbyConnector.NetworkRunner != null);
+            lobbyConnector.NetworkRunner.AddCallbacks(this);
         }
 
-        public override void Spawned()
+        [Inject]
+        private void Construct(AuthService authService)
         {
-            UnityDataLinker.Instance.RPC_Add(Runner.LocalPlayer, AuthenticationService.Instance.PlayerId);
+            _authService = authService;
+        }
+
+        public override async void Spawned()
+        {
+            var unityDataLinker = await UnityDataLinker.WaitForInitialization();
+            unityDataLinker.RPC_Add(Runner.LocalPlayer, _authService.PlayerId);
             base.Spawned();
         }
 
         protected override void CorrectState()
         {
             base.CorrectState();
-            UpdateState();
+            ReadyStatusUpdated.OnNext(Unit.Default);
         }
 
-        private void UpdateState()
-        {
-            foreach (var valuePair in ReadyStatesDictionary)
-            {
-                bool isReady = valuePair.Value;
-                PlayerRef playerRef = valuePair.Key;
-
-                ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == playerRef);
-
-                readyUI.RPC_SetReadyView(isReady);
-                readyUI.UpdateNickname();
-            }
-        }
-        
         public void SetReady(PlayerRef playerRef)
         {
             NetworkBool wasReady = IsPlayerReady(playerRef);
-
             RPC_ReadyStatusUpdate(!wasReady, playerRef);
+        }
 
-            _readyUis.First(x => x.PlayerRef == playerRef).RPC_SetReadyView(!wasReady);
+        public bool IsPlayerReady(PlayerRef playerRef)
+        {
+            return SessionPlayerReadyStatuses[playerRef];
         }
 
         [Rpc]
         private void RPC_ReadyStatusUpdate(bool isReady, PlayerRef playerRef)
         {
-            ReadyStatesDictionary.Set(playerRef, isReady);
-
+            SessionPlayerReadyStatuses.Set(playerRef, isReady);
             ReadyStatusUpdated.OnNext(Unit.Default);
-            UpdateState();
-        }
-
-        public bool IsPlayerReady(PlayerRef playerRef)
-        {
-            return ReadyStatesDictionary[playerRef];
         }
 
         public bool IsAllPlayersReady()
         {
-            int readyPlayerCount = ReadyStatesDictionary.Count(x => x.Value);
-            int requiredPlayersCountToStart = ReadyStatesDictionary.Count;
+            int readyPlayerCount = SessionPlayerReadyStatuses.Count(x => x.Value);
+            int requiredPlayersCountToStart = SessionPlayerReadyStatuses.Count;
 
-            Debug.Log($"Ready players {readyPlayerCount}");
+            AtomicLogger.Log($"Ready players count {readyPlayerCount}");
 
             return readyPlayerCount == requiredPlayersCountToStart;
         }
@@ -90,26 +84,18 @@ namespace Dev.UI
             PlayerManager.LoadingPlayers.Add(playerRef);
             PlayerManager.PlayersOnServer.Add(playerRef);
 
-            Debug.Log($"Player joined");
-            
+            AtomicLogger.Log($"Player {playerRef} joined to lobby");
+
             if (Runner.IsSharedModeMasterClient)
             {
-                ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == PlayerRef.None);
-
-                Debug.Log($"Player {playerRef} joined to lobby", readyUI);
-
-                Extensions.Delay(0.5f, destroyCancellationToken, () =>
-                {
-                    readyUI.RPC_AssignPlayer(playerRef);
-                });
-               
-                ReadyStatesDictionary.Add(playerRef, false);
+                SessionPlayerReadyStatuses.Add(playerRef, false);
+                PlayerJoinedSession.OnNext(playerRef);
             }
             else
             {
                 //PlayersManager.Instance.RPC_Register(playerRef, AuthService.Nickname);
             }
-            
+
             ReadyStatusUpdated.OnNext(Unit.Default);
         }
 
@@ -118,16 +104,16 @@ namespace Dev.UI
             PlayerManager.LoadingPlayers.Remove(playerRef);
             PlayerManager.PlayersOnServer.Remove(playerRef);
 
-            ReadyUI readyUI = _readyUis.First(x => x.PlayerRef == PlayerRef.None);
+            PlayerLeftSession.OnNext(playerRef);
 
-            Debug.Log($"Player {playerRef} left lobby");
-
-            readyUI.RPC_RemovePlayerAssigment();
-
-            ReadyStatesDictionary.Remove(playerRef);
-
+            SessionPlayerReadyStatuses.Remove(playerRef);
             ReadyStatusUpdated.OnNext(Unit.Default);
         }
+
+
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
 
         public void OnConnectedToServer(NetworkRunner runner)
         {
@@ -137,19 +123,13 @@ namespace Dev.UI
             Debug.Log($"{runner.LocalPlayer} Connected to server");
         }
 
-        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
-
-        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
-
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
-
 
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
 
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
-
 
         public void OnDisconnectedFromServer(NetworkRunner runner) { }
 
@@ -175,10 +155,6 @@ namespace Dev.UI
 
         public void OnSceneLoadDone(NetworkRunner runner) { }
 
-        public void OnSceneLoadStart(NetworkRunner runner)
-        {
-            Debug.Log($"Scene load start");
-            //  runner.RemoveCallbacks(this);
-        }
+        public void OnSceneLoadStart(NetworkRunner runner) { }
     }
 }

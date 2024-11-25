@@ -98,7 +98,7 @@ namespace Dev.Infrastructure
             onShow?.Invoke();
         }
 
-        public void ShowWithDotAnimation(float showDuration = 1, float waitDuration = 0, Action onShow = null)
+        public void ShowWithDotAnimation(float fadeDuration = 1, float waitDuration = 0, Action onShow = null)
         {
             StopDotAnimation();
 
@@ -126,7 +126,7 @@ namespace Dev.Infrastructure
                    
                 }));
 
-            Show(showDuration, waitDuration, onShow);
+            Show(fadeDuration, waitDuration, onShow);
         }
 
         public void StopDotAnimation()

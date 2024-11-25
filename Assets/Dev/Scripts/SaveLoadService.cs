@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.Utils;
 using Newtonsoft.Json;
+using UniRx;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
@@ -18,10 +19,12 @@ namespace Dev
     public class SaveLoadService
     {
         private ISaveLoadScheme _saveLoadScheme;
-        
-        public Profile Profile { get; private set; }
+
+        private Profile _profile;
 
         public static SaveLoadService Instance { get; private set; }
+        
+        public Subject<Profile> ProfileChanged { get; } = new Subject<Profile>();
         
         public SaveLoadService(ISaveLoadScheme saveLoadScheme)
         {
@@ -31,13 +34,18 @@ namespace Dev
         
         public async UniTask Load()
         {
-            Profile = await _saveLoadScheme.Load();
+            _profile = await _saveLoadScheme.Load();
         }
 
-        public async UniTask Save(Action<Profile> changedCallback)
+        public async UniTask<Result> Save(Action<Profile> changedCallback)
         {   
-            changedCallback?.Invoke(Profile);
-            await _saveLoadScheme.Save(Profile);
+            changedCallback?.Invoke(_profile);
+            var result = await _saveLoadScheme.Save(_profile);
+
+            if (result.IsSuccess) 
+                ProfileChanged.OnNext(_profile);
+            
+            return result;
         }
 
         public void AddKill(SessionPlayer sessionPlayer)
@@ -56,7 +64,7 @@ namespace Dev
         
         public interface ISaveLoadScheme
         {
-            UniTask<bool> Save(Profile profile);
+            UniTask<Result> Save(Profile profile);
             UniTask<Profile> Load();
         }
         
@@ -64,12 +72,12 @@ namespace Dev
         {
             private const string PlayerSaveKey = "PlayerSave";
         
-            public UniTask<bool> Save(Profile profile)
+            public UniTask<Result> Save(Profile profile)
             {
                 string json = JsonConvert.SerializeObject(profile);
                 PlayerPrefs.SetString(PlayerSaveKey, json);
                 PlayerPrefs.Save();
-                return UniTask.FromResult(true);
+                return UniTask.FromResult(Result.Success());
             }
 
             public UniTask<Profile> Load()
@@ -96,15 +104,23 @@ namespace Dev
             private static string PlayerSaveKey => AtomicConstants.SaveLoad.PlayerSaveKey;
 
         
-            public async UniTask<bool> Save(Profile profile)
+            public async UniTask<Result> Save(Profile profile)
             {
                 string serializeObject = JsonConvert.SerializeObject(profile);
             
                 var data = new Dictionary<string, object> { {"profile", serializeObject} };
 
-                await CloudSaveService.Instance.Data.Player.SaveAsync(data, new SaveOptions(new PublicWriteAccessClassOptions()));
+                try
+                {
+                    await CloudSaveService.Instance.Data.Player.SaveAsync(data, new SaveOptions(new PublicWriteAccessClassOptions()));
+                }
+                catch (Exception e)
+                {
+                    AtomicLogger.Err(e.Message, AtomicConstants.LogTags.Networking);
+                    return Result.Error(GameSettingsProvider.GameSettings.IsDebugMode ? $"{e.Message}" : "Failed to save player");
+                }
                 
-                return true;
+                return Result.Success();
             }
 
             public async UniTask<Profile> Load()

@@ -14,4 +14,14 @@ namespace Dev
 
         public bool IsVolumeMuted = false;
     }
+    
+    [Serializable]
+    public class PlayerPreferences
+    {
+        public float AdditionalSoundVolume = 0.5f;
+        public float MusicVolume = 0.5f;
+
+        public bool IsVolumeMuted = false;
+    }
+    
 }

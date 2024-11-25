@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Dev.Infrastructure;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -12,22 +13,15 @@ namespace Dev.UI.PopUpsAndMenus
         
         [SerializeField] private TextReactiveButton _linkAccountButton;
         private AuthService _authService;
+        private string _prevNickname;
 
         protected override void Awake()
         {
             base.Awake();
 
-            _linkAccountButton.Clicked.Subscribe((unit =>
-            {
-                PopUpService.ShowPopUp<LinkProfilePopUp>((() =>
-                {
-                    PopUpService.HidePopUp<LinkProfilePopUp>();
-                }));
-            })).AddTo(this);
-            
-            
-            _changeNicknameButton.Clicked.Subscribe((unit => OnChangeNicknameClicked())).AddTo(this);
-            _nickname.onValueChanged.AsObservable().Subscribe((OnNicknameChanged)).AddTo(this);
+            _linkAccountButton.Clicked.Subscribe(OnLinkAccountClicked).AddTo(this);
+            _changeNicknameButton.Clicked.Subscribe(unit => OnChangeNicknameClicked()).AddTo(this);
+            _nickname.onValueChanged.AsObservable().Subscribe(OnNicknameChanged).AddTo(this);
         }
 
         [Inject]
@@ -38,30 +32,41 @@ namespace Dev.UI.PopUpsAndMenus
 
         public override void Show()
         {
-            _nickname.text = $"{SaveLoadService.Instance.Profile.Nickname}";
+            string currentNickname = _authService.MyProfile.Nickname;
+            
+            _prevNickname = currentNickname;
+            _nickname.text = $"{currentNickname}";
+            
+            OnNicknameChanged(currentNickname);
             
             base.Show();
         }
         
-        
-        private async void OnNicknameChanged(string nickname)
+        private void OnNicknameChanged(string nickname)
         {
-            _changeNicknameButton.IsInteractable(nickname.Length > 0);
+            _changeNicknameButton.IsInteractable(nickname.Length > 0 && _prevNickname != nickname);
         }
 
         private async void OnChangeNicknameClicked()
         {
-            var updateNickname = await _authService.UpdateNickname(_nickname.text);
+            Curtains.Instance.SetText("Saving nickname");
+            Curtains.Instance.ShowWithDotAnimation(0);
 
-            if (!updateNickname)
-            {
-                PopUpService.ShowPopUp<NotificationPopUp>().Init("Error", $"Error updating nickname {updateNickname.ErrorMessage}", 5);
-            }
-            else
-            {
-                PopUpService.ShowPopUp<NotificationPopUp>().Init("Success", "Success changed nickname", 5);
-            }
+            string newNickname = _nickname.text;
+            var updateNickname = await _authService.UpdateNickname(newNickname);
 
+            string errorMsg = GameSettingsProvider.GameSettings.IsDebugMode ? $"{updateNickname.ErrorMessage}" : "Error happened";
+             
+            Curtains.Instance.SetText(updateNickname.IsSuccess ? $"Nickname changed to {newNickname}" : $"{errorMsg}");
+            Curtains.Instance.HideWithDelay(2f,0);
+        }
+        
+        private void OnLinkAccountClicked(Unit unit)
+        {
+            PopUpService.ShowPopUp<LinkProfilePopUp>((() =>
+            {
+                PopUpService.HidePopUp<LinkProfilePopUp>();
+            }));
         }
     }
 }

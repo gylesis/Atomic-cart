@@ -14,18 +14,19 @@ namespace Dev.Sounds
         private SoundStaticDataContainer _soundStaticDataContainer;
         private ObjectPool<AudioSource> _soundPool;
         private SaveLoadService _saveLoadService;
+        private AuthService _authService;
 
         public static SoundController Instance { get; private set; }
         
-        private float SoundVolume => _saveLoadService.Profile.AdditionalSoundVolume;
-        private float MusicVolume => _saveLoadService.Profile.MusicVolume;
-
-        private bool IsMuted => _saveLoadService.Profile.IsVolumeMuted;
+        private float SoundVolume => _authService.MyProfile.AdditionalSoundVolume;
+        private float MusicVolume => _authService.MyProfile.MusicVolume;
+        private bool IsMuted => _authService.MyProfile.IsVolumeMuted;
         
         
         [Inject]
-        private void Construct(SoundStaticDataContainer soundStaticDataContainer, SaveLoadService saveLoadService)
+        private void Construct(SoundStaticDataContainer soundStaticDataContainer, SaveLoadService saveLoadService, AuthService authService)
         {
+            _authService = authService;
             _saveLoadService = saveLoadService;
             _soundStaticDataContainer = soundStaticDataContainer;
         }

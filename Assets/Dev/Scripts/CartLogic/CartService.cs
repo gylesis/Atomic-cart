@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Utils;
@@ -41,10 +42,12 @@ namespace Dev.CartLogic
 
         private float _pushTime;
         private SessionStateService _sessionStateService;
+        private PlayersSpawner _playersSpawner;
 
         [Inject]
-        private void Construct(SessionStateService sessionStateService)
+        private void Construct(SessionStateService sessionStateService, PlayersSpawner playersSpawner)
         {
+            _playersSpawner = playersSpawner;
             _sessionStateService = sessionStateService;
         }
         
@@ -58,17 +61,17 @@ namespace Dev.CartLogic
         {
             base.OnInjectCompleted();
             
-            PlayersSpawner playersSpawner = FindObjectOfType<PlayersSpawner>();
-            playersSpawner.PlayerBaseDeSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerLeft));
+            _playersSpawner.BaseDespawned.Subscribe(OnPlayerLeft).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _playersSpawner.CharacterDespawned.Subscribe(OnPlayerDespawned).AddTo(GlobalDisposable.DestroyCancellationToken);
 
-            _cart.CartZoneEntered.TakeUntilDestroy(this).Subscribe((OnCartZoneEntered));
-            _cart.CartZoneExit.TakeUntilDestroy(this).Subscribe((OnCartZoneExit));
+            _cart.CartZoneEntered.Subscribe(OnCartZoneEntered).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _cart.CartZoneExit.Subscribe(OnCartZoneExit).AddTo(GlobalDisposable.DestroyCancellationToken);
 
             HighlightControlPoints();
             
             ResetCart();
         }
-        
+      
         private void OnCartZoneEntered(PlayerRef playerRef)
         {
             _playersInsideCartZone.Add(playerRef);
@@ -85,6 +88,14 @@ namespace Dev.CartLogic
             if (_playersInsideCartZone.Count == 0)
             {
                 AllowToMove = false;
+            }
+        }
+        
+        private void OnPlayerDespawned(PlayerRef playerRef) 
+        {
+            if (_playersInsideCartZone.Contains(playerRef))
+            {
+                OnCartZoneExit(playerRef);
             }
         }
         

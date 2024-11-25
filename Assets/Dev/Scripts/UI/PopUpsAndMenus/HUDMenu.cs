@@ -51,8 +51,8 @@ namespace Dev.UI.PopUpsAndMenus
             _joysticksContainer.AimJoystick.PointerUpOrDown.TakeUntilDestroy(this)
                 .Subscribe((OnAimJoystickPointerUpOrDown));
 
-            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseSpawned));
-            _playersSpawner.PlayerCharacterSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerCharacterSpawned));
+            _playersSpawner.BaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseSpawned));
+            _playersSpawner.CharacterSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerCharacterSpawned));
         }
 
         private void OnPlayerBaseSpawned(PlayerSpawnEventContext context)

@@ -25,7 +25,7 @@ namespace Dev.UI.PopUpsAndMenus
         {
             base.Awake();
 
-            _linkButton.Clicked.Subscribe((unit => OnLinkButtonClicked())).AddTo(this);
+            _linkButton.Clicked.Subscribe(unit => OnLinkButtonClicked()).AddTo(this);
         }
 
         private async void OnLinkButtonClicked()
@@ -40,7 +40,7 @@ namespace Dev.UI.PopUpsAndMenus
             
             PopUpService.HidePopUp<LinkProfilePopUp>();
             
-            await _authService.LinkWithUsernameAndPassword(_usernameInputField.text, _passwordInputField.text);
+            await _authService.LinkWithUsernameAndPasswordAsync(_usernameInputField.text, _passwordInputField.text);
             
             _linkButton.Enable();
         }

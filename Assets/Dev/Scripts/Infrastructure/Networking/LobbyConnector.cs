@@ -4,9 +4,7 @@ using Cysharp.Threading.Tasks;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
-using Fusion.Photon.Realtime;
 using Fusion.Sockets;
-using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -14,41 +12,41 @@ using Zenject;
 namespace Dev.Infrastructure
 {
     [RequireComponent(typeof(NetworkRunner))]
-    public class LobbyConnector : MonoBehaviour, INetworkRunnerCallbacks
+    public class LobbyConnector : MonoSingleton<LobbyConnector>, INetworkRunnerCallbacks
     {
-        private NetworkRunner _networkRunner;
-
         public NetworkRunner NetworkRunner => _networkRunner;
-
-        public static bool IsConnected;
+        public bool IsConnected { get; set; }
 
         private Action _sessionJoined;
         private SceneLoader _sceneLoader;
+        private NetworkRunner _networkRunner;
 
-        public static LobbyConnector Instance { get; private set; }
-        
         [Inject]
         private void Construct(SceneLoader sceneLoader)
         {
             _sceneLoader = sceneLoader;
         }
         
-        private async void Awake()
+        protected override void Awake()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
+            base.Awake();
+            
             if (IsConnected)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            Instance = this;
-            
             DiInjecter.Instance.InjectGameObject(gameObject);
             
-            if (SceneManager.GetActiveScene().name == "Main")
-            {
+            if (SceneManager.GetActiveScene().name == "Main") 
                 Connect();
-            }
 
             DontDestroyOnLoad(gameObject);
         }

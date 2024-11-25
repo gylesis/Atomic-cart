@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Cysharp.Threading.Tasks;
 using Dev.Utils;
 using Fusion;
 using UniRx;
@@ -7,22 +6,13 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class UnityDataLinker : NetworkContext
+    public class UnityDataLinker : NetSingleton<UnityDataLinker>
     {
-        [Networked] public NetworkDictionary<PlayerRef, NetworkString<_64>> LinkData { get; }
+        [Networked] public NetworkDictionary<PlayerRef, NetworkString<_64>> LinkData { get; } // PlayerRef to PlayerID map
 
-        public static UnityDataLinker Instance { get; private set; }
-        
-        private Dictionary<PlayerRef, Profile> _profiles = new Dictionary<PlayerRef, Profile>();
         private AuthService _authService;
 
         public Subject<Unit> ProfilesFetched = new Subject<Unit>();
-
-        public override void Spawned()
-        {
-            Instance = this;
-            base.Spawned();
-        }
 
         [Inject]
         private void Construct(AuthService authService)
@@ -41,38 +31,56 @@ namespace Dev.Infrastructure
         {
             foreach (var pair in LinkData)
             {
-                var playerRef = pair.Key;
-                var playerId = pair.Value.ToString();
+                PlayerRef playerRef = pair.Key;
+                string playerId = pair.Value.ToString();
 
-                if(_profiles.ContainsKey(playerRef)) continue;
-                
-                var tryGetProfile = await _authService.TryGetProfile(playerId);
+                var tryGetProfile = await _authService.GetProfileAsync(playerId);
 
                 if (tryGetProfile.IsError)
                 {
-                    AtomicLogger.Err(tryGetProfile.ErrorMessage);
+                    AtomicLogger.Err(tryGetProfile.ErrorMessage, AtomicConstants.LogTags.Networking);
                     continue;
                 }
                 
-                _profiles.Add(playerRef, tryGetProfile.Data);
+                _authService.GetProfileAsync(playerId).Forget(); // only caches once, not new data
             }
             
             ProfilesFetched.OnNext(Unit.Default);
         }
 
-        public override void FixedUpdateNetwork()
+        public override void Render()
         {
+            base.Render();
+            
             foreach (var pair in LinkData)
             {
-                AtomicLogger.Log($"Player {pair.Key} id {pair.Value.Value}");
+                string playerID = pair.Value.ToString();
+
+                string nickname = "undefined";
+
+                if(_authService.TryGetCachedProfile(playerID, out var profile)) 
+                    nickname = profile.Nickname;
+
+                AtomicLogger.Log($"Player {pair.Key}, nickname: {nickname}");
             }
         }
        
         public string GetNickname(PlayerRef playerRef)
         {
-            var nickname = _profiles.TryGetValue(playerRef, out var profile) ? profile.Nickname : "Unnamed";
-
+            string playerId = LinkData[playerRef].ToString();
+            var nickname = _authService.TryGetCachedProfile(playerId, out var profile) ? profile.Nickname : "Unnamed";
             return nickname;
+        }
+
+        public async UniTask<string> GetNicknameAsync(PlayerRef playerRef)
+        {
+            string playerId = LinkData[playerRef].ToString();
+            var result = await _authService.GetNicknameAsync(playerId);
+            
+            if(result.IsError)
+                return "unnamed";
+
+            return result.Data;
         }
     }
 }

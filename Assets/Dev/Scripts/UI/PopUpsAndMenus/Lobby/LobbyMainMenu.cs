@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Dev.UI.PopUpsAndMenus
 {
@@ -11,7 +12,8 @@ namespace Dev.UI.PopUpsAndMenus
         [SerializeField] private DefaultReactiveButton _exitButton;
 
         [SerializeField] private TMP_Text _nicknameText;
-        
+        private AuthService _authService;
+
         protected override void Awake()
         {
             _playButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnPlayButtonClicked()));
@@ -19,6 +21,12 @@ namespace Dev.UI.PopUpsAndMenus
             _exitButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitButtonClicked()));
             
             Show();
+        }
+
+        [Inject]
+        private void Construct(AuthService authService)
+        {
+            _authService = authService;
         }
 
         private void OnPlayButtonClicked()
@@ -45,7 +53,7 @@ namespace Dev.UI.PopUpsAndMenus
         {
             base.Show();
 
-            _nicknameText.text = $"{SaveLoadService.Instance.Profile.Nickname}";
+            _nicknameText.text = $"{_authService.MyProfile.Nickname}";
         }
 
         private void OnExitButtonClicked()

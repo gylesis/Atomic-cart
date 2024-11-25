@@ -4,6 +4,7 @@ using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Dev.UI
 {
@@ -12,13 +13,20 @@ namespace Dev.UI
         [SerializeField] private TMP_Text _playerNicknameText;
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Image _readyImage;
-        
+        private AuthService _authService;
+
         [Networked]
         public PlayerRef PlayerRef { get; private set; }
 
         private void Awake()
         {
             _canvasGroup.alpha = 0;
+        }
+
+        [Inject]
+        private void Construct(AuthService authService)
+        {
+            _authService = authService;
         }
 
         [Rpc]
@@ -38,16 +46,16 @@ namespace Dev.UI
         public void RPC_RemovePlayerAssigment()
         {
              PlayerRef = PlayerRef.None;
-             
              Object.AssignInputAuthority(PlayerRef.None);
-
              _canvasGroup.alpha = 0;
         }
 
-        public void UpdateNickname()
+        public async void UpdateNickname()
         {
-            //_playerNicknameText.text = $"{SaveLoadService.Instance.Profile.Nickname}";
-            _playerNicknameText.text = $"{UnityDataLinker.Instance.GetNickname(PlayerRef)}";
+            string nickname = await UnityDataLinker.Instance.GetNicknameAsync(PlayerRef);
+
+            _playerNicknameText.text = $"{nickname}";
+            //_playerNicknameText.text = $"moloko";
         }
 
         [Rpc]

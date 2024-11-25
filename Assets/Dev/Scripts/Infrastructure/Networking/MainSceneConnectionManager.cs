@@ -12,7 +12,7 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class MainSceneConnectionManager : NetworkContext, INetworkRunnerCallbacks
+    public class MainSceneConnectionManager : NetSingleton<MainSceneConnectionManager>, INetworkRunnerCallbacks
     {
         [SerializeField] private NetworkRunner _networkRunner;
 
@@ -20,22 +20,15 @@ namespace Dev.Infrastructure
         private PopUpService _popUpService;
         private GameSettings _gameSettings;
 
-        public static MainSceneConnectionManager Instance { get; private set; }
-
-        protected override void Awake()
+        protected override async void Awake()
         {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
+            base.Awake();
 
-            if (LobbyConnector.IsConnected)
+            var lobbyConnector = await LobbyConnector.WaitForInitialization();
+
+            if (lobbyConnector.IsConnected)
             {
-                LobbyConnector.IsConnected = false;
+                lobbyConnector.IsConnected = false;
                 NetworkRunner networkRunner = FindObjectOfType<LobbyConnector>().NetworkRunner;
                 
                 networkRunner.AddCallbacks(this);
@@ -73,7 +66,7 @@ namespace Dev.Infrastructure
             Curtains.Instance.Show();
             Curtains.Instance.SetText("Returning back to menu");
             
-            LobbyConnector.IsConnected = false;
+            LobbyConnector.Instance.IsConnected = false;
             
             Runner.Shutdown();
 

@@ -39,6 +39,7 @@ namespace Dev.UI
 
         public void IsInteractable(bool value)
         {
+            //_button.interactable = value;
             _canvasGroup.interactable = value;
         }
 

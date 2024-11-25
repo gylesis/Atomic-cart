@@ -39,6 +39,12 @@ namespace Dev.Infrastructure
                 new ObjectPool<SessionUIView>(CreateFunc, ActionOnGet, ActionOnRelease);
         }
 
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            _networkRunner.RemoveCallbacks(this);
+            base.Despawned(runner, hasState);
+        }
+
         [Inject]
         private void Construct(AuthService authService)
         {
@@ -83,7 +89,7 @@ namespace Dev.Infrastructure
             _networkRunner.AddCallbacks(this);
 
             startGameArgs.GameMode = GameMode.Shared;
-            startGameArgs.SessionName = $"{SaveLoadService.Instance.Profile.Nickname}";
+            startGameArgs.SessionName = $"{_authService.MyProfile.Nickname}";
             startGameArgs.SceneManager = _networkRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
             Scene activeScene = SceneManager.GetActiveScene();
             startGameArgs.Scene = SceneRef.FromIndex(activeScene.buildIndex);

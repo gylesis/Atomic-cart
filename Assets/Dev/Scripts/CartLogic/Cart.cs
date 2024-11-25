@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
@@ -22,8 +23,8 @@ namespace Dev.CartLogic
         {
             base.OnInjectCompleted();
             
-            _triggerZone.PlayerEntered.TakeUntilDestroy(this).Subscribe((OnPlayerEnteredCartZone));
-            _triggerZone.PlayerExit.TakeUntilDestroy(this).Subscribe((OnPlayerExitCartZone));
+            _triggerZone.PlayerEntered.Subscribe(OnPlayerEnteredCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _triggerZone.PlayerExit.Subscribe(OnPlayerExitCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
         }
 
         private void OnPlayerEnteredCartZone(PlayerCharacter playerCharacter)

@@ -37,7 +37,7 @@ namespace Dev.Levels
             base.Spawned();
             
             LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
-            _playersSpawner.PlayerBaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
+            _playersSpawner.BaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerSpawned));
         }
 
         private void OnLevelLoaded(Level level)

@@ -23,22 +23,20 @@ namespace Dev.Infrastructure
         [SerializeField] private CameraController _cameraControllerPrefab;
         [SerializeField] private PlayerBase _playerBasePrefab;
 
-        public Subject<PlayerSpawnEventContext> PlayerBaseSpawned { get; } = new Subject<PlayerSpawnEventContext>();
-        public Subject<PlayerSpawnEventContext> PlayerCharacterSpawned { get; } =
-            new Subject<PlayerSpawnEventContext>();
+        public Subject<PlayerSpawnEventContext> BaseSpawned { get; } = new Subject<PlayerSpawnEventContext>();
+        public Subject<PlayerSpawnEventContext> CharacterSpawned { get; } = new Subject<PlayerSpawnEventContext>();
 
-        public Subject<PlayerRef> CharacterDeSpawned { get; } = new Subject<PlayerRef>();
-        public Subject<PlayerRef> PlayerBaseDeSpawned { get; } = new Subject<PlayerRef>();
+        public Subject<PlayerRef> BaseDespawned { get; } = new Subject<PlayerRef>();
+        public Subject<PlayerRef> CharacterDespawned { get; } = new Subject<PlayerRef>();
 
-        [Networked, Capacity(10)] private NetworkDictionary<PlayerRef, PlayerBase> PlayersBaseDictionary { get; }
-
-        public List<PlayerCharacter> PlayersCharacters => PlayersBaseDictionary.Select(x => x.Value.Character).ToList();
+        public List<PlayerCharacter> PlayersCharacters => PlayersBases.Select(x => x.Character).ToList();
         public List<PlayerBase> PlayersBases => PlayersBaseDictionary.Select(x => x.Value).ToList();
 
         public int PlayersCount => PlayersBaseDictionary.Count;
 
         private Dictionary<PlayerRef, List<NetworkObject>> _playerServices =
             new Dictionary<PlayerRef, List<NetworkObject>>();
+        [Networked, Capacity(10)] private NetworkDictionary<PlayerRef, PlayerBase> PlayersBaseDictionary { get; }
 
         private TeamsService _teamsService;
         private PopUpService _popUpService;
@@ -46,12 +44,14 @@ namespace Dev.Infrastructure
         private SessionStateService _sessionStateService;
         private HealthObjectsService _healthObjectsService;
         private GameSettings _gameSettings;
+        private AuthService _authService;
 
         [Inject]
         private void Init(TeamsService teamsService, PopUpService popUpService,
                           GameStaticDataContainer gameStaticDataContainer, SessionStateService sessionStateService,
-                          HealthObjectsService healthObjectsService, GameSettings gameSettings)
+                          HealthObjectsService healthObjectsService, GameSettings gameSettings, AuthService authService)
         {
+            _authService = authService;
             _gameSettings = gameSettings;
             _healthObjectsService = healthObjectsService;
             _sessionStateService = sessionStateService;
@@ -94,7 +94,7 @@ namespace Dev.Infrastructure
             playerBase.Object.AssignInputAuthority(playerRef);
             playerBase.CharacterClass = characterClass;
             
-            RPC_AddPlayer(playerRef, SaveLoadService.Instance.Profile.Nickname, playerBase);
+            RPC_AddPlayer(playerRef, _authService.MyProfile.Nickname, playerBase);
             
             _healthObjectsService.RegisterPlayer(playerRef);
 
@@ -120,7 +120,7 @@ namespace Dev.Infrastructure
                 _healthObjectsService.UnRegisterObject(id);
                 PlayersBaseDictionary.Remove(playerRef);
                 
-                PlayerBaseDeSpawned.OnNext(playerRef);
+                BaseDespawned.OnNext(playerRef);
             }
             else
             {
@@ -131,7 +131,7 @@ namespace Dev.Infrastructure
                 Runner.Despawn(playerCharacter.Object);
 
                 PlayersBaseDictionary[playerRef].Character = null;
-                CharacterDeSpawned.OnNext(playerRef);
+                CharacterDespawned.OnNext(playerRef);
             }
 
             PlayerManager.PlayersOnServer.Remove(playerRef);
@@ -194,7 +194,7 @@ namespace Dev.Infrastructure
 
             SetCharacterTeamBannerColor(playerRef);
             
-            PlayerCharacterSpawned.OnNext(spawnEventContext);
+            CharacterSpawned.OnNext(spawnEventContext);
 
             return playerCharacter;
         }
@@ -364,7 +364,7 @@ namespace Dev.Infrastructure
             spawnEventContext.CharacterClass = playerBase.CharacterClass;
 
             // Debug.Log($"[RPC] Player spawned");
-            PlayerBaseSpawned.OnNext(spawnEventContext);
+            BaseSpawned.OnNext(spawnEventContext);
         }
 
         private void LoadWeapon(PlayerCharacter playerCharacter)

@@ -1,4 +1,5 @@
-﻿using Dev.UI;
+﻿using Cysharp.Threading.Tasks;
+using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
 using TMPro;
 using UniRx;
@@ -39,21 +40,27 @@ namespace Dev
             
             if (answer)
             {
-                await _authService.DeleteAccount();
+                await _authService.DeleteAccountAsync();
                 Application.Quit();
             }
         }
 
-        public override async void Show()
+        public override void Show()
         {
-            await SaveLoadService.Instance.Load();
-            Profile profile = SaveLoadService.Instance.Profile;
+            Profile profile = _authService.MyProfile;
 
             _statsText.text = $"Nickname: {profile.Nickname}\n" +
                               $"Kills: {profile.Kills}\n" +
                               $"Deaths: {profile.Deaths}";
 
             base.Show();
+        }
+
+        public override void Hide()
+        {
+            base.Hide();
+            
+            _authService.GetMyProfileAsync(true).Forget();
         }
     }
 }

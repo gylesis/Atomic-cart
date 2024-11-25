@@ -1,13 +1,8 @@
-﻿using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.UI;
 using Dev.Utils;
 using TMPro;
-using Unity.Services.Authentication;
-using Unity.Services.CloudSave;
-using Unity.Services.CloudSave.Models;
-using Unity.Services.CloudSave.Models.Data.Player;
 using Unity.Services.Core;
 using UnityEngine;
 using Zenject;
@@ -53,9 +48,7 @@ namespace Dev
                 await _authService.Auth();
                 await _saveLoadService.Load();
             }
-           
-            AtomicLogger.Log($"Player ID {AuthenticationService.Instance.PlayerId}", AtomicConstants.LogTags.Networking);
-
+            
             if (_authService.IsNicknameNotSet)
             {
                 Curtains.Instance.Hide(0);
@@ -79,11 +72,15 @@ namespace Dev
                 await _authService.UpdateNickname(_nicknameInput.text.Trim());
             }
 
-            _nicknameInput.text = $"{SaveLoadService.Instance.Profile.Nickname}";
+            var result = await _authService.GetMyProfileAsync();
+            Profile profile = result.Data;
+
+            AtomicLogger.Log($"Player ID {_authService.PlayerId}, nickname {profile.Nickname}", AtomicConstants.LogTags.Networking);
+            _nicknameInput.text = $"{profile.Nickname}";
             
             Curtains.Instance.SetText("Loading data...");
-
-            LobbyConnector lobbyConnector = Instantiate(_lobbyConnector);
+            
+            LobbyConnector lobbyConnector = LobbyConnector.IsInitialized ? LobbyConnector.Instance : Instantiate(_lobbyConnector);
             lobbyConnector.ConnectFromBootstrap();
         }
     }

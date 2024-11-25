@@ -3,6 +3,8 @@
     public struct Result
     {
         public bool IsError { get; set; }
+        public bool IsSuccess => !IsError;
+
         public string ErrorMessage { get; set; }
 
 
@@ -26,6 +28,7 @@
     public struct Result<TData>
     {
         public bool IsError { get; set; }
+        public bool IsSuccess => !IsError;
         public string ErrorMessage { get; set; }
 
         public TData Data { get; private set; }

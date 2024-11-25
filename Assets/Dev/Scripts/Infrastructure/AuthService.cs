@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.Utils;
+using Fusion;
+using Newtonsoft.Json;
+using UniRx;
 #if !UNITY_STANDALONE_WIN
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
@@ -21,21 +24,51 @@ using Debug = UnityEngine.Debug;
 
 namespace Dev
 {
-    public class AuthService : IDisposable
+    public class AuthService : IInitializable, IDisposable
     {
         public string Token;
         public string Error;
         
+        public bool IsAuthorized { get; private set; }
+        public string PlayerId
+        {
+            get
+            {
+                if (UnityServices.State == ServicesInitializationState.Uninitialized)
+                    return "not_initialized";
+                
+                if(!AuthenticationService.Instance.IsAuthorized)
+                    return "not_authorized";
+                
+                return AuthenticationService.Instance.PlayerId;
+            }
+        }
+
+        public Profile MyProfile => _cachedMyProfile;
+        
+        private Dictionary<string, Profile> _cachedProfiles = new Dictionary<string, Profile>();
+        //private Dictionary<PlayerRef, string> _playerRefMap = new Dictionary<PlayerRef, string>();
         private SaveLoadService _saveLoadService;
 
-        public static bool IsAuthorized { get; private set; }
+        private Profile _cachedMyProfile;
 
         public AuthService(SaveLoadService saveLoadService)
         {
             _saveLoadService = saveLoadService;
         }
-        
-        public async Task<bool> Auth()
+
+        public void Initialize()
+        {
+            _saveLoadService.ProfileChanged.Subscribe(OnProfileSaveOrLoad).AddTo(GlobalDisposable.DestroyCancellationToken);
+        }
+
+        private void OnProfileSaveOrLoad(Profile profile)
+        {
+            _cachedProfiles[PlayerId] = profile;
+            _cachedMyProfile = profile;
+        }
+
+        public async UniTask<bool> Auth()
         {   
             //await LoginGooglePlayGames();
             //await SignInWithGooglePlayGamesAsync(Token);
@@ -57,7 +90,7 @@ namespace Dev
             }
         }
 
-        private async Task<bool> SignInWithGooglePlayGamesAsync(string authCode)
+        private async UniTask<bool> SignInWithGooglePlayGamesAsync(string authCode)
         {
             try
             {   
@@ -83,7 +116,6 @@ namespace Dev
             }
         }
 
-
         public async UniTask<Result> UpdateNickname(string nickname)
         {
             if (string.IsNullOrEmpty(nickname))
@@ -101,8 +133,35 @@ namespace Dev
 
         public bool IsNicknameNotSet => string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName);
 
-        public async Task<Result<Profile>> TryGetProfile(string playerId)
+        public async UniTask<Result<Profile>> GetMyProfileAsync(bool requestFreshData = false)
         {
+            var tryGetProfile = await GetProfileAsync(PlayerId, requestFreshData);
+            
+            if(tryGetProfile.IsSuccess)
+                _cachedMyProfile = tryGetProfile.Data;
+            
+            return tryGetProfile;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <param name="requestFreshData">Request fresh data from Cloud. It needs when you know that old data can be changed. </param>
+        /// <returns></returns>
+        public async UniTask<Result<Profile>> GetProfileAsync(string playerId, bool requestFreshData = false)
+        {
+            if (UnityServices.State == ServicesInitializationState.Uninitialized)
+                return Result<Profile>.Error($"Services not initialized.");
+
+            if (requestFreshData == false)
+            {
+                if (_cachedProfiles.TryGetValue(playerId, out Profile profile))
+                    return Result<Profile>.Success(profile);
+                
+                AtomicLogger.Log($"No profile found for player {playerId}, requesting fresh one", AtomicConstants.LogTags.Networking);
+            }
+            
             var playerData = await CloudSaveService.Instance.Data.Player.LoadAsync(new HashSet<string>{"profile"}, new LoadOptions(new PublicReadAccessClassOptions(playerId)));
 
             bool tryGetValue = playerData.TryGetValue("profile", out Item profileItem);
@@ -110,19 +169,50 @@ namespace Dev
             if (tryGetValue)
             {       
                 var asString = profileItem.Value.GetAsString();
-                return Result<Profile>.Success(JsonUtility.FromJson<Profile>(asString));
+                Profile profile = JsonUtility.FromJson<Profile>(asString);
+                _cachedProfiles[playerId] = profile;
+                return Result<Profile>.Success(profile);
             }
 
-            return Result<Profile>.Error($"No profile found for player {playerId}.");
+            return Result<Profile>.Error($"No profile found for ID: {playerId}.");
         }
-        
-        public async UniTask DeleteAccount()
+
+        public bool TryGetCachedProfile(string playerId, out Profile profile)
         {
+            return _cachedProfiles.TryGetValue(playerId, out profile);
+        }
+
+        public async UniTask<Result<string>> GetNicknameAsync(string playerId, bool requestFreshData = false)
+        {
+            var tryGetProfile = await GetProfileAsync(playerId, requestFreshData);
+            
+            if(tryGetProfile.IsError)
+                return Result<string>.Error(tryGetProfile.ErrorMessage);
+
+            Profile profile = tryGetProfile.Data;
+
+            return Result<string>.Success(profile.Nickname);
+        }
+
+        public async UniTask DeleteAccountAsync()
+        {
+            if (UnityServices.State == ServicesInitializationState.Uninitialized)
+            {
+                AtomicLogger.Log($"Services not initialized. Deleting is failed", AtomicConstants.LogTags.Networking);
+                return;
+            }
+            
             await AuthenticationService.Instance.DeleteAccountAsync();
         }
 
-        public async Task<bool> LinkWithUsernameAndPassword(string username, string password)
+        public async UniTask<bool> LinkWithUsernameAndPasswordAsync(string username, string password)
         {
+            if (UnityServices.State == ServicesInitializationState.Uninitialized)
+            {
+                AtomicLogger.Log($"Services not initialized. Linking is failed", AtomicConstants.LogTags.Networking);
+                return false;
+            }
+            
             try
             {
                 await AuthenticationService.Instance.AddUsernamePasswordAsync(username, password);
@@ -144,8 +234,8 @@ namespace Dev
         {
             AtomicLogger.Err($"Sign in Failed: {exception.Message}");
         }
-        
-        
+
+
 #if !UNITY_STANDALONE_WIN
         public Task<bool> LoginGooglePlayGames()
         {
@@ -184,5 +274,4 @@ namespace Dev
             AuthenticationService.Instance.SignInFailed -= OnSignInFailed;
         }
     }
-    
 }
