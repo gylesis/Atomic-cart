@@ -38,7 +38,7 @@ namespace Dev.CartLogic
 
         public Subject<Unit> PointReached { get; } = new Subject<Unit>();
 
-        private List<PlayerRef> _playersInsideCartZone = new List<PlayerRef>();
+        private List<SessionPlayer> _playersInsideCartZone = new List<SessionPlayer>();
 
         private float _pushTime;
         private SessionStateService _sessionStateService;
@@ -72,16 +72,16 @@ namespace Dev.CartLogic
             ResetCart();
         }
       
-        private void OnCartZoneEntered(PlayerRef playerRef)
+        private void OnCartZoneEntered(SessionPlayer sessionPlayer)
         {
-            _playersInsideCartZone.Add(playerRef);
+            _playersInsideCartZone.Add(sessionPlayer);
 
             AllowToMove = !IsCartBlocked();
         }
 
-        private void OnCartZoneExit(PlayerRef playerRef)
+        private void OnCartZoneExit(SessionPlayer sessionPlayer)
         {
-            _playersInsideCartZone.Remove(playerRef);
+            _playersInsideCartZone.Remove(sessionPlayer);
 
             AllowToMove = !IsCartBlocked();
 
@@ -93,17 +93,23 @@ namespace Dev.CartLogic
         
         private void OnPlayerDespawned(PlayerRef playerRef) 
         {
-            if (_playersInsideCartZone.Contains(playerRef))
+            bool hasPlayer = _playersInsideCartZone.Any(x => !x.IsBot && x.Owner == playerRef);
+
+            if (hasPlayer)
             {
-                OnCartZoneExit(playerRef);
+                SessionPlayer sessionPlayer = _playersInsideCartZone.First(x => !x.IsBot && x.Owner == playerRef);
+                OnCartZoneExit(sessionPlayer);
             }
         }
         
         private void OnPlayerLeft(PlayerRef playerRef)
         {
-            if (_playersInsideCartZone.Contains(playerRef))
+            bool hasPlayer = _playersInsideCartZone.Any(x => !x.IsBot && x.Owner == playerRef);
+
+            if (hasPlayer)
             {
-                OnCartZoneExit(playerRef);
+                SessionPlayer sessionPlayer = _playersInsideCartZone.First(x => !x.IsBot && x.Owner == playerRef);
+                OnCartZoneExit(sessionPlayer);
             }
         }
 
@@ -203,13 +209,13 @@ namespace Dev.CartLogic
 
         private bool IsCartBlocked()
         {
-            foreach (var playerRef in _playersInsideCartZone)
+            foreach (var sessionPlayer in _playersInsideCartZone)
             {
-                var hasTeam = _sessionStateService.TryGetPlayerTeam(playerRef, out var playerTeamSide);
+                var hasTeam = _sessionStateService.TryGetPlayerTeam(sessionPlayer, out var playerTeamSide);
 
                 if (hasTeam == false)
                 {
-                    AtomicLogger.Err($"Player {playerRef} doesn't have team");
+                    AtomicLogger.Err($"Player {sessionPlayer} doesn't have team");
                     continue;
                 }
                 

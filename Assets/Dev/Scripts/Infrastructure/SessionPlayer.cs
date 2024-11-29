@@ -1,10 +1,11 @@
-﻿using Dev.PlayerLogic;
+﻿using System;
+using Dev.PlayerLogic;
 using Fusion;
 using Newtonsoft.Json;
 
 namespace Dev.Infrastructure
 {
-    public struct SessionPlayer : INetworkStruct // the problem in what if some value will be changed somewhere outside  
+    public struct SessionPlayer : INetworkStruct, IEquatable<SessionPlayer> // the problem in what if some value will be changed somewhere outside  
     {
         private static readonly SessionPlayer @default = new SessionPlayer();
         
@@ -33,6 +34,20 @@ namespace Dev.Infrastructure
             Id = id;
         }
 
+        public bool Equals(SessionPlayer other)
+        {
+            return Id.Equals(other.Id) && InternalName.Equals(other.InternalName) && IsBot.Equals(other.IsBot) && Owner.Equals(other.Owner);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is SessionPlayer other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, InternalName, IsBot, Owner);
+        }
     }
 
     public static class SessionPlayerExtensions

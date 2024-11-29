@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
@@ -7,6 +8,7 @@ using Fusion;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Dev.CartLogic
 {
@@ -15,30 +17,67 @@ namespace Dev.CartLogic
         public DamagableType DamageId => DamagableType.Obstacle;
         
         [FormerlySerializedAs("_interactionZone")] [SerializeField] private PlayerTriggerZone _triggerZone;
+        private SessionStateService _sessionStateService;
 
-        public Subject<PlayerRef> CartZoneEntered { get; } = new Subject<PlayerRef>();
-        public Subject<PlayerRef> CartZoneExit { get; } = new Subject<PlayerRef>();
+        public Subject<SessionPlayer> CartZoneEntered { get; } = new Subject<SessionPlayer>();
+        public Subject<SessionPlayer> CartZoneExit { get; } = new Subject<SessionPlayer>();
 
+        [Inject]
+        private void Construct(SessionStateService sessionStateService)
+        {
+            _sessionStateService = sessionStateService;
+        }
+        
         protected override void OnInjectCompleted()
         {
             base.OnInjectCompleted();
             
             _triggerZone.PlayerEntered.Subscribe(OnPlayerEnteredCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _triggerZone.BotEntered.Subscribe(OnBotEnteredCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
             _triggerZone.PlayerExit.Subscribe(OnPlayerExitCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _triggerZone.BotExit.Subscribe(OnBotExitCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
+        }
+
+        private void OnBotEnteredCartZone(Bot bot)
+        {
+            var sessionPlayer = _sessionStateService.GetSessionPlayer(bot);
+            
+            if (!sessionPlayer.Equals(SessionPlayer.Default))
+            {
+                CartZoneEntered.OnNext(sessionPlayer);
+            }
         }
 
         private void OnPlayerEnteredCartZone(PlayerCharacter playerCharacter)
         {
             PlayerRef playerRef = playerCharacter.Object.InputAuthority;
+            SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(playerRef);
 
-            CartZoneEntered.OnNext(playerRef);
+            if (!sessionPlayer.Equals(SessionPlayer.Default))
+            {
+                CartZoneEntered.OnNext(sessionPlayer);
+            }
+        }
+
+        private void OnBotExitCartZone(Bot bot)
+        {
+            SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(bot);
+
+            if (!sessionPlayer.Equals(SessionPlayer.Default))
+            {
+                CartZoneExit.OnNext(sessionPlayer);
+            }
         }
 
         private void OnPlayerExitCartZone(PlayerCharacter playerCharacter)
         {
             PlayerRef playerRef = playerCharacter.Object.InputAuthority;
+            SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(playerRef);
 
-            CartZoneExit.OnNext(playerRef);
+            if (!sessionPlayer.Equals(SessionPlayer.Default))
+            {
+                CartZoneExit.OnNext(sessionPlayer);
+            }
         }
     }
 }

@@ -34,7 +34,12 @@ namespace Dev.Infrastructure
         {
             return Players.FirstOrDefault(x => x.Id == bot.Object.Id);
         }
-
+        
+        public SessionPlayer GetSessionPlayer(PlayerRef playerRef)
+        {
+            return Players.FirstOrDefault(x => !x.IsBot && x.Owner == playerRef);
+        }
+        
         public Result TryGetPlayerTeam(SessionPlayer player, out TeamSide teamSide)
         {
             teamSide = TeamSide.None;

@@ -273,7 +273,7 @@ namespace Dev
 
         public void Dispose()
         {
-            if (AuthenticationService.Instance != null)
+            if (UnityServices.State == ServicesInitializationState.Initialized)
             {
                 AuthenticationService.Instance.SignedIn -= OnSignedIn;
                 AuthenticationService.Instance.SignInFailed -= OnSignInFailed;
