@@ -30,7 +30,7 @@ namespace Dev.Utils
         {
             public static string PlayerSaveKey = "player";
 #if UNITY_EDITOR
-            public static string LogSavePath = $"{Directory.GetCurrentDirectory()}";
+            public static string LogSavePath = $"{Directory.GetCurrentDirectory()}/Other";
 #else
             public static string LogSavePath = $"{Application.persistentDataPath}";
 #endif
