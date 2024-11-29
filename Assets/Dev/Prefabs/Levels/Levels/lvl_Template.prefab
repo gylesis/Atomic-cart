@@ -3542,7 +3542,7 @@ GameObject:
   - component: {fileID: 771205705009211117}
   - component: {fileID: 6670209535854230740}
   m_Layer: 0
-  m_Name: Level_Template
+  m_Name: lvl_Template
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
