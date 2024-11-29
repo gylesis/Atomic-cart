@@ -22,7 +22,7 @@ namespace Dev.Infrastructure
         private NetworkRunner _networkRunner;
 
         [Inject]
-        private void Construct(SceneLoader sceneLoader)
+        private void Construct(SceneLoader sceneLoader) // probably buggy
         {
             _sceneLoader = sceneLoader;
         }
@@ -46,7 +46,7 @@ namespace Dev.Infrastructure
             DiInjecter.Instance.InjectGameObject(gameObject);
             
             if (SceneManager.GetActiveScene().name == "Main") 
-                Connect();
+                ConnectFromMain();
 
             DontDestroyOnLoad(gameObject);
         }
@@ -56,7 +56,7 @@ namespace Dev.Infrastructure
             LoadFromBootstrap();
         }
 
-        public void Connect()
+        public void ConnectFromMain()
         {
             DefaultJoinToSessionLobby();
         }
@@ -74,21 +74,19 @@ namespace Dev.Infrastructure
             StartGameResult gameResult = await _networkRunner.JoinSessionLobby(SessionLobby.Shared, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
             OnLobbyJoined(gameResult);
 
-            string msg;
-            
+            string msg = gameResult.Ok ? "Welcome!" : "Failed to connect to servers";
+            Curtains.Instance.SetText(msg);
+
             if (gameResult.Ok)
             {
-                msg = "Welcome!";
                 Curtains.Instance.HideWithDelay(1, 0.5f);
-                AtomicLogger.Log($"Joined lobby");
+                AtomicLogger.Log($"Joined lobby", AtomicConstants.LogTags.Networking);
             }
             else
             {
-                msg = "Failed to connect to servers";
-                AtomicLogger.Err($"Failed to Start: {gameResult.ShutdownReason}, {gameResult.ErrorMessage}"); // TODO add button to reconnect to photon lobby 
+                AtomicLogger.Err($"Failed to Start: {gameResult.ShutdownReason}, {gameResult.ErrorMessage}", AtomicConstants.LogTags.Networking); // TODO add button to reconnect to photon lobby 
+                _sceneLoader.LoadSceneLocal(0);
             }
-            
-            Curtains.Instance.SetText(msg);
         }
 
         private async void LoadFromBootstrap()
@@ -116,10 +114,11 @@ namespace Dev.Infrastructure
 
         public async void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
-            Curtains.Instance.SetText("Game closed");
-            Curtains.Instance.Show();
-            await SceneManager.LoadSceneAsync(0);
-            Curtains.Instance.Hide();
+          //  Debug.Log($"Shutdown");
+           // Curtains.Instance.SetText("Game closed");
+           // Curtains.Instance.Show();
+           // await SceneManager.LoadSceneAsync(0);
+          //  Curtains.Instance.Hide();
         }
 
         public void OnSceneLoadStart(NetworkRunner runner)

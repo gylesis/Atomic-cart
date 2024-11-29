@@ -15,10 +15,10 @@ namespace Dev.UI.PopUpsAndMenus
         {
             base.Awake();
 
-            _createSessionButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnCreateSessionButtonClicked() ));
-            _joinSessionButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnJoinSessionButtonClicked() ));
+            _createSessionButton.Clicked.TakeUntilDestroy(this).Subscribe(unit => OnCreateSessionButtonClicked());
+            _joinSessionButton.Clicked.TakeUntilDestroy(this).Subscribe(unit => OnJoinSessionButtonClicked());
 
-            _gameSessionBrowser.SessionCountChanged.Subscribe((OnSessionsCountChanged));
+            _gameSessionBrowser.SessionCountChanged.Subscribe(OnSessionsCountChanged).AddTo(this);
         }
 
         private void OnCreateSessionButtonClicked()
@@ -30,7 +30,6 @@ namespace Dev.UI.PopUpsAndMenus
                 Show();
                 PopUpService.HidePopUp<MapSelectionMenu>();
             }));
-
         }
 
         private void OnJoinSessionButtonClicked()
@@ -41,13 +40,9 @@ namespace Dev.UI.PopUpsAndMenus
         private void OnSessionsCountChanged(int sessionsCount)
         {
             if (sessionsCount == 0)
-            {
-                _joinSessionButton.Disable();   
-            }
+                _joinSessionButton.Disable();
             else
-            {
                 _joinSessionButton.Enable();
-            }
         }
     }
 }

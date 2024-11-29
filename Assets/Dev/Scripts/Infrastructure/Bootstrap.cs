@@ -1,7 +1,6 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
-using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using LogType = Fusion.LogType;
@@ -10,8 +9,9 @@ namespace Dev
 {
     public class Bootstrap : MonoBehaviour
     {
-        private void Awake()
+        private async void Awake()
         {
+            Curtains curtains = await Curtains.WaitForInitialization();
             LoadAuthScene();
         }
 

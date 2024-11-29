@@ -60,6 +60,9 @@ namespace Dev
         public void Initialize()
         {
             _saveLoadService.ProfileChanged.Subscribe(OnProfileSaveOrLoad).AddTo(GlobalDisposable.DestroyCancellationToken);
+
+            if (_saveLoadService.Profile != null) 
+                OnProfileSaveOrLoad(_saveLoadService.Profile);
         }
 
         private void OnProfileSaveOrLoad(Profile profile)
@@ -220,19 +223,19 @@ namespace Dev
             }
             catch (Exception e)
             {
-                AtomicLogger.Ex(e.Message);
+                AtomicLogger.Ex(e.Message, AtomicConstants.LogTags.Networking);
                 return false;
             }
         }
 
         private void OnSignedIn()
         {
-            AtomicLogger.Log($"Signed In");
+            AtomicLogger.Log($"Signed In", AtomicConstants.LogTags.Networking);
         }
 
         private void OnSignInFailed(RequestFailedException exception)
         {
-            AtomicLogger.Err($"Sign in Failed: {exception.Message}");
+            AtomicLogger.Err($"Sign in Failed: {exception.Message}", AtomicConstants.LogTags.Networking);
         }
 
 
@@ -270,8 +273,11 @@ namespace Dev
 
         public void Dispose()
         {
-            AuthenticationService.Instance.SignedIn -= OnSignedIn;
-            AuthenticationService.Instance.SignInFailed -= OnSignInFailed;
+            if (AuthenticationService.Instance != null)
+            {
+                AuthenticationService.Instance.SignedIn -= OnSignedIn;
+                AuthenticationService.Instance.SignInFailed -= OnSignInFailed;
+            }
         }
     }
 }

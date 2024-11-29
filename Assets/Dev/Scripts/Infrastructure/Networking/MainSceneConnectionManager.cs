@@ -23,12 +23,10 @@ namespace Dev.Infrastructure
         protected override async void Awake()
         {
             base.Awake();
-
-            var lobbyConnector = await LobbyConnector.WaitForInitialization();
-
-            if (lobbyConnector.IsConnected)
+            
+            if (LobbyConnector.Instance != null)
             {
-                lobbyConnector.IsConnected = false;
+                LobbyConnector.Instance.IsConnected = false;
                 NetworkRunner networkRunner = FindObjectOfType<LobbyConnector>().NetworkRunner;
                 
                 networkRunner.AddCallbacks(this);
@@ -153,17 +151,16 @@ namespace Dev.Infrastructure
 
             if (runner.IsSharedModeMasterClient)
             {
-                if (_gameSettings.IsDebugMode)
+                if (LobbyConnector.IsInitialized)
+                {
+                    LevelService.Instance.LoadLevel(LobbyConnector.Instance.NetworkRunner.SessionInfo.Properties["map"]);
+                    await Task.Delay(2000); // TODO wait until all players load the scene
+                }
+                else
                 {
                     await SaveLoadService.Instance.Load();
                     LevelService.Instance.LoadLevel("NightCity");
                 }
-                else
-                {
-                     LevelService.Instance.LoadLevel(LobbyConnector.Instance.NetworkRunner.SessionInfo.Properties["map"]);
-                     await Task.Delay(2000); // TODO wait until all players load the scene
-                }
-                
             }
             
             PlayerRef player = runner.LocalPlayer;

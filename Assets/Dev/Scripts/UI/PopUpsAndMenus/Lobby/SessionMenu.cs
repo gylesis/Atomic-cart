@@ -159,11 +159,11 @@ namespace Dev.UI.PopUpsAndMenus
                 LobbyConnector.Instance.IsConnected = false;
             
                 await _networkRunner.Shutdown();
-
+                
                 PlayerManager.PlayersOnServer.Clear();
                 PlayerManager.LoadingPlayers.Clear();
-
-                _sceneLoader.LoadSceneLocal("Lobby", LoadSceneMode.Single).Forget();
+                
+                _sceneLoader.LoadSceneLocal(0, LoadSceneMode.Single).Forget();
             }
 
         }

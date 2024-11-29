@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Cysharp.Threading.Tasks;
@@ -18,60 +19,66 @@ namespace Dev
 {
     public class SaveLoadService
     {
-        private ISaveLoadScheme _saveLoadScheme;
+        public Profile Profile { get; private set; }
 
-        private Profile _profile;
+        private Dictionary<Type, ISaveLoadScheme> _loadSchemes = new Dictionary<Type, ISaveLoadScheme>();
 
         public static SaveLoadService Instance { get; private set; }
-        
+
         public Subject<Profile> ProfileChanged { get; } = new Subject<Profile>();
-        
-        public SaveLoadService(ISaveLoadScheme saveLoadScheme)
+
+        public SaveLoadService(ISaveLoadScheme[] saveLoadSchemes)
         {
-            _saveLoadScheme = saveLoadScheme;
+            foreach (var saveLoadScheme in saveLoadSchemes)
+                _loadSchemes[saveLoadScheme.GetType()] = saveLoadScheme;
+
             Instance = this;
         }
-        
+
         public async UniTask Load()
         {
-            _profile = await _saveLoadScheme.Load();
+            Profile = await GetSaveLoadScheme().Load();
+            ProfileChanged.OnNext(Profile);
         }
 
         public async UniTask<Result> Save(Action<Profile> changedCallback)
-        {   
-            changedCallback?.Invoke(_profile);
-            var result = await _saveLoadScheme.Save(_profile);
+        {
+            changedCallback?.Invoke(Profile);
+            var result = await GetSaveLoadScheme().Save(Profile);
 
-            if (result.IsSuccess) 
-                ProfileChanged.OnNext(_profile);
-            
+            if (result.IsSuccess)
+                ProfileChanged.OnNext(Profile);
+
             return result;
         }
 
         public void AddKill(SessionPlayer sessionPlayer)
         {
-            if(sessionPlayer.IsBot) return;
+            if (sessionPlayer.IsBot) return;
 
             Save(profile => profile.Kills++).Forget();
         }
-        
+
         public void AddDeath(SessionPlayer sessionPlayer)
         {
-            if(sessionPlayer.IsBot) return;
+            if (sessionPlayer.IsBot) return;
 
             Save(profile => profile.Deaths++).Forget();
         }
-        
+
+        private ISaveLoadScheme GetSaveLoadScheme() =>
+            _loadSchemes[LobbyConnector.IsInitialized ? typeof(CloudSaveLoadScheme) : typeof(LocalSaveLoadScheme)];
+
         public interface ISaveLoadScheme
         {
             UniTask<Result> Save(Profile profile);
             UniTask<Profile> Load();
         }
-        
+
         public class LocalSaveLoadScheme : ISaveLoadScheme
         {
             private const string PlayerSaveKey = "PlayerSave";
-        
+
             public UniTask<Result> Save(Profile profile)
             {
                 string json = JsonConvert.SerializeObject(profile);
@@ -99,27 +106,30 @@ namespace Dev
 
         public class CloudSaveLoadScheme : ISaveLoadScheme
         {
-            private HashSet<string> _fieldNames = new HashSet<string>() { "profile"};
-            
+            private HashSet<string> _fieldNames = new HashSet<string>() { "profile" };
+
             private static string PlayerSaveKey => AtomicConstants.SaveLoad.PlayerSaveKey;
 
-        
+
             public async UniTask<Result> Save(Profile profile)
             {
                 string serializeObject = JsonConvert.SerializeObject(profile);
-            
-                var data = new Dictionary<string, object> { {"profile", serializeObject} };
+
+                var data = new Dictionary<string, object> { { "profile", serializeObject } };
 
                 try
                 {
-                    await CloudSaveService.Instance.Data.Player.SaveAsync(data, new SaveOptions(new PublicWriteAccessClassOptions()));
+                    await CloudSaveService.Instance.Data.Player.SaveAsync(data,
+                        new SaveOptions(new PublicWriteAccessClassOptions()));
                 }
                 catch (Exception e)
                 {
                     AtomicLogger.Err(e.Message, AtomicConstants.LogTags.Networking);
-                    return Result.Error(GameSettingsProvider.GameSettings.IsDebugMode ? $"{e.Message}" : "Failed to save player");
+                    return Result.Error(GameSettingsProvider.GameSettings.IsDebugMode
+                        ? $"{e.Message}"
+                        : "Failed to save player");
                 }
-                
+
                 return Result.Success();
             }
 
@@ -136,7 +146,9 @@ namespace Dev
                     return profile;
                 }
 
-                Dictionary<string,Item> profileItems = await CloudSaveService.Instance.Data.Player.LoadAsync(_fieldNames, new LoadOptions(new PublicReadAccessClassOptions()));
+                Dictionary<string, Item> profileItems =
+                    await CloudSaveService.Instance.Data.Player.LoadAsync(_fieldNames,
+                        new LoadOptions(new PublicReadAccessClassOptions()));
 
                 var tryGetValue = profileItems.TryGetValue("profile", out var profileItem);
                 if (tryGetValue)
@@ -149,8 +161,5 @@ namespace Dev
                 return profile;
             }
         }
-        
     }
-
-    
 }

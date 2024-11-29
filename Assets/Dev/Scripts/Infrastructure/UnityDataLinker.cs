@@ -61,7 +61,7 @@ namespace Dev.Infrastructure
                 if(_authService.TryGetCachedProfile(playerID, out var profile)) 
                     nickname = profile.Nickname;
 
-                AtomicLogger.Log($"Player {pair.Key}, nickname: {nickname}");
+                //AtomicLogger.Log($"Player {pair.Key}, nickname: {nickname}");
             }
         }
        

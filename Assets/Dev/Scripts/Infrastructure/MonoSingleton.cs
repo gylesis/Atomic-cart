@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.Utils;
 using UnityEngine;
@@ -24,6 +25,12 @@ namespace Dev
         {
             await UniTask.WaitUntil(() => IsInitialized, cancellationToken: GlobalDisposable.DestroyCancellationToken);
             return Instance;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            Instance = null;
+            IsInitialized = false;
         }
     }
 }

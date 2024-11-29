@@ -51,14 +51,8 @@ namespace Dev.Infrastructure
 
         private void BindSaveLoadScheme()
         {
-            if (_gameSettings.IsDebugMode)
-            {
-                Container.Bind<SaveLoadService.ISaveLoadScheme>().To<SaveLoadService.LocalSaveLoadScheme>().WhenInjectedInto<SaveLoadService>();
-            }
-            else
-            {
-                Container.Bind<SaveLoadService.ISaveLoadScheme>().To<SaveLoadService.CloudSaveLoadScheme>().WhenInjectedInto<SaveLoadService>();
-            }
+            Container.Bind<SaveLoadService.ISaveLoadScheme>().To<SaveLoadService.LocalSaveLoadScheme>().AsTransient().WhenInjectedInto<SaveLoadService>();
+            Container.Bind<SaveLoadService.ISaveLoadScheme>().To<SaveLoadService.CloudSaveLoadScheme>().AsTransient().WhenInjectedInto<SaveLoadService>();
         }
     }
 }

@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 4065643546084726696}
   - component: {fileID: 998696771792111929}
   - component: {fileID: 5057071567940366527}
-  - component: {fileID: -5001927645664027644}
   m_Layer: 0
   m_Name: PlayerBase
   m_TagString: Untagged
@@ -106,6 +105,7 @@ MonoBehaviour:
   _IsActive:
     _value: 1
   _Character: {fileID: 0}
+  _CharacterClass: 0
 --- !u!114 &998696771792111929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,15 +142,5 @@ MonoBehaviour:
   _LastLookDirection: {x: 0, y: 0}
   _IsPlayerAiming:
     _value: 0
---- !u!210 &-5001927645664027644
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2405011219587723232}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_SortAtRoot: 1
+  _IsCastingMode:
+    _value: 0

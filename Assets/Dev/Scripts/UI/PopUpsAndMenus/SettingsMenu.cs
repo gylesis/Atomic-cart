@@ -55,7 +55,7 @@ namespace Dev.UI.PopUpsAndMenus
             _volumeMute.OnValueChangedAsObservable().Skip(1).Subscribe(OnMuteChanged).AddTo(this);
         }
 
-        public override async void Show()
+        public override void Show()
         {
             base.Show();
 
@@ -114,11 +114,14 @@ namespace Dev.UI.PopUpsAndMenus
                 PopUpService.ShowPopUp<SettingsMenu>((() =>
                 {
                     PopUpService.HidePopUp<SettingsMenu>();
-                    PopUpService.ShowPopUp<LobbyMainMenu>();
+
+                    if (LobbyConnector.IsInitialized && LobbyConnector.Instance.IsConnected)
+                        PopUpService.ShowPopUp<LobbyMainMenu>();
+                    else
+                        PopUpService.ShowPopUp<InGameMenu>();
                 }));
             }));
         }
-        
         
         private void OnResetClicked()
         {

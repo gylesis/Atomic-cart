@@ -14,12 +14,19 @@ namespace Dev.Infrastructure
             runner.LoadScene(sceneRef);
         }
 
-        public async UniTask LoadSceneLocal(string sceneName, LoadSceneMode loadSceneMode)
+        public async UniTask LoadSceneLocal(string sceneName, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
             await SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
             SceneLoaded.OnNext(sceneName);
         }
-
+        
+        public async UniTask LoadSceneLocal(int index, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
+        {
+            await SceneManager.LoadSceneAsync(index, loadSceneMode);
+            Scene scene = SceneManager.GetSceneAt(index);
+            SceneLoaded.OnNext(scene.name);
+        }
+        
         public async UniTask UnloadSceneLocal(string sceneName)
         {
             await SceneManager.UnloadSceneAsync(sceneName);

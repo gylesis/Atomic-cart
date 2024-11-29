@@ -84,7 +84,11 @@ namespace Dev.UI.PopUpsAndMenus
             else
             {
                 Curtains.Instance.SetText("Something went wrong, returning back to menu!");
+                Curtains.Instance.HideWithDelay(2,0);
                 AtomicLogger.Err($"Failed to host lobby, reason: {gameResult.ErrorMessage}",AtomicConstants.LogTags.Networking);
+                
+                PopUpService.HideAllPopUps();
+                PopUpService.ShowPopUp<LobbyMainMenu>();
             }
             
         }
