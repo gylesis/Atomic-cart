@@ -919,6 +919,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2609533721339008849}
   - component: {fileID: 3586853953370897614}
+  - component: {fileID: 6264443000128144261}
   m_Layer: 3
   m_Name: 'Light 2D '
   m_TagString: Untagged
@@ -991,6 +992,19 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
+--- !u!114 &6264443000128144261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8640146017149203415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b96b8f20e9524230b28679e5afcdbae6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _light2D: {fileID: 3586853953370897614}
 --- !u!1001 &5521286320170600853
 PrefabInstance:
   m_ObjectHideFlags: 0

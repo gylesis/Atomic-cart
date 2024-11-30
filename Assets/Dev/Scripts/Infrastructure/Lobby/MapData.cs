@@ -10,5 +10,7 @@ namespace Dev.Infrastructure
         public MapType MapType;
         public Sprite MapIcon;
         public Level Prefab;
+        
+        public bool SupportLighting;
     }
 }

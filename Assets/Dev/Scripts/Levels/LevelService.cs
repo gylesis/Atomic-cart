@@ -7,24 +7,12 @@ using Zenject;
 
 namespace Dev.Levels
 {
-    public class LevelService : NetworkContext
+    public class LevelService : NetSingleton<LevelService>
     {
         private MapsContainer _mapsContainer;
         [Networked] public Level CurrentLevel { get; private set; }
 
-        public static LevelService Instance { get; private set; }
-
         public Subject<Level> LevelLoaded { get; } = new Subject<Level>();
-
-        private void Awake()
-        {
-            //_currentLevel = FindObjectOfType<Level>();
-
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-        }
 
         [Inject]
         private void Init(MapsContainer mapsContainer)
@@ -38,6 +26,7 @@ namespace Dev.Levels
     
             Level level = Runner.Spawn(levelStaticData.Prefab, onBeforeSpawned: (runner, o) =>
             {
+                o.GetComponent<Level>().LevelName = levelName;
                 DiInjecter.Instance.InjectGameObject(o.gameObject);
             });
             

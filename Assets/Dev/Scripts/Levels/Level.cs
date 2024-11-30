@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dev.BotsLogic;
 using Dev.CartLogic;
@@ -6,6 +7,7 @@ using Dev.Infrastructure;
 using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
 using Dev.Utils;
+using Fusion;
 using UnityEngine;
 using Zenject;
 
@@ -17,8 +19,17 @@ namespace Dev.Levels
         
         [SerializeField] private Transform _redTeamSpawnPointsParent;
         [SerializeField] private Transform _blueTeamSpawnPointsParent;
+
+        [SerializeField] private List<LightSource> _lightSources;
+            
+        [Networked] private NetworkString<_16> _levelName { get; set; }
         
-        
+        public string LevelName
+        {
+            get => _levelName.Value;
+            set => _levelName = value;
+        }
+
         private List<SpawnPoint> _redTeamSpawnPoints;
         private List<SpawnPoint> _blueTeamSpawnPoints;
         
@@ -33,6 +44,8 @@ namespace Dev.Levels
 
         public List<BotMovePoint> BotMovePoints => _botMovePoints;
 
+        public List<LightSource> LightSources => _lightSources;
+
         public CartService CartService => _cartService;
 
         private void Awake()
@@ -40,6 +53,8 @@ namespace Dev.Levels
             _obstacles = GetComponentsInChildren<Obstacle>(true).ToList();
             _interactionObjects = GetComponentsInChildren<InteractionObject>(true).ToList();
 
+            _lightSources = GetComponentsInChildren<LightSource>(true).ToList();
+            
             _botMovePoints = _botMovePointsParent.GetComponentsInChildren<BotMovePoint>().ToList();
             
             _redTeamSpawnPoints = _redTeamSpawnPointsParent.GetComponentsInChildren<SpawnPoint>().ToList();
@@ -65,5 +80,6 @@ namespace Dev.Levels
                     return _redTeamSpawnPoints;
             }
         }
+
     }
 }

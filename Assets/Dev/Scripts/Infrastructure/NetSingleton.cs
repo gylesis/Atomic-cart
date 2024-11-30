@@ -9,9 +9,10 @@ namespace Dev
     {
         public static T Instance { get; private set; }
 
+        public static bool IsNetInitialized { get; private set; }
         public static bool IsInitialized { get; private set; }
-        
-        public override void Spawned()
+
+        protected override void Awake()
         {
             if (Instance != null) 
                 AtomicLogger.Err($"Multiple singleton for [{typeof(T)}]");
@@ -19,12 +20,18 @@ namespace Dev
             Instance = this as T;
             IsInitialized = true;
             
-            base.Spawned();
+            base.Awake();
         }
 
-        public static async UniTask<T> WaitForInitialization()
+        public override void Spawned()
         {
-            await UniTask.WaitUntil(() => IsInitialized, cancellationToken: GlobalDisposable.DestroyCancellationToken);
+            base.Spawned();
+            IsNetInitialized = true;
+        }
+
+        public static async UniTask<T> WaitForNetInitialization()
+        {
+            await UniTask.WaitUntil(() => IsNetInitialized, cancellationToken: GlobalDisposable.DestroyCancellationToken);
             return Instance;
         }
     }

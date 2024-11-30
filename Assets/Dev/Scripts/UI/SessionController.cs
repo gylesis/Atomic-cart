@@ -40,7 +40,7 @@ namespace Dev.UI
 
         public override async void Spawned()
         {
-            var unityDataLinker = await UnityDataLinker.WaitForInitialization();
+            var unityDataLinker = await UnityDataLinker.WaitForNetInitialization();
             unityDataLinker.RPC_Add(Runner.LocalPlayer, _authService.PlayerId);
             base.Spawned();
         }
