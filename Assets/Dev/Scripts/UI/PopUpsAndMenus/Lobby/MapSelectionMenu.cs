@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Lobby;
 using Dev.Utils;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Lobby
 {
     public class MapSelectionMenu : PopUp
     {

@@ -1,9 +1,10 @@
-﻿using TMPro;
+﻿using Dev.Infrastructure;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Lobby
 {
     public class LobbyMainMenu : PopUp
     {

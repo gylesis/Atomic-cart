@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Dev.Utils;
+using Dev.Infrastructure;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
@@ -10,7 +10,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 
-namespace Dev.Infrastructure
+namespace Dev.UI
 {
     [DisallowMultipleComponent]
     public class Curtains : MonoSingleton<Curtains>

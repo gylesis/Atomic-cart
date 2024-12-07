@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Lobby
 {
     [CreateAssetMenu(menuName = "StaticData/Maps/MapsContainer", fileName = "MapsContainer", order = 0)]
     public class MapsContainer : ScriptableObject

@@ -1,7 +1,7 @@
 ﻿using Dev.Weapons.Guns;
 using UnityEngine;
 
-namespace Dev.Weapons
+namespace Dev.Weapons.Commands
 {
     public class TearGas : ExplosiveProjectile
     {

@@ -2,6 +2,9 @@
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Lobby;
+using Dev.Infrastructure.Networking;
+using Dev.UI.PopUpsAndMenus.Other;
 using Dev.Utils;
 using Fusion;
 using UniRx;
@@ -9,7 +12,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Lobby
 {
     public class SessionMenu : PopUp
     {
@@ -38,13 +41,13 @@ namespace Dev.UI.PopUpsAndMenus
             
             _networkRunner = lobbyConnector.NetworkRunner;
 
-            _playButton.Clicked.Subscribe(unit => OnPlayButtonClicked()).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _readyButton.Clicked.Subscribe(unit => OnReadyButtonClicked()).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _exitButton.Clicked.Subscribe(unit => OnExitButtonClicked()).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _playButton.Clicked.Subscribe(unit => OnPlayButtonClicked()).AddTo(GlobalDisposable.SceneScopeToken);
+            _readyButton.Clicked.Subscribe(unit => OnReadyButtonClicked()).AddTo(GlobalDisposable.SceneScopeToken);
+            _exitButton.Clicked.Subscribe(unit => OnExitButtonClicked()).AddTo(GlobalDisposable.SceneScopeToken);
             
-            _sessionController.ReadyStatusUpdated.Subscribe(unit => OnReadyStatusChanged()).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _sessionController.PlayerJoinedSession.Subscribe(OnPlayerJoinedSession).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _sessionController.PlayerLeftSession.Subscribe(OnPlayerLeftSession).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _sessionController.ReadyStatusUpdated.Subscribe(unit => OnReadyStatusChanged()).AddTo(GlobalDisposable.SceneScopeToken);
+            _sessionController.PlayerJoinedSession.Subscribe(OnPlayerJoinedSession).AddTo(GlobalDisposable.SceneScopeToken);
+            _sessionController.PlayerLeftSession.Subscribe(OnPlayerLeftSession).AddTo(GlobalDisposable.SceneScopeToken);
             
             _playButton.Disable();
         }

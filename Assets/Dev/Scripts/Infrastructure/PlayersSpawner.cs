@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Dev.Infrastructure.Networking;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
+using Dev.UI.PopUpsAndMenus.Main;
 using Dev.Utils;
 using Dev.Weapons;
+using Dev.Weapons.Commands;
 using Dev.Weapons.StaticData;
 using Fusion;
 using UniRx;
@@ -40,7 +43,6 @@ namespace Dev.Infrastructure
 
         private TeamsService _teamsService;
         private PopUpService _popUpService;
-        private CharactersDataContainer _charactersDataContainer;
         private SessionStateService _sessionStateService;
         private HealthObjectsService _healthObjectsService;
         private GameSettings _gameSettings;
@@ -48,14 +50,13 @@ namespace Dev.Infrastructure
 
         [Inject]
         private void Init(TeamsService teamsService, PopUpService popUpService,
-                          GameStaticDataContainer gameStaticDataContainer, SessionStateService sessionStateService,
+                          SessionStateService sessionStateService,
                           HealthObjectsService healthObjectsService, GameSettings gameSettings, AuthService authService)
         {
             _authService = authService;
             _gameSettings = gameSettings;
             _healthObjectsService = healthObjectsService;
             _sessionStateService = sessionStateService;
-            _charactersDataContainer = gameStaticDataContainer.CharactersDataContainer;
             _popUpService = popUpService;
             _teamsService = teamsService;
         }
@@ -140,7 +141,7 @@ namespace Dev.Infrastructure
 
         private PlayerCharacter SpawnCharacter(PlayerRef playerRef ,PlayerBase playerBase, CharacterClass characterClass)
         {
-            CharacterData characterData = _charactersDataContainer.GetCharacterDataByClass(characterClass);
+            CharacterData characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(characterClass);
 
             var hasTeam = _sessionStateService.TryGetPlayerTeam(playerRef, out var teamSide);
 

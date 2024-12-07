@@ -1,5 +1,4 @@
-﻿using Dev.Infrastructure;
-using Zenject;
+﻿using Zenject;
 
 namespace Dev.BotsLogic
 {

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
-using Dev.PlayerLogic;
-using Dev.UI.PopUpsAndMenus;
-using Dev.Utils;
+using Dev.Infrastructure.Networking;
 using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
@@ -13,7 +10,7 @@ using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Dev.Weapons
+namespace Dev.Weapons.Commands
 {
     public class AirStrikeController : NetworkContext
     {

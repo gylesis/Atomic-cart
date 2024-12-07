@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System.Linq;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Lobby;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,8 +12,12 @@ namespace Dev.Utils
         [MenuItem("Tools/Refresh Maps Enum")]
         public static async void RefreshEnumMaps()
         {
-            string enumCode = "namespace Dev.Utils\n{\n";
-            enumCode += "    public enum MapName\n    {\n";
+            string filename = "MapName";
+            
+            string file = "namespace Dev.Utils\n";
+            file += "{\n";
+            file += $"    public enum {filename}\n";
+            file += "    {\n";
 
             var assets = AssetDatabase.FindAssets("t:MapsContainer", new [] { "Assets/Dev/SO/Maps"});
             string mapsContainerPath = AssetDatabase.GUIDToAssetPath(assets[0]);
@@ -23,14 +28,14 @@ namespace Dev.Utils
 
             foreach (var level in levels)
             {
-                enumCode += "        " + level + ",\n";
+                file += "       " + level + ",\n";
             }
             
-            enumCode += "    }\n";
-            enumCode += "}";
+            file += "    }\n";
+            file += "}";
 
-            string filePath = Application.dataPath + "/Dev/Scripts/Utils/MapName.cs";
-            System.IO.File.WriteAllText(filePath, enumCode);
+            string filePath = Application.dataPath + $"/Dev/Scripts/Utils/{filename}.cs";
+            System.IO.File.WriteAllText(filePath, file);
 
             AssetDatabase.Refresh();
         }

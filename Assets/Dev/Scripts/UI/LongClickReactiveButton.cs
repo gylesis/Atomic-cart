@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI
 {
     public class LongClickReactiveButton : DefaultReactiveButton
     {

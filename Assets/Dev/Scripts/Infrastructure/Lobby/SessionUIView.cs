@@ -1,9 +1,8 @@
-﻿using System;
-using Dev.UI;
+﻿using Dev.UI;
 using TMPro;
 using UnityEngine;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Lobby
 {
     public class SessionUIView : UIElement<SessionUIView>
     {

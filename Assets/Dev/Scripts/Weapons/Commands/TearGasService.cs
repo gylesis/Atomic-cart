@@ -2,7 +2,7 @@
 using Cysharp.Threading.Tasks;
 using Dev.Effects;
 using Dev.Infrastructure;
-using Dev.PlayerLogic;
+using Dev.Infrastructure.Networking;
 using Dev.Utils;
 using Dev.Weapons.Guns;
 using DG.Tweening;
@@ -10,7 +10,7 @@ using Fusion;
 using UniRx;
 using UnityEngine;
 
-namespace Dev.Weapons
+namespace Dev.Weapons.Commands
 {
     public class TearGasService : NetworkContext
     {

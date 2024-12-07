@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dev.Levels;
+using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
@@ -10,7 +11,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Networking
 {
     public class MainSceneConnectionManager : NetSingleton<MainSceneConnectionManager>, INetworkRunnerCallbacks
     {

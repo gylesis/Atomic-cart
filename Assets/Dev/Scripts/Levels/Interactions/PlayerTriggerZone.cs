@@ -21,8 +21,8 @@ namespace Dev.Levels.Interactions
         {
             base.OnInjectCompleted();
             
-            _triggerZone.TriggerEntered.Subscribe(OnZoneEntered).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _triggerZone.TriggerExit.Subscribe(OnZoneExit).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _triggerZone.TriggerEntered.Subscribe(OnZoneEntered).AddTo(GlobalDisposable.SceneScopeToken);
+            _triggerZone.TriggerExit.Subscribe(OnZoneExit).AddTo(GlobalDisposable.SceneScopeToken);
         }
 
         private void OnZoneEntered(Collider2D collider)

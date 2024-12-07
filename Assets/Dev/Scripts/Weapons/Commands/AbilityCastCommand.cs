@@ -1,11 +1,10 @@
 ﻿using Dev.Infrastructure;
-using Dev.PlayerLogic;
-using Dev.UI.PopUpsAndMenus;
+using Dev.Infrastructure.Networking;
 using Fusion;
 using UniRx;
 using UnityEngine;
 
-namespace Dev.Weapons
+namespace Dev.Weapons.Commands
 {
     public abstract class AbilityCastCommand
     {

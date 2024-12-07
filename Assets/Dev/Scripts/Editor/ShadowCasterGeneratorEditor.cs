@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Dev.Editor
+namespace Dev.Scripts.Editor
 {
     [CustomEditor(typeof(ShadowCaster2DCreator))]
     public class ShadowCaster2DTileMapEditor : UnityEditor.Editor

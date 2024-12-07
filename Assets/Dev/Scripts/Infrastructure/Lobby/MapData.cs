@@ -1,7 +1,7 @@
 ﻿using Dev.Levels;
 using UnityEngine;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Lobby
 {
     [CreateAssetMenu(menuName = "StaticData/Maps/MapStaticData", fileName = "MapStaticData", order = 0)]
     public class MapData : ScriptableObject

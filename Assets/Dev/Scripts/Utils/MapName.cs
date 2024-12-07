@@ -1,8 +1,8 @@
 namespace Dev.Utils
 {
     public enum MapName
-{
-    SunCity,
-    NightCity,
+    {
+       SunCity,
+       NightCity,
     }
 }

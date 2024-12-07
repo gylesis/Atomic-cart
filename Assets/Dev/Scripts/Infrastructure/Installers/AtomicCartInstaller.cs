@@ -1,12 +1,13 @@
-using System;
+using Dev.Infrastructure.Lobby;
 using Dev.Sounds;
+using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using UnityEngine;
 using Zenject;
 using LogType = Fusion.LogType;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Installers
 {
     public class AtomicCartInstaller : MonoInstaller
     {
@@ -15,8 +16,6 @@ namespace Dev.Infrastructure
         [SerializeField] private Curtains _curtains;
         [SerializeField] private SoundStaticDataContainer _soundStaticDataContainer;
         
-        [SerializeField] private GameStaticDataContainer _gameStaticDataContainer;
-
         [SerializeField] private Transform _popUpsParent;
         
         
@@ -25,12 +24,13 @@ namespace Dev.Infrastructure
             Fusion.Log.LogLevel = (LogType)UnityEngine.LogType.Error;
 
             Container.Bind<GlobalDisposable>().AsSingle().NonLazy();
-            
+
             Container.Bind<SceneLoader>().AsSingle().NonLazy();
             Container.Bind<PopUpService>().AsSingle().WithArguments(_popUpsParent).NonLazy();
 
             Container.Bind<SoundStaticDataContainer>().FromInstance(_soundStaticDataContainer).AsSingle().WhenInjectedInto<SoundController>();
-            
+            Container.Bind<SoundSettings>().AsSingle().WhenInjectedInto<SoundController>();
+
             Container.BindInterfacesAndSelfTo<AtomicLogger>().AsSingle().NonLazy();
             
             Container.Bind<InternetChecker>().AsSingle().NonLazy();
@@ -38,8 +38,6 @@ namespace Dev.Infrastructure
             BindSaveLoadScheme();
             Container.Bind<SaveLoadService>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<AuthService>().AsSingle().NonLazy();
-            
-            Container.Bind<GameStaticDataContainer>().FromInstance(_gameStaticDataContainer).AsSingle();
             
             Container.Bind<Curtains>().FromInstance(_curtains).AsSingle();
             Container.Bind<GameSettingsProvider>().AsSingle().NonLazy();

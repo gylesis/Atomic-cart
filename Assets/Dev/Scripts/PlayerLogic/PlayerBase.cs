@@ -1,5 +1,6 @@
 ﻿using Dev.Infrastructure;
-using Dev.Weapons;
+using Dev.Infrastructure.Networking;
+using Dev.Weapons.Commands;
 using Fusion;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -26,7 +27,6 @@ namespace Dev.PlayerLogic
             if (HasStateAuthority) 
                 LocalPlayerBase = this;
         }   
-      
         
         [Inject]
         private void Construct(InputService inputService, AbilityCastController abilityCastController, PlayerController playerController)

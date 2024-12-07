@@ -1,8 +1,8 @@
-﻿using Dev.Infrastructure;
+﻿using Dev.Infrastructure.Lobby;
 using UniRx;
 using UnityEngine;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Lobby
 {
     public class LobbyPlayMenu : PopUp
     {

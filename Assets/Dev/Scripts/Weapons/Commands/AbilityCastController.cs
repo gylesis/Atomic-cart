@@ -2,14 +2,16 @@
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.PlayerLogic;
 using Dev.Utils;
+using Dev.Weapons.Guns;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev.Weapons
+namespace Dev.Weapons.Commands
 {
     public class AbilityCastController : NetworkContext
     {

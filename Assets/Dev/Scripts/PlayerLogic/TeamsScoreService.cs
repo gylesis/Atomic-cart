@@ -1,5 +1,6 @@
 ﻿using Dev.CartLogic;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.Levels;
 using Fusion;
 using TMPro;
@@ -47,7 +48,6 @@ namespace Dev.PlayerLogic
 
         private void OnLevelLoaded(Level level)
         {
-            Debug.Log($"Level loaded");
             _cartService = level.CartService;
             level.CartService.PointReached.TakeUntilDestroy(this).Subscribe((unit => OnPointReached()));
         }

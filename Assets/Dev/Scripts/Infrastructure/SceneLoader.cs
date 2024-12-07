@@ -9,11 +9,6 @@ namespace Dev.Infrastructure
     {
         public Subject<string> SceneLoaded { get; private set; } = new Subject<string>();
 
-        public void LoadSceneNet(NetworkRunner runner, SceneRef sceneRef)
-        {
-            runner.LoadScene(sceneRef);
-        }
-
         public async UniTask LoadSceneLocal(string sceneName, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
             await SceneManager.LoadSceneAsync(sceneName, loadSceneMode);

@@ -13,21 +13,14 @@ namespace Dev.Sounds
             
         private SoundStaticDataContainer _soundStaticDataContainer;
         private ObjectPool<AudioSource> _soundPool;
-        private SaveLoadService _saveLoadService;
-        private AuthService _authService;
+        private SoundSettings _soundSettings;
 
         public static SoundController Instance { get; private set; }
         
-        private float SoundVolume => _authService.MyProfile.AdditionalSoundVolume;
-        private float MusicVolume => _authService.MyProfile.MusicVolume;
-        private bool IsMuted => _authService.MyProfile.IsVolumeMuted;
-        
-        
         [Inject]
-        private void Construct(SoundStaticDataContainer soundStaticDataContainer, SaveLoadService saveLoadService, AuthService authService)
+        private void Construct(SoundStaticDataContainer soundStaticDataContainer, SoundSettings soundSettings)
         {
-            _authService = authService;
-            _saveLoadService = saveLoadService;
+            _soundSettings = soundSettings;
             _soundStaticDataContainer = soundStaticDataContainer;
         }
 
@@ -46,7 +39,7 @@ namespace Dev.Sounds
             instance.loop = false;
             instance.volume = 0.2f;
             instance.clip = null;
-            instance.mute = IsMuted;
+            instance.mute = _soundSettings.IsMuted;
             
             return instance;
         }
@@ -84,13 +77,12 @@ namespace Dev.Sounds
             audioSource.clip = audioClip;
             audioSource.Play();
             audioSource.loop = false;
-            audioSource.volume = soundStaticData.Volume / 100f * SoundVolume;
+            audioSource.volume = soundStaticData.Volume / 100f * _soundSettings.SoundVolume;
             audioSource.spatialBlend = 1;
             audioSource.maxDistance = radius;
-            audioSource.mute = IsMuted;
+            audioSource.mute = _soundSettings.IsMuted;
             
             Extensions.Delay(audioSource.clip.length, destroyCancellationToken, () => _soundPool.Release(audioSource));
         }
-        
     }
 }

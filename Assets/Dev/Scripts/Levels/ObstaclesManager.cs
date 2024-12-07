@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Fusion;
 using UniRx;
 using UnityEngine;
@@ -29,8 +31,8 @@ namespace Dev.Levels
         {
             base.OnInjectCompleted();
             
-            _levelService.LevelLoaded.TakeUntilDestroy(this).Subscribe(OnLevelLoaded);
-            _gameStateService.GameRestarted.TakeUntilDestroy(this).Subscribe(unit => OnGameRestarted());
+            _levelService.LevelLoaded.Subscribe(OnLevelLoaded).AddTo(GlobalDisposable.SceneScopeToken);
+            _gameStateService.GameRestarted.Subscribe(unit => OnGameRestarted()).AddTo(GlobalDisposable.SceneScopeToken);
         }
 
         private void OnLevelLoaded(Level level)
@@ -57,8 +59,6 @@ namespace Dev.Levels
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
-            Debug.Log($"Players {runner.ActivePlayers.Count()}");
-                
             if(runner.IsSharedModeMasterClient || _levelService.CurrentLevel == null) return;
 
             foreach (var obstacle in _levelService.CurrentLevel.Obstacles)

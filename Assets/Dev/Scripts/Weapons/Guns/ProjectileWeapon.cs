@@ -13,7 +13,6 @@ using UnityEngine;
 
 namespace Dev.Weapons.Guns
 {
-    //[OrderAfter(typeof(Projectile))]
     public abstract class ProjectileWeapon<TProjectileType> : Weapon where TProjectileType : ProjectileStaticData
     {
         [SerializeField] private float _soundRadius = 40;

@@ -1,12 +1,13 @@
 using Cysharp.Threading.Tasks;
-using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.PlayerLogic;
+using Dev.UI.PopUpsAndMenus.Other;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Main
 {
     public class InGameMenu : PopUp
     {

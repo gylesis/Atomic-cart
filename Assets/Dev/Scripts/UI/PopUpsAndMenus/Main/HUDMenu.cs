@@ -1,13 +1,12 @@
-﻿using System;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using Dev.PlayerLogic;
-using Dev.Weapons;
+using Dev.Weapons.Commands;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Main
 {
     public class HUDMenu : PopUp
     {

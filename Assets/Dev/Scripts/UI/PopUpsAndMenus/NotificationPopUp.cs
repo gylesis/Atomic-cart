@@ -1,10 +1,9 @@
 ﻿using System;
-using Dev.UI.PopUpsAndMenus;
 using TMPro;
 using UniRx;
 using UnityEngine;
 
-namespace Dev.UI
+namespace Dev.UI.PopUpsAndMenus
 {
     public class NotificationPopUp : PopUp
     {

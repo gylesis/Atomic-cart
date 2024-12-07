@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
-using Dev.Infrastructure;
-using Dev.Utils;
-using Fusion;
-using Newtonsoft.Json;
-using UniRx;
-#if !UNITY_STANDALONE_WIN
+﻿#if !UNITY_STANDALONE_WIN
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
 #endif
+using System;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Dev.Infrastructure.Networking;
+using Dev.Utils;
+using UniRx;
 using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
 using Unity.Services.Core;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 using Zenject;
 using Debug = UnityEngine.Debug;
 
-namespace Dev
+namespace Dev.Infrastructure
 {
     public class AuthService : IInitializable, IDisposable
     {
@@ -59,7 +54,7 @@ namespace Dev
 
         public void Initialize()
         {
-            _saveLoadService.ProfileChanged.Subscribe(OnProfileSaveOrLoad).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _saveLoadService.ProfileChanged.Subscribe(OnProfileSaveOrLoad).AddTo(GlobalDisposable.ProjectScopeToken);
 
             if (_saveLoadService.Profile != null) 
                 OnProfileSaveOrLoad(_saveLoadService.Profile);

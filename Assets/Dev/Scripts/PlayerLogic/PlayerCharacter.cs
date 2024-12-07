@@ -1,4 +1,4 @@
-﻿using Dev.Infrastructure;
+﻿using Dev.Infrastructure.Networking;
 using Dev.Weapons;
 using Dev.Weapons.Guns;
 using DG.Tweening;
@@ -16,7 +16,6 @@ namespace Dev.PlayerLogic
 
         [SerializeField] private Rigidbody2D _rigidbody2D;
         
-       
         public PlayerView PlayerView => _playerView;
         public Collider2D Collider2D => _collider2D;
         public Rigidbody2D Rigidbody => _rigidbody2D;

@@ -1,11 +1,11 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
-using Dev.Infrastructure;
+using Dev.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using LogType = Fusion.LogType;
 
-namespace Dev
+namespace Dev.Infrastructure
 {
     public class Bootstrap : MonoBehaviour
     {

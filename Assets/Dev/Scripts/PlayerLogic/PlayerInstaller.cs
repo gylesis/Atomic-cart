@@ -1,5 +1,6 @@
 ﻿using Dev.Infrastructure;
 using Dev.Weapons;
+using Dev.Weapons.Commands;
 using UnityEngine;
 using Zenject;
 

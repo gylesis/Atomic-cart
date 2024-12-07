@@ -1,10 +1,11 @@
-﻿using Dev.Utils;
+﻿using Dev.Infrastructure;
+using Dev.Utils;
 using TMPro;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Lobby
 {
     public class LinkProfilePopUp : PopUp
     {

@@ -15,7 +15,6 @@ MonoBehaviour:
   _timeAfterWinGame: 5
   _isFriendlyFireOn: 0
   _saveLogsAfterQuit: 0
-  _botsConfig: {fileID: 11400000, guid: c51c82455b2a4bf408bf820658849260, type: 2}
   _cameraZoomModifier: 20
   _cameraFollowSpeed: 2
   _weaponObstaclesDetectLayers:
@@ -23,7 +22,6 @@ MonoBehaviour:
     m_Bits: 192
   _weaponHitDetectionOffset: 1.5
   _shootThreshold: 0.267
-  _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
   _grenadeFlyFunction:
     serializedVersion: 2
     m_Curve:
@@ -90,7 +88,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _firstLevelName: 1
+  _charactersDataContainer: {fileID: 11400000, guid: b9885e7b526be5943b1cbcee28b272eb, type: 2}
+  _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
+  _popUpsStaticDataContainer: {fileID: 11400000, guid: 30d814251de0cf541ab732a4c5d29145, type: 2}
+  _botsConfig: {fileID: 11400000, guid: c51c82455b2a4bf408bf820658849260, type: 2}
   _isDebugMode: 0
   _barrelsRespawnCooldown: 5
   Radius: 2

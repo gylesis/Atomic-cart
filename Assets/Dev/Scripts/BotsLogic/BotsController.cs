@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI.PopUpsAndMenus;
@@ -22,6 +24,8 @@ namespace Dev.BotsLogic
         private GameSettings _gameSettings; 
         private SessionStateService _sessionStateService;
         private HealthObjectsService _healthObjectsService;
+        private LevelService _levelService;
+        private DiInjecter _diInjecter;
 
         public Subject<Bot> BotSpawned { get; } = new Subject<Bot>();
         public Subject<Bot> BotDeSpawned { get; } = new Subject<Bot>();
@@ -30,38 +34,38 @@ namespace Dev.BotsLogic
 
         public List<BotMovePoint> LevelMovePoints => _levelMovePoints;
 
-        protected override void Start()
-        {
-            base.Start();
-            
-            LevelService.Instance.LevelLoaded.TakeUntilDestroy(this).Subscribe((OnLevelLoaded));
-        }
-
         [Inject]
-        private void Construct(TeamsService teamsService, GameSettings gameSettings, SessionStateService sessionStateService, HealthObjectsService healthObjectsService)
+        private void Construct(TeamsService teamsService, GameSettings gameSettings, SessionStateService sessionStateService, HealthObjectsService healthObjectsService, LevelService levelService, DiInjecter diInjecter)
         {
+            _diInjecter = diInjecter;
+            _levelService = levelService;
             _healthObjectsService = healthObjectsService;
             _sessionStateService = sessionStateService;
             _gameSettings = gameSettings;
             _teamsService = teamsService;
         }
 
+        protected override void OnInjectCompleted()
+        {
+            base.OnInjectCompleted();
+            
+            _levelService.LevelLoaded.Subscribe(OnLevelLoaded).AddTo(GlobalDisposable.SceneScopeToken);
+        }
+
         protected override void CorrectState()
         {
             base.CorrectState();
 
-            if (LevelService.Instance.CurrentLevel != null)
-            {
-                _levelMovePoints = LevelService.Instance.CurrentLevel.BotMovePoints;
-            }
+            if (_levelService.CurrentLevel != null) 
+                _levelMovePoints = _levelService.CurrentLevel.BotMovePoints;
         }
 
         private void OnLevelLoaded(Level level)
         {
             if (Runner.IsSharedModeMasterClient == false) return;
             
-            _levelMovePoints = LevelService.Instance.CurrentLevel.BotMovePoints;
-            
+            _levelMovePoints = _levelService.CurrentLevel.BotMovePoints;
+
             SetupBots();
         }
 
@@ -90,7 +94,7 @@ namespace Dev.BotsLogic
             {
                 var bot = o.GetComponent<Bot>();
 
-                DiInjecter.Instance.InjectGameObject(bot.gameObject);
+                _diInjecter.InjectGameObject(bot.gameObject);
                 
                 _teamsService.RPC_AssignForTeam(new TeamMember(bot), team);
 

@@ -1,4 +1,6 @@
-﻿using Dev.Utils;
+﻿using Dev.PlayerLogic;
+using Dev.UI.PopUpsAndMenus;
+using Dev.Utils;
 using Dev.Weapons.StaticData;
 using UnityEngine;
 
@@ -13,7 +15,6 @@ namespace Dev.Infrastructure
         [SerializeField] private bool _saveLogsAfterQuit;
         
         [Header("Bots")] 
-        [SerializeField] private BotsConfig _botsConfig;
 
         [Header("Player")] 
         [SerializeField] private float _cameraZoomModifier = 15f;
@@ -23,15 +24,17 @@ namespace Dev.Infrastructure
         [SerializeField] private float _weaponHitDetectionOffset = 1;
         [Range(0.1f, 1f)] [SerializeField] private float _shootThreshold = 0.5f;
         
-        
         [Header("Weapon")]
-        [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
-
         [SerializeField] private AnimationCurve _grenadeFlyFunction;
         [SerializeField] private AnimationCurve _grenadeFlySizeFunction;
+        
+        [Header("Configs")]
+        [SerializeField] private CharactersDataContainer _charactersDataContainer;
+        [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
+        [SerializeField] private PopUpsStaticDataContainer _popUpsStaticDataContainer;
+        [SerializeField] private BotsConfig _botsConfig;
 
         [Header("Debug")]
-        [SerializeField] private MapName _firstLevelName;
         [SerializeField] private bool _isDebugMode;
 
         [SerializeField] private float _barrelsRespawnCooldown = 5f;
@@ -45,12 +48,8 @@ namespace Dev.Infrastructure
 
         public bool SaveLogsAfterQuit => _saveLogsAfterQuit;
 
-        public WeaponStaticDataContainer WeaponStaticDataContainer => _weaponStaticDataContainer;
-
         public AnimationCurve GrenadeFlyFunction => _grenadeFlyFunction;
         public AnimationCurve GrenadeFlySizeFunction => _grenadeFlySizeFunction;
-
-        public MapName FirstLevelName => _firstLevelName;
 
         public bool IsFriendlyFireOn => _isFriendlyFireOn;
         public float CameraZoomModifier => _cameraZoomModifier;
@@ -62,5 +61,9 @@ namespace Dev.Infrastructure
 
         public int TimeAfterWinGame => _timeAfterWinGame;
         public float ShootThreshold => _shootThreshold;
+        
+        public PopUpsStaticDataContainer PopUpsStaticDataContainer => _popUpsStaticDataContainer;
+        public CharactersDataContainer CharactersDataContainer => _charactersDataContainer;
+        public WeaponStaticDataContainer WeaponStaticDataContainer => _weaponStaticDataContainer;
     }
 }

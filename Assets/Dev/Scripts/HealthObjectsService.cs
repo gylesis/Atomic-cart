@@ -3,6 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Dev.BotsLogic;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.Utils;
@@ -20,7 +21,6 @@ namespace Dev
         private GameSettings _gameSettings;
         private WorldTextProvider _worldTextProvider;
         private PlayersDataService _playersDataService;
-        private GameStaticDataContainer _gameStaticDataContainer;
         private BotsController _botsController;
         private SessionStateService _sessionStateService;
 
@@ -36,12 +36,11 @@ namespace Dev
         [Inject]
         private void Construct(GameSettings gameSettings,
                                WorldTextProvider worldTextProvider, PlayersDataService playersDataService,
-                               GameStaticDataContainer gameStaticDataContainer, BotsController botsController,
+                               BotsController botsController,
                                SessionStateService sessionStateService)
         {
             _sessionStateService = sessionStateService;
             _botsController = botsController;
-            _gameStaticDataContainer = gameStaticDataContainer;
             _playersDataService = playersDataService;
             _worldTextProvider = worldTextProvider;
             _gameSettings = gameSettings;
@@ -66,7 +65,7 @@ namespace Dev
         private void RPC_RegisterPlayerInternal(PlayerRef playerRef)
         {
             CharacterClass playerCharacterClass = _playersDataService.GetPlayerCharacterClass(playerRef);
-            CharacterData characterData = _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
+            CharacterData characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
 
             RPC_InternalRegisterObject(playerRef.ToNetworkId(), characterData.CharacterStats.Health);
         }
@@ -381,7 +380,7 @@ namespace Dev
                 PlayerRef playerRef = networkObject.InputAuthority;
 
                 CharacterClass playerCharacterClass = _playersDataService.GetPlayerCharacterClass(playerRef);
-                CharacterData characterData = _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
+                CharacterData characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(playerCharacterClass);
 
                 GainHealthToPlayer(playerRef, characterData.CharacterStats.Health);
             }
@@ -394,7 +393,7 @@ namespace Dev
                 {
                     Bot bot = networkObject.GetComponent<Bot>();
                     CharacterClass characterClass = bot.BotData.CharacterClass;
-                    CharacterData characterData = _gameStaticDataContainer.CharactersDataContainer.GetCharacterDataByClass(characterClass);
+                    CharacterData characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(characterClass);
                     GainHealthTo(id, characterData.CharacterStats.Health);
                 }
                 else

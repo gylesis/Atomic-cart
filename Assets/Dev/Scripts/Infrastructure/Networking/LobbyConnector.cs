@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Dev.UI.PopUpsAndMenus;
+using Dev.UI;
 using Dev.Utils;
 using Fusion;
 using Fusion.Sockets;
@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Networking
 {
     [RequireComponent(typeof(NetworkRunner))]
     public class LobbyConnector : MonoSingleton<LobbyConnector>, INetworkRunnerCallbacks

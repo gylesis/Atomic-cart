@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Lobby
 {
     public class MapUIView : UIElement<MapUIView>
     {

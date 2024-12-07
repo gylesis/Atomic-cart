@@ -1,4 +1,5 @@
-﻿using Fusion;
+﻿using Dev.Infrastructure.Lobby;
+using Fusion;
 
 namespace Dev.Infrastructure
 {

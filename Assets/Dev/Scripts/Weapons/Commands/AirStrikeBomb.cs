@@ -1,7 +1,7 @@
 ﻿using Dev.Effects;
 using Dev.Weapons.Guns;
 
-namespace Dev.Weapons
+namespace Dev.Weapons.Commands
 {
     public class AirStrikeBomb : ExplosiveProjectile
     {

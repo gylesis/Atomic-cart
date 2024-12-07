@@ -1,4 +1,4 @@
-﻿namespace Dev
+﻿namespace Dev.Infrastructure
 {
     public class ZenjectSingleton<T> where T : class, new() // TODO
     {

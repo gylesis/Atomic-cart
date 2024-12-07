@@ -7,32 +7,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Main
 {
     public class CharacterChooseMenu : PopUp
     {
         [SerializeField] private CharacterPickUI _characterPickUIPrefab;
         [SerializeField] private Transform _parent;
-        
-        private CharactersDataContainer _charactersDataContainer;
+        [SerializeField] private Image _blockMask;
 
         private List<CharacterPickUI> _characterPickUis = new List<CharacterPickUI>(4);
-
-        [SerializeField] private Image _blockMask;
-        
-        private PlayersSpawner _playersSpawner;
         private Action<CharacterClass> _onCharacterChose;
 
+        private GameSettings _gameSettings;
+
         [Inject]
-        private void Init(GameStaticDataContainer gameStaticDataContainer, PlayersSpawner playersSpawner)
+        private void Init(GameSettings gameSettings)
         {
-            _playersSpawner = playersSpawner;   
-            _charactersDataContainer = gameStaticDataContainer.CharactersDataContainer;
+            _gameSettings = gameSettings;
         }
 
         private void Start()
         {
-            foreach (CharacterData data in _charactersDataContainer.Datas)
+            foreach (CharacterData data in _gameSettings.CharactersDataContainer.Datas)
             {
                 CharacterPickUI characterPickUI = Instantiate(_characterPickUIPrefab, _parent);
                 

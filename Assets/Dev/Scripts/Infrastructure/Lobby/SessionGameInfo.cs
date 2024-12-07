@@ -1,4 +1,4 @@
-﻿namespace Dev.Infrastructure
+﻿namespace Dev.Infrastructure.Lobby
 {
     public struct SessionGameInfo
     {

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Installers
 {
     public class LevelInstaller : MonoInstaller
     {

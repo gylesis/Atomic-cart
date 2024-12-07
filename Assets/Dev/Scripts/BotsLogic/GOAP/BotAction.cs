@@ -1,4 +1,4 @@
-﻿namespace Dev.BotsLogic
+﻿namespace Dev.BotsLogic.GOAP
 {
     public abstract class BotAction<TPayload> : IBotAction
     {

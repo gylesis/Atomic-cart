@@ -1,10 +1,10 @@
 ﻿using Dev.Infrastructure;
-using Dev.PlayerLogic;
+using Dev.Weapons.Guns;
 using Fusion;
 using UniRx;
 using UnityEngine;
 
-namespace Dev.Weapons
+namespace Dev.Weapons.Commands
 {
     public class CastLandmineCommand : AbilityCastCommand
     {

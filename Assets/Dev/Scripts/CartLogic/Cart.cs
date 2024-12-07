@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Dev.BotsLogic;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.Levels.Interactions;
 using Dev.PlayerLogic;
 using Dev.Weapons.Guns;
@@ -32,10 +33,10 @@ namespace Dev.CartLogic
         {
             base.OnInjectCompleted();
             
-            _triggerZone.PlayerEntered.Subscribe(OnPlayerEnteredCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _triggerZone.BotEntered.Subscribe(OnBotEnteredCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _triggerZone.PlayerExit.Subscribe(OnPlayerExitCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _triggerZone.BotExit.Subscribe(OnBotExitCartZone).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _triggerZone.PlayerEntered.Subscribe(OnPlayerEnteredCartZone).AddTo(GlobalDisposable.SceneScopeToken);
+            _triggerZone.BotEntered.Subscribe(OnBotEnteredCartZone).AddTo(GlobalDisposable.SceneScopeToken);
+            _triggerZone.PlayerExit.Subscribe(OnPlayerExitCartZone).AddTo(GlobalDisposable.SceneScopeToken);
+            _triggerZone.BotExit.Subscribe(OnBotExitCartZone).AddTo(GlobalDisposable.SceneScopeToken);
         }
 
         private void OnBotEnteredCartZone(Bot bot)

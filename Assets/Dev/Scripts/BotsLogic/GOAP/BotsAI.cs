@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Dev.CartLogic;
-using Dev.PlayerLogic;
 using UnityEngine;
 
-namespace Dev.BotsLogic
+namespace Dev.BotsLogic.GOAP
 {
     public class BotsAI
     {

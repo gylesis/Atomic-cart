@@ -16,6 +16,5 @@ namespace Dev.UI.PopUpsAndMenus
 
             return _popups.FirstOrDefault(x => x.GetType() == type) as T;
         }
-        
     }
 }

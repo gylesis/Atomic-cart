@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Dev.Infrastructure.Networking;
 using Dev.UI;
 using Fusion;
 using Fusion.Sockets;
@@ -11,7 +11,7 @@ using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
 using Zenject;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Lobby
 {
     public class GameSessionBrowser : NetworkContext, INetworkRunnerCallbacks
     {

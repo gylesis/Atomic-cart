@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Dev.Weapons.StaticData;
 using UnityEditor;
 using UnityEngine;
 
-namespace Dev.Editor
+namespace Dev.Scripts.Editor
 {
     public class WeaponDataEditor : EditorWindow
     {

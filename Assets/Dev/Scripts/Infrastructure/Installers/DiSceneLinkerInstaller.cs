@@ -1,7 +1,6 @@
-﻿using Dev.UI.PopUpsAndMenus;
-using Zenject;
+﻿using Zenject;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Installers
 {
     public class DiSceneLinkerInstaller : MonoInstaller
     {

@@ -1,9 +1,8 @@
-﻿using System;
-using Cysharp.Threading.Tasks;
-using Dev.Infrastructure;
+﻿using Cysharp.Threading.Tasks;
+using Dev.Infrastructure.Networking;
 using Dev.Utils;
 
-namespace Dev
+namespace Dev.Infrastructure
 {
     public abstract class NetSingleton<T> : NetworkContext where T : NetworkContext
     {
@@ -31,7 +30,7 @@ namespace Dev
 
         public static async UniTask<T> WaitForNetInitialization()
         {
-            await UniTask.WaitUntil(() => IsNetInitialized, cancellationToken: GlobalDisposable.DestroyCancellationToken);
+            await UniTask.WaitUntil(() => IsNetInitialized, cancellationToken: GlobalDisposable.ProjectScopeToken);
             return Instance;
         }
     }

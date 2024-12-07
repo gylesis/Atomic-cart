@@ -1,5 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
-using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.UI;
 using Dev.Utils;
 using TMPro;
@@ -7,7 +7,7 @@ using Unity.Services.Core;
 using UnityEngine;
 using Zenject;
 
-namespace Dev
+namespace Dev.Infrastructure
 {
     public class AuthBootstrap : MonoBehaviour
     {

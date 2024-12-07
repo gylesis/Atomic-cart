@@ -1,5 +1,6 @@
 using Dev.Effects;
 using Dev.Infrastructure;
+using Dev.Weapons.Guns;
 using UnityEngine;
 
 namespace Dev.Levels

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.PlayerLogic;
 using Dev.Utils;
 using Fusion;
@@ -61,11 +62,11 @@ namespace Dev.CartLogic
         {
             base.OnInjectCompleted();
             
-            _playersSpawner.BaseDespawned.Subscribe(OnPlayerLeft).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _playersSpawner.CharacterDespawned.Subscribe(OnPlayerDespawned).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _playersSpawner.BaseDespawned.Subscribe(OnPlayerLeft).AddTo(GlobalDisposable.SceneScopeToken);
+            _playersSpawner.CharacterDespawned.Subscribe(OnPlayerDespawned).AddTo(GlobalDisposable.SceneScopeToken);
 
-            _cart.CartZoneEntered.Subscribe(OnCartZoneEntered).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _cart.CartZoneExit.Subscribe(OnCartZoneExit).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _cart.CartZoneEntered.Subscribe(OnCartZoneEntered).AddTo(GlobalDisposable.SceneScopeToken);
+            _cart.CartZoneExit.Subscribe(OnCartZoneExit).AddTo(GlobalDisposable.SceneScopeToken);
 
             HighlightControlPoints();
             

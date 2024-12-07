@@ -1,22 +1,14 @@
-﻿using System;
-using Dev.BotsLogic;
-using Dev.Effects;
+﻿using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.PlayerLogic;
 using Dev.Utils;
-using Dev.Weapons.Guns;
 using DG.Tweening;
 using Fusion;
-using UniRx;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Zenject;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-namespace Dev.Weapons
+namespace Dev.Weapons.Guns
 {
     public class Landmine : ExplosiveProjectile
     {

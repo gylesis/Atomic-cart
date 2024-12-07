@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Installers
 {
     public class PopUpsSpawnTransformLinker : MonoBehaviour
     {

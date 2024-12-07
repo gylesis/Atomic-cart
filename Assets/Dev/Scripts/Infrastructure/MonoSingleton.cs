@@ -1,10 +1,8 @@
-﻿using System;
-using Cysharp.Threading.Tasks;
-using Dev.Infrastructure;
+﻿using Cysharp.Threading.Tasks;
 using Dev.Utils;
 using UnityEngine;
 
-namespace Dev
+namespace Dev.Infrastructure
 {
     public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
@@ -23,7 +21,7 @@ namespace Dev
 
         public static async UniTask<T> WaitForInitialization()
         {
-            await UniTask.WaitUntil(() => IsInitialized, cancellationToken: GlobalDisposable.DestroyCancellationToken);
+            await UniTask.WaitUntil(() => IsInitialized, cancellationToken: GlobalDisposable.ProjectScopeToken);
             return Instance;
         }
 

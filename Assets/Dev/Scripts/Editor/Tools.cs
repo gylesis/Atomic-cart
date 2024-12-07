@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace Dev.Editor
+namespace Dev.Scripts.Editor
 {
     public class Tools : MonoBehaviour
     {

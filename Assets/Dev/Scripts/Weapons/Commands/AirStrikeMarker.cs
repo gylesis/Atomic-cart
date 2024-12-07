@@ -1,9 +1,9 @@
-﻿using Dev.Infrastructure;
+﻿using Dev.Infrastructure.Networking;
 using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Dev.Weapons
+namespace Dev.Weapons.Commands
 {
     public class AirStrikeMarker : NetworkContext
     {

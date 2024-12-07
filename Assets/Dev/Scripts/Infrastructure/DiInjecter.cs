@@ -4,7 +4,7 @@ using UniRx.Triggers;
 using UnityEngine;
 using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.Infrastructure
 {
     public class DiInjecter
     {
@@ -37,8 +37,5 @@ namespace Dev.UI.PopUpsAndMenus
             _objects.Add(gameObject.GetInstanceID());
             SceneDiContainer.InjectGameObject(gameObject);
         }
-        
-        
-        
     }
 }

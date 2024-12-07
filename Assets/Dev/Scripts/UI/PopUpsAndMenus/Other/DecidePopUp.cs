@@ -7,7 +7,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.UI.PopUpsAndMenus.Other
 {
     public class DecidePopUp : PopUp
     {

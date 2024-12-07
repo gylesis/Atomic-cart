@@ -3,14 +3,14 @@ using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
 using Dev.Utils;
-using Dev.Weapons;
+using Dev.Weapons.Commands;
 using Dev.Weapons.Guns;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
 
-namespace Dev.Infrastructure
+namespace Dev.Infrastructure.Installers
 {
     public class MainSceneInstaller : MonoInstaller
     {

@@ -3,6 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Dev.BotsLogic;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Lobby;
 using Dev.Levels;
 using UniRx;
 using UnityEngine;
@@ -15,10 +16,12 @@ namespace Dev
         private MapsContainer _mapsContainer;
         private BotsController _botsController;
         private PlayersSpawner _playersSpawner;
+        private LevelService _levelService;
 
         [Inject]
-        private void Construct(MapsContainer mapsContainer, PlayersSpawner playersSpawner, BotsController botsController)
+        private void Construct(MapsContainer mapsContainer, PlayersSpawner playersSpawner, BotsController botsController, LevelService levelService)
         {
+            _levelService = levelService;
             _playersSpawner = playersSpawner;
             _botsController = botsController;
             _mapsContainer = mapsContainer;
@@ -31,10 +34,10 @@ namespace Dev
             if (levelService.CurrentLevel != null) 
                 OnLevelLoaded(levelService.CurrentLevel);
 
-            levelService.LevelLoaded.Subscribe(OnLevelLoaded).AddTo(GlobalDisposable.DestroyCancellationToken);
+            levelService.LevelLoaded.Subscribe(OnLevelLoaded).AddTo(GlobalDisposable.SceneScopeToken);
 
-            _botsController.BotSpawned.Subscribe(OnBotSpawned).AddTo(GlobalDisposable.DestroyCancellationToken);
-            _playersSpawner.CharacterSpawned.Subscribe(OnPlayerSpawned).AddTo(GlobalDisposable.DestroyCancellationToken);
+            _botsController.BotSpawned.Subscribe(OnBotSpawned).AddTo(GlobalDisposable.SceneScopeToken);
+            _playersSpawner.CharacterSpawned.Subscribe(OnPlayerSpawned).AddTo(GlobalDisposable.SceneScopeToken);
         }
 
         private void OnPlayerSpawned(PlayerSpawnEventContext context)
@@ -51,7 +54,7 @@ namespace Dev
 
         private void UpdateSources(List<LightSource> lightSources)
         {
-            var mapData = _mapsContainer.GetMapData(LevelService.Instance.CurrentLevel.LevelName);
+            var mapData = _mapsContainer.GetMapData(_levelService.CurrentLevel.LevelName);
             
             foreach (var lightSource in lightSources) 
                 lightSource.Light2D.enabled = mapData.SupportLighting;

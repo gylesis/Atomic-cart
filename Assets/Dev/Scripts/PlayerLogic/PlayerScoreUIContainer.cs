@@ -1,4 +1,5 @@
 ﻿using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using UnityEngine;
 
 namespace Dev.PlayerLogic

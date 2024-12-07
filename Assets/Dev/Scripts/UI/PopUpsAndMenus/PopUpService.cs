@@ -9,30 +9,24 @@ namespace Dev.UI.PopUpsAndMenus
 {
     public class PopUpService
     {
-        private Transform _linkedScenePopUpsParent;
-        private Transform _spawnedPopUpsParent;
-
-        private Dictionary<Type, PopUp> _spawnedPopUps = new Dictionary<Type, PopUp>();
-
+        public static PopUpService Instance { get; private set; }
         public Subject<PopUpStateContext> PopUpStateChanged { get; } = new Subject<PopUpStateContext>();
 
-        private Queue<PopUp> _popUpsChain = new Queue<PopUp>();
-
-        private PopUpsStaticDataContainer _popUpsStaticDataContainer;
-        private DiInjecter _diInjecter;
-
+        private Queue<PopUp> _popUpsChain = new Queue<PopUp>(); // TODO implement chaining resolve when pressing back
+        private Dictionary<Type, PopUp> _spawnedPopUps = new Dictionary<Type, PopUp>();
+        private List<Type> _scenePopUps = new ();
+        private Transform _linkedScenePopUpsParent;
         private CompositeDisposable _disposable = new CompositeDisposable();
 
-        public static PopUpService Instance { get; private set; }
+        private DiInjecter _diInjecter;
+        private Transform _spawnedPopUpsParent;
+        private GameSettings _gameSettings;
 
-        public List<Type> _scenePopUps = new ();
-        
-        private PopUpService(GameStaticDataContainer gameStaticDataContainer, DiInjecter diInjecter,
-                             Transform spawnedPopUpsParent)
+        private PopUpService(GameSettings gameSettings, DiInjecter diInjecter, Transform spawnedPopUpsParent)
         {
+            _gameSettings = gameSettings;
             _spawnedPopUpsParent = spawnedPopUpsParent;
             _diInjecter = diInjecter;
-            _popUpsStaticDataContainer = gameStaticDataContainer.PopUpsStaticDataContainer;
 
             Instance = this;
         }
@@ -126,13 +120,11 @@ namespace Dev.UI.PopUpsAndMenus
         {
             TryGetPopUp<TPopUp>(out var popUp);
 
-            //popUp.OnSucceedButtonClicked(null);
             popUp.Hide();
         }
 
         public void HidePopUp(PopUp popUp)
         {
-            //popUp.OnSucceedButtonClicked(null);
             popUp.Hide();
         }
 
@@ -146,7 +138,7 @@ namespace Dev.UI.PopUpsAndMenus
 
         private TPopUp GetPrefab<TPopUp>() where TPopUp : PopUp
         {
-            return _popUpsStaticDataContainer.GetPrefab<TPopUp>();
+            return _gameSettings.PopUpsStaticDataContainer.GetPrefab<TPopUp>();
         }
 
         private bool IsPopUpSpawned<TPopUp>() => _spawnedPopUps.ContainsKey(typeof(TPopUp));

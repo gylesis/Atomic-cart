@@ -3,7 +3,7 @@ using System.IO;
 using Dev.Utils;
 using UnityEditor;
 
-namespace Dev.Editor
+namespace Dev.Scripts.Editor
 {
     public static class Builder
     {

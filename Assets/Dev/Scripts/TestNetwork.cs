@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;

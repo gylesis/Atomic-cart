@@ -16,6 +16,5 @@ namespace Dev.PlayerLogic
         {
             _playersSpawner.ChangePlayerCharacter(playerRef, characterClass);
         }
-        
     }
 }

@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace Dev.PlayerLogic
 {
-    [CreateAssetMenu(menuName = "StaticData/Character/CharactersDataContainer", fileName = "CharactersDataContainer",
-        order = 0)]
+    [CreateAssetMenu(menuName = "StaticData/Character/CharactersDataContainer", fileName = "CharactersDataContainer")]
     public class CharactersDataContainer : ScriptableObject
     {
         [SerializeField] private CharacterData[] _datas;

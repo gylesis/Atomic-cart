@@ -1,6 +1,6 @@
 ﻿using Zenject;
 
-namespace Dev.UI.PopUpsAndMenus
+namespace Dev.Infrastructure
 {
     public class DiSceneLinker
     {

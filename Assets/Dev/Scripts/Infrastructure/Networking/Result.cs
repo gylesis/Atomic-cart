@@ -1,4 +1,4 @@
-﻿namespace Dev.Infrastructure
+﻿namespace Dev.Infrastructure.Networking
 {
     public struct Result
     {
