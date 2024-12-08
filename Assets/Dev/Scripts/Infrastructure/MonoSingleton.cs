@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Dev.Infrastructure
 {
-    public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
+    public abstract class MonoSingleton<T> : MonoContext where T : MonoBehaviour
     {
         public static T Instance { get; private set; }
 

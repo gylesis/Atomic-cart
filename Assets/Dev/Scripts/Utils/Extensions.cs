@@ -80,6 +80,34 @@ namespace Dev.Utils
             }
         }
 
+        public static void SetPositionZ(this Transform transform, float newZ)
+        {
+            var position = transform.position;
+            position.z = newZ;
+            transform.position = position;
+        }
+        
+         /*
+        public static void SetPositionZ(this Transform transform, float newX = default, float newY = float.PositiveInfinity, float newZ = float.PositiveInfinity)
+        {
+            var position = transform.position;
+            position.x = newX == default ? transform.position.x : newX;
+            position.y = newY;
+            position.z = newZ;
+            transform.position = position;
+        }
+        */
+        
+        
+        public static bool IsPointInCameraView(this Camera camera, Vector3 worldPosition, float offset = 0)
+        {
+            Vector3 viewportPosition = camera.WorldToViewportPoint(worldPosition);
+            
+            return viewportPosition.z > 0 && 
+                   viewportPosition.x >= -offset && viewportPosition.x <= 1 + offset && // Width offset
+                   viewportPosition.y >= -offset && viewportPosition.y <= 1 + offset;   // Height offset
+        }
+
         public static NetworkId ToNetworkId(this PlayerRef playerRef)
         {
             return new NetworkId

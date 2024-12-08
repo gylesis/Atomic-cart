@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 523fb269f66a4bd4bf6c13bb39f3261c, type: 3}
+  m_Name: CameraShakeConfig
+  m_EditorClassIdentifier: 
+  _shakeDatas:
+  - Name: small_explosion
+    Duration: 0.5
+    Power: 0.25
+    Vibrato: 25
+  - Name: big_explosion
+    Duration: 0.4
+    Power: 0.5
+    Vibrato: 50
+  - Name: ak_fire
+    Duration: 0.05
+    Power: 0.1
+    Vibrato: 10
+  - Name: pistol_fire
+    Duration: 0.1
+    Power: 0.1
+    Vibrato: 15
+  - Name: grenade_launcher_fire
+    Duration: 0.05
+    Power: 0.1
+    Vibrato: 10
+  - Name: bazooka_fire
+    Duration: 0.168
+    Power: 0.192
+    Vibrato: 28

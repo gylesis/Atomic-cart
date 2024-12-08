@@ -20,6 +20,7 @@ MonoBehaviour:
   _maxDamage: 55
   _fireSound: bazooka_fire
   _hitSound: bazooka_hit
+  _shakePatternKey: bazooka_fire
   _projectileSpeed: 1500
   _projectilePrefab: {fileID: 7001214283104243862, guid: a1f906040a118324e851d514da024c6a, type: 3}
   _explosionRadius: 5

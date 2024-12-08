@@ -33,7 +33,8 @@ namespace Dev.Infrastructure
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
         [SerializeField] private PopUpsStaticDataContainer _popUpsStaticDataContainer;
         [SerializeField] private BotsConfig _botsConfig;
-
+        [SerializeField] private CameraShakeConfig _cameraShakeConfig;
+        
         [Header("Debug")]
         [SerializeField] private bool _isDebugMode;
 
@@ -65,5 +66,6 @@ namespace Dev.Infrastructure
         public PopUpsStaticDataContainer PopUpsStaticDataContainer => _popUpsStaticDataContainer;
         public CharactersDataContainer CharactersDataContainer => _charactersDataContainer;
         public WeaponStaticDataContainer WeaponStaticDataContainer => _weaponStaticDataContainer;
+        public CameraShakeConfig CameraShakeConfig => _cameraShakeConfig;
     }
 }

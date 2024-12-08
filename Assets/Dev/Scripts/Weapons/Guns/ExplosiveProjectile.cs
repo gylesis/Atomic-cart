@@ -1,4 +1,5 @@
 ﻿using Dev.BotsLogic;
+using Dev.Infrastructure;
 using Dev.Levels;
 using Dev.PlayerLogic;
 using UniRx;
@@ -20,17 +21,12 @@ namespace Dev.Weapons.Guns
             Init(moveDirection, force, damage);
         }
 
-        protected override void LoadLateInjection()
+        protected override void OnInjectCompleted()
         {
-            base.LoadLateInjection();
+            base.OnInjectCompleted();
             _hitsProcessor.Explode.Subscribe(OnExplode).AddTo(this);
         }
-
-        protected virtual void OnExplode(HitContext context)
-        {
-            RPC_PlaySound("explosion", transform.position, 40);
-        }
-        
+       
         public void SetExplosionRadius(float explosionRadius)
         {
             _explosionRadius = explosionRadius;
@@ -54,6 +50,28 @@ namespace Dev.Weapons.Guns
         protected override void OnObstacleHit(Obstacle obstacle)
         {
             ExplodeAndDealDamage(_explosionRadius);
+        }
+        
+        protected virtual void OnExplode(HitContext context)
+        {
+            OnExplodePlayEffect();
+            OnExplodePlaySound();
+            OnExplodeShake();
+        }
+
+        protected virtual void OnExplodePlayEffect()
+        {
+            
+        }
+
+        protected virtual void OnExplodePlaySound()
+        {
+            RPC_PlaySound("explosion", transform.position, 40);
+        }
+
+        protected virtual void OnExplodeShake()
+        {
+            CameraService.Instance.ShakeIfNeed(transform.position, "small_explosion", Owner.IsBot);
         }
 
         protected void ExplodeAndDealDamage(float explosionRadius)

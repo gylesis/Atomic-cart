@@ -1,42 +1,75 @@
 ﻿using Dev.Infrastructure;
-using Dev.Infrastructure.Networking;
-using Dev.PlayerLogic;
+using Dev.Utils;
+using DG.Tweening;
 using UnityEngine;
 using Zenject;
 
 namespace Dev
 {
-    public class CameraController : NetworkContext
+    public class CameraController : MonoContext
     {
+        [SerializeField] private Transform _cameraLocalParent;
         [SerializeField] private float _followSpeed = 1.5f;
         [SerializeField] private Camera _camera;
 
-        private Transform _target;
-        private GameSettings _gameSettings;
-        private bool _toFollow;
-        private CameraService _cameraService;
+        public Camera Camera => _camera;
 
-        [Inject]
-        private void Construct(CameraService cameraService, GameSettings gameSettings)
+        private bool _toFollow;
+        private Transform _target;
+        private Tweener _shakeTween;
+        private Vector3 _originLocalPos;
+        
+        private GameSettings _gameSettings;
+
+        protected override void Awake()
         {
-            _cameraService = cameraService;
-            _gameSettings = gameSettings;
+            base.Awake();
+            _originLocalPos = _cameraLocalParent.localPosition;
+            transform.SetPositionZ(-10);
         }
         
-        public override void Spawned()
+        [Inject]
+        private void Construct(GameSettings gameSettings)
         {
-            base.Spawned();
-            
-            if (HasStateAuthority)
-            {
-                _cameraService.SetMainCameraState(false);
-            }
-            else
-            {
-                gameObject.SetActive(false);
-            }
+            _gameSettings = gameSettings;
         }
 
+        #region Shake
+    
+        public void Shake(string keyShakePattern)
+        {
+            if (GetShakeData(keyShakePattern, out var shakeData))
+                Shake(shakeData);
+            else
+                AtomicLogger.Log($"Not found camera shake data for key {keyShakePattern}");
+        }
+
+        private bool GetShakeData(string key, out ShakeData shakeData)
+        {
+            shakeData = _gameSettings.CameraShakeConfig.GetData(key);
+            return shakeData != null;
+        }
+        
+        private void Shake(ShakeData shakeData)
+        {
+            _shakeTween?.Kill();
+            
+            float duration = shakeData.Duration;
+            float power = shakeData.Power;
+            Vector3 strenght = new Vector3(1, 1, 0);
+            int vibrato = shakeData.Vibrato;
+            float randomness = 180;
+
+            _shakeTween = _cameraLocalParent.DOShakePosition(duration, strenght * power, vibrato, randomness).OnComplete(OnShakeComplete);
+        }
+
+        private void OnShakeComplete()
+        {
+            _cameraLocalParent.localPosition = _originLocalPos;
+        }
+        
+        #endregion
+        
         public void SetupTarget(Transform target)
         {
             _target = target;
@@ -51,24 +84,20 @@ namespace Dev
         {
             transform.position = _target.position;
         }
-        
-        public override void Render()
-        {
-            if (HasStateAuthority == false) return;
 
-            _camera.orthographicSize = 
-                _gameSettings.CameraZoomModifier;
+        protected override void Update()
+        {
+            base.Update();
             
+            _camera.orthographicSize = _gameSettings.CameraZoomModifier;
             FollowTarget();
         }
 
         private void FollowTarget()
         {
-            if(_toFollow == false) return;
+            if(_toFollow == false || _target == null) return;
             
-            if (_target == null) return;
-            
-            transform.position = Vector3.Lerp(transform.position, _target.position, Runner.DeltaTime * _gameSettings.CameraFollowSpeed);
+            transform.position = Vector3.Lerp(transform.position, _target.position, Time.deltaTime * _gameSettings.CameraFollowSpeed);
         }
     }
 }

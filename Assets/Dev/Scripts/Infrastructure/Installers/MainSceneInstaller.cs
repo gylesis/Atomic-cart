@@ -18,32 +18,34 @@ namespace Dev.Infrastructure.Installers
         [SerializeField] private PlayersDataService _playersDataService;
         [SerializeField] private TeamsService _teamsService;
         [SerializeField] private TeamsScoreService _teamsScoreService;
+        [SerializeField] private PlayersScoreService _playersScoreService;
+        [SerializeField] private KillerFeedNotifyService _killerFeedNotifyService;
 
         [SerializeField] private WorldTextProvider _worldTextProvider;
         [SerializeField] private TimeService _timeService;
-        [FormerlySerializedAs("_gameService")] [SerializeField] private GameStateService gameStateService;
+        [SerializeField] private GameStateService _gameStateService;
 
+        [SerializeField] private MainCameraHolder _mainCameraHolder;
         [SerializeField] private CameraService _cameraService;
-        
-        [SerializeField] private LevelService _levelService;
+        [SerializeField] private CameraController _cameraControllerPrefab;
         
         [SerializeField] private JoysticksContainer _joysticksContainer;
 
         [SerializeField] private BotsController _botsController;
-
+        
+        [SerializeField] private LevelService _levelService;
         [SerializeField] private HealthObjectsService _healthObjectsService;
         [SerializeField] private HitsProcessor _hitsProcessor;
+        [SerializeField] private SessionStateService _sessionStateService;
 
         [SerializeField] private AirStrikeController _airStrikeController;
         [SerializeField] private TearGasService _tearGasService;
-
-        [SerializeField] private SessionStateService _sessionStateService;
-
-        [SerializeField] private PlayersScoreService _playersScoreService;
-        [SerializeField] private KillerFeedNotifyService _killerFeedNotifyService;
         
         public override void InstallBindings()
         {
+            Container.Bind<CameraController>().FromInstance(_cameraControllerPrefab).AsSingle().WhenInjectedInto<CameraService>();
+            Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
+            
             Container.Bind<NetworkRunner>().FromInstance(FindObjectOfType<NetworkRunner>()).AsSingle();
             Container.Bind<KillerFeedNotifyService>().FromInstance(_killerFeedNotifyService).AsSingle();
             
@@ -56,12 +58,11 @@ namespace Dev.Infrastructure.Installers
             Container.Bind<TearGasService>().FromInstance(_tearGasService).AsSingle();
 
             Container.Bind<BotsController>().FromInstance(_botsController).AsSingle();
-
             Container.Bind<WorldTextProvider>().FromInstance(_worldTextProvider).AsSingle();
 
             Container.Bind<SessionStateService>().FromInstance(_sessionStateService).AsSingle();
             Container.Bind<PlayersScoreService>().FromInstance(_playersScoreService).AsSingle();
-            
+
             BindPlayer();
             BindServices();
         }
@@ -75,9 +76,9 @@ namespace Dev.Infrastructure.Installers
 
         private void BindServices()
         {
-            Container.Bind<GameStateService>().FromInstance(gameStateService).AsSingle();
+            Container.Bind<GameStateService>().FromInstance(_gameStateService).AsSingle();
             Container.Bind<LevelService>().FromInstance(_levelService).AsSingle();
-            Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
+            Container.Bind<MainCameraHolder>().FromInstance(_mainCameraHolder).AsSingle();
             Container.Bind<TimeService>().FromInstance(_timeService).AsSingle();
             Container.Bind<TeamsService>().FromInstance(_teamsService).AsSingle();
             Container.Bind<TeamsScoreService>().FromInstance(_teamsScoreService).AsSingle();

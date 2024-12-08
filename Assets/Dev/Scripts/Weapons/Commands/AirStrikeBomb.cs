@@ -1,4 +1,5 @@
 ﻿using Dev.Effects;
+using Dev.Infrastructure;
 using Dev.Weapons.Guns;
 
 namespace Dev.Weapons.Commands
@@ -16,5 +17,10 @@ namespace Dev.Weapons.Commands
             ToDestroy.OnNext(this);
         }
 
+
+        protected override void OnExplodeShake()
+        {
+            CameraService.Instance.ShakeIfNeed(transform.position, "big_explosion", Owner.IsBot);
+        }
     }
 }

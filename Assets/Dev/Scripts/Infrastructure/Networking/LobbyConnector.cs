@@ -14,7 +14,17 @@ namespace Dev.Infrastructure.Networking
     [RequireComponent(typeof(NetworkRunner))]
     public class LobbyConnector : MonoSingleton<LobbyConnector>, INetworkRunnerCallbacks
     {
-        public NetworkRunner NetworkRunner => _networkRunner;
+        public NetworkRunner NetworkRunner
+        {
+            get
+            {
+                if(_networkRunner == null)
+                    _networkRunner = GetComponent<NetworkRunner>();
+                
+                return _networkRunner;
+            }
+        }
+
         public bool IsConnected { get; set; }
 
         private Action _sessionJoined;
@@ -68,10 +78,9 @@ namespace Dev.Infrastructure.Networking
 
             IsConnected = true;
 
-            _networkRunner = GetComponent<NetworkRunner>();
-            _networkRunner.ProvideInput = true;
+            NetworkRunner.ProvideInput = true;
 
-            StartGameResult gameResult = await _networkRunner.JoinSessionLobby(SessionLobby.Shared, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
+            StartGameResult gameResult = await NetworkRunner.JoinSessionLobby(SessionLobby.Shared, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
             OnLobbyJoined(gameResult);
 
             string msg = gameResult.Ok ? "Welcome!" : "Failed to connect to servers";

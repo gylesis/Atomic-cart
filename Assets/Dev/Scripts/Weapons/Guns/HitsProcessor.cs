@@ -4,7 +4,6 @@ using Dev.Infrastructure;
 using Dev.Infrastructure.Networking;
 using Dev.Levels;
 using Dev.PlayerLogic;
-using Dev.Sounds;
 using Dev.Utils;
 using Fusion;
 using UniRx;
@@ -18,19 +17,15 @@ namespace Dev.Weapons.Guns
         [Networked, Capacity(4)] private NetworkLinkedList<HitRecord> HitRecords { get; }
         
         private HealthObjectsService _healthObjectsService;
-        private PlayersDataService _playersDataService;
         private SessionStateService _sessionStateService;
-        private GameSettings _gameSettings;
 
         public Subject<HitContext> Hit { get; } = new();
         public Subject<HitContext> Explode { get; } = new();
 
         [Inject]
-        private void Construct(HealthObjectsService healthObjectsService, SessionStateService sessionStateService, PlayersDataService playersDataService, GameSettings gameSettings)
+        private void Construct(HealthObjectsService healthObjectsService, SessionStateService sessionStateService)
         {
-            _gameSettings = gameSettings;
             _sessionStateService = sessionStateService;
-            _playersDataService = playersDataService;
             _healthObjectsService = healthObjectsService;   
         }
 

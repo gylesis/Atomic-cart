@@ -150,6 +150,9 @@ namespace Dev.Infrastructure.Networking
         {
             AtomicLogger.Log($"OnSceneLoadDone");
 
+            if (!LobbyConnector.IsInitialized) 
+                await SaveLoadService.Instance.Load();
+            
             if (runner.IsSharedModeMasterClient)
             {
                 if (LobbyConnector.IsInitialized)
@@ -159,11 +162,11 @@ namespace Dev.Infrastructure.Networking
                 }
                 else
                 {
-                    await SaveLoadService.Instance.Load();
                     LevelService.Instance.LoadLevel("NightCity");
                 }
             }
-            
+
+
             PlayerRef player = runner.LocalPlayer;
             _playersSpawner.AskCharacterAndSpawn(player);
             PlayerManager.LoadingPlayers.Remove(player);

@@ -22,6 +22,7 @@ namespace Dev.Levels
             base.OnZeroHealth();
 
             FxController.Instance.SpawnEffectAt<Effect>("barrel_explosion", transform.position);
+            CameraService.Instance.ShakeIfNeed(transform.position, "small_explosion", false);
 
             ExplodeAtAndHitPlayers(transform.position);
         }

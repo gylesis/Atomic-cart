@@ -82,10 +82,11 @@ namespace Dev.Weapons.Guns
             Extensions.Delay(0.5f, destroyCancellationToken, () => ToDestroy.OnNext(this));
         }
 
-        protected override void OnExplode(HitContext context)
+
+        protected override void OnExplodePlayEffect()
         {
+            base.OnExplodePlayEffect();
             FxController.Instance.SpawnEffectAt<Effect>("landmine_explosion", transform.position);
-            base.OnExplode(context);
         }
 
         private void StartDetonation()

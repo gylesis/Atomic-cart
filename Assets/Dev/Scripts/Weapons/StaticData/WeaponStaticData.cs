@@ -18,9 +18,12 @@ namespace Dev.Weapons.StaticData
 
         [SerializeField] private string _fireSound = "ak_fire";
         [SerializeField] private string _hitSound = "ak_hit";
+        [SerializeField] private string _shakePatternKey = "TO IMPLEMENT";
 
         public string FireSound => _fireSound;
         public string HitSound => _hitSound;
+
+        public string ShakePatternKey => _shakePatternKey;
 
         public Type SystemType => _weaponPrefab.GetType();
         

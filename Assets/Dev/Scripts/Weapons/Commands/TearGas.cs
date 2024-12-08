@@ -14,6 +14,7 @@ namespace Dev.Weapons.Commands
 
         protected override void OnExplode(HitContext context)
         {
+            base.OnExplode(context);
             //RPC_PlaySound("teargas", transform.position, 40);
         }
 

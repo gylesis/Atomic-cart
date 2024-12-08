@@ -3,7 +3,6 @@ using Dev.Infrastructure;
 using Dev.Infrastructure.Networking;
 using Dev.Levels;
 using Dev.PlayerLogic;
-using Dev.Sounds;
 using Fusion;
 using Fusion.Addons.Physics;
 using UniRx;
@@ -148,22 +147,31 @@ namespace Dev.Weapons.Guns
 
         protected virtual void OnObstacleHit(Obstacle obstacle)
         {
+            PlayShakeEffect();
             PlayDefaultHitSound(obstacle.transform.position);
         }
 
         protected virtual void OnPlayerHit(PlayerCharacter playerCharacter)
         {
+            PlayShakeEffect();   
             PlayDefaultHitSound(playerCharacter.transform.position);
         }
 
         protected virtual void OnBotHit(Bot bot)
         {
+            PlayShakeEffect();
             PlayDefaultHitSound(bot.transform.position);
         }
 
         protected virtual void OnDummyHit(DummyTarget dummyTarget)
         {
+            PlayShakeEffect();
             PlayDefaultHitSound(dummyTarget.transform.position);
+        }
+
+        protected virtual void PlayShakeEffect() // TODO think, if it really need to feel impact when projectile hit smthg
+        {
+            //CameraService.Instance.ShakeIfNeed(transform.position, "bullet", SessionPlayer.Default);
         }
 
         protected virtual void PlayDefaultHitSound(Vector3 position)
