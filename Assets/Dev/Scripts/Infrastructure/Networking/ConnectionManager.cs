@@ -1,7 +1,11 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Dev.Levels;
 using Dev.UI;
+using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Fusion;
 using Fusion.Sockets;
@@ -12,7 +16,7 @@ using Zenject;
 namespace Dev.Infrastructure.Networking
 {
     [RequireComponent(typeof(NetworkRunner))]
-    public class LobbyConnector : MonoSingleton<LobbyConnector>, INetworkRunnerCallbacks
+    public class ConnectionManager : MonoSingleton<ConnectionManager>, INetworkRunnerCallbacks
     {
         public NetworkRunner NetworkRunner
         {
@@ -26,36 +30,38 @@ namespace Dev.Infrastructure.Networking
         }
 
         public bool IsConnected { get; set; }
+        private bool IsOnMainScene => SceneManager.GetActiveScene().name == "Main";
 
+        public bool IsHostedProperly { get; private set; }
+        
         private Action _sessionJoined;
-        private SceneLoader _sceneLoader;
         private NetworkRunner _networkRunner;
 
+        private SceneLoader _sceneLoader;
+        private PopUpService _popUpService;
+        private ModulesService _modulesService;
+
         [Inject]
-        private void Construct(SceneLoader sceneLoader) // probably buggy
+        private void Construct(SceneLoader sceneLoader, PopUpService popUpService, ModulesService modulesService) // probably buggy
         {
+            _modulesService = modulesService;
+            _popUpService = popUpService;
             _sceneLoader = sceneLoader;
         }
         
         protected override void Awake()
         {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            
-            base.Awake();
-            
-            if (IsConnected)
+            if (IsHostedProperly)
             {
                 Destroy(gameObject);
                 return;
             }
 
+            base.Awake();
+
             DiInjecter.Instance.InjectGameObject(gameObject);
             
-            if (SceneManager.GetActiveScene().name == "Main") 
+            if (IsOnMainScene) 
                 ConnectFromMain();
 
             DontDestroyOnLoad(gameObject);
@@ -66,9 +72,38 @@ namespace Dev.Infrastructure.Networking
             LoadFromBootstrap();
         }
 
-        public void ConnectFromMain()
+        public async void ConnectFromMain()
         {
-            DefaultJoinToSessionLobby();
+            Curtains.Instance.SetText("Starting test session");
+            Curtains.Instance.ShowWithDotAnimation();
+            
+            NetworkRunner.ProvideInput = true;
+            NetworkRunner.AddCallbacks(this);
+            
+            var startGameArgs = new StartGameArgs();
+
+            startGameArgs.GameMode = GameMode.Shared;
+            startGameArgs.SceneManager = NetworkRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+            startGameArgs.Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
+            startGameArgs.SessionName = "Test1";
+
+            var gameResult = await NetworkRunner.StartGame(startGameArgs);
+    
+            string msg = gameResult.Ok ? "Welcome!" : "Failed to connect to servers";
+            Curtains.Instance.SetText(msg);
+
+            IsConnected = gameResult.Ok;
+            
+            if (gameResult.Ok)
+            {
+                Curtains.Instance.HideWithDelay(1, 0.5f);
+                AtomicLogger.Log($"Joined lobby", AtomicConstants.LogTags.Networking);
+            }
+            else
+            {
+                AtomicLogger.Err($"Failed to Start: {gameResult.ShutdownReason}, {gameResult.ErrorMessage}", AtomicConstants.LogTags.Networking); // TODO add button to reconnect to photon lobby 
+               // _sceneLoader.LoadSceneLocal(0);
+            }
         }
 
         private async void DefaultJoinToSessionLobby()
@@ -76,16 +111,17 @@ namespace Dev.Infrastructure.Networking
             Curtains.Instance.SetText("Joining to servers");
             Curtains.Instance.ShowWithDotAnimation();
 
-            IsConnected = true;
-
             NetworkRunner.ProvideInput = true;
-
+            NetworkRunner.AddCallbacks(this);
+            
             StartGameResult gameResult = await NetworkRunner.JoinSessionLobby(SessionLobby.Shared, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
             OnLobbyJoined(gameResult);
 
             string msg = gameResult.Ok ? "Welcome!" : "Failed to connect to servers";
             Curtains.Instance.SetText(msg);
 
+            IsConnected = gameResult.Ok;
+            
             if (gameResult.Ok)
             {
                 Curtains.Instance.HideWithDelay(1, 0.5f);
@@ -103,6 +139,7 @@ namespace Dev.Infrastructure.Networking
             Scene activeScene = SceneManager.GetActiveScene();
 
             DefaultJoinToSessionLobby();
+            IsHostedProperly = true;
 
             await _sceneLoader.LoadSceneLocal("Lobby", LoadSceneMode.Additive)
                 .AttachExternalCancellation(gameObject.GetCancellationTokenOnDestroy());
@@ -119,6 +156,25 @@ namespace Dev.Infrastructure.Networking
         {
             _sessionJoined?.Invoke();
             _sessionJoined = null;
+        }
+        
+        public void Disconnect()
+        {
+            Curtains.Instance.Show();
+            Curtains.Instance.SetText("Returning back to menu");
+            
+            IsConnected = false;
+            IsHostedProperly = false;
+            
+            NetworkRunner.Shutdown();
+
+            PlayerManager.PlayersOnServer.Clear();
+            PlayerManager.LoadingPlayers.Clear();
+
+            if (_popUpService != null) 
+                _popUpService.HideAllPopUps();
+
+            SceneManager.LoadScene(0);
         }
 
         public async void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
@@ -138,11 +194,47 @@ namespace Dev.Infrastructure.Networking
             Curtains.Instance.Show();
         }
 
-        public void OnSceneLoadDone(NetworkRunner runner)
+        public async void OnSceneLoadDone(NetworkRunner runner)
         {
             AtomicLogger.Log("Scene load done");
-            Curtains.Instance.SetText("Finishing");
-            Curtains.Instance.HideWithDelay(1);
+            
+            if (IsOnMainScene)
+            {
+                if (!_modulesService.IsInitialized) // loaded from MainScene
+                {
+                    var initializeResult = await _modulesService.Initialize();
+
+                    if (initializeResult.IsError)
+                    {
+                        Curtains.Instance.SetText("Error initializing services");
+                        AtomicLogger.Err("Failed to initialize modules", initializeResult.ErrorMessage);
+                        return;
+                    }
+                    
+                }
+                
+                if (runner.IsSharedModeMasterClient)
+                {
+                    if (IsHostedProperly)
+                    {
+                        LevelService.Instance.LoadLevel(NetworkRunner.SessionInfo.Properties["map"]);
+                        await UniTask.Delay(2000); // TODO wait until all players load the scene
+                    }
+                    else
+                    {
+                        LevelService.Instance.LoadLevel("NightCity");
+                    }
+                }
+
+                PlayerRef player = runner.LocalPlayer;
+                PlayersSpawner.Instance.AskCharacterAndSpawn(player);
+                PlayerManager.LoadingPlayers.Remove(player);
+            }
+            else
+            {
+                Curtains.Instance.SetText("Finishing");
+                Curtains.Instance.HideWithDelay(1);
+            }
         }
 
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
@@ -159,9 +251,26 @@ namespace Dev.Infrastructure.Networking
 
         public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
 
-        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
+        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+        {
+            if (IsOnMainScene)
+            {
+                AtomicLogger.Log($"Someone's late connection to the game {player}");
+            }
+        }
 
-        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+        {
+            if (IsOnMainScene)
+            {
+                AtomicLogger.Log($"On Player Left");
+                if (runner.IsSharedModeMasterClient)
+                {
+                    AtomicLogger.Log($"Despawning player");
+                    PlayersSpawner.Instance.DespawnPlayer(player, true);
+                }
+            }
+        }
 
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
 

@@ -1,6 +1,7 @@
 ﻿using Dev.Infrastructure;
 using TMPro;
 using UniRx;
+using Unity.Services.Authentication;
 using UnityEngine;
 using Zenject;
 
@@ -10,8 +11,9 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
     {
         [SerializeField] private TMP_InputField _nickname;
         [SerializeField] private DefaultReactiveButton _changeNicknameButton;
-        
+        [SerializeField] private TextReactiveButton _loadLinkedAccButton;
         [SerializeField] private TextReactiveButton _linkAccountButton;
+
         private AuthService _authService;
         private string _prevNickname;
 
@@ -20,10 +22,12 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
             base.Awake();
 
             _linkAccountButton.Clicked.Subscribe(OnLinkAccountClicked).AddTo(this);
+            _loadLinkedAccButton.Clicked.Subscribe(unit => OnLoadLinkedAccClicked()).AddTo(this);
+            
             _changeNicknameButton.Clicked.Subscribe(unit => OnChangeNicknameClicked()).AddTo(this);
             _nickname.onValueChanged.AsObservable().Subscribe(OnNicknameChanged).AddTo(this);
         }
-
+        
         [Inject]
         private void Construct(AuthService authService)
         {
@@ -38,6 +42,9 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
             _nickname.text = $"{currentNickname}";
             
             OnNicknameChanged(currentNickname);
+            
+            _linkAccountButton.SetText(_authService.IsCurrentAccountLinkedToSomething ? "Linked!" : "Link account");
+            _linkAccountButton.IsInteractable(!_authService.IsCurrentAccountLinkedToSomething);
             
             base.Show();
         }
@@ -60,6 +67,12 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
             Curtains.Instance.SetText(updateNickname.IsSuccess ? $"Nickname changed to {newNickname}" : $"{errorMsg}");
             Curtains.Instance.HideWithDelay(2f,0);
         }
+        
+        private void OnLoadLinkedAccClicked()
+        {
+            
+        }
+
         
         private void OnLinkAccountClicked(Unit unit)
         {

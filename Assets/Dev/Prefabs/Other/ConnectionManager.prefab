@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1714822015735046838}
   - component: {fileID: 8727085948715030020}
   m_Layer: 0
-  m_Name: LobbyConnector
+  m_Name: ConnectionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

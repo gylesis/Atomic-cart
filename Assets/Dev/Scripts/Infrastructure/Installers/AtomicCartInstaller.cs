@@ -1,4 +1,5 @@
 using Dev.Infrastructure.Lobby;
+using Dev.Infrastructure.Networking;
 using Dev.Sounds;
 using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
@@ -23,6 +24,8 @@ namespace Dev.Infrastructure.Installers
         {
             Fusion.Log.LogLevel = (LogType)UnityEngine.LogType.Error;
 
+            BindModules();
+            
             Container.Bind<GlobalDisposable>().AsSingle().NonLazy();
 
             Container.Bind<SceneLoader>().AsSingle().NonLazy();
@@ -47,6 +50,14 @@ namespace Dev.Infrastructure.Installers
             Container.Bind<DiInjecter>().AsSingle().NonLazy();
         }
 
+        private void BindModules()
+        {
+            Container.BindInterfacesAndSelfTo<ModulesService>().AsSingle().NonLazy();
+
+            Container.Bind<IInitializableModule>().To<ServicesModule>().AsTransient().WhenInjectedInto<ModulesService>();
+            Container.Bind<IInitializableModule>().To<SaveDataModule>().AsTransient().WhenInjectedInto<ModulesService>();
+        }
+        
         private void BindSaveLoadScheme()
         {
             Container.Bind<SaveLoadService.ISaveLoadScheme>().To<SaveLoadService.LocalSaveLoadScheme>().AsTransient().WhenInjectedInto<SaveLoadService>();

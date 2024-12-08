@@ -37,9 +37,9 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
         {
             base.Awake();
 
-            LobbyConnector lobbyConnector = await LobbyConnector.WaitForInitialization();
+            ConnectionManager connectionManager = await ConnectionManager.WaitForInitialization();
             
-            _networkRunner = lobbyConnector.NetworkRunner;
+            _networkRunner = connectionManager.NetworkRunner;
 
             _playButton.Clicked.Subscribe(unit => OnPlayButtonClicked()).AddTo(GlobalDisposable.SceneScopeToken);
             _readyButton.Clicked.Subscribe(unit => OnReadyButtonClicked()).AddTo(GlobalDisposable.SceneScopeToken);
@@ -159,7 +159,7 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
                 Curtains.Instance.Show();
                 Curtains.Instance.SetText("Returning back to menu");
             
-                LobbyConnector.Instance.IsConnected = false;
+                ConnectionManager.Instance.IsConnected = false;
             
                 await _networkRunner.Shutdown();
                 

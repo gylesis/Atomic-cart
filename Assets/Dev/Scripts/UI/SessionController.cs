@@ -29,9 +29,9 @@ namespace Dev.UI
         {
             base.Awake();
 
-            LobbyConnector lobbyConnector = await LobbyConnector.WaitForInitialization();
-            await UniTask.WaitUntil(() => lobbyConnector.NetworkRunner != null);
-            lobbyConnector.NetworkRunner.AddCallbacks(this);
+            ConnectionManager connectionManager = await ConnectionManager.WaitForInitialization();
+            await UniTask.WaitUntil(() => connectionManager.NetworkRunner != null);
+            connectionManager.NetworkRunner.AddCallbacks(this);
         }
 
         [Inject]

@@ -36,10 +36,11 @@ namespace Dev
             Instance = this;
         }
 
-        public async UniTask Load()
+        public async UniTask<Profile> Load()
         {
             Profile = await GetSaveLoadScheme().Load();
             ProfileChanged.OnNext(Profile);
+            return Profile;
         }
 
         public async UniTask<Result> Save(Action<Profile> changedCallback)
@@ -68,7 +69,8 @@ namespace Dev
         }
 
         private ISaveLoadScheme GetSaveLoadScheme() =>
-            _loadSchemes[LobbyConnector.IsInitialized ? typeof(CloudSaveLoadScheme) : typeof(LocalSaveLoadScheme)];
+            _loadSchemes[typeof(CloudSaveLoadScheme)];
+           // _loadSchemes[ConnectionManager.IsInitialized ? typeof(CloudSaveLoadScheme) : typeof(LocalSaveLoadScheme)];
 
         public interface ISaveLoadScheme
         {
@@ -136,29 +138,35 @@ namespace Dev
 
             public async UniTask<Profile> Load()
             {
-                List<FileItem> fileItems = await CloudSaveService.Instance.Files.Player.ListAllAsync();
-
+                Dictionary<string, Item> profileItems = null;
                 Profile profile = new Profile();
 
-                bool isNewPlayer = fileItems.Count == 0;
+                try
+                {
+                    profileItems = await CloudSaveService.Instance.Data.Player.LoadAsync(_fieldNames, new LoadOptions(new PublicReadAccessClassOptions()));
+                }
+                catch (Exception e)
+                {
+                    AtomicLogger.Log($"New profile created");
+                    return profile;
+                }
+                
+                bool isNewPlayer = profileItems.Count == 0;
                 if (isNewPlayer)
                 {
-                    await Save(profile);
+                    AtomicLogger.Log($"New profile created");
                     return profile;
                 }
 
-                Dictionary<string, Item> profileItems =
-                    await CloudSaveService.Instance.Data.Player.LoadAsync(_fieldNames,
-                        new LoadOptions(new PublicReadAccessClassOptions()));
-
                 var tryGetValue = profileItems.TryGetValue("profile", out var profileItem);
+                    
                 if (tryGetValue)
                 {
                     var asString = profileItem.Value.GetAsString();
                     profile = JsonUtility.FromJson<Profile>(asString);
                 }
 
-                AtomicLogger.Log($"Profile loaded");
+                AtomicLogger.Log($"Existing profile loaded");
                 return profile;
             }
         }

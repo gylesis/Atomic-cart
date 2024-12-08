@@ -80,7 +80,7 @@ namespace Dev.UI.PopUpsAndMenus.Main
             PopUpService.HidePopUp<DecidePopUp>();
 
             if (answer) 
-                MainSceneConnectionManager.Instance.Disconnect();
+                ConnectionManager.Instance.Disconnect();
         }
     }
 }

@@ -25,30 +25,58 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
         protected override void Awake()
         {
             base.Awake();
-
             _linkButton.Clicked.Subscribe(unit => OnLinkButtonClicked()).AddTo(this);
+
+            _usernameInputField.onValueChanged.AsObservable().Subscribe(s => UpdateButtonAvailability());
+            _passwordInputField.onValueChanged.AsObservable().Subscribe(s => UpdateButtonAvailability());
+        }
+
+        public override void Show()
+        {
+            _usernameInputField.text = _authService.MyProfile.Nickname;
+
+            UpdateButtonAvailability();
+            base.Show();
         }
 
         private async void OnLinkButtonClicked()
         {
-            _linkButton.Disable();
+            _linkButton.IsInteractable(false);
             
             if (CheckForUsername() == false)
             {
                 AtomicLogger.Err("Wrong credentials");
                 return;
             }
+
+            var linkStatus = await _authService.LinkWithUsernameAndPasswordAsync(_usernameInputField.text, _passwordInputField.text);
+
+            if (!linkStatus)
+            {
+                Curtains.Instance.Show();
+                Curtains.Instance.SetText($"{linkStatus.ErrorMessage}");
+                Curtains.Instance.HideWithDelay(1);
+                
+                return;
+            }
             
             PopUpService.HidePopUp<LinkProfilePopUp>();
-            
-            await _authService.LinkWithUsernameAndPasswordAsync(_usernameInputField.text, _passwordInputField.text);
-            
-            _linkButton.Enable();
+
+            Curtains.Instance.Show();
+            Curtains.Instance.SetText($"Successfuly linked account to {_usernameInputField.text}");
+            Curtains.Instance.HideWithDelay(2);
+
+            UpdateButtonAvailability();
         }
 
+        private void UpdateButtonAvailability()
+        {
+            _linkButton.IsInteractable(CheckForUsername());
+        }
+        
         private bool CheckForUsername()
         {
-            return true;
+            return !string.IsNullOrEmpty(_usernameInputField.text) && !string.IsNullOrEmpty(_passwordInputField.text);
         }
     }
 }

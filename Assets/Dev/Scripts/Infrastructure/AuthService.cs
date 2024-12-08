@@ -4,9 +4,11 @@ using GooglePlayGames.BasicApi;
 #endif
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Dev.Infrastructure.Networking;
 using Dev.Utils;
+using ModestTree;
 using UniRx;
 using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
@@ -39,6 +41,9 @@ namespace Dev.Infrastructure
             }
         }
 
+        public bool IsCurrentAccountLinkedToSomething =>
+            AuthenticationService.Instance.PlayerInfo.Identities.Count > 0;
+
         public Profile MyProfile => _cachedMyProfile;
         
         private Dictionary<string, Profile> _cachedProfiles = new Dictionary<string, Profile>();
@@ -55,9 +60,6 @@ namespace Dev.Infrastructure
         public void Initialize()
         {
             _saveLoadService.ProfileChanged.Subscribe(OnProfileSaveOrLoad).AddTo(GlobalDisposable.ProjectScopeToken);
-
-            if (_saveLoadService.Profile != null) 
-                OnProfileSaveOrLoad(_saveLoadService.Profile);
         }
 
         private void OnProfileSaveOrLoad(Profile profile)
@@ -66,7 +68,7 @@ namespace Dev.Infrastructure
             _cachedMyProfile = profile;
         }
 
-        public async UniTask<bool> Auth()
+        public async UniTask<Result> Auth()
         {   
             //await LoginGooglePlayGames();
             //await SignInWithGooglePlayGamesAsync(Token);
@@ -77,15 +79,16 @@ namespace Dev.Infrastructure
             try
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
-                IsAuthorized = true;
-                return true;
             }
             catch (Exception e)
             {
                 IsAuthorized = false;
                 AtomicLogger.Ex(e.Message);
-                return false;
+                return Result.Error(e.Message);
             }
+            
+            IsAuthorized = true;
+            return Result.Success();
         }
 
         private async UniTask<bool> SignInWithGooglePlayGamesAsync(string authCode)
@@ -128,8 +131,6 @@ namespace Dev.Infrastructure
             
             return Result.Success();
         }
-
-        public bool IsNicknameNotSet => string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName);
 
         public async UniTask<Result<Profile>> GetMyProfileAsync(bool requestFreshData = false)
         {
@@ -203,24 +204,25 @@ namespace Dev.Infrastructure
             await AuthenticationService.Instance.DeleteAccountAsync();
         }
 
-        public async UniTask<bool> LinkWithUsernameAndPasswordAsync(string username, string password)
+        public async UniTask<Result> LinkWithUsernameAndPasswordAsync(string username, string password)
         {
             if (UnityServices.State == ServicesInitializationState.Uninitialized)
             {
                 AtomicLogger.Log($"Services not initialized. Linking is failed", AtomicConstants.LogTags.Networking);
-                return false;
+                return Result.Error($"Services not initialized. Linking is failed.");
             }
             
             try
             {
                 await AuthenticationService.Instance.AddUsernamePasswordAsync(username, password);
-                return true;
             }
             catch (Exception e)
             {
                 AtomicLogger.Ex(e.Message, AtomicConstants.LogTags.Networking);
-                return false;
+                return Result.Error(e.Message);
             }
+            
+            return Result.Success();
         }
 
         private void OnSignedIn()

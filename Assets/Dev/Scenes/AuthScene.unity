@@ -978,7 +978,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _nicknameInput: {fileID: 260453510}
   _login: {fileID: 653761115}
-  _lobbyConnector: {fileID: 8727085948715030020, guid: ce80b6a27f1b9ac48b40988378923393, type: 3}
+  _connectionManager: {fileID: 8727085948715030020, guid: ce80b6a27f1b9ac48b40988378923393, type: 3}
 --- !u!4 &1095352845
 Transform:
   m_ObjectHideFlags: 0

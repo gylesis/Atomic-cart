@@ -19,7 +19,7 @@ using Zenject;
 
 namespace Dev.Infrastructure
 {
-    public class PlayersSpawner : NetworkContext
+    public class PlayersSpawner : NetSingleton<PlayersSpawner>
     {
         [SerializeField] private PlayerBase _playerBasePrefab;
 

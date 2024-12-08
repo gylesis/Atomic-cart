@@ -32,7 +32,7 @@ namespace Dev.Infrastructure
 
             Changed.OnNext(typeof(TState).ToString());
 
-            AtomicLogger.Log($"Changed state to {state.GetType()}");
+            //AtomicLogger.Log($"Changed state to {state.GetType()}");
 
             _currentState = state;
  
