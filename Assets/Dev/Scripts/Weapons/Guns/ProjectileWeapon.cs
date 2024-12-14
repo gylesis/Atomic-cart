@@ -84,7 +84,7 @@ namespace Dev.Weapons.Guns
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
             projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 5);
 
-            CameraService.Instance.ShakeIfNeed(transform.position, Data.ShakePatternKey, Owner.IsBot);
+            CameraService.Instance.ShakeIfNeed(Data.ShakePatternKey, transform.position, Owner.IsBot);
 
             RPC_PlaySound(Data.FireSound, projectile.transform.position, 40);
             

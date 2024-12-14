@@ -141,7 +141,7 @@ namespace Dev.UI.PopUpsAndMenus
 
             var saveResult = await _saveLoadService.Save(profile =>
             {
-                profile.MusicVolume = _musicVolumePrev;
+                profile.MusicVolume = _musicVolume.value;
                 profile.AdditionalSoundVolume = _soundVolume.value;
                 profile.IsVolumeMuted = _volumeMute.isOn;
             });
@@ -150,7 +150,8 @@ namespace Dev.UI.PopUpsAndMenus
             UpdateButtons();
             
             Curtains.Instance.SetText(saveResult.IsError ? $"{saveResult.ErrorMessage}" : "Settings saved.");
-            Curtains.Instance.HideWithDelay(2, 0);
+            
+            Curtains.Instance.HideWithDelay(saveResult.IsError ? 2 : 0.5f, 0);
         }
     }
 }   

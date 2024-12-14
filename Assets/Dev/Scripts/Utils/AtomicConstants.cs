@@ -36,6 +36,12 @@ namespace Dev.Utils
 #endif
             
         }
+
+        public static class SoundKeys
+        {
+            public static string PlayerDeathSound = "PlayerDeathSound";
+        }
+        
         
     }
 }

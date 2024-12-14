@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Dev.Levels;
+using Dev.Sounds;
 using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
@@ -108,6 +109,8 @@ namespace Dev.Infrastructure.Networking
 
         private async void DefaultJoinToSessionLobby()
         {
+            SoundController.Instance.PlayMainMusic(true);
+            
             Curtains.Instance.SetText("Joining to servers");
             Curtains.Instance.ShowWithDotAnimation();
 
@@ -222,7 +225,7 @@ namespace Dev.Infrastructure.Networking
                     }
                     else
                     {
-                        LevelService.Instance.LoadLevel("NightCity");
+                        LevelService.Instance.LoadLevel(GameSettingsProvider.GameSettings.DebugMap.ToString());
                     }
                 }
 

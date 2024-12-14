@@ -20,7 +20,7 @@ namespace Dev.Weapons.Commands
 
         protected override void OnExplodeShake()
         {
-            CameraService.Instance.ShakeIfNeed(transform.position, "big_explosion", Owner.IsBot);
+            CameraService.Instance.ShakeIfNeed("big_explosion", transform.position, Owner.IsBot);
         }
     }
 }

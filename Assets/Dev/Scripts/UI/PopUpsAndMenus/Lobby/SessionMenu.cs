@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Dev.Infrastructure;
 using Dev.Infrastructure.Lobby;
 using Dev.Infrastructure.Networking;
+using Dev.Sounds;
 using Dev.UI.PopUpsAndMenus.Other;
 using Dev.Utils;
 using Fusion;
@@ -60,6 +61,8 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
 
         private async void StartGame()
         {
+            SoundController.Instance.PlayMainMusic(false);
+            
             var oldProperties = _networkRunner.SessionInfo.Properties;
             
             var sessionProperties = new Dictionary<string, SessionProperty>()

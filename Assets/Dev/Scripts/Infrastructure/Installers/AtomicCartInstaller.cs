@@ -32,7 +32,7 @@ namespace Dev.Infrastructure.Installers
             Container.Bind<PopUpService>().AsSingle().WithArguments(_popUpsParent).NonLazy();
 
             Container.Bind<SoundStaticDataContainer>().FromInstance(_soundStaticDataContainer).AsSingle().WhenInjectedInto<SoundController>();
-            Container.Bind<SoundSettings>().AsSingle().WhenInjectedInto<SoundController>();
+            Container.Bind<UserSoundSettings>().AsSingle().WhenInjectedInto<SoundController>();
 
             Container.BindInterfacesAndSelfTo<AtomicLogger>().AsSingle().NonLazy();
             

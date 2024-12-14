@@ -5,19 +5,28 @@ namespace Dev.Infrastructure
     [CreateAssetMenu(menuName = "StaticData/BotsConfig", fileName = "BotsConfig", order = 0)]
     public class BotsConfig : ScriptableObject
     {
-        [SerializeField] private float _botsTargetsSearchRadius = 15;
+        [Header("General")]
         [SerializeField] private int _botsPerTeam = 2;
-        [SerializeField] private float _botsSearchForTargetsCooldown = 0.25f;
-        [SerializeField] private float _botsChangeMoveDirectionCooldown = 5;
-        [SerializeField] private int _botsNearestPointsAmountToChoose = 5;
-        [SerializeField] private int _pointsPoolAmount = 5;
 
+        [Header("Attack")]
+        [SerializeField] private float _targetsSearchRadius = 20f;
+        [SerializeField] private float _searchForTargetsCooldown = 0.25f;
+        
+        [Header("Movement")]
+        [SerializeField] private float _speed = 5f;
+        [SerializeField] private float _speedWhenAttacking = 3f;
+        [SerializeField] private float _changeMoveDirectionCooldown = 5;
+        [SerializeField] private int _nearestPointsToChooseAmount = 5;
+        [SerializeField] private int _patrolPointsPoolAmount = 5;
 
-        public int PointsPoolAmount => _pointsPoolAmount;
+        public float Speed => _speed;
+        public float SpeedWhenAttacking => _speedWhenAttacking;
+
+        public int PatrolPointsPoolAmount => _patrolPointsPoolAmount;
         public int BotsPerTeam => _botsPerTeam;
-        public float BotsTargetsSearchRadius => _botsTargetsSearchRadius;
-        public float BotsSearchForTargetsCooldown => _botsSearchForTargetsCooldown;
-        public float BotsChangeMoveDirectionCooldown => _botsChangeMoveDirectionCooldown;
-        public int BotsNearestPointsAmountToChoose => _botsNearestPointsAmountToChoose;
+        public float TargetsSearchRadius => _targetsSearchRadius;
+        public float SearchForTargetsCooldown => _searchForTargetsCooldown;
+        public float ChangeMoveDirectionCooldown => _changeMoveDirectionCooldown;
+        public int NearestPointsToChooseAmount => _nearestPointsToChooseAmount;
     }
 }

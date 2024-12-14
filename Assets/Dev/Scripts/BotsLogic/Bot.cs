@@ -33,9 +33,6 @@ namespace Dev.BotsLogic
 
         [SerializeField] private Rigidbody2D _rigidbody;
 
-        [SerializeField] private float _speed = 1.2f;
-        [SerializeField] private float _chaseSpeed = 3.5f;
-
         [SerializeField] private LayerMask _playerLayer;
 
         [SerializeField] private float _moveDistance = 10;
@@ -61,8 +58,8 @@ namespace Dev.BotsLogic
         public WeaponController WeaponController => _weaponController;
         public bool AllowToShoot => _allowToShoot;
         public Rigidbody2D Rigidbody => _rigidbody;
-        public float Speed => _speed;
-        public float ChaseSpeed => _chaseSpeed;
+        public float Speed => _gameSettings.BotsConfig.Speed;
+        public float ChaseSpeed => _gameSettings.BotsConfig.SpeedWhenAttacking;
 
         public bool AllowToMove => _allowToMove;
         public BotView View => _view;
@@ -153,7 +150,7 @@ namespace Dev.BotsLogic
             var movePoints = MovePoints.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude)
                 .ToList();
 
-            int maxPoints = _gameSettings.BotsConfig.BotsNearestPointsAmountToChoose;
+            int maxPoints = _gameSettings.BotsConfig.NearestPointsToChooseAmount;
             int index = Math.Clamp(Random.Range(0, maxPoints), 0, movePoints.Count());
 
             BotMovePoint movePoint = movePoints[index];
@@ -190,7 +187,7 @@ namespace Dev.BotsLogic
         
         public bool TryFindNearTarget()
         {
-            bool overlapSphere = Extensions.OverlapCircleExcludeWalls(_botStateController.NetworkRunner, transform.position, _gameSettings.BotsConfig.BotsTargetsSearchRadius, out var targets);
+            bool overlapSphere = Extensions.OverlapCircleExcludeWalls(_botStateController.NetworkRunner, transform.position, _gameSettings.BotsConfig.TargetsSearchRadius, out var targets);
 
             bool targetFound = false;
 
@@ -261,7 +258,7 @@ namespace Dev.BotsLogic
             Vector3 direction = (Target.transform.position - transform.position).normalized;
             Vector3 movePos = transform.position + direction;
 
-            Move(movePos, _chaseSpeed);
+            Move(movePos, ChaseSpeed);
         }
 
         public void AimWeaponTowards(Vector2 direction)

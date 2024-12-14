@@ -43,13 +43,13 @@ namespace Dev.BotsLogic
 
         private void ResetSearchForTargetsTimer()
         {
-            _searchForTargetsTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.BotsSearchForTargetsCooldown);
+            _searchForTargetsTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.SearchForTargetsCooldown);
         }
 
         private void ResetSearchChangeDirectionTimer()
         {
             _changeMoveDirectionTimer =
-                TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.BotsChangeMoveDirectionCooldown);
+                TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.ChangeMoveDirectionCooldown);
         }
 
         public void FixedNetworkTick()
@@ -86,14 +86,14 @@ namespace Dev.BotsLogic
 
             int allPointsCount = movePoints.Count;
 
-            int maxPoints = BotsConfig.BotsNearestPointsAmountToChoose;
+            int maxPoints = BotsConfig.NearestPointsToChooseAmount;
             int pointIndex = Random.Range(0, maxPoints);
             pointIndex = Math.Clamp(pointIndex, 0, allPointsCount);
 
             _currentMovePoint = movePoints[pointIndex];
             _bot.RandomMovePointPos = _currentMovePoint.transform.position;
 
-            if (_usedPoints.Count > BotsConfig.PointsPoolAmount)
+            if (_usedPoints.Count > BotsConfig.PatrolPointsPoolAmount)
                 _usedPoints.RemoveAt(0);
 
             _usedPoints.Add(_currentMovePoint);

@@ -2,6 +2,7 @@
 using System.Linq;
 using Dev.Infrastructure;
 using Dev.Infrastructure.Lobby;
+using Dev.Sounds;
 using Dev.Utils;
 using Fusion;
 using UniRx;
@@ -73,6 +74,8 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
             Curtains.Instance.SetText("Creating lobby");
             Curtains.Instance.ShowWithDotAnimation();
 
+            SoundController.Instance.FadeMainMusic(true);
+            
             StartGameResult gameResult = await _gameSessionBrowser.CreateSession(_selectedMap.MapName, _selectedMap.MapType);
 
             if (gameResult.Ok)
@@ -90,6 +93,7 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
                 
                 PopUpService.HideAllPopUps();
                 PopUpService.ShowPopUp<LobbyMainMenu>();
+                SoundController.Instance.FadeMainMusic(false);
             }
             
         }

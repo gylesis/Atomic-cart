@@ -12,31 +12,122 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a6c7f264f83496882b666ac7af3a9ac, type: 3}
   m_Name: SoundStaticDataContainer
   m_EditorClassIdentifier: 
+  _mainMusicSettings:
+    _volume: 30
+    fadedVolume: 15
+    _clip: {fileID: 8300000, guid: a13363b88d2dc864b94ee20518a9da6b, type: 3}
+    _smoothHideVolumeCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.0050811768
+        value: 0.0043792725
+        inSlope: 8.918742
+        outSlope: 8.918742
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.10674107
+        value: 0.91105765
+        inSlope: 2.294497
+        outSlope: 2.294497
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.8250151
+        outWeight: 0.4892729
+      - serializedVersion: 3
+        time: 0.18677944
+        value: 1.0003211
+        inSlope: 0.11206534
+        outSlope: 0.11206534
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.16782126
+      - serializedVersion: 3
+        time: 0.5578144
+        value: 1
+        inSlope: -0.0077087968
+        outSlope: -0.0077087968
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.65817374
+        value: 0.99853957
+        inSlope: -0.023918822
+        outSlope: -0.023918822
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.30321214
+      - serializedVersion: 3
+        time: 0.8289062
+        value: 0.9064456
+        inSlope: -1.063156
+        outSlope: -1.063156
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.5559452
+        outWeight: 0.7894966
+      - serializedVersion: 3
+        time: 0.88918084
+        value: 0.7737643
+        inSlope: -3.0781434
+        outSlope: -3.0781434
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.35385233
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.99108887
+        value: 0.0029067993
+        inSlope: -7.564247
+        outSlope: -7.564247
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   _soundDatas:
-  - SoundType: ak_hit
-    AudioClip: {fileID: 8300000, guid: 4dc01f23c543b394ab39e25e1421368a, type: 3}
-    Volume: 5
   - SoundType: ak_fire
     AudioClip: {fileID: 8300000, guid: d826c2150a2b4514ca8634b2eb861810, type: 3}
-    Volume: 12
+    Pitch: 10
+    Volume: 6
+  - SoundType: ak_hit
+    AudioClip: {fileID: 8300000, guid: 17929c055617a5842b907b444883ee39, type: 3}
+    Pitch: 5
+    Volume: 5
+  - SoundType: bazooka_fire
+    AudioClip: {fileID: 8300000, guid: c8e869045e16fe847ae782d109e6c023, type: 3}
+    Pitch: 10
+    Volume: 10
+  - SoundType: bazooka_hit
+    AudioClip: {fileID: 8300000, guid: a94e8ff353e040b41acd1137a989a3b7, type: 3}
+    Pitch: 10
+    Volume: 45.8
+  - SoundType: pistol_fire
+    AudioClip: {fileID: 8300000, guid: d826c2150a2b4514ca8634b2eb861810, type: 3}
+    Pitch: 10
+    Volume: 6
+  - SoundType: pistol_hit
+    AudioClip: {fileID: 8300000, guid: 17929c055617a5842b907b444883ee39, type: 3}
+    Pitch: 5
+    Volume: 5
   - SoundType: explosion
-    AudioClip: {fileID: 8300000, guid: d80e1ce7dd0b5ad42973a696864b2146, type: 3}
-    Volume: 20
+    AudioClip: {fileID: 8300000, guid: a94e8ff353e040b41acd1137a989a3b7, type: 3}
+    Pitch: 10
+    Volume: 49.5
   - SoundType: teargas
-    AudioClip: {fileID: 8300000, guid: c5fbe8772b819be4699f5c548a060d7c, type: 3}
+    AudioClip: {fileID: 8300000, guid: c8e869045e16fe847ae782d109e6c023, type: 3}
+    Pitch: 10
     Volume: 15
   - SoundType: grenade_launcher
     AudioClip: {fileID: 8300000, guid: 097748a4ea0ddd14a8d62d476e2d2776, type: 3}
+    Pitch: 10
     Volume: 15
-  - SoundType: bazooka_fire
-    AudioClip: {fileID: 8300000, guid: 40e98d37ce318c4498039195e576618d, type: 3}
-    Volume: 10
-  - SoundType: bazooka_hit
-    AudioClip: {fileID: 8300000, guid: d80e1ce7dd0b5ad42973a696864b2146, type: 3}
-    Volume: 8
-  - SoundType: pistol_hit
-    AudioClip: {fileID: 8300000, guid: 4dc01f23c543b394ab39e25e1421368a, type: 3}
-    Volume: 15
-  - SoundType: pistol_fire
-    AudioClip: {fileID: 8300000, guid: d826c2150a2b4514ca8634b2eb861810, type: 3}
-    Volume: 10

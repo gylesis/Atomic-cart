@@ -21,14 +21,16 @@ namespace Dev.Infrastructure
             _projectDisposable = new GameObject("[Global Disposable]");
             Object.DontDestroyOnLoad(_projectDisposable); 
             
-            if(SceneManager.GetActiveScene().name != "Bootstrap")
-                UpdateSceneDisposable();
+            UpdateSceneDisposable();
             
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneLoaded;
         }
 
-        private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+        private void OnSceneLoaded(Scene scene)
         {
+            if(scene.name == "Bootstrap" || scene.name == "AuthScene")
+                return;
+            
             UpdateSceneDisposable();
         }
 

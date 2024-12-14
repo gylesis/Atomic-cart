@@ -24,7 +24,7 @@ namespace Dev.BotsLogic
 
         public void Enter()
         {
-            _tickTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.BotsSearchForTargetsCooldown);
+            _tickTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.SearchForTargetsCooldown);
         }
 
         public void Tick() { }
@@ -33,7 +33,7 @@ namespace Dev.BotsLogic
         {
             if (_tickTimer.ExpiredOrNotRunning(_bot.Runner))
             {
-                _tickTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.BotsSearchForTargetsCooldown);
+                _tickTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.SearchForTargetsCooldown);
 
                 if (_bot.TryFindNearTarget() == false)
                     StateMachine.ChangeState<PatrolBotState>();

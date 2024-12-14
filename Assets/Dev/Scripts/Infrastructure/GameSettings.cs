@@ -1,4 +1,5 @@
-﻿using Dev.PlayerLogic;
+﻿using Dev.Infrastructure.Lobby;
+using Dev.PlayerLogic;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
 using Dev.Weapons.StaticData;
@@ -37,8 +38,11 @@ namespace Dev.Infrastructure
         
         [Header("Debug")]
         [SerializeField] private bool _isDebugMode;
+        [SerializeField] private MapName _debugMap;
 
         [SerializeField] private float _barrelsRespawnCooldown = 5f;
+
+        public MapName DebugMap => _debugMap;
 
         public bool IsDebugMode => _isDebugMode;
 

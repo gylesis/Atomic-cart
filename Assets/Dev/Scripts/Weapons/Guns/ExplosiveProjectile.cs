@@ -71,7 +71,7 @@ namespace Dev.Weapons.Guns
 
         protected virtual void OnExplodeShake()
         {
-            CameraService.Instance.ShakeIfNeed(transform.position, "small_explosion", Owner.IsBot);
+            CameraService.Instance.ShakeIfNeed("small_explosion", transform.position, Owner.IsBot);
         }
 
         protected void ExplodeAndDealDamage(float explosionRadius)

@@ -42,7 +42,7 @@ namespace Dev
             }
         }*/
 
-        public void ShakeIfNeed(Vector3 position, string key, bool isShakeFromBot, bool isGlobal = false)
+        public void ShakeIfNeed(string key, Vector3 position, bool isShakeFromBot, bool isGlobal = false)
         {
             if(isShakeFromBot) return;
             
@@ -58,7 +58,7 @@ namespace Dev
         [Rpc]
         private void RPC_ShakeIfNeed(Vector3 position, string key)
         {
-            if(_cameraInstance != null) return;
+            if(_cameraInstance == null) return;
             
             bool isShakeNeeded = _cameraInstance.Camera.IsPointInCameraView(position, 0.1f);
 

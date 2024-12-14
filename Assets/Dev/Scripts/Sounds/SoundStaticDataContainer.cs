@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -7,7 +8,12 @@ namespace Dev.Sounds
     [CreateAssetMenu(menuName = "StaticData/SoundStaticDataContainer", fileName = "SoundStaticDataContainer", order = 0)]
     public class SoundStaticDataContainer : ScriptableObject    
     {
+        [SerializeField] private MainMusicSettings _mainMusicSettings;
+        [Space]
+        [Space]
         [SerializeField] private List<SoundStaticData> _soundDatas;
+
+        public MainMusicSettings MainMusicSettings => _mainMusicSettings;
         
         public bool TryGetSoundStaticData(string soundType, out SoundStaticData soundStaticData)
         {
@@ -60,5 +66,21 @@ namespace Dev.Sounds
             );
         }
         */
+    }
+
+
+    [Serializable]
+    public class MainMusicSettings
+    {
+        [SerializeField, Range(0f, 100f)] private float _volume = 40f;
+        [SerializeField, Range(0f, 100f)] private float fadedVolume = 15f;
+        [SerializeField] private AudioClip _clip;
+
+        [SerializeField] private AnimationCurve _smoothHideVolumeCurve;
+
+        public AnimationCurve SmoothHideVolumeCurve => _smoothHideVolumeCurve;
+        public AudioClip Clip => _clip;
+        public float Volume => _volume;
+        public float FadedVolume => fadedVolume;
     }
 }

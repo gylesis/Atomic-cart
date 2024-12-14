@@ -22,7 +22,7 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
             base.Awake();
 
             _linkAccountButton.Clicked.Subscribe(OnLinkAccountClicked).AddTo(this);
-            _loadLinkedAccButton.Clicked.Subscribe(unit => OnLoadLinkedAccClicked()).AddTo(this);
+            //_loadLinkedAccButton.Clicked.Subscribe(unit => OnLoadLinkedAccClicked()).AddTo(this);
             
             _changeNicknameButton.Clicked.Subscribe(unit => OnChangeNicknameClicked()).AddTo(this);
             _nickname.onValueChanged.AsObservable().Subscribe(OnNicknameChanged).AddTo(this);

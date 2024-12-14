@@ -1,4 +1,6 @@
-﻿using Dev.Infrastructure;
+﻿using Cysharp.Threading.Tasks;
+using Dev.Infrastructure;
+using Dev.Sounds;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -11,15 +13,15 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
         [SerializeField] private DefaultReactiveButton _playButton;
         [SerializeField] private DefaultReactiveButton _settingsButton;
         [SerializeField] private DefaultReactiveButton _exitButton;
-
         [SerializeField] private TMP_Text _nicknameText;
+        
         private AuthService _authService;
 
         protected override void Awake()
         {
-            _playButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnPlayButtonClicked()));
-            _settingsButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnSettingsButtonClicked()));
-            _exitButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitButtonClicked()));
+            _playButton.Clicked.Subscribe(unit => OnPlayButtonClicked()).AddTo(GlobalDisposable.SceneScopeToken);
+            _settingsButton.Clicked.TakeUntilDestroy(this).Subscribe(unit => OnSettingsButtonClicked()).AddTo(GlobalDisposable.SceneScopeToken);
+            _exitButton.Clicked.TakeUntilDestroy(this).Subscribe(unit => OnExitButtonClicked()).AddTo(GlobalDisposable.SceneScopeToken);
             
             Show();
         }
@@ -52,6 +54,7 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
 
         public override void Show()
         {
+            SoundController.Instance.FadeMainMusic(false);
             base.Show();
 
             _nicknameText.text = $"{_authService.MyProfile.Nickname}";

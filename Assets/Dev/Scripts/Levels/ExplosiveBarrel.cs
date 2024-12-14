@@ -1,5 +1,6 @@
 using Dev.Effects;
 using Dev.Infrastructure;
+using Dev.Sounds;
 using Dev.Weapons.Guns;
 using UnityEngine;
 
@@ -22,7 +23,8 @@ namespace Dev.Levels
             base.OnZeroHealth();
 
             FxController.Instance.SpawnEffectAt<Effect>("barrel_explosion", transform.position);
-            CameraService.Instance.ShakeIfNeed(transform.position, "small_explosion", false);
+            CameraService.Instance.ShakeIfNeed("small_explosion", transform.position, false);
+            SoundController.Instance.PlaySoundAt("explosion", transform.position, 40);
 
             ExplodeAtAndHitPlayers(transform.position);
         }
