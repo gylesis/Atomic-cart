@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SoundStaticDataContainer
   m_EditorClassIdentifier: 
   _mainMusicSettings:
-    _volume: 30
-    fadedVolume: 15
+    _volume: 25
+    fadedVolume: 12
     _clip: {fileID: 8300000, guid: a13363b88d2dc864b94ee20518a9da6b, type: 3}
     _smoothHideVolumeCurve:
       serializedVersion: 2

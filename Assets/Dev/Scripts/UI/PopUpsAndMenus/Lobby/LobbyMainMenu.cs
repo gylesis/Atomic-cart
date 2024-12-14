@@ -54,6 +54,7 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
 
         public override void Show()
         {
+            LobbyAnimation.Instance.Play();
             SoundController.Instance.FadeMainMusic(false);
             base.Show();
 
