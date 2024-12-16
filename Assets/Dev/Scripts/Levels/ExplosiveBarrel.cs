@@ -22,7 +22,7 @@ namespace Dev.Levels
         {
             base.OnZeroHealth();
 
-            FxController.Instance.SpawnEffectAt<Effect>("barrel_explosion", transform.position);
+            FxController.Instance.SpawnEffectAt("barrel_explosion", transform.position);
             CameraService.Instance.ShakeIfNeed("small_explosion", transform.position, false);
             SoundController.Instance.PlaySoundAt("explosion", transform.position, 40);
 

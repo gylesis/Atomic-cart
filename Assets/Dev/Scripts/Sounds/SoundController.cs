@@ -1,5 +1,6 @@
 ﻿using System;
 using Dev.Utils;
+using Fusion;
 using UnityEngine;
 using UnityEngine.Pool;
 using Zenject;
@@ -117,10 +118,11 @@ namespace Dev.Sounds
 
         public void PlaySoundAt(string soundType, Vector3 pos, float radius = 40, bool isLocal = false)
         {
-            Play(soundType, pos, radius);
+            RPC_Play(soundType, pos, radius);
         }
 
-        private void Play(string soundType, Vector3 pos = default, float radius = 25)
+        [Rpc(Channel = RpcChannel.Reliable)]
+        private void RPC_Play(string soundType, Vector3 pos = default, float radius = 25)
         {
             var hasSound = _soundStaticDataContainer.TryGetSoundStaticData(soundType, out var soundStaticData);
 

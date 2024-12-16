@@ -82,7 +82,7 @@ MonoBehaviour:
   _mapsContainer: {fileID: 11400000, guid: 3ed23742090337849a77629f2f319577, type: 2}
   _curtains: {fileID: 8273177609646514508}
   _soundStaticDataContainer: {fileID: 11400000, guid: d0adcd20e3bc1d84b830530cb7945b55, type: 2}
-  _gameStaticDataContainer: {fileID: 11400000, guid: 319ebe2e65da7924cbd5039b1d4651af, type: 2}
+  _fxContainer: {fileID: 11400000, guid: cc4edc5e3b303e14aa794fe792946f45, type: 2}
   _popUpsParent: {fileID: 439113241469097981}
 --- !u!1 &5928570784874416841
 GameObject:

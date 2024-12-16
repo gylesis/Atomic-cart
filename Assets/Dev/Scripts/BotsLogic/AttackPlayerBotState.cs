@@ -1,8 +1,5 @@
-﻿using System;
-using Cysharp.Threading.Tasks;
-using Dev.Infrastructure;
+﻿using Dev.Infrastructure;
 using Fusion;
-using UniRx;
 using UnityEngine;
 
 namespace Dev.BotsLogic
@@ -41,8 +38,11 @@ namespace Dev.BotsLogic
            
             if (_bot.Target == null) return;
 
-            Vector3 direction = (_bot.Target.transform.position - _bot.transform.position).normalized;
-
+            float randomness = BotsConfig.ShootRandomnessFactor;
+            Vector3 target = _bot.Target.transform.position + (Vector3)(Vector3.one * (Random.insideUnitCircle * randomness));
+            
+            Vector3 direction = (target - _bot.transform.position).normalized;
+            
             _bot.AimWeaponTowards(direction);
             _bot.MoveTowardsTarget();
 

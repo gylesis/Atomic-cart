@@ -34,15 +34,7 @@ namespace Dev
             _playersSpawner.CharacterSpawned.Subscribe(OnCharacterSpawned).AddTo(GlobalDisposable.SceneScopeToken);
         }
 
-        /*private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                ShakeIfNeed(_testPoint.position, "small_explosion", _sessionStateService.GetSessionPlayer(PlayerRef.MasterClient));
-            }
-        }*/
-
-        public void ShakeIfNeed(string key, Vector3 position, bool isShakeFromBot, bool isGlobal = false)
+        public void ShakeIfNeed(string key, Vector3 position, bool isShakeFromBot, bool isGlobal = true)
         {
             if(isShakeFromBot) return;
             
@@ -50,13 +42,21 @@ namespace Dev
             {
                 if(sessionPlayer.IsBot) continue;
                 
-                RPC_ShakeIfNeed(position, key);
+                if(isGlobal)
+                    RPC_ShakeIfNeed(position, key);
+                else
+                    ShakeInternal(position, key);
             }
         }
 
 
         [Rpc]
         private void RPC_ShakeIfNeed(Vector3 position, string key)
+        {
+            ShakeInternal(position, key);
+        }
+
+        private void ShakeInternal(Vector3 position, string key)
         {
             if(_cameraInstance == null) return;
             

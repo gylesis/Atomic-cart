@@ -1,3 +1,4 @@
+using Dev.Effects;
 using Dev.Infrastructure.Lobby;
 using Dev.Infrastructure.Networking;
 using Dev.Sounds;
@@ -16,9 +17,9 @@ namespace Dev.Infrastructure.Installers
         [SerializeField] private MapsContainer _mapsContainer;
         [SerializeField] private Curtains _curtains;
         [SerializeField] private SoundStaticDataContainer _soundStaticDataContainer;
+        [SerializeField] private FxContainer _fxContainer;
         
         [SerializeField] private Transform _popUpsParent;
-        
         
         public override void InstallBindings()
         {
@@ -28,6 +29,8 @@ namespace Dev.Infrastructure.Installers
             
             Container.Bind<GlobalDisposable>().AsSingle().NonLazy();
 
+            Container.Bind<FxContainer>().FromInstance(_fxContainer).AsSingle().WhenInjectedInto<FxController>().NonLazy();
+            
             Container.Bind<SceneLoader>().AsSingle().NonLazy();
             Container.Bind<PopUpService>().AsSingle().WithArguments(_popUpsParent).NonLazy();
 

@@ -37,7 +37,7 @@ namespace Dev.Levels.Interactions.Pickable
 
             Vector3 playerPos = _playersDataService.GetPlayerPos(interactedPlayer);
 
-            FxController.Instance.SpawnEffectAt<Effect>("picked_health", playerPos);
+            FxController.Instance.SpawnEffectAt("picked_health", playerPos);
 
             //Debug.Log($"Player picked health for {_healthRestoreAmount}", gameObject);
         }

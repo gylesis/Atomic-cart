@@ -86,7 +86,7 @@ namespace Dev.Weapons.Guns
         protected override void OnExplodePlayEffect()
         {
             base.OnExplodePlayEffect();
-            FxController.Instance.SpawnEffectAt<Effect>("landmine_explosion", transform.position);
+            FxController.Instance.SpawnEffectAt("landmine_explosion", transform.position);
         }
 
         private void StartDetonation()

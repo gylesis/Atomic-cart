@@ -1,4 +1,5 @@
 ﻿using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.PlayerLogic;
 using Dev.Weapons.Commands;
 using Fusion;
@@ -38,31 +39,29 @@ namespace Dev.UI.PopUpsAndMenus.Main
 
         private void Start()
         {
-            _showTab.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnShowTabButtonClicked()));
-            _exitMenuButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnExitMenuButtonClicked()));
-            _interactionButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnInteractionButtonClicked()));
+            _showTab.Clicked.TakeUntilDestroy(this).Subscribe(unit => OnShowTabButtonClicked());
+            _exitMenuButton.Clicked.TakeUntilDestroy(this).Subscribe(nit => OnExitMenuButtonClicked());
+            _interactionButton.Clicked.TakeUntilDestroy(this).Subscribe(unit => OnInteractionButtonClicked());
 
-            _resetAbilityButton.LongClick.TakeUntilDestroy(this).Subscribe((unit => OnResetAbilityButtonClicked()));
+            _resetAbilityButton.LongClick.TakeUntilDestroy(this).Subscribe(unit => OnResetAbilityButtonClicked());
             _resetAbilityButton.SetAllowToLongClick(true);
 
-            _toggleCastModesButton.Clicked.TakeUntilDestroy(this).Subscribe((unit => OnToggleCastModesClicked()));
+            _toggleCastModesButton.Clicked.TakeUntilDestroy(this).Subscribe(unit => OnToggleCastModesClicked());
 
             _joysticksContainer.AimJoystick.PointerUpOrDown.TakeUntilDestroy(this)
-                .Subscribe((OnAimJoystickPointerUpOrDown));
+                .Subscribe(OnAimJoystickPointerUpOrDown);
 
-            _playersSpawner.BaseSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerBaseSpawned));
-            _playersSpawner.CharacterSpawned.TakeUntilDestroy(this).Subscribe((OnPlayerCharacterSpawned));
+            _playersSpawner.BaseSpawned.TakeUntilDestroy(this).Subscribe(OnPlayerBaseSpawned);
+            _playersSpawner.CharacterSpawned.TakeUntilDestroy(this).Subscribe(OnPlayerCharacterSpawned);
         }
 
         private void OnPlayerBaseSpawned(PlayerSpawnEventContext context)
         {
             if (_playerBase != null) return;
 
-            NetworkRunner runner = FindObjectOfType<NetworkRunner>();
-
             PlayerRef playerRef = context.PlayerRef;
 
-            if (runner.LocalPlayer != playerRef) return;
+            if (ConnectionManager.Instance.NetworkRunner.LocalPlayer != playerRef) return;
 
             PlayerBase playerBase = context.Transform.GetComponent<PlayerBase>();
 

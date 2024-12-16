@@ -8,6 +8,7 @@ namespace Dev.Weapons.StaticData
 {
     public abstract class WeaponStaticData : ScriptableObject
     {
+        [Header("General")]
         [SerializeField] private WeaponType _weaponType;
         [SerializeField] private Weapon _weaponPrefab;
 
@@ -16,14 +17,19 @@ namespace Dev.Weapons.StaticData
         [SerializeField] private int _minDamage = 8;
         [SerializeField] private int _maxDamage = 12;
 
+        [Header("Effects")]
         [SerializeField] private string _fireSound = "ak_fire";
         [SerializeField] private string _hitSound = "ak_hit";
         [SerializeField] private string _shakePatternKey = "TO IMPLEMENT";
+        [SerializeField] private string _shellsKey = "gun_shells";
+        [SerializeField] private string _muzzleKey = "TO IMPLEMENT";
 
         public string FireSound => _fireSound;
         public string HitSound => _hitSound;
 
         public string ShakePatternKey => _shakePatternKey;
+        public string ShellsKey => _shellsKey;
+        public string MuzzleKey => _muzzleKey;
 
         public Type SystemType => _weaponPrefab.GetType();
         
@@ -35,7 +41,5 @@ namespace Dev.Weapons.StaticData
         public float Cooldown => _cooldown;
 
         public int Damage => Random.Range(_minDamage, _maxDamage + 1);
-
     }
-    
 }

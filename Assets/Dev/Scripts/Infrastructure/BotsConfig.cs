@@ -11,6 +11,7 @@ namespace Dev.Infrastructure
         [Header("Attack")]
         [SerializeField] private float _targetsSearchRadius = 20f;
         [SerializeField] private float _searchForTargetsCooldown = 0.25f;
+        [SerializeField] private float _shootRandomnessFactor = 1.5f;
         
         [Header("Movement")]
         [SerializeField] private float _speed = 5f;
@@ -21,6 +22,8 @@ namespace Dev.Infrastructure
 
         public float Speed => _speed;
         public float SpeedWhenAttacking => _speedWhenAttacking;
+
+        public float ShootRandomnessFactor => _shootRandomnessFactor;
 
         public int PatrolPointsPoolAmount => _patrolPointsPoolAmount;
         public int BotsPerTeam => _botsPerTeam;

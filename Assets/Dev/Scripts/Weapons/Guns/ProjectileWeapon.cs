@@ -84,9 +84,9 @@ namespace Dev.Weapons.Guns
             projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
             projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 5);
 
-            CameraService.Instance.ShakeIfNeed(Data.ShakePatternKey, transform.position, Owner.IsBot);
+            CameraService.Instance.ShakeIfNeed(Data.ShakePatternKey, transform.position, Owner.IsBot, false);
 
-            Effect effect = FxController.Instance.SpawnEffectAt("gun_shells", _shootPoint.position);
+            Effect effect = FxController.Instance.SpawnEffectAt(Data.ShellsKey, _shootPoint.position);
             effect.transform.RotateTowardsDirection(Vector3.right);
             
             RPC_PlaySound(Data.FireSound, projectile.transform.position, 40);
@@ -171,7 +171,7 @@ namespace Dev.Weapons.Guns
         /// <param name="projectile"></param>
         protected virtual void SpawnVFXOnDestroyProjectile(Projectile projectile)
         {
-            FxController.Instance.SpawnEffectAt<Effect>("bullet_explosion", projectile.transform.position);
+            FxController.Instance.SpawnEffectAt("bullet_explosion", projectile.transform.position);
         }
 
         protected virtual void SpawnSoundOnDestroyProjectile(Projectile projectile)

@@ -46,7 +46,7 @@ namespace Dev.Weapons.Guns
 
         protected override void SpawnVFXOnDestroyProjectile(Projectile projectile)
         {
-            FxController.Instance.SpawnEffectAt<Effect>("bazooka_projectile_explosion", projectile.transform.position);
+            FxController.Instance.SpawnEffectAt("bazooka_projectile_explosion", projectile.transform.position);
         }
     }
 }   
