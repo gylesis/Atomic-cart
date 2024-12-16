@@ -134,7 +134,7 @@ namespace Dev.Infrastructure
             RPC_ShowRestartNotification(title, description, timeAfterWinGame);
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_ShowRestartNotification(string title, string description, int removeNotificationDelay)
         {
             var notificationPopUp = _popUpService.ShowPopUp<NotificationPopUp>();

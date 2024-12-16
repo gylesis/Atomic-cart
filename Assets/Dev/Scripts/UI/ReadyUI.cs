@@ -30,7 +30,7 @@ namespace Dev.UI
             _authService = authService;
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_AssignPlayer(PlayerRef playerRef)
         {
             PlayerRef = playerRef;
@@ -43,7 +43,7 @@ namespace Dev.UI
             UpdateNickname();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_RemovePlayerAssigment()
         {
              PlayerRef = PlayerRef.None;
@@ -59,7 +59,7 @@ namespace Dev.UI
             //_playerNicknameText.text = $"moloko";
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetReadyView(bool isReady)
         {
             _canvasGroup.alpha = 1;

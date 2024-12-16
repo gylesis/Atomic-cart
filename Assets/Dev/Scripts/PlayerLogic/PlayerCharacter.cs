@@ -34,15 +34,16 @@ namespace Dev.PlayerLogic
                 LocalPlayerCharacter = this;
         }
         
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_Init(CharacterClass characterClass)
         {
             CharacterClass = characterClass;
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_OnDeath()
         {
+            Debug.Log($"Rpc on death");
             transform.DOScale(0, 0.5f);
             
             IsDead = true;
@@ -50,7 +51,7 @@ namespace Dev.PlayerLogic
             _collider2D.enabled = false;
         }
         
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_ResetAfterDeath()
         {
             transform.DOScale(1, 0);

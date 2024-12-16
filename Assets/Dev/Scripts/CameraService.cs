@@ -50,7 +50,7 @@ namespace Dev
         }
 
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_ShakeIfNeed(Vector3 position, string key)
         {
             ShakeInternal(position, key);

@@ -100,7 +100,7 @@ namespace Dev.BotsLogic
             _botStateController.NetworkSpawned();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_OnDeath(bool isDead) // TODO bullshit
         {
             transform.DOScale(isDead ? 0 : 1, 0.5f);

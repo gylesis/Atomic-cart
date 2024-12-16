@@ -319,7 +319,7 @@ namespace Dev
             Extensions.Delay(respawnTime, destroyCancellationToken, () => _botsController.RPC_RespawnBot(bot));
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_OnBotDeath(SessionPlayer killer, SessionPlayer victim, bool isDamageFromServer )
         {
             var dieContext = new UnitDieContext();

@@ -51,7 +51,7 @@ namespace Dev.Weapons.Guns
             _hitsProcessor.Hit.Subscribe(OnHit).AddTo(this);
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetOwner(SessionPlayer owner)
         {
             Owner = owner;

@@ -227,7 +227,7 @@ namespace Dev.Infrastructure
             playerBase.AbilityCastController.RPC_SetAbilityType(abilityType);
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_AddPlayer(PlayerRef playerRef, string nickname, PlayerBase playerBase)
         {
             PlayersBaseDictionary.Add(playerRef, playerBase);
@@ -309,7 +309,7 @@ namespace Dev.Infrastructure
             return PlayersBaseDictionary.First(x => x.Value.Object.StateAuthority.ToNetworkId() == id).Value;
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_OnPlayerBaseSpawnedInvoke(PlayerBase playerBase)
         {
             PlayerRef playerRef = playerBase.Object.InputAuthority;

@@ -36,7 +36,7 @@ namespace Dev.Levels.Interactions.Pickable
             base.OnInteraction(interaction, interactedPlayer);
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_SetForRespawn()
         {
             _playerTriggerZone.gameObject.SetActive(false);
@@ -52,7 +52,7 @@ namespace Dev.Levels.Interactions.Pickable
             }));
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_Respawn()
         {
             transform.DOScale(1, 0.5f).SetEase(Ease.InCubic).OnComplete((() => _playerTriggerZone.gameObject.SetActive(true)));

@@ -40,7 +40,7 @@ namespace Dev.Infrastructure.Networking
             CorrectState();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetActive(bool isActive)
         {
             IsActive = isActive;
@@ -61,7 +61,7 @@ namespace Dev.Infrastructure.Networking
             networkObject.transform.position = pos;
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetPos(Vector3 pos)
         {
             transform.position = pos;

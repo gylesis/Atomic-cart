@@ -53,7 +53,7 @@ namespace Dev.PlayerLogic
             _teamBanner.color = TeamColor;
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetTeamColor(Color color)
         {
             TeamColor = color;

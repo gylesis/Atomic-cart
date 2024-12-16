@@ -139,7 +139,7 @@ namespace Dev.PlayerLogic
             RPC_UpdateScore();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_UpdateScore()
         {
             OnScoreUpdate.OnNext(Unit.Default);

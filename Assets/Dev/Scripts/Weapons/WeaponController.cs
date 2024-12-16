@@ -53,7 +53,7 @@ namespace Dev.Weapons
             //_weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetOwner(SessionPlayer owner)
         {
             Owner = owner;
@@ -67,7 +67,7 @@ namespace Dev.Weapons
             return weapon != null;
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_AddWeapon(Weapon weapon, bool withChoose = false)
         {
             Weapons.Add(weapon);
@@ -173,7 +173,7 @@ namespace Dev.Weapons
         }
 
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_ChooseWeapon(int index)
         {
             if (Weapons.Count == 0)
@@ -200,7 +200,7 @@ namespace Dev.Weapons
             RPC_SelectViewWeapon();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_ChooseWeapon(WeaponType weaponType)
         {
             if (Weapons.Count == 0)
@@ -225,7 +225,7 @@ namespace Dev.Weapons
             RPC_SelectViewWeapon();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_SelectViewWeapon()
         {
             foreach (Weapon weapon in Weapons)

@@ -55,7 +55,7 @@ namespace Dev.Weapons.Commands
             ResetAbility();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetAbilityType(AbilityType abilityType)
         {
             CurrentAbilityToCast = abilityType;

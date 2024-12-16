@@ -128,7 +128,7 @@ namespace Dev.PlayerLogic
             SetTeamScore(TeamSide.Red, 0);
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_UpdateTeamsScores()
         {
             _blueScoreText.text = $"{BlueTeamScoreData.Score}";

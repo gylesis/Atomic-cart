@@ -20,7 +20,7 @@ namespace Dev.Infrastructure
             _authService = authService;
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_Add(PlayerRef playerRef, string playerId)
         {
             LinkData.Add(playerRef, new NetworkString<_64>(playerId));

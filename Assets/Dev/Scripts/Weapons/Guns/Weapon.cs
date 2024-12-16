@@ -32,7 +32,7 @@ namespace Dev.Weapons.Guns
 
         public float BulletHitOverlapRadius { get; protected set; } = 0.5f;
         
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetOwner(SessionPlayer owner)
         {
             Owner = owner;

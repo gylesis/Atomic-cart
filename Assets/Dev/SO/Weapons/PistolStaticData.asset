@@ -15,11 +15,13 @@ MonoBehaviour:
   _weaponType: 3
   _weaponPrefab: {fileID: 5401552539073650256, guid: 72807d6fe6787ab4292cad478db34cb7, type: 3}
   _bulletMaxDistance: 15
-  _cooldown: 0.44
-  _minDamage: 8
-  _maxDamage: 12
+  _cooldown: 0.4
+  _minDamage: 12
+  _maxDamage: 16
   _fireSound: pistol_fire
   _hitSound: pistol_hit
   _shakePatternKey: pistol_fire
+  _shellsKey: gun_shells
+  _muzzleKey: TO IMPLEMENT
   _projectileSpeed: 1500
   _projectilePrefab: {fileID: -4585705015197709361, guid: 71867f885506fd340a6759292de3fdb4, type: 3}

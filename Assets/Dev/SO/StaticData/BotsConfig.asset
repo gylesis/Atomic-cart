@@ -15,6 +15,7 @@ MonoBehaviour:
   _botsPerTeam: 2
   _targetsSearchRadius: 20
   _searchForTargetsCooldown: 0.25
+  _shootRandomnessFactor: 2.4
   _speed: 6
   _speedWhenAttacking: 5
   _changeMoveDirectionCooldown: 5

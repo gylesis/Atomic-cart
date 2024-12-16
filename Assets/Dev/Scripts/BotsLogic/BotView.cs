@@ -23,7 +23,7 @@ namespace Dev.BotsLogic
             UpdateTeamBannerColor();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetTeamBannerColor(Color color)
         {
             TeamBannerColor = color;
@@ -35,7 +35,7 @@ namespace Dev.BotsLogic
             _teamBanner.color = TeamBannerColor;
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_Scale(float target)
         {
             transform.DOScale(target, 0.5f);

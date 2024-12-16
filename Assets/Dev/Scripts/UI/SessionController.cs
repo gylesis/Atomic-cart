@@ -64,7 +64,7 @@ namespace Dev.UI
             return SessionPlayerReadyStatuses[playerRef];
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_ReadyStatusUpdate(bool isReady, PlayerRef playerRef)
         {
             SessionPlayerReadyStatuses.Set(playerRef, isReady);

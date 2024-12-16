@@ -53,7 +53,7 @@ namespace Dev.Levels
             }));
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_SetHitboxState(bool isOn)
         {
             _collider.enabled = isOn;

@@ -21,7 +21,7 @@ namespace Dev.Effects
             RPC_Hide();
         }
 
-        [Rpc]
+        [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_Hide()
         {
             ParticleSystem.MainModule mainModule = _particleSystem.main;
