@@ -7,6 +7,7 @@ using Dev.PlayerLogic;
 using Dev.Utils;
 using Dev.Weapons;
 using Dev.Weapons.Guns;
+using Dev.Weapons.StaticData;
 using DG.Tweening;
 using Fusion;
 using UniRx;
@@ -112,6 +113,9 @@ namespace Dev.BotsLogic
             _collider.enabled = !isDead;
 
             _navMeshAgent.isStopped = isDead;
+
+            if (isDead) 
+                _weaponController.ChooseRandomWeapon();
         }
     
         public void SetFreezeState(bool toFreeze)

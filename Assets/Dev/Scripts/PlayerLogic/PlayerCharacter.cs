@@ -43,7 +43,6 @@ namespace Dev.PlayerLogic
         [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_OnDeath()
         {
-            Debug.Log($"Rpc on death");
             transform.DOScale(0, 0.5f);
             
             IsDead = true;

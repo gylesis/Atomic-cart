@@ -29,7 +29,7 @@ namespace Dev.Weapons
             {
                 if (withChose)
                 {
-                    playerWeaponController.RPC_ChooseWeapon(weaponStaticData.WeaponType);
+                    playerWeaponController.ChooseWeapon(weaponStaticData.WeaponType);
                 }
 
                 Debug.Log($"This weapon is already chosen");

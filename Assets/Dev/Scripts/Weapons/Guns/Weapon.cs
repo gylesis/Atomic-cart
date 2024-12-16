@@ -18,6 +18,7 @@ namespace Dev.Weapons.Guns
         public Transform View => _view;
         [Networked] public TickTimer CooldownTimer { get; set; }
         [Networked] public SessionPlayer Owner { get; private set; }
+        [Networked] public NetworkBool IsChosen { get; private set; }
             
         public WeaponType WeaponType => _weaponType;
         public virtual bool AllowToShoot => CooldownTimer.ExpiredOrNotRunning(Runner);
@@ -31,7 +32,13 @@ namespace Dev.Weapons.Guns
         public Vector2 ShootDirection => transform.right;
 
         public float BulletHitOverlapRadius { get; protected set; } = 0.5f;
-        
+
+        protected override void CorrectState()
+        {
+            base.CorrectState();
+            SetViewState(IsChosen);
+        }
+
         [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_SetOwner(SessionPlayer owner)
         {
@@ -47,11 +54,12 @@ namespace Dev.Weapons.Guns
         /// <param name="power"></param>
         public abstract void Shoot(Vector2 direction, float power = 1);
 
-        public virtual void OnChosen() { }
-
+        public virtual void Choose(bool chosen) { }
+        
         public virtual void SetViewState(bool isActive)
         {
-            _view.gameObject.SetActive(isActive);
+            IsChosen = isActive;
+            _view.gameObject.SetActive(IsChosen);
         }
     }
 }

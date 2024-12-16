@@ -2,9 +2,9 @@
 {
     public enum WeaponType
     {
-        Bazooka = 0,
-        Rifle,
-        GrenadeLauncher,
-        Pistol
+        Rifle = 0,
+        Pistol = 1,
+        Bazooka = 2,
+        GrenadeLauncher = 3
     }
 }

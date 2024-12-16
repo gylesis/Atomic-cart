@@ -42,10 +42,14 @@ namespace Dev.Weapons
             
             if (HasStateAuthority == false) return;
 
-            Weapon weapon = WeaponParent.GetComponentInChildren<Weapon>();
+            var weapons = WeaponParent.GetComponentsInChildren<Weapon>();
+            int randomWeapon = Random.Range(0, weapons.Length + 1);
 
-            if (weapon != null) 
-                RPC_AddWeapon(weapon, true);
+            for (var index = 0; index < weapons.Length; index++)
+            {
+                var weapon = weapons[index];
+                RPC_AddWeapon(weapon, index == randomWeapon);
+            }
 
             foreach (Weapon weap in Weapons) 
                 weap.transform.parent = WeaponParent;
@@ -76,10 +80,8 @@ namespace Dev.Weapons
 
             weapon.RPC_SetOwner(Owner);
 
-            if (withChoose)
-            {
-                RPC_ChooseWeapon(Weapons.Count);
-            }
+            if (withChoose) 
+                ChooseWeapon(Weapons.Count);
         }
 
         public void TryToFire(Vector2 direction)
@@ -172,58 +174,50 @@ namespace Dev.Weapons
             //_weaponUiView.ShootReloadView(time, maxCooldown);
         }
 
-
-        [Rpc(Channel = RpcChannel.Reliable)]
-        public void RPC_ChooseWeapon(int index)
+        public void ChooseWeapon(int index)
         {
             if (Weapons.Count == 0)
             {
+                AtomicLogger.Log($"Zero weapons to choose from");
                 return;
             }
 
-            var weaponIndex = Mathf.Clamp(index - 1, 0, Weapons.Count - 1);
+            var nextWeaponIndex = Mathf.Clamp(index - 1, 0, Weapons.Count - 1);
 
-            Weapon chosenWeapon = Weapons[weaponIndex];
+            Weapon nextWeapon = Weapons[nextWeaponIndex];
 
-            if (CurrentWeapon == chosenWeapon)
-            {
-                // Debug.Log($"Weapon already chosen");
-                return;
-            }
-
-            CurrentWeapon = chosenWeapon;
-            CurrentWeapon.OnChosen();
-
-            WeaponChanged.OnNext(CurrentWeapon);
-            OnWeaponChanged(chosenWeapon);
-
-            RPC_SelectViewWeapon();
-        }
-
-        [Rpc(Channel = RpcChannel.Reliable)]
-        public void RPC_ChooseWeapon(WeaponType weaponType)
-        {
-            if (Weapons.Count == 0)
-            {
-                return;
-            }
-
-            Weapon weapon = Weapons.First(x => x.WeaponType == weaponType);
-
-            if (CurrentWeapon == weapon)
+            if (CurrentWeapon == nextWeapon)
             {
                 Debug.Log($"Weapon already chosen");
                 return;
             }
 
-            CurrentWeapon = weapon;
-            CurrentWeapon.OnChosen();
+            CurrentWeapon?.Choose(false);
+            
+            CurrentWeapon = nextWeapon;
+            CurrentWeapon.Choose(true);
 
             WeaponChanged.OnNext(CurrentWeapon);
-            OnWeaponChanged(weapon);
+            OnWeaponChanged(nextWeapon);
 
             RPC_SelectViewWeapon();
         }
+
+        public void ChooseWeapon(WeaponType weaponType)
+        {
+            Weapon newWeapon = Weapons.FirstOrDefault(x => x.WeaponType == weaponType);
+            
+            if (newWeapon != null)
+                ChooseWeapon(Weapons.IndexOf(newWeapon));
+            else
+                AtomicLogger.Log($"Couldn't choose Weapon {weaponType}");
+        }
+
+        public void ChooseRandomWeapon()
+        {
+            ChooseWeapon(Random.Range(0, Weapons.Count));
+        }
+        
 
         [Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_SelectViewWeapon()
