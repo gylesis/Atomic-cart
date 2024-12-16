@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96dad4d7d88441cc82731f9353776ab0, type: 3}
   m_Name: BotsConfig
   m_EditorClassIdentifier: 
-  _botsTargetsSearchRadius: 20
   _botsPerTeam: 2
-  _botsSearchForTargetsCooldown: 0.25
-  _botsChangeMoveDirectionCooldown: 5
-  _botsNearestPointsAmountToChoose: 5
+  _targetsSearchRadius: 20
+  _searchForTargetsCooldown: 0.25
+  _speed: 6
+  _speedWhenAttacking: 5
+  _changeMoveDirectionCooldown: 5
+  _nearestPointsToChooseAmount: 5
+  _patrolPointsPoolAmount: 5

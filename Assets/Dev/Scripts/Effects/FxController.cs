@@ -38,6 +38,9 @@ namespace Dev.Effects
 
             return null;
         }
+        
+        public Effect SpawnEffectAt(string effectName, Vector3 pos, float destroyDelay = 4) => SpawnEffectAt<Effect>(effectName, pos, destroyDelay);
+
 
         /*[Rpc(Channel = RpcChannel.Reliable)]
         private void RPC_SpawnEffect(string effectName, Vector3 pos, float destroyDelay)

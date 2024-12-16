@@ -86,6 +86,9 @@ namespace Dev.Weapons.Guns
 
             CameraService.Instance.ShakeIfNeed(Data.ShakePatternKey, transform.position, Owner.IsBot);
 
+            Effect effect = FxController.Instance.SpawnEffectAt("gun_shells", _shootPoint.position);
+            effect.transform.RotateTowardsDirection(Vector3.right);
+            
             RPC_PlaySound(Data.FireSound, projectile.transform.position, 40);
             
             var projectileContext = new SpawnedProjectileContext();

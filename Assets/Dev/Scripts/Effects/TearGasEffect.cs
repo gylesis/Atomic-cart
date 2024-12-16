@@ -24,7 +24,6 @@ namespace Dev.Effects
         [Rpc]
         private void RPC_Hide()
         {
-            Debug.Log($"Hide tear gas");
             ParticleSystem.MainModule mainModule = _particleSystem.main;
             mainModule.loop = false;
             mainModule.simulationSpeed = 3;

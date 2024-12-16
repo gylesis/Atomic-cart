@@ -340,7 +340,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6569c6dc21d30064c952232ce5ec5822, type: 3}
   - {fileID: 21300000, guid: 45e6a655aa801c1488508ee8e409bbf6, type: 3}
   - {fileID: 21300000, guid: 384a88d05ad627d45b137f02cc617917, type: 3}
-  _fadeDuration: 1
+  _fadeDuration: 2
   _waitCooldown: 3
 --- !u!223 &6533194321707618662
 Canvas:

@@ -32,6 +32,10 @@ PrefabInstance:
       propertyPath: Hitboxes.Array.data[0]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3706869247759106061, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5231129319991485753, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: _hitboxRoot
       value: 

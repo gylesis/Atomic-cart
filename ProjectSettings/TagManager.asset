@@ -50,14 +50,17 @@ TagManager:
   - name: CartRails
     uniqueID: 1117007807
     locked: 0
+  - name: Foreground
+    uniqueID: 670461283
+    locked: 0
   - name: Player
     uniqueID: 63057319
     locked: 0
+  - name: Obstacles
+    uniqueID: 418881091
+    locked: 0
   - name: Weapon
     uniqueID: 2991617485
-    locked: 0
-  - name: Foreground
-    uniqueID: 670461283
     locked: 0
   - name: Background
     uniqueID: 2473310833
