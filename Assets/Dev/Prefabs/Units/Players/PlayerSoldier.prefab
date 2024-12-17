@@ -101,6 +101,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 522116193, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -578042191, guid: c7bd1b8108a389a478261a1d2518f26d, type: 3}
     - target: {fileID: 898484371, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: SortKey
       value: 2957192915
@@ -113,6 +117,10 @@ PrefabInstance:
       propertyPath: NetworkedBehaviours.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1681818469465762018, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 6e3e572a7da44ac4b8d87247964d91e5, type: 2}
     - target: {fileID: 5429065874298734006, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: _aimDistance
       value: 40

@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 522116193, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 765841674, guid: 39caacbb0620e8947973168a922f8787, type: 3}
     - target: {fileID: 898484371, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: SortKey
       value: 4090998876
@@ -24,6 +28,10 @@ PrefabInstance:
       propertyPath: _currentAbilityToCast
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1681818469465762018, guid: b70550f1e6f52484585e66f02133010c, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 9c755f8992193354f8cd811f05f0e022, type: 2}
     - target: {fileID: 5231129319991485753, guid: b70550f1e6f52484585e66f02133010c, type: 3}
       propertyPath: _collider2D
       value: 

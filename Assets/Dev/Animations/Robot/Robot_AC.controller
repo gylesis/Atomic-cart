@@ -11,7 +11,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 321230353057505473}
-    m_Position: {x: 310, y: 140, z: 0}
+    m_Position: {x: 230, y: 230, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7671351065727620646}
     m_Position: {x: 410, y: 30, z: 0}
@@ -46,7 +46,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlayerAC
+  m_Name: Robot_AC
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Move
@@ -104,7 +104,7 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 21fbd413765ab8d429359c49036945d6, type: 2}
+    m_Motion: {fileID: 7400000, guid: 4fe7180f8f0d15c4992a014734cd4e18, type: 2}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
     m_TimeScale: 0.2
@@ -112,7 +112,7 @@ BlendTree:
     m_DirectBlendParameter: Blend
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 784fb07004f2bff4e9ebffdf9a27ba93, type: 2}
+    m_Motion: {fileID: 7400000, guid: f4e84c8ea668d6d4682c82a959499ca7, type: 2}
     m_Threshold: 0.5
     m_Position: {x: 0, y: 0}
     m_TimeScale: 0.7
@@ -120,7 +120,7 @@ BlendTree:
     m_DirectBlendParameter: Blend
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 120b728eaa4c0df479851934ee2443da, type: 2}
+    m_Motion: {fileID: 7400000, guid: 8ea85c7f9e6cde7439839146c751dc31, type: 2}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
     m_TimeScale: 0.7
