@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6914b2525844a48966f22442d443dbe, type: 3}
   m_Name: GrenadeLauncherStaticData
   m_EditorClassIdentifier: 
-  _weaponType: 2
+  _weaponType: 3
   _weaponPrefab: {fileID: 500056703753904321, guid: 56e7fc85cb862f04bac76f277fb498e9, type: 3}
   _bulletMaxDistance: 12
   _cooldown: 1
@@ -21,6 +21,8 @@ MonoBehaviour:
   _fireSound: grenade_launcher
   _hitSound: explosion
   _shakePatternKey: grenade_launcher_fire
+  _shellsKey: gun_shells
+  _muzzleKey: TO IMPLEMENT
   _projectileSpeed: 1550
   _projectilePrefab: {fileID: 1232863737919391639, guid: 1fc8abe7c0163ce429ccb687612f4a0e, type: 3}
   _grenadeExplosionRadius: 3

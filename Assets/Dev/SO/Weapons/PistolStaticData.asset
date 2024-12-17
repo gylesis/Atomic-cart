@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb77842c219541f5a10014515e3130ea, type: 3}
   m_Name: PistolStaticData
   m_EditorClassIdentifier: 
-  _weaponType: 3
+  _weaponType: 1
   _weaponPrefab: {fileID: 5401552539073650256, guid: 72807d6fe6787ab4292cad478db34cb7, type: 3}
   _bulletMaxDistance: 15
   _cooldown: 0.4

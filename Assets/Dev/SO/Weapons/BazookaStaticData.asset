@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22b325fca1594d8092755b81020b2d9e, type: 3}
   m_Name: BazookaStaticData
   m_EditorClassIdentifier: 
-  _weaponType: 0
+  _weaponType: 2
   _weaponPrefab: {fileID: 6292559310413262657, guid: 789c93015ccd7a74db4f818e69284525, type: 3}
   _bulletMaxDistance: 15
   _cooldown: 1.5
@@ -21,6 +21,8 @@ MonoBehaviour:
   _fireSound: bazooka_fire
   _hitSound: bazooka_hit
   _shakePatternKey: bazooka_fire
+  _shellsKey: gun_shells
+  _muzzleKey: TO IMPLEMENT
   _projectileSpeed: 1500
   _projectilePrefab: {fileID: 7001214283104243862, guid: a1f906040a118324e851d514da024c6a, type: 3}
   _explosionRadius: 5

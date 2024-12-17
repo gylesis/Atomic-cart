@@ -25,19 +25,13 @@ namespace Dev.BotsLogic
         public DamagableType DamageId => DamagableType.Bot;
 
         [SerializeField] private Collider2D _collider;
-        
         [SerializeField] private NavMeshAgent _navMeshAgent;
-
         [SerializeField] private WeaponController _weaponController;
+        [SerializeField] private Rigidbody2D _rigidbody;
+        [SerializeField] private BotView _view;
+        
         [SerializeField] private bool _allowToShoot = true;
         [SerializeField] private bool _allowToMove = true;
-
-        [SerializeField] private Rigidbody2D _rigidbody;
-
-        [SerializeField] private LayerMask _playerLayer;
-
-        [SerializeField] private float _moveDistance = 10;
-        [SerializeField] private BotView _view;
 
         private int _currentPointIndex = 0;
         public List<BotMovePoint> MovePoints => _botsController.LevelMovePoints;
@@ -45,14 +39,13 @@ namespace Dev.BotsLogic
         private BotsController _botsController;
         private BotStateController _botStateController;
 
-        public bool Alive = true;
         private GameSettings _gameSettings;
         private SessionStateService _sessionStateService;
 
-        [Networked] public NetworkObject Target { get; set; }
-        [Networked] public NetworkBool IsFrozen { get; set; }
+        [Networked, HideInInspector] public NetworkObject Target { get; set; }
+        [Networked, HideInInspector] public NetworkBool IsFrozen { get; set; }
         [Networked] public BotData BotData { get; private set; }
-
+        public bool Alive { get; set; } = true;
         public SessionPlayer TargetSessionPlayer => Target != null ? _sessionStateService.GetSessionPlayer(Target.Id) : default(SessionPlayer);
         
         public Vector3 RandomMovePointPos { get; set; }
