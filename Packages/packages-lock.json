@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.google.external-dependency-manager": {
-      "version": "file:../MyPackages/com.google.external-dependency-manager@523887a528",
+      "version": "file:../Other/MyPackages/com.google.external-dependency-manager@523887a528",
       "depth": 0,
       "source": "local",
       "dependencies": {}

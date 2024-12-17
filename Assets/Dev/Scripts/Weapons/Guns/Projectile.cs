@@ -1,8 +1,10 @@
-﻿using Dev.BotsLogic;
+﻿using System.Collections.Generic;
+using Dev.BotsLogic;
 using Dev.Infrastructure;
 using Dev.Infrastructure.Networking;
 using Dev.Levels;
 using Dev.PlayerLogic;
+using Dev.Utils;
 using Fusion;
 using Fusion.Addons.Physics;
 using UniRx;
@@ -192,4 +194,23 @@ namespace Dev.Weapons.Guns
             Gizmos.DrawWireSphere(transform.position, _overlapRadius);
         }
     }
+
+
+    public class Recordable : NetworkContext
+    {
+        [SerializeField] private int _recordSize = 120;
+        
+        private Queue<Vector3> _positions = new Queue<Vector3>();
+        
+        public override void FixedUpdateNetwork()
+        {
+            base.FixedUpdateNetwork();
+        
+            if(_positions.Count >= _recordSize)
+                _positions.Dequeue();
+            
+            _positions.Enqueue(transform.position);
+        }
+    }
+    
 }

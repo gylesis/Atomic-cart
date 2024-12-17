@@ -1,3 +1,4 @@
+using System;
 using Dev.Effects;
 using Dev.Infrastructure.Lobby;
 using Dev.Infrastructure.Networking;
@@ -20,11 +21,12 @@ namespace Dev.Infrastructure.Installers
         [SerializeField] private FxContainer _fxContainer;
         
         [SerializeField] private Transform _popUpsParent;
-        
+
         public override void InstallBindings()
         {
             Fusion.Log.LogLevel = (LogType)UnityEngine.LogType.Error;
-
+            Application.targetFrameRate = 165;
+            
             BindModules();
             
             Container.Bind<GlobalDisposable>().AsSingle().NonLazy();

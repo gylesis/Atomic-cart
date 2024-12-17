@@ -21,7 +21,7 @@ namespace Dev.PlayerLogic
         public Rigidbody2D Rigidbody => _rigidbody2D;
         public WeaponController WeaponController => _weaponController;
         
-        [Networked] private NetworkBool IsDead { get; set; }
+        [Networked] private NetworkBool IsAlive { get; set; } = true;
         [Networked] public CharacterClass CharacterClass { get; private set; }
         
         public static PlayerCharacter LocalPlayerCharacter;
@@ -34,35 +34,26 @@ namespace Dev.PlayerLogic
                 LocalPlayerCharacter = this;
         }
         
-        [Rpc(Channel = RpcChannel.Reliable)]
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         public void RPC_Init(CharacterClass characterClass)
         {
             CharacterClass = characterClass;
         }
 
-        [Rpc(Channel = RpcChannel.Reliable)]
-        public void RPC_OnDeath()
+        public void SetAliveState(bool isAlive)
         {
-            transform.DOScale(0, 0.5f);
-            
-            IsDead = true;
-            
-            _collider2D.enabled = false;
+            RPC_DoScale(0.3f, isAlive ? 1 : 0);
+            RPC_OnAliveChanged(isAlive);
         }
         
-        [Rpc(Channel = RpcChannel.Reliable)]
-        public void RPC_ResetAfterDeath()
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
+        private void RPC_OnAliveChanged(bool isAlive)
         {
-            transform.DOScale(1, 0);
-            
-            IsDead = false;
-            
-            _collider2D.enabled = true;
+            IsAlive = isAlive;
+            _collider2D.enabled = isAlive;
         }
-        
         
         public DamagableType DamageId => DamagableType.Player;
-
 
         public static implicit operator PlayerRef(PlayerCharacter playerCharacter)
         {

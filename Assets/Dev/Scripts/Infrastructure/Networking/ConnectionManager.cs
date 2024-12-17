@@ -59,7 +59,7 @@ namespace Dev.Infrastructure.Networking
             }
 
             base.Awake();
-
+            
             DiInjecter.Instance.InjectGameObject(gameObject);
             
             if (IsOnMainScene) 

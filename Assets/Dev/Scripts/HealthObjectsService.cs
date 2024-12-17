@@ -335,7 +335,7 @@ namespace Dev
             PlayerCharacter playerCharacter = _playersDataService.GetPlayer(victim);
             PlayerBase playerBase = _playersDataService.GetPlayerBase(victim);
 
-            playerCharacter.RPC_OnDeath();
+            playerCharacter.SetAliveState(false);
 
             playerBase.PlayerController.SetAllowToMove(false);
             playerBase.PlayerController.SetAllowToShoot(false);

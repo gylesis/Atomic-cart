@@ -43,7 +43,7 @@ namespace Dev.Weapons
             if (HasStateAuthority == false) return;
 
             var weapons = WeaponParent.GetComponentsInChildren<Weapon>();
-            int randomWeapon = Random.Range(0, weapons.Length + 1);
+            int randomWeapon = Random.Range(0, weapons.Length);
 
             for (var index = 0; index < weapons.Length; index++)
             {

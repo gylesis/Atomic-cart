@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dev.Infrastructure
 {
@@ -9,7 +10,8 @@ namespace Dev.Infrastructure
         [SerializeField] private int _botsPerTeam = 2;
 
         [Header("Attack")]
-        [SerializeField] private float _targetsSearchRadius = 20f;
+        [SerializeField] private float _firstSearchRadius = 20f;
+        [SerializeField] private float _secondSearchRadius = 30f;
         [SerializeField] private float _searchForTargetsCooldown = 0.25f;
         [SerializeField] private float _shootRandomnessFactor = 1.5f;
         
@@ -27,7 +29,8 @@ namespace Dev.Infrastructure
 
         public int PatrolPointsPoolAmount => _patrolPointsPoolAmount;
         public int BotsPerTeam => _botsPerTeam;
-        public float TargetsSearchRadius => _targetsSearchRadius;
+        public float FirstSearchRadius => _firstSearchRadius;
+        public float SecondSearchRadius => _secondSearchRadius;
         public float SearchForTargetsCooldown => _searchForTargetsCooldown;
         public float ChangeMoveDirectionCooldown => _changeMoveDirectionCooldown;
         public int NearestPointsToChooseAmount => _nearestPointsToChooseAmount;

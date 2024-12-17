@@ -189,9 +189,11 @@ namespace Dev.BotsLogic
             }
         }
         
-        public bool TryFindNearTarget()
+        public bool TryFindTarget(bool near = true)
         {
-            bool overlapSphere = Extensions.OverlapCircleExcludeWalls(_botStateController.NetworkRunner, transform.position, _gameSettings.BotsConfig.TargetsSearchRadius, out var targets);
+            float searchRadius = near ? _gameSettings.BotsConfig.FirstSearchRadius : _gameSettings.BotsConfig.SecondSearchRadius;
+            
+            bool overlapSphere = Extensions.OverlapCircleExcludeWalls(_botStateController.NetworkRunner, transform.position, searchRadius, out var targets);
 
             bool targetFound = false;
 
@@ -256,6 +258,7 @@ namespace Dev.BotsLogic
             
             return targetFound;
         }
+        
         
         public void MoveTowardsTarget()
         {

@@ -285,7 +285,7 @@ namespace Dev.Infrastructure
 
             Extensions.Delay(0.5f, destroyCancellationToken, () =>
             {
-                playerCharacter.RPC_ResetAfterDeath();
+                playerCharacter.SetAliveState(true);
 
                 playerBase.PlayerController.SetAllowToMove(true);
                 playerBase.PlayerController.SetAllowToShoot(true);

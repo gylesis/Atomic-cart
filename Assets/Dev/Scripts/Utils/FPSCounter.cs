@@ -1,26 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using TMPro;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dev.Utils
 {
     public class FPSCounter : MonoBehaviour
     {
-        [SerializeField] private int _targetFPS = -1;
 
+        [SerializeField] private float _xPos = 400;
+        [SerializeField] private float _yPos = 50;
+        [SerializeField] private int _fontSize = 35;
+        
         private readonly Queue<float> _fpsValues = new Queue<float>();
-
-        private void Awake()
-        {
-/*#if UNITY_EDITOR
-            Application.targetFrameRate = -1;
-#else
-            Application.targetFrameRate = _targetFPS;
-#endif*/
-            
-            Application.targetFrameRate = 300;
-        }
 
         private void OnGUI()
         {
@@ -43,14 +33,14 @@ namespace Dev.Utils
             averageFPS /= _fpsValues.Count;
 
             GUIStyle guiStyle = new GUIStyle();
-            guiStyle.fontSize = 35;
+            guiStyle.fontSize = _fontSize;
             guiStyle.fontStyle = FontStyle.Bold;
             guiStyle.active = new GUIStyleState
             {
                 textColor = Color.white
             };
 
-            GUI.Label(new Rect(400, 50, 100, 50), $"FPS:{(int)averageFPS}", guiStyle);
+            GUI.Label(new Rect(_xPos, _yPos, 100, 50), $"FPS:{(int)averageFPS}", guiStyle);
         }
     }
 }

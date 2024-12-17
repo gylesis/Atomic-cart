@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: BotsConfig
   m_EditorClassIdentifier: 
   _botsPerTeam: 2
-  _targetsSearchRadius: 20
+  _firstSearchRadius: 23
+  _secondSearchRadius: 28
   _searchForTargetsCooldown: 0.25
   _shootRandomnessFactor: 2.4
   _speed: 6

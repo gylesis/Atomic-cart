@@ -57,7 +57,7 @@ namespace Dev.BotsLogic
             if (_searchForTargetsTimer.ExpiredOrNotRunning(_bot.Runner))
             {
                 ResetSearchForTargetsTimer();
-                var foundTarget = _bot.TryFindNearTarget();
+                var foundTarget = _bot.TryFindTarget();
 
                 if (foundTarget)
                     BotStateMachine.ChangeState<AttackPlayerBotState>();

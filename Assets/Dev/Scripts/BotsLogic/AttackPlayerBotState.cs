@@ -32,7 +32,7 @@ namespace Dev.BotsLogic
             {
                 _tickTimer = TickTimer.CreateFromSeconds(_bot.Runner, BotsConfig.SearchForTargetsCooldown);
 
-                if (_bot.TryFindNearTarget() == false)
+                if (_bot.TryFindTarget(false) == false)
                     StateMachine.ChangeState<PatrolBotState>();
             }
            
