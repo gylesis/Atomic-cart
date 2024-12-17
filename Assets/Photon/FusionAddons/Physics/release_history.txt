@@ -1,6 +1,9 @@
 Photon Fusion Physics Addon - Release History
 
-Last tested with Fusion SDK 2.0.0-RC-807
+Last tested with Fusion SDK 2.0.0 Stable 834
+
+Version 2.0.1
+- Fixed reset of Physics.autoSimulation after stopping all network runners.
 
 Version 2.0.0
 - Initial release.

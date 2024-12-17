@@ -5,7 +5,7 @@ namespace Fusion.Addons.Physics {
   /// NetworkRigidbody base class with generic definition for the Unity Rigidbody type (3d or 2d) and
   /// <see cref="RunnerSimulatePhysicsBase{TPhysicsScene}"/> type.
   /// </summary>
-  public abstract partial class NetworkRigidbody<RBType, PhysicsSimType> : NetworkRigidbodyBase, IStateAuthorityChanged, ISimulationExit
+  public abstract partial class NetworkRigidbody<RBType, PhysicsSimType> : NetworkRigidbodyBase, IStateAuthorityChanged, ISimulationExit, IAfterSpawned
     where RBType          : Component
     where PhysicsSimType  : RunnerSimulatePhysicsBase {
 
@@ -69,6 +69,25 @@ namespace Fusion.Addons.Physics {
         // This has to be here after CopyToEngine, or it will set Kinematic right back.
         if (Object.IsInSimulation == false) {
           SetRBIsKinematic(_rigidbody, true);
+        }
+      }
+    }
+    
+    public void AfterSpawned()
+    {
+      // Warn about incompatible configuration.
+      if (Runner.IsClient)
+      {
+        if (Runner.Topology != Topologies.Shared)
+        {
+          if (Object.IsInSimulation && _clientPrediction == false)
+          {
+            Log.Warn($"The NetworkRigidbody [Id:{Object.Id}] is simulated on the local client fusion simulation. However, the client physics mode of RunnerSimulatePhysics is NOT set to predict local physics (ForwardOnly or Always simulate). Remove the NetworkObject from the simulation calling Runner.SetIsSimulated(Object, false); in Spawned()");
+          }
+          else if (_clientPrediction && Object.IsInSimulation == false)
+          {
+            Log.Warn($"The NetworkRigidbody [Id:{Object.Id}] is NOT simulated on the local client fusion simulation. However, the client physics mode of RunnerSimulatePhysics is set to predict local physics (ForwardOnly or Always simulate). Add the NetworkObject on the simulation calling Runner.SetIsSimulated(Object, true); in Spawned()");
+          }
         }
       }
     }
