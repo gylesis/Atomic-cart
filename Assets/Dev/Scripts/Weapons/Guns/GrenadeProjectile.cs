@@ -54,6 +54,7 @@ namespace Dev.Weapons.Guns
             {
                 FlyTimer = TickTimer.None;
                 DetonateTimer = TickTimer.CreateFromSeconds(Runner, _detonateTime);
+                DangerZoneViewProvider.Instance.SetDangerZoneView(transform.position, _explosionRadius, _detonateTime);
                 return;
             }
 

@@ -22,6 +22,7 @@ namespace Dev.Levels
         {
             base.OnZeroHealth();
 
+            DangerZoneViewProvider.Instance.SetDangerZoneView(transform.position, _explosionRadius, 1.5f);
             FxController.Instance.SpawnEffectAt("barrel_explosion", transform.position);
             CameraService.Instance.ShakeIfNeed("small_explosion", transform.position, false);
             SoundController.Instance.PlaySoundAt("explosion", transform.position, 40);

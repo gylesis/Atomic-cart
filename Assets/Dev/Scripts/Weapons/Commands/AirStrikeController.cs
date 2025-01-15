@@ -95,6 +95,8 @@ namespace Dev.Weapons.Commands
                 airStrikeBomb.View.localScale = Vector3.one * size;
             });
 
+            DangerZoneViewProvider.Instance.SetDangerZoneView(transform.position, _explosionRadius, 1.5f);
+            
             bomb.ToDestroy.Take(1).Subscribe((OnToDestroy));
             bomb.transform.DOScale(1, 0.8f);
 

@@ -7,8 +7,8 @@ namespace Dev.Utils
 {
     public class WorldTextProvider : MonoBehaviour
     {
+        [SerializeField] private Transform _parent;
         [SerializeField] private WorldText _worldTextPrefab;
-        [SerializeField] private Color _damageTextColor = Color.red;
         
         private ObjectPool<WorldText> _worldTextPool;
 
@@ -32,7 +32,7 @@ namespace Dev.Utils
 
         private WorldText CreateFunc()
         {
-            WorldText worldText = Instantiate(_worldTextPrefab);
+            WorldText worldText = Instantiate(_worldTextPrefab, _parent);
 
             return worldText;
         }
@@ -72,7 +72,5 @@ namespace Dev.Utils
 
             sequence.Play();
         }
-        
-        
     }
 }

@@ -44,5 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03145b29bc734770babcca8025eb89e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _parent: {fileID: 2877001439088922017}
   _worldTextPrefab: {fileID: 6419785139149661179, guid: 177ad050e896fd644bd52afd4e167557, type: 3}
   _damageTextColor: {r: 1, g: 0, b: 0, a: 1}
