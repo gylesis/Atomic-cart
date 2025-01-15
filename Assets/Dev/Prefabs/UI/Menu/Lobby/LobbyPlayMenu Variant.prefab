@@ -1051,6 +1051,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BackBtn
       objectReference: {fileID: 0}
+    - target: {fileID: 2530360100825543482, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
+      propertyPath: m_fontSize
+      value: 54.8
+      objectReference: {fileID: 0}
     - target: {fileID: 2530360100825543485, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 9.599976
@@ -1069,23 +1073,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -1790.6931
-      objectReference: {fileID: 0}
-    - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -980.0825
       objectReference: {fileID: 0}
     - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1117,11 +1113,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 139.17337
+      value: -768
       objectReference: {fileID: 0}
     - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -437.54123
+      value: 102
       objectReference: {fileID: 0}
     - target: {fileID: 8383428789099784577, guid: 6f6f61699fb3c0b40b3ef959faf01326, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

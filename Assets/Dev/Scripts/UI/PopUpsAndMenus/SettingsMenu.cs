@@ -118,7 +118,7 @@ namespace Dev.UI.PopUpsAndMenus
                 {
                     PopUpService.HidePopUp<SettingsMenu>();
 
-                    if (ConnectionManager.IsInitialized && ConnectionManager.Instance.IsConnected)
+                    if (ConnectionManager.IsInitialized && ConnectionManager.IsConnected)
                         PopUpService.ShowPopUp<LobbyMainMenu>();
                     else
                         PopUpService.ShowPopUp<InGameMenu>();

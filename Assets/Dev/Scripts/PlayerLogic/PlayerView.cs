@@ -2,6 +2,7 @@
 using Dev.Utils;
 using Dev.Weapons.Guns;
 using Fusion;
+using UniRx;
 using UnityEngine;
 
 namespace Dev.PlayerLogic
@@ -23,17 +24,24 @@ namespace Dev.PlayerLogic
 
         public Vector3 CrosshairPos => _groundAimTransform.TransformVector(_groundAimTransform.position);
         
-        
-        [Networked]
-        private Color TeamColor { get; set; }
+        [Networked] private Color TeamColor { get; set; }
 
         protected override void CorrectState()
         {
             base.CorrectState();
-            
             OnTeamColorChanged();
         }
 
+        public void UpdateView(RuntimeAnimatorController animatorController, Sprite sprite)
+        {
+            _animator.runtimeAnimatorController = animatorController;
+
+            Observable.EveryLateUpdate().Take(1).Subscribe(l =>
+            {
+                _playerSprite.sprite = sprite;
+            });
+        }
+        
         public void OnMove(float velocity, bool isRight)
         {
             _animator.SetFloat(Move, velocity);

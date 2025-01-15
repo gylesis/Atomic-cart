@@ -264,7 +264,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
-  _weaponType: 2
+  _weaponType: 3
   _shootPoint: {fileID: 3272456645180693182}
   _view: {fileID: 1202007607465240342}
+  _IsChosen:
+    _value: 0
   _soundRadius: 40

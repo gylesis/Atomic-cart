@@ -195,10 +195,38 @@ namespace Dev.Infrastructure
         }
 
         public void ChangePlayerCharacter(PlayerRef playerRef, CharacterClass newCharacterClass)
-        {   
-            DespawnPlayer(playerRef, false);
-            SpawnCharacter(playerRef, PlayersBaseDictionary[playerRef], newCharacterClass);
+        {
+            CharacterData characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(newCharacterClass);
+
+            PlayerBase playerBase = PlayersBaseDictionary[playerRef];
+            PlayerCharacter playerCharacter = playerBase.Character;
+
+            playerCharacter.RPC_Init(newCharacterClass);
+
+            // add weapon
+            
+            RPC_AssignPlayerCharacter(playerRef, playerCharacter, newCharacterClass);
+            
+            playerBase.PlayerController.Init(characterData.CharacterStats.MoveSpeed,
+                _gameSettings.ShootThreshold, characterData.CharacterStats.SpeedLowerSpeed);
+
+            playerBase.PlayerController.SetAllowToMove(true);
+            playerBase.PlayerController.SetAllowToShoot(true);
+
+            
             SetCharacterTeamBannerColor(playerRef);
+            
+            PlayerSpawnEventContext spawnEventContext = new PlayerSpawnEventContext();
+            spawnEventContext.CharacterClass = newCharacterClass;
+            spawnEventContext.PlayerRef = playerRef;
+            spawnEventContext.Transform = playerCharacter.transform;
+            
+            CharacterSpawned.OnNext(spawnEventContext);
+
+            
+            /*DespawnPlayer(playerRef, false);
+            SpawnCharacter(playerRef, PlayersBaseDictionary[playerRef], newCharacterClass);
+            SetCharacterTeamBannerColor(playerRef);*/
         }
         
         private static void SetAbilityType(PlayerBase playerBase, CharacterClass characterClass)

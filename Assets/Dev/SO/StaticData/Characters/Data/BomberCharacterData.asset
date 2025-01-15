@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d6cbdfff1fee2f4fba059bb79ed1c7b, type: 3}
   m_Name: BomberCharacterData
   m_EditorClassIdentifier: 
+  _animatorController: {fileID: 9100000, guid: 2a62a86947f31f84ea7def281b3d3cb8, type: 2}
+  _characterSprite: {fileID: -1433731438, guid: 06b82550a17c01542bfb927e8cd312a5, type: 3}
   CharacterClass: 3
-  _playerCharacterPrefab: {fileID: 5765426120640435462, guid: 64ff141257ccfcd4983d32854e4f232f, type: 3}
+  PlayerCharacterPrefab: {fileID: 5765426120640435462, guid: 64ff141257ccfcd4983d32854e4f232f, type: 3}
   CharacterIcon: {fileID: 21300000, guid: cf4de9a8774c1b043a209a7168e83e42, type: 3}
   CharacterStats:
     Health: 240
     MoveSpeed: 375
     SpeedLowerSpeed: 1.1
-    ShootThreshold: 0.75

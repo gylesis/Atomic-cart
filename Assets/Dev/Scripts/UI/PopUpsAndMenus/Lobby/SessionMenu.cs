@@ -162,7 +162,7 @@ namespace Dev.UI.PopUpsAndMenus.Lobby
                 Curtains.Instance.Show();
                 Curtains.Instance.SetText("Returning back to menu");
             
-                ConnectionManager.Instance.IsConnected = false;
+                ConnectionManager.IsConnected = false;
             
                 await _networkRunner.Shutdown();
                 

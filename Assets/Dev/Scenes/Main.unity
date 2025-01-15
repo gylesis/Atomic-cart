@@ -6757,6 +6757,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1395464432}
     m_Modifications:
+    - target: {fileID: 2415488616026348314, guid: c8fdf2fefe3f7df4eb57fb245f141fb3, type: 3}
+      propertyPath: _botPrefab
+      value: 
+      objectReference: {fileID: 5118015108234698655, guid: 6e34ef89956e01d498ea6af370849dee, type: 3}
     - target: {fileID: 2711811418930736359, guid: c8fdf2fefe3f7df4eb57fb245f141fb3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

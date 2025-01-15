@@ -71,7 +71,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 670461283
-  m_SortingLayer: 5
+  m_SortingLayer: 3
   m_SortingOrder: 4
   m_Sprite: {fileID: 21300000, guid: ffb8662c0dbf23841b81b537aeb61028, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.90588236}
@@ -239,9 +239,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
-  _weaponType: 3
+  _weaponType: 1
   _shootPoint: {fileID: 2228336035719268217}
   _view: {fileID: 2533514099861174993}
+  _IsChosen:
+    _value: 0
   _soundRadius: 40
 --- !u!4 &8727511924750778641 stripped
 Transform:

@@ -37,6 +37,11 @@ namespace Dev.Infrastructure
         
         protected virtual void OnDestroy()
         {
+            DestroyInstance();
+        }
+
+        protected void DestroyInstance()
+        {
             _onInitialized = null;
             Instance = null;
             IsInitialized = false;

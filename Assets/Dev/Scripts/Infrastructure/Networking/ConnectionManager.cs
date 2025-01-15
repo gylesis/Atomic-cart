@@ -30,10 +30,10 @@ namespace Dev.Infrastructure.Networking
             }
         }
 
-        public bool IsConnected { get; set; }
+        public static bool IsConnected { get; set; }
         private bool IsOnMainScene => SceneManager.GetActiveScene().name == "Main";
 
-        public bool IsHostedProperly { get; private set; }
+        public static bool IsHostedProperly { get; private set; }
         
         private Action _sessionJoined;
         private NetworkRunner _networkRunner;
@@ -66,6 +66,12 @@ namespace Dev.Infrastructure.Networking
                 ConnectFromMain();
 
             DontDestroyOnLoad(gameObject);
+        }
+
+        protected override void OnDestroy()
+        {
+            if(!IsHostedProperly)
+                base.OnDestroy();
         }
 
         public void ConnectFromBootstrap()

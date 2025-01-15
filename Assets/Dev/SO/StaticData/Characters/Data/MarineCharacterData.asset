@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d6cbdfff1fee2f4fba059bb79ed1c7b, type: 3}
   m_Name: MarineCharacterData
   m_EditorClassIdentifier: 
+  _animatorController: {fileID: 9100000, guid: 9c755f8992193354f8cd811f05f0e022, type: 2}
+  _characterSprite: {fileID: 765841674, guid: 39caacbb0620e8947973168a922f8787, type: 3}
   CharacterClass: 2
-  _playerCharacterPrefab: {fileID: 606440834157423290, guid: 9ac618e84feb9ca4cb93e0c33dc17924, type: 3}
+  PlayerCharacterPrefab: {fileID: 606440834157423290, guid: 9ac618e84feb9ca4cb93e0c33dc17924, type: 3}
   CharacterIcon: {fileID: 21300000, guid: a614871969fa0b948b9a9965821bb823, type: 3}
   CharacterStats:
     Health: 150
     MoveSpeed: 450
     SpeedLowerSpeed: 1.1
-    ShootThreshold: 0.75

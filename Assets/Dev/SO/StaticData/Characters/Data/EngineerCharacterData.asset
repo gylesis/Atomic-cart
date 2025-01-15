@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d6cbdfff1fee2f4fba059bb79ed1c7b, type: 3}
   m_Name: EngineerCharacterData
   m_EditorClassIdentifier: 
+  _animatorController: {fileID: 9100000, guid: 29aef4d602a462e40b8109e09ec111c2, type: 2}
+  _characterSprite: {fileID: -282830825, guid: cee4f767e9ac22a40b9eea63c4add257, type: 3}
   CharacterClass: 1
-  _playerCharacterPrefab: {fileID: 1666288093418894811, guid: 24effd42c2ea44e46b01b009b4c922ca, type: 3}
+  PlayerCharacterPrefab: {fileID: 1666288093418894811, guid: 24effd42c2ea44e46b01b009b4c922ca, type: 3}
   CharacterIcon: {fileID: 21300000, guid: e5de43120dcf25543b5daaaae8cd2d32, type: 3}
   CharacterStats:
     Health: 175
     MoveSpeed: 450
     SpeedLowerSpeed: 1.1
-    ShootThreshold: 0.75

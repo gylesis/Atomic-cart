@@ -1,6 +1,4 @@
 ﻿#if !UNITY_STANDALONE_WIN
-using GooglePlayGames;
-using GooglePlayGames.BasicApi;
 #endif
 using System;
 using System.Collections.Generic;
@@ -234,39 +232,6 @@ namespace Dev.Infrastructure
         {
             AtomicLogger.Err($"Sign in Failed: {exception.Message}", AtomicConstants.LogTags.Networking);
         }
-
-
-#if !UNITY_STANDALONE_WIN
-        public Task<bool> LoginGooglePlayGames()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            PlayGamesPlatform.Instance.Authenticate((success) =>
-            {
-                if (success == SignInStatus.Success)
-                {
-                    AtomicLogger.Log("Login with Google Play games successful.");
-                    PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
-                    {
-                        Debug.Log("Authorization code: " + code);
-                        Token = code;
-                        // This token serves as an example to be used for SignInWithGooglePlayGames
-
-                        tcs.SetResult(true);
-                    });
-                }
-                else
-                {
-                    Error = "Failed to retrieve Google play games authorization code";
-                    AtomicLogger.Log("Login Unsuccessful");
-                    tcs.SetResult(false);
-                }
-            });
-            
-            return tcs.Task;
-        }
-#endif
-
 
         public void Dispose()
         {

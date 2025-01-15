@@ -1,4 +1,5 @@
-﻿using Dev.Infrastructure.Networking;
+﻿using Dev.Infrastructure;
+using Dev.Infrastructure.Networking;
 using Dev.Weapons;
 using Dev.Weapons.Guns;
 using DG.Tweening;
@@ -26,6 +27,14 @@ namespace Dev.PlayerLogic
         
         public static PlayerCharacter LocalPlayerCharacter;
 
+        protected override void CorrectState()
+        {
+            base.CorrectState();
+            
+            if(!HasStateAuthority)
+                UpdateViewForClass(CharacterClass);
+        }
+
         public override void Spawned()
         {
             base.Spawned();
@@ -34,10 +43,17 @@ namespace Dev.PlayerLogic
                 LocalPlayerCharacter = this;
         }
         
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
+        [Rpc(Channel = RpcChannel.Reliable)]
         public void RPC_Init(CharacterClass characterClass)
         {
             CharacterClass = characterClass;
+            UpdateViewForClass(characterClass);
+        }
+
+        private void UpdateViewForClass(CharacterClass characterClass)
+        {
+            CharacterData characterData = GameSettingsProvider.GameSettings.CharactersDataContainer.GetCharacterDataByClass(characterClass);
+            _playerView.UpdateView(characterData.AnimatorController, characterData.CharacterSprite);
         }
 
         public void SetAliveState(bool isAlive)

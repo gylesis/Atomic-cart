@@ -218,9 +218,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
-  _weaponType: 0
+  _weaponType: 2
   _shootPoint: {fileID: 8329106418942572176}
   _view: {fileID: 5643736420937599800}
+  _IsChosen:
+    _value: 0
   _soundRadius: 40
 --- !u!4 &1469321519044833528 stripped
 Transform:

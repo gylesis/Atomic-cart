@@ -9,18 +9,15 @@ namespace Dev.Weapons
     public class WeaponProvider
     {
         private WeaponStaticDataContainer _weaponStaticDataContainer;
-        private NetworkRunner _runner;
 
-        public WeaponProvider(WeaponStaticDataContainer weaponStaticDataContainer, NetworkRunner runner)
+        public WeaponProvider(WeaponStaticDataContainer weaponStaticDataContainer)
         {
-            _runner = runner;
             _weaponStaticDataContainer = weaponStaticDataContainer;
         }
 
-        public void ProvideWeaponToPlayer(PlayerRef playerRef, WeaponType weaponType, bool withChose = false)
+        public void ProvideWeaponToPlayer(NetworkRunner runner, PlayerCharacter playerCharacter, WeaponType weaponType, bool withChose = false)
         {
-            PlayerCharacter playerCharacter = _runner.GetPlayerObject(playerRef).GetComponent<PlayerCharacter>();
-
+            PlayerRef playerRef = playerCharacter.Object.StateAuthority;
             WeaponController playerWeaponController = playerCharacter.WeaponController;
 
             WeaponStaticData weaponStaticData = _weaponStaticDataContainer.GetData(weaponType);
@@ -40,7 +37,7 @@ namespace Dev.Weapons
 
             Vector3 weaponPos = playerCharacter.WeaponController.WeaponParent.transform.position;
 
-            Weapon weaponInstance = _runner.Spawn(weaponPrefab, weaponPos, Quaternion.Euler(0, 0, 0),
+            Weapon weaponInstance = runner.Spawn(weaponPrefab, weaponPos, Quaternion.Euler(0, 0, 0),
                 playerRef, ((runner, o) =>
                 {
                     Weapon weapon = o.GetComponent<Weapon>();
