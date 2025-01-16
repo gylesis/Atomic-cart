@@ -19,6 +19,7 @@ namespace Dev.Infrastructure
 
         [Header("Player")] 
         [SerializeField] private float _cameraZoomModifier = 15f;
+        [SerializeField] private bool _isImmortal;
 
         [SerializeField] private float _cameraFollowSpeed = 2f;
         [SerializeField] private LayerMask _weaponObstaclesDetectLayers;
@@ -45,6 +46,8 @@ namespace Dev.Infrastructure
         public MapName DebugMap => _debugMap;
 
         public bool IsDebugMode => _isDebugMode;
+
+        public bool IsImmortal => _isImmortal;
 
         public float BarrelsRespawnCooldown => _barrelsRespawnCooldown;
         public BotsConfig BotsConfig => _botsConfig;

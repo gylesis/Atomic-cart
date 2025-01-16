@@ -210,6 +210,12 @@ namespace Dev
 
             if (isPlayer)
             {
+                if (_gameSettings.IsImmortal)
+                {
+                    AtomicLogger.Log($"Damage {damage} skipped for Player, immortality cheat is ON");
+                    return;
+                }
+                
                 PlayerCharacter playerCharacter = damagable as PlayerCharacter;
                 PlayerRef victim = victimObj.StateAuthority;
 
