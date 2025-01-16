@@ -4871,6 +4871,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1192389097}
     - target: {fileID: 1161691534502274922, guid: 98fdcca30e86d4a478edf6bf6cbf6893, type: 3}
+      propertyPath: _playerCharacterPrefab
+      value: 
+      objectReference: {fileID: 2881597750378725987, guid: 620d9cb5086e8be4ca7a813d9ffafccd, type: 3}
+    - target: {fileID: 1161691534502274922, guid: 98fdcca30e86d4a478edf6bf6cbf6893, type: 3}
       propertyPath: _setStateAuthorityNeutralOnSpawned
       value: 1
       objectReference: {fileID: 0}

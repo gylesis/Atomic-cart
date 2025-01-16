@@ -17,6 +17,7 @@ MonoBehaviour:
   CharacterClass: 0
   PlayerCharacterPrefab: {fileID: 4526861717596210487, guid: ff947a5d341c10544b6374ad8de58a4c, type: 3}
   CharacterIcon: {fileID: 21300000, guid: 954ac8e49cbaab748ac81705fefa86d6, type: 3}
+  WeaponType: 2
   CharacterStats:
     Health: 200
     MoveSpeed: 410

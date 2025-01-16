@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponType: 0
   _weaponPrefab: {fileID: 7814030919455456839, guid: 9b92def86228e264995e6ff644efde54, type: 3}
-  _bulletMaxDistance: 2
+  _bulletMaxDistance: 15
   _cooldown: 0.25
   _minDamage: 14
   _maxDamage: 18

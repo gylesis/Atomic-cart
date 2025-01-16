@@ -6,7 +6,6 @@ using Dev.Utils;
 using Dev.Weapons.Guns;
 using Dev.Weapons.StaticData;
 using Fusion;
-using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 
@@ -15,7 +14,7 @@ namespace Dev.Weapons
     public class WeaponController : NetworkContext
     {
         [SerializeField] private WeaponStaticDataContainer _weaponStaticDataContainer;
-        [SerializeField] private Transform _weaponParent;
+        [SerializeField] private NetworkObject _weaponParent;
 
         private PlayerCharacter _playerCharacter;
        // private WeaponProvider _weaponProvider;
@@ -25,9 +24,9 @@ namespace Dev.Weapons
         [Networked, Capacity(4)] private NetworkLinkedList<Weapon> Weapons { get; }
         [Networked] public SessionPlayer Owner { get; private set; }
         [Networked] public NetworkBool TeamWasSet { get; private set; }
-        public Transform WeaponParent => _weaponParent;
+        public NetworkObject WeaponParent => _weaponParent;
         public int WeaponsAmount => Weapons.Count;
-        public Vector3 Direction => WeaponParent.up;
+        public Vector3 Direction => WeaponParent.transform.up;
         public bool HasAnyWeapon => Weapons.Count > 0 && CurrentWeapon != null;
         public Subject<Weapon> WeaponChanged { get; } = new Subject<Weapon>();
 
@@ -42,7 +41,7 @@ namespace Dev.Weapons
             
             if (HasStateAuthority == false) return;
 
-            var weapons = WeaponParent.GetComponentsInChildren<Weapon>();
+            var weapons = WeaponParent.GetComponentsInChildren<Weapon>(true);
             int randomWeapon = Random.Range(0, weapons.Length);
 
             for (var index = 0; index < weapons.Length; index++)
@@ -52,7 +51,7 @@ namespace Dev.Weapons
             }
 
             foreach (Weapon weap in Weapons) 
-                weap.transform.parent = WeaponParent;
+                weap.transform.parent = WeaponParent.transform;
 
             //_weaponProvider = new WeaponProvider(_weaponStaticDataContainer, Runner);
         }
@@ -71,17 +70,18 @@ namespace Dev.Weapons
             return weapon != null;
         }
 
-        [Rpc(Channel = RpcChannel.Reliable)]
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         public void RPC_AddWeapon(Weapon weapon, bool withChoose = false)
         {
             Weapons.Add(weapon);
 
-            weapon.transform.parent = WeaponParent;
+            //AtomicLogger.Log($"Added weapon {weapon.WeaponType}");
+            weapon.transform.parent = WeaponParent.transform;
 
             weapon.RPC_SetOwner(Owner);
 
             if (withChoose) 
-                ChooseWeapon(Weapons.Count);
+                ChooseWeapon(Weapons.Count - 1);
         }
 
         public void TryToFire(Vector2 direction)
@@ -100,7 +100,7 @@ namespace Dev.Weapons
 
         public void AimWeaponTowards(Vector2 direction)
         {
-            WeaponParent.RotateTowardsDirection(direction);
+            WeaponParent.transform.RotateTowardsDirection(direction);
             
             float scaleSign = 1;
 
@@ -182,9 +182,7 @@ namespace Dev.Weapons
                 return;
             }
 
-            var nextWeaponIndex = Mathf.Clamp(index - 1, 0, Weapons.Count - 1);
-
-            Weapon nextWeapon = Weapons[nextWeaponIndex];
+            Weapon nextWeapon = Weapons[index];
 
             if (CurrentWeapon == nextWeapon)
             {

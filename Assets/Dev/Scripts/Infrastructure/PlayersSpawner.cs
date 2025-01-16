@@ -21,6 +21,7 @@ namespace Dev.Infrastructure
 {
     public class PlayersSpawner : NetSingleton<PlayersSpawner>
     {
+        [SerializeField] private PlayerCharacter _playerCharacterPrefab;
         [SerializeField] private PlayerBase _playerBasePrefab;
 
         public Subject<PlayerSpawnEventContext> BaseSpawned { get; } = new Subject<PlayerSpawnEventContext>();
@@ -74,7 +75,7 @@ namespace Dev.Infrastructure
         private void SpawnByCharacter(CharacterClass characterClass, PlayerRef playerRef,
                                             NetworkRunner networkRunner)
         {
-            Debug.Log($"Player {playerRef} chose {characterClass}");
+            AtomicLogger.Log($"Player {playerRef} chose {characterClass}");
             SpawnPlayer(playerRef, characterClass, networkRunner);
         }
 
@@ -128,7 +129,7 @@ namespace Dev.Infrastructure
             PlayerManager.LoadingPlayers.Remove(playerRef);
         }
 
-        private PlayerCharacter SpawnCharacter(PlayerRef playerRef ,PlayerBase playerBase, CharacterClass characterClass)
+        private PlayerCharacter SpawnCharacter(PlayerRef playerRef, PlayerBase playerBase, CharacterClass characterClass)
         {
             CharacterData characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(characterClass);
 
@@ -142,10 +143,11 @@ namespace Dev.Infrastructure
             
             Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
 
-            PlayerCharacter playerCharacter = Runner.Spawn(characterData.PlayerCharacterPrefab, spawnPos,
+            PlayerCharacter playerCharacter = Runner.Spawn(_playerCharacterPrefab, spawnPos,
                 quaternion.identity, playerRef, onBeforeSpawned: (runner, o) =>
                 {
                     PlayerCharacter character = o.GetComponent<PlayerCharacter>();
+                    character.CharacterClass = characterClass;
                     SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(playerRef.ToNetworkId()); 
                     character.WeaponController.RPC_SetOwner(sessionPlayer);
                     character.transform.parent = playerBase.transform;
@@ -175,6 +177,8 @@ namespace Dev.Infrastructure
 
             playerCharacter.RPC_Init(characterClass);
 
+            new WeaponProvider(_gameSettings.WeaponStaticDataContainer).ProvideWeaponToPlayer(Runner, playerCharacter, characterData.WeaponType, true);
+
             PlayerSpawnEventContext spawnEventContext = new PlayerSpawnEventContext();
             spawnEventContext.CharacterClass = characterClass;
             spawnEventContext.PlayerRef = playerRef;
@@ -187,13 +191,6 @@ namespace Dev.Infrastructure
             return playerCharacter;
         }
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_AssignPlayerCharacter(PlayerRef playerRef, PlayerCharacter playerCharacter, CharacterClass characterClass)
-        {
-            PlayersBaseDictionary[playerRef].Character = playerCharacter;
-            PlayersBaseDictionary[playerRef].CharacterClass = characterClass;
-        }
-
         public void ChangePlayerCharacter(PlayerRef playerRef, CharacterClass newCharacterClass)
         {
             CharacterData characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(newCharacterClass);
@@ -202,8 +199,8 @@ namespace Dev.Infrastructure
             PlayerCharacter playerCharacter = playerBase.Character;
 
             playerCharacter.RPC_Init(newCharacterClass);
-
-            // add weapon
+            
+            new WeaponProvider(_gameSettings.WeaponStaticDataContainer).ProvideWeaponToPlayer(Runner, playerCharacter, characterData.WeaponType, true);
             
             RPC_AssignPlayerCharacter(playerRef, playerCharacter, newCharacterClass);
             
@@ -213,8 +210,13 @@ namespace Dev.Infrastructure
             playerBase.PlayerController.SetAllowToMove(true);
             playerBase.PlayerController.SetAllowToShoot(true);
 
-            
             SetCharacterTeamBannerColor(playerRef);
+            
+            _teamsService.TryGetUnitTeamSide(playerRef, out var teamSide);
+            
+            Vector3 spawnPos = Extensions.AtomicCart.GetSpawnPosByTeam(teamSide);
+            playerBase.transform.position = spawnPos;
+            playerCharacter.transform.localPosition = Vector3.zero;
             
             PlayerSpawnEventContext spawnEventContext = new PlayerSpawnEventContext();
             spawnEventContext.CharacterClass = newCharacterClass;
@@ -222,14 +224,16 @@ namespace Dev.Infrastructure
             spawnEventContext.Transform = playerCharacter.transform;
             
             CharacterSpawned.OnNext(spawnEventContext);
-
-            
-            /*DespawnPlayer(playerRef, false);
-            SpawnCharacter(playerRef, PlayersBaseDictionary[playerRef], newCharacterClass);
-            SetCharacterTeamBannerColor(playerRef);*/
         }
-        
-        private static void SetAbilityType(PlayerBase playerBase, CharacterClass characterClass)
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_AssignPlayerCharacter(PlayerRef playerRef, PlayerCharacter playerCharacter, CharacterClass characterClass)
+        {
+            PlayersBaseDictionary[playerRef].Character = playerCharacter;
+            PlayersBaseDictionary[playerRef].CharacterClass = characterClass;
+        }
+
+        private void SetAbilityType(PlayerBase playerBase, CharacterClass characterClass)
         {
             AbilityType abilityType;
 

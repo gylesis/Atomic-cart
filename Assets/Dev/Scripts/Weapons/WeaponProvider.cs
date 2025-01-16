@@ -41,8 +41,9 @@ namespace Dev.Weapons
                 playerRef, ((runner, o) =>
                 {
                     Weapon weapon = o.GetComponent<Weapon>();
+                    weapon.RPC_SetParent(playerWeaponController.WeaponParent);
                     weapon.RPC_SetPos(weaponPos);
-                    weapon.RPC_SetRotation(playerCharacter.WeaponController.WeaponParent.rotation.eulerAngles);
+                    weapon.RPC_SetRotation(playerCharacter.WeaponController.WeaponParent.transform.rotation.eulerAngles);
                 }));
 
             playerWeaponController.RPC_AddWeapon(weaponInstance, withChose);

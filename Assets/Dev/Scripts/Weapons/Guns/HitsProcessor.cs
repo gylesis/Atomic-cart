@@ -245,7 +245,6 @@ namespace Dev.Weapons.Guns
         /// <param name="onExploded"></param>
         public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext, Action<NetworkObject, SessionPlayer, DamagableType, int, bool> onExploded = null)
         {   
-            AtomicLogger.Log("ProcessExplodeAndHitUnits");
             NetworkRunner runner = Runner;  
             SessionPlayer owner = explodeContext.Owner;
             bool isDamageFromServer = explodeContext.IsDamageFromServer;

@@ -1,4 +1,6 @@
-﻿using Dev.Infrastructure.Networking;
+﻿using System;
+using Cysharp.Threading.Tasks;
+using Dev.Infrastructure.Networking;
 using Dev.Utils;
 using Dev.Weapons.Guns;
 using Fusion;
@@ -32,16 +34,14 @@ namespace Dev.PlayerLogic
             OnTeamColorChanged();
         }
 
-        public void UpdateView(RuntimeAnimatorController animatorController, Sprite sprite)
+        public void UpdateView(AnimatorOverrideController animatorController, Sprite sprite)
         {
+            _animator.runtimeAnimatorController = null;
+            _playerSprite.sprite = sprite;
             _animator.runtimeAnimatorController = animatorController;
-
-            Observable.EveryLateUpdate().Take(1).Subscribe(l =>
-            {
-                _playerSprite.sprite = sprite;
-            });
         }
-        
+
+     
         public void OnMove(float velocity, bool isRight)
         {
             _animator.SetFloat(Move, velocity);

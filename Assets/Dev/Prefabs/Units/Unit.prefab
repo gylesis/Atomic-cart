@@ -522,10 +522,10 @@ MonoBehaviour:
   Flags: 264449
   NestedObjects:
   - {fileID: 5125772941664141739}
+  - {fileID: 5387992814256358572}
   NetworkedBehaviours:
   - {fileID: 4742693456741398201}
   - {fileID: 7764133834740659818}
-  - {fileID: 2914492477773207794}
   - {fileID: 1630368686030238550}
 --- !u!114 &4742693456741398201
 MonoBehaviour:
@@ -542,7 +542,7 @@ MonoBehaviour:
   _IsActive:
     _value: 1
   _weaponStaticDataContainer: {fileID: 11400000, guid: db610eb328d4dfe42b4b99abb89973cb, type: 2}
-  _weaponParent: {fileID: 6701763844050339089}
+  _weaponParent: {fileID: 5387992814256358572}
   _CurrentWeapon: {fileID: 0}
   _TeamWasSet:
     _value: 0
@@ -640,6 +640,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6701763844050339089}
   - component: {fileID: 2914492477773207794}
+  - component: {fileID: 5387992814256358572}
   m_Layer: 3
   m_Name: Weapons
   m_TagString: Untagged
@@ -675,9 +676,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SyncScale: 0
-  SyncParent: 0
+  SyncParent: 1
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
+--- !u!114 &5387992814256358572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7481703605418306153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2386121009
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 2914492477773207794}
 --- !u!1 &8313629371380185466
 GameObject:
   m_ObjectHideFlags: 0

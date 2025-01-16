@@ -35,7 +35,5 @@ namespace Dev.PlayerLogic
             InputService = inputService;
             PlayerController = playerController;
         }
-        
-        
     }
 }

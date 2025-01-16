@@ -23,7 +23,7 @@ namespace Dev.PlayerLogic
         public WeaponController WeaponController => _weaponController;
         
         [Networked] private NetworkBool IsAlive { get; set; } = true;
-        [Networked] public CharacterClass CharacterClass { get; private set; }
+        [Networked] public CharacterClass CharacterClass { get; set; }
         
         public static PlayerCharacter LocalPlayerCharacter;
 

@@ -94,7 +94,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: Flags
-      value: 264449
+      value: 262145
       objectReference: {fileID: 0}
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: SortKey
@@ -214,9 +214,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsActive:
     _value: 1
-  _weaponType: 1
+  _weaponType: 0
   _shootPoint: {fileID: 8329106418942572176}
   _view: {fileID: 5643736420937599800}
+  _IsChosen:
+    _value: 0
   _soundRadius: 40
 --- !u!4 &1469321519044833528 stripped
 Transform:
