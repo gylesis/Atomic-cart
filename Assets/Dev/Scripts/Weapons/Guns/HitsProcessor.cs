@@ -149,17 +149,17 @@ namespace Dev.Weapons.Guns
 
             if (isProjectileHitSomething)
             {
-                OnHit(hitObject, shooter, damage, damagableType, projectile is ExplosiveProjectile, isDamageFromServer);
+                OnHit(hitObject, shooter, damage, damagableType, context.ProjectileId , projectile is ExplosiveProjectile, isDamageFromServer);
                 
                 projectile.ToDestroy.OnNext(projectile);
             }
         }
 
-        private void OnHit(NetworkObject networkObject, SessionPlayer shooter, int damage, DamagableType damagableType,
+        private void OnHit(NetworkObject networkObject, SessionPlayer shooter, int damage, DamagableType damagableType, NetworkId projectileId,
                            bool isExplosionProjectile, bool isHitFromServer)
         {
             if (damagableType != DamagableType.Obstacle && isExplosionProjectile == false)
-            {
+            {   
                 ApplyDamageContext damageContext = new ApplyDamageContext();
                 damageContext.IsFromServer = isHitFromServer;
                 damageContext.Damage = damage;
@@ -172,13 +172,10 @@ namespace Dev.Weapons.Guns
 
             //Debug.Log($"Damage type: {damagableType},");
 
-            HitContext hitContext = new HitContext();
-            hitContext.GameObject = networkObject.gameObject;
-            hitContext.DamagableType = damagableType;
+            HitContext hitContext = new HitContext(networkObject.gameObject, damagableType, projectileId);
 
             Hit.OnNext(hitContext);
         }
-
       
         /// <summary>
         /// Used for processing collision excluding collision check owner
@@ -248,6 +245,7 @@ namespace Dev.Weapons.Guns
         /// <param name="onExploded"></param>
         public void ProcessExplodeAndHitUnits(ProcessExplodeContext explodeContext, Action<NetworkObject, SessionPlayer, DamagableType, int, bool> onExploded = null)
         {   
+            AtomicLogger.Log("ProcessExplodeAndHitUnits");
             NetworkRunner runner = Runner;  
             SessionPlayer owner = explodeContext.Owner;
             bool isDamageFromServer = explodeContext.IsDamageFromServer;
@@ -358,7 +356,7 @@ namespace Dev.Weapons.Guns
                     }
                     else
                     {
-                        OnExplode(victim, owner, damagableType, totalDamage, isDamageFromServer);
+                        OnExplode(victim, owner, damagableType, explodeContext.ProjectileId, totalDamage, isDamageFromServer);
                     }
                     
                 }
@@ -367,6 +365,7 @@ namespace Dev.Weapons.Guns
 
 
         private void OnExplode(NetworkObject networkObject, SessionPlayer shooter, DamagableType damagableType,
+                               NetworkId explodeContextProjectileId,
                                int damage, bool isDamageFromServer)
         {
             if (damagableType != DamagableType.Obstacle)
@@ -382,9 +381,7 @@ namespace Dev.Weapons.Guns
                 _healthObjectsService.ApplyDamage(damageContext);
             }
             
-            HitContext hitContext = new HitContext();
-            hitContext.GameObject = networkObject.gameObject;
-            hitContext.DamagableType = damagableType;
+            HitContext hitContext = new HitContext(networkObject.gameObject, damagableType, explodeContextProjectileId);
 
             Explode.OnNext(hitContext);
         }

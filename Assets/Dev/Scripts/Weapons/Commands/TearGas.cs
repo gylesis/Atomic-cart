@@ -17,13 +17,6 @@ namespace Dev.Weapons.Commands
             base.OnExplode(context);
             //RPC_PlaySound("teargas", transform.position, 40);
         }
-
-        protected override void OnDrawGizmos()
-        {
-            base.OnDrawGizmos();
-            
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(transform.position, _explosionRadius);
-        }
+       
     }
 }

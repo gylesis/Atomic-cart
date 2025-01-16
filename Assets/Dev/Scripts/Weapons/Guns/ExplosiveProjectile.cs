@@ -78,7 +78,7 @@ namespace Dev.Weapons.Guns
         {   
             Vector3 pos = transform.position;   
             
-            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Owner, explosionRadius, Damage, pos, false);
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Owner, explosionRadius, Damage, pos, false, Object.Id);
             
             _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);
         }
@@ -86,6 +86,7 @@ namespace Dev.Weapons.Guns
 #if UNITY_EDITOR
         protected override void OnDrawGizmos()
         {
+            base.OnDrawGizmos();
             var position = transform.position;
             
             Gizmos.color = Color.red;

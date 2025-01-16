@@ -71,6 +71,9 @@ namespace Dev.Weapons.Guns
         private void OnHit(HitContext hitContext)
         {
             if(Object.IsValid == false) return;
+
+            if (hitContext.ProjectileId != Owner.Id) // it means this hit doesn't affect to current projectile
+                return;
             
             if (hitContext.DamagableType is DamagableType.Obstacle or DamagableType.ObstacleWithHealth)
             {
@@ -91,6 +94,7 @@ namespace Dev.Weapons.Guns
             {
                 OnDummyHit(hitContext.GameObject.GetComponent<DummyTarget>());
             }
+            
         }
 
         [Rpc]
@@ -191,6 +195,7 @@ namespace Dev.Weapons.Guns
 
         protected virtual void OnDrawGizmos()
         {
+            Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, _overlapRadius);
         }
     }

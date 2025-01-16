@@ -61,6 +61,7 @@ namespace Dev.Weapons.Guns
                 if (expired)
                 {
                     OnProjectileExpired(projectile);
+                    continue;
                 }
                 
                 
@@ -81,7 +82,7 @@ namespace Dev.Weapons.Guns
             
             projectile.RPC_SetOwner(Owner);
             
-            projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe((OnProjectileDestroy));
+            projectile.ToDestroy.Take(1).TakeUntilDestroy(projectile).Subscribe(OnProjectileDestroy);
             projectile.DestroyTimer = TickTimer.CreateFromSeconds(Runner, 5);
 
             CameraService.Instance.ShakeIfNeed(Data.ShakePatternKey, transform.position, Owner.IsBot, false);

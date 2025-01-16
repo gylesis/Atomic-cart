@@ -12,20 +12,21 @@ namespace Dev.Weapons.Guns
         public Vector3 ExplosionPos { get; private set; }
         public float ExplosionRadius { get; private set; }
         public int Damage { get; private set; }
-
+        
+        public NetworkId ProjectileId { get; private set; }
 
         public ProcessExplodeContext(
             SessionPlayer owner,
             float explosionRadius,
             int damage,
             Vector3 explosionPos,
-            bool isDamageFromServer
-        )   
+            bool isDamageFromServer, NetworkId projectileId)   
         {
             ExplosionRadius = explosionRadius;
             Damage = damage;
             ExplosionPos = explosionPos;
             IsDamageFromServer = isDamageFromServer;
+            ProjectileId = projectileId;
             Owner = owner;
         }
     }

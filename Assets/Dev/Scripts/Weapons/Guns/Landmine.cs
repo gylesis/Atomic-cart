@@ -49,7 +49,7 @@ namespace Dev.Weapons.Guns
             
             if(_hasAnyTarget) return;
             
-            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Owner, _detonateRadius, -1, transform.position, false);
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext(Owner, _detonateRadius, -1, transform.position, false, Object.Id);
             
             _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext, Exploded); // TODO remove Exploded callback and make other method for simulating explode
 

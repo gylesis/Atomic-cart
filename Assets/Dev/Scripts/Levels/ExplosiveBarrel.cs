@@ -2,6 +2,7 @@ using Dev.Effects;
 using Dev.Infrastructure;
 using Dev.Sounds;
 using Dev.Weapons.Guns;
+using Fusion;
 using UnityEngine;
 
 namespace Dev.Levels
@@ -32,7 +33,7 @@ namespace Dev.Levels
 
         private void ExplodeAtAndHitPlayers(Vector3 pos) // TODO refactor
         {
-            ProcessExplodeContext explodeContext = new ProcessExplodeContext(new SessionPlayer(), _explosionRadius, _damage, pos,  true);
+            ProcessExplodeContext explodeContext = new ProcessExplodeContext(new SessionPlayer(), _explosionRadius, _damage, pos,  true, Object.Id);
         
             _hitsProcessor.ProcessExplodeAndHitUnits(explodeContext);
         }

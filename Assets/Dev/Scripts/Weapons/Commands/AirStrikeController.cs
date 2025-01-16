@@ -97,7 +97,7 @@ namespace Dev.Weapons.Commands
 
             DangerZoneViewProvider.Instance.SetDangerZoneView(transform.position, _explosionRadius, 1.5f);
             
-            bomb.ToDestroy.Take(1).Subscribe((OnToDestroy));
+            bomb.ToDestroy.Take(1).Subscribe(OnToDestroy);
             bomb.transform.DOScale(1, 0.8f);
 
             await UniTask.Delay(TimeSpan.FromSeconds(detonateDelay), cancellationToken: gameObject.GetCancellationTokenOnDestroy());
