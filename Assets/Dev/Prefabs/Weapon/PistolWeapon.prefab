@@ -102,14 +102,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: NetworkedBehaviours.Array.data[0]
       value: 
-      objectReference: {fileID: 5401552539073650256}
+      objectReference: {fileID: 3285471989489783876}
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
       propertyPath: NetworkedBehaviours.Array.data[1]
+      value: 
+      objectReference: {fileID: 5401552539073650256}
+    - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
+      propertyPath: NetworkedBehaviours.Array.data[2]
       value: 
       objectReference: {fileID: 210556930726437009}
     - target: {fileID: 1336763401420694640, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
@@ -220,6 +224,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6010108543459295257, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
   m_PrefabInstance: {fileID: 8088720318266718920}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3285471989489783876 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6762364950511709836, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}
+  m_PrefabInstance: {fileID: 8088720318266718920}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7595750940393342686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7595750940393342686 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1813102896745135126, guid: 31b9cc25fad6ed6499bb9090dba1b0d4, type: 3}

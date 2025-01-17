@@ -226,7 +226,7 @@ namespace Dev.Infrastructure
             CharacterSpawned.OnNext(spawnEventContext);
         }
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         private void RPC_AssignPlayerCharacter(PlayerRef playerRef, PlayerCharacter playerCharacter, CharacterClass characterClass)
         {
             PlayersBaseDictionary[playerRef].Character = playerCharacter;
@@ -280,7 +280,7 @@ namespace Dev.Infrastructure
             GetPlayer(playerRef).PlayerView.RPC_SetTeamColor(AtomicConstants.Teams.GetTeamColor(teamSide));
         }
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         private void RPC_AssignTeam(PlayerRef playerRef)
         {
             int redTeamMembersCount = _teamsService.GetTeamMembersCount(TeamSide.Red);

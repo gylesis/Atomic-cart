@@ -72,7 +72,7 @@ namespace Dev.Weapons.Guns
         {
             if(Object.IsValid == false) return;
 
-            if (hitContext.ProjectileId != Owner.Id) // it means this hit doesn't affect to current projectile
+            if (hitContext.ProjectileId != Object.Id) // it means this hit doesn't affect to current projectile
                 return;
             
             if (hitContext.DamagableType is DamagableType.Obstacle or DamagableType.ObstacleWithHealth)
