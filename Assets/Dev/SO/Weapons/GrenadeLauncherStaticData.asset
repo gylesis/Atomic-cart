@@ -22,7 +22,7 @@ MonoBehaviour:
   _hitSound: explosion
   _shakePatternKey: grenade_launcher_fire
   _shellsKey: gun_shells
-  _muzzleKey: TO IMPLEMENT
+  _muzzleKey: bazooka_muzzle
   _projectileSpeed: 1550
   _projectilePrefab: {fileID: 1232863737919391639, guid: 1fc8abe7c0163ce429ccb687612f4a0e, type: 3}
   _grenadeExplosionRadius: 5

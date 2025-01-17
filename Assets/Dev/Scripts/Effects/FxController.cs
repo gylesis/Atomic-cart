@@ -40,6 +40,7 @@ namespace Dev.Effects
                     (runner, o) =>
                     {
                         o.transform.parent = _effectsParent;
+                        o.transform.position = pos;
                     });
                 
                 Extensions.Delay(destroyDelay, destroyCancellationToken, () => Runner.Despawn(effect.Object));

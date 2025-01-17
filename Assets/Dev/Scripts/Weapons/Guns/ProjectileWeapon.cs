@@ -90,7 +90,7 @@ namespace Dev.Weapons.Guns
             Effect effect = FxController.Instance.SpawnEffectAt(Data.ShellsKey, _shootPoint.position);
             effect.transform.RotateTowardsDirection(Vector3.right);
             
-            RPC_PlaySound(Data.FireSound, projectile.transform.position, 40);
+            RPC_PlayEffectsOnShoot();
             
             var projectileContext = new SpawnedProjectileContext();
             projectileContext.Projectile = projectile;
@@ -177,11 +177,27 @@ namespace Dev.Weapons.Guns
 
         protected virtual void SpawnSoundOnDestroyProjectile(Projectile projectile)
         {
-            RPC_PlaySound(Data.HitSound, projectile.transform.position, _soundRadius);
+            RPC_PlayEffectsOnDestroy(projectile.transform.position);
+        }
+
+        [Rpc(Channel = RpcChannel.Reliable)]
+        private void RPC_PlayEffectsOnShoot()
+        {
+            PlayMuzzleFlash();
+            PlaySound(Data.FireSound, transform.position, _soundRadius);
         }
         
         [Rpc(Channel = RpcChannel.Reliable)]
-        private void RPC_PlaySound(NetworkString<_16> soundType, Vector3 at, float radius)
+        private void RPC_PlayEffectsOnDestroy(Vector3 position)
+        {
+            PlaySound(Data.HitSound, position, _soundRadius);
+        }
+
+        private void PlayMuzzleFlash()
+        {
+            FxController.Instance.SpawnEffectAt($"{Data.MuzzleKey}", _shootPoint.position);
+        }
+        private void PlaySound(NetworkString<_16> soundType, Vector3 at, float radius)
         {
             SoundController.Instance.PlaySoundAt(soundType.ToString(), at, radius);
         }

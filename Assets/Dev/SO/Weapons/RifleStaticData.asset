@@ -22,6 +22,6 @@ MonoBehaviour:
   _hitSound: ak_hit
   _shakePatternKey: ak_fire
   _shellsKey: gun_shells
-  _muzzleKey: TO IMPLEMENT
+  _muzzleKey: rifle_muzzle
   _projectileSpeed: 1200
   _projectilePrefab: {fileID: 7517733375811117740, guid: 84a5f993419651b4a9bafbf7ec59556c, type: 3}

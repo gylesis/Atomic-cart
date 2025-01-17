@@ -22,6 +22,6 @@ MonoBehaviour:
   _hitSound: pistol_hit
   _shakePatternKey: pistol_fire
   _shellsKey: gun_shells
-  _muzzleKey: TO IMPLEMENT
+  _muzzleKey: rifle_muzzle
   _projectileSpeed: 1500
   _projectilePrefab: {fileID: -4585705015197709361, guid: 71867f885506fd340a6759292de3fdb4, type: 3}

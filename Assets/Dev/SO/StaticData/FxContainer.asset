@@ -27,3 +27,7 @@ MonoBehaviour:
     Prefab: {fileID: 3822852745849569462, guid: c7dd6f854c7ff1140ae689c45e3e8754, type: 3}
   - Name: gun_shells
     Prefab: {fileID: 5020433607645639613, guid: acc1a701e69c38446bdf6f73ebc53e9c, type: 3}
+  - Name: rifle_muzzle
+    Prefab: {fileID: 3860351972379931894, guid: 62daa94456613d148bd5d24f75d98f86, type: 3}
+  - Name: bazooka_muzzle
+    Prefab: {fileID: 3860351972379931894, guid: 62daa94456613d148bd5d24f75d98f86, type: 3}
