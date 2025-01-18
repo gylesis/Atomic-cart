@@ -34,13 +34,12 @@ namespace Dev.PlayerLogic
             OnTeamColorChanged();
         }
 
-        public void UpdateView(AnimatorOverrideController animatorController, Sprite sprite)
+        public void UpdateCharacterView(AnimatorOverrideController animatorController, Sprite sprite)
         {
             _animator.runtimeAnimatorController = null;
             _playerSprite.sprite = sprite;
             _animator.runtimeAnimatorController = animatorController;
         }
-
      
         public void OnMove(float velocity, bool isRight)
         {

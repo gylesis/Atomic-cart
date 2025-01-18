@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -7,10 +8,13 @@ using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI.PopUpsAndMenus;
 using Dev.Utils;
+using Dev.Weapons;
+using Dev.Weapons.StaticData;
 using Fusion;
 using UniRx;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Dev.BotsLogic
 {
@@ -26,6 +30,7 @@ namespace Dev.BotsLogic
         private HealthObjectsService _healthObjectsService;
         private LevelService _levelService;
         private DiInjecter _diInjecter;
+        private WeaponProvider _weaponProvider;
 
         public Subject<Bot> BotSpawned { get; } = new Subject<Bot>();
         public Subject<Bot> BotDeSpawned { get; } = new Subject<Bot>();
@@ -35,8 +40,9 @@ namespace Dev.BotsLogic
         public List<BotMovePoint> LevelMovePoints => _levelMovePoints;
 
         [Inject]
-        private void Construct(TeamsService teamsService, GameSettings gameSettings, SessionStateService sessionStateService, HealthObjectsService healthObjectsService, LevelService levelService, DiInjecter diInjecter)
+        private void Construct(TeamsService teamsService, GameSettings gameSettings, SessionStateService sessionStateService, HealthObjectsService healthObjectsService, LevelService levelService, DiInjecter diInjecter, WeaponProvider weaponProvider)
         {
+            _weaponProvider = weaponProvider;
             _diInjecter = diInjecter;
             _levelService = levelService;
             _healthObjectsService = healthObjectsService;
@@ -50,6 +56,28 @@ namespace Dev.BotsLogic
             base.OnInjectCompleted();
             
             _levelService.LevelLoaded.Subscribe(OnLevelLoaded).AddTo(GlobalDisposable.SceneScopeToken);
+            _healthObjectsService.BotDied.Subscribe(OnBotDied).AddTo(GlobalDisposable.SceneScopeToken);
+        }
+
+        private void OnBotDied(UnitDieContext context)
+        {
+            return;
+            var bot = AliveBots.FirstOrDefault(x => x.Object.Id == context.Victim.Id);
+
+            if (bot == null)
+            {
+                AtomicLogger.Err($"Not found bot with ID: {context.Victim.Id}");
+                return;
+            }
+
+            // wait for animation to complete and change view
+            Extensions.Delay(1, GlobalDisposable.SceneScopeToken, (() =>
+            {
+                var characterClass = (CharacterClass)Random.Range(0, Enum.GetNames(typeof(CharacterClass)).Length);
+                var characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(characterClass);
+                bot.View.UpdateCharacterView(characterData.AnimatorController, characterData.CharacterSprite);
+                _weaponProvider.ProvideWeapon(Runner, bot.WeaponController, characterData.WeaponType, true);
+            }));
         }
 
         protected override void CorrectState()
@@ -95,8 +123,8 @@ namespace Dev.BotsLogic
                 var bot = o.GetComponent<Bot>();
 
                 _diInjecter.InjectGameObject(bot.gameObject);
-                
                 _teamsService.RPC_AssignForTeam(new TeamMember(bot), team);
+                var characterClass = (CharacterClass)Random.Range(0, Enum.GetNames(typeof(CharacterClass)).Length);
 
                 string id = $"{bot.GetHashCode()}";
                 id = $"{id[^4]}{id[^3]}{id[^2]}{id[^1]}";
@@ -106,8 +134,13 @@ namespace Dev.BotsLogic
                 
                 SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(bot);
                 
-                var botData = new BotData(sessionPlayer, CharacterClass.Engineer);
+                var botData = new BotData(sessionPlayer, characterClass);
                 bot.Init(botData, team);
+
+                var characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(characterClass);
+                bot.View.UpdateCharacterView(characterData.AnimatorController, characterData.CharacterSprite);
+
+                _weaponProvider.ProvideWeapon(Runner, bot.WeaponController, characterData.WeaponType, true);
             });
                 
             AliveBots.Add(bot);
@@ -126,6 +159,11 @@ namespace Dev.BotsLogic
             bot.NavMeshAgent.nextPosition = spawnPos;
             bot.transform.position = spawnPos;
             bot.NavMeshAgent.ResetPath();
+            
+            var characterClass = (CharacterClass)Random.Range(0, Enum.GetNames(typeof(CharacterClass)).Length);
+            var characterData = _gameSettings.CharactersDataContainer.GetCharacterDataByClass(characterClass);
+            bot.View.UpdateCharacterView(characterData.AnimatorController, characterData.CharacterSprite);
+            _weaponProvider.ProvideWeapon(Runner, bot.WeaponController, characterData.WeaponType, true);
             
             bot.RPC_OnDeath(false);
         }

@@ -53,7 +53,7 @@ namespace Dev.PlayerLogic
         private void UpdateViewForClass(CharacterClass characterClass)
         {
             CharacterData characterData = GameSettingsProvider.GameSettings.CharactersDataContainer.GetCharacterDataByClass(characterClass);
-            _playerView.UpdateView(characterData.AnimatorController, characterData.CharacterSprite);
+            _playerView.UpdateCharacterView(characterData.AnimatorController, characterData.CharacterSprite);
         }
 
         public void SetAliveState(bool isAlive)

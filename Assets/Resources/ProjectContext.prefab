@@ -83,6 +83,7 @@ MonoBehaviour:
   _curtains: {fileID: 8273177609646514508}
   _soundStaticDataContainer: {fileID: 11400000, guid: d0adcd20e3bc1d84b830530cb7945b55, type: 2}
   _fxContainer: {fileID: 11400000, guid: cc4edc5e3b303e14aa794fe792946f45, type: 2}
+  _connectionManagerPrefab: {fileID: 8349413133611181872, guid: 94f289708f955db41bd81a00fa244884, type: 3}
   _popUpsParent: {fileID: 439113241469097981}
 --- !u!1 &5928570784874416841
 GameObject:

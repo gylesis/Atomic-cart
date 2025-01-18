@@ -1,6 +1,5 @@
 using Dev.Weapons.StaticData;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Dev.PlayerLogic
 {
@@ -11,7 +10,6 @@ namespace Dev.PlayerLogic
         [SerializeField] private Sprite _characterSprite;
 
         public CharacterClass CharacterClass;
-        public PlayerCharacter PlayerCharacterPrefab;
         public Sprite CharacterIcon;
         public WeaponType WeaponType;
 

@@ -2,9 +2,9 @@ namespace Dev.PlayerLogic
 {
     public enum CharacterClass
     {
-        Soldier,
-        Engineer,
-        Marine,
-        Bomber
+        Soldier = 0,
+        Engineer = 1,
+        Marine = 2,
+        Bomber = 3
     }
 }

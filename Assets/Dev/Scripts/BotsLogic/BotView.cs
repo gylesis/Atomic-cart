@@ -3,6 +3,8 @@ using Dev.Infrastructure.Networking;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.TextCore.Text;
 
 namespace Dev.BotsLogic
 {
@@ -10,7 +12,7 @@ namespace Dev.BotsLogic
     {
         [SerializeField] private SpriteRenderer _teamBanner;
         [SerializeField] private Animator _animator;
-        [SerializeField] private SpriteRenderer _sprite;
+        [SerializeField] private SpriteRenderer _botSprite;
 
         private static readonly int Move = Animator.StringToHash("Move");
 
@@ -23,36 +25,36 @@ namespace Dev.BotsLogic
             UpdateTeamBannerColor();
         }
 
-        [Rpc(Channel = RpcChannel.Reliable)]
-        public void RPC_SetTeamBannerColor(Color color)
-        {
-            TeamBannerColor = color;
-            UpdateTeamBannerColor();
-        }
-
         private void UpdateTeamBannerColor()
         {
             _teamBanner.color = TeamBannerColor;
         }
 
-        [Rpc(Channel = RpcChannel.Reliable)]
-        public void RPC_Scale(float target)
+        public void UpdateCharacterView(AnimatorOverrideController animatorController, Sprite sprite)
         {
-            transform.DOScale(target, 0.5f);
+            _animator.runtimeAnimatorController = null;
+            _botSprite.sprite = sprite;
+            _animator.runtimeAnimatorController = animatorController;
         }
-        
-        
+
+
         [Rpc]
         public void RPC_OnMove(float velocity, bool isRight)
         {
             _animator.SetFloat(Move, velocity);
-
             SetFlipSide(isRight);
         }
-        
+
         private void SetFlipSide(bool isRight)
         {
-            _sprite.flipX = isRight;
+            _botSprite.flipX = isRight;
+        }
+
+        [Rpc(Channel = RpcChannel.Reliable)]
+        public void RPC_SetTeamBannerColor(Color color)
+        {
+            TeamBannerColor = color;
+            UpdateTeamBannerColor();
         }
     }
 }

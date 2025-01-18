@@ -80,6 +80,11 @@ namespace Dev.Utils
             }
         }
 
+        /*public static T Randomize<T>(this Enum en) where T : Enum
+        {
+            return (T)Random.Range(0, Enum.GetNames(typeof(T)).Length);
+        }*/
+        
         public static void SetPositionZ(this Transform transform, float newZ)
         {
             var position = transform.position;

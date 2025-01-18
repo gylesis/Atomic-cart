@@ -1,4 +1,6 @@
-﻿using Dev.PlayerLogic;
+﻿using Dev.Infrastructure;
+using Dev.PlayerLogic;
+using Dev.Utils;
 using Dev.Weapons.Guns;
 using Dev.Weapons.StaticData;
 using Fusion;
@@ -10,43 +12,46 @@ namespace Dev.Weapons
     {
         private WeaponStaticDataContainer _weaponStaticDataContainer;
 
-        public WeaponProvider(WeaponStaticDataContainer weaponStaticDataContainer)
+        public WeaponProvider(GameSettings gameSettings)
         {
-            _weaponStaticDataContainer = weaponStaticDataContainer;
+            _weaponStaticDataContainer = gameSettings.WeaponStaticDataContainer;
         }
 
-        public void ProvideWeaponToPlayer(NetworkRunner runner, PlayerCharacter playerCharacter, WeaponType weaponType, bool withChose = false)
+        public void ProvideWeapon(NetworkRunner runner, WeaponController weaponController, WeaponType weaponType, bool withChose = false)
         {
-            PlayerRef playerRef = playerCharacter.Object.StateAuthority;
-            WeaponController playerWeaponController = playerCharacter.WeaponController;
+            PlayerRef playerRef = runner.LocalPlayer;
 
             WeaponStaticData weaponStaticData = _weaponStaticDataContainer.GetData(weaponType);
 
-            if (playerWeaponController.HasWeapon(weaponStaticData.WeaponType))
+            if (weaponController.HasWeapon(weaponStaticData.WeaponType))
             {
                 if (withChose)
                 {
-                    playerWeaponController.ChooseWeapon(weaponStaticData.WeaponType);
+                    weaponController.ChooseWeapon(weaponStaticData.WeaponType);
                 }
-
-                Debug.Log($"This weapon is already chosen");
+                else
+                {
+                    AtomicLogger.Log("Weapon is already provided");
+                }                
+                
                 return;
             }
 
             Weapon weaponPrefab = weaponStaticData.Prefab;
-
-            Vector3 weaponPos = playerCharacter.WeaponController.WeaponParent.transform.position;
+            var weaponParentTransform = weaponController.WeaponParent.transform;
+            Vector3 weaponPos = weaponParentTransform.position;
 
             Weapon weaponInstance = runner.Spawn(weaponPrefab, weaponPos, Quaternion.Euler(0, 0, 0),
                 playerRef, ((runner, o) =>
                 {
                     Weapon weapon = o.GetComponent<Weapon>();
-                    weapon.transform.parent = playerWeaponController.WeaponParent.transform;
+                    weapon.transform.parent = weaponParentTransform;
                     weapon.transform.localPosition = Vector3.zero;
-                    weapon.transform.rotation = Quaternion.Euler(playerCharacter.WeaponController.WeaponParent.transform.rotation.eulerAngles);
+                    weapon.transform.rotation = Quaternion.Euler(weaponParentTransform.rotation.eulerAngles);
+                    weapon.transform.localScale = Vector3.one;
                 }));
 
-            playerWeaponController.RPC_AddWeapon(weaponInstance, withChose);
+            weaponController.RPC_AddWeapon(weaponInstance, withChose);
         }
 
     }

@@ -19,6 +19,7 @@ namespace Dev.Infrastructure.Installers
         [SerializeField] private Curtains _curtains;
         [SerializeField] private SoundStaticDataContainer _soundStaticDataContainer;
         [SerializeField] private FxContainer _fxContainer;
+        [SerializeField] private ConnectionManager _connectionManagerPrefab;
         
         [SerializeField] private Transform _popUpsParent;
 
@@ -28,6 +29,8 @@ namespace Dev.Infrastructure.Installers
             Application.targetFrameRate = 165;
             
             BindModules();
+
+            Container.Bind<ConnectionManager>().FromInstance(_connectionManagerPrefab).AsSingle().WhenInjectedInto<AuthBootstrap>();
             
             Container.Bind<GlobalDisposable>().AsSingle().NonLazy();
 

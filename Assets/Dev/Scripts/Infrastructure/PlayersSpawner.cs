@@ -42,12 +42,14 @@ namespace Dev.Infrastructure
         private HealthObjectsService _healthObjectsService;
         private GameSettings _gameSettings;
         private AuthService _authService;
+        private WeaponProvider _weaponProvider;
 
         [Inject]
         private void Init(TeamsService teamsService, PopUpService popUpService,
                           SessionStateService sessionStateService,
-                          HealthObjectsService healthObjectsService, GameSettings gameSettings, AuthService authService)
+                          HealthObjectsService healthObjectsService, GameSettings gameSettings, AuthService authService, WeaponProvider weaponProvider)
         {
+            _weaponProvider = weaponProvider;
             _authService = authService;
             _gameSettings = gameSettings;
             _healthObjectsService = healthObjectsService;
@@ -177,7 +179,7 @@ namespace Dev.Infrastructure
 
             playerCharacter.RPC_Init(characterClass);
 
-            new WeaponProvider(_gameSettings.WeaponStaticDataContainer).ProvideWeaponToPlayer(Runner, playerCharacter, characterData.WeaponType, true);
+            _weaponProvider.ProvideWeapon(Runner, playerCharacter.WeaponController, characterData.WeaponType, true);
 
             PlayerSpawnEventContext spawnEventContext = new PlayerSpawnEventContext();
             spawnEventContext.CharacterClass = characterClass;
@@ -200,7 +202,7 @@ namespace Dev.Infrastructure
 
             playerCharacter.RPC_Init(newCharacterClass);
             
-            new WeaponProvider(_gameSettings.WeaponStaticDataContainer).ProvideWeaponToPlayer(Runner, playerCharacter, characterData.WeaponType, true);
+            _weaponProvider.ProvideWeapon(Runner, playerCharacter.WeaponController, characterData.WeaponType, true);
             
             RPC_AssignPlayerCharacter(playerRef, playerCharacter, newCharacterClass);
             

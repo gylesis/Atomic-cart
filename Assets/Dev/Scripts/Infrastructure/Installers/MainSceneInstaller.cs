@@ -3,6 +3,7 @@ using Dev.Levels;
 using Dev.PlayerLogic;
 using Dev.UI;
 using Dev.Utils;
+using Dev.Weapons;
 using Dev.Weapons.Commands;
 using Dev.Weapons.Guns;
 using Fusion;
@@ -43,6 +44,8 @@ namespace Dev.Infrastructure.Installers
         
         public override void InstallBindings()
         {
+            Container.Bind<WeaponProvider>().AsSingle().NonLazy();
+            
             Container.Bind<CameraController>().FromInstance(_cameraControllerPrefab).AsSingle().WhenInjectedInto<CameraService>();
             Container.Bind<CameraService>().FromInstance(_cameraService).AsSingle();
             

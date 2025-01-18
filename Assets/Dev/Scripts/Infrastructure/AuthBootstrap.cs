@@ -13,23 +13,22 @@ namespace Dev.Infrastructure
     {
         [SerializeField] private TMP_InputField _nicknameInput;
         [SerializeField] private DefaultReactiveButton _login;
-        [SerializeField] private ConnectionManager _connectionManager;
         
-        private AuthService _authService;
+        private ConnectionManager _connectionManager;
         private InternetChecker _internetChecker;
         private ModulesService _modulesService;
 
         [Inject]
-        private void Construct(AuthService authService, InternetChecker internetChecker, ModulesService modulesService)
+        private void Construct(InternetChecker internetChecker, ModulesService modulesService, ConnectionManager connectionManager)
         {
+            _connectionManager = connectionManager;
             _modulesService = modulesService;
             _internetChecker = internetChecker;
-            _authService = authService;
         }
         
         private void Start()
         {
-            Connect();
+            Connect();  
         }
 
         private async void Connect()

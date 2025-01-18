@@ -106,9 +106,6 @@ namespace Dev.BotsLogic
             _collider.enabled = !isDead;
 
             _navMeshAgent.isStopped = isDead;
-
-            if (isDead) 
-                _weaponController.ChooseRandomWeapon();
         }
     
         public void SetFreezeState(bool toFreeze)
