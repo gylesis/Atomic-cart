@@ -2,7 +2,6 @@
 using Dev.Infrastructure.Networking;
 using Dev.Weapons;
 using Dev.Weapons.Guns;
-using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -23,7 +22,7 @@ namespace Dev.PlayerLogic
         public WeaponController WeaponController => _weaponController;
         
         [Networked] private NetworkBool IsAlive { get; set; } = true;
-        [Networked] public CharacterClass CharacterClass { get; set; }
+        [Networked, HideInInspector] public CharacterClass CharacterClass { get; private set; }
         
         public static PlayerCharacter LocalPlayerCharacter;
 

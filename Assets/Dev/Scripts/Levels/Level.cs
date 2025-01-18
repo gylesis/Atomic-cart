@@ -10,6 +10,7 @@ using Dev.PlayerLogic;
 using Dev.Utils;
 using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Dev.Levels
@@ -24,7 +25,11 @@ namespace Dev.Levels
         [SerializeField] private List<LightSource> _lightSources;
             
         [Networked] private NetworkString<_16> _levelName { get; set; }
-        
+
+        [FormerlySerializedAs("metaData")] [SerializeField] private LevelMetaData _metaData;
+
+        public LevelMetaData MetaData => _metaData;
+
         public string LevelName
         {
             get => _levelName.Value;
@@ -82,5 +87,42 @@ namespace Dev.Levels
             }
         }
 
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(_metaData.Bounds.center, _metaData.Bounds.size);
+        }
+    }
+
+    [Serializable]
+    public class LevelMetaData
+    {
+        [SerializeField] private Transform _leftUpCorner;
+        [SerializeField] private Transform _rightUpCorner;
+        [SerializeField] private Transform _leftDownCorner;
+        [SerializeField] private Transform _rightDownCorner;
+        
+        private Bounds _bounds;
+        
+        public Bounds Bounds
+        {
+            get
+            {
+                //if(!_bounds.Equals(default))
+               //     return _bounds;
+                
+                Vector3 center = _leftDownCorner.position + _rightUpCorner.position;
+                center /= 2;
+
+                float ySize = (_leftDownCorner.position - _leftUpCorner.position).magnitude;
+                float xSize = (_leftDownCorner.position - _rightDownCorner.position).magnitude;
+                
+                Vector3 size = new Vector3(ySize, xSize, 999);
+
+                _bounds = new Bounds(center, size);
+                
+                return _bounds;
+            }
+        }
     }
 }

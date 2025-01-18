@@ -2,6 +2,7 @@ using System;
 using Dev.Effects;
 using Dev.Infrastructure.Lobby;
 using Dev.Infrastructure.Networking;
+using Dev.Levels.Env;
 using Dev.Sounds;
 using Dev.UI;
 using Dev.UI.PopUpsAndMenus;
@@ -20,6 +21,7 @@ namespace Dev.Infrastructure.Installers
         [SerializeField] private SoundStaticDataContainer _soundStaticDataContainer;
         [SerializeField] private FxContainer _fxContainer;
         [SerializeField] private ConnectionManager _connectionManagerPrefab;
+
         
         [SerializeField] private Transform _popUpsParent;
 
@@ -29,7 +31,7 @@ namespace Dev.Infrastructure.Installers
             Application.targetFrameRate = 165;
             
             BindModules();
-
+            
             Container.Bind<ConnectionManager>().FromInstance(_connectionManagerPrefab).AsSingle().WhenInjectedInto<AuthBootstrap>();
             
             Container.Bind<GlobalDisposable>().AsSingle().NonLazy();

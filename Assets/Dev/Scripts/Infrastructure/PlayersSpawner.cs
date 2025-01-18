@@ -149,7 +149,7 @@ namespace Dev.Infrastructure
                 quaternion.identity, playerRef, onBeforeSpawned: (runner, o) =>
                 {
                     PlayerCharacter character = o.GetComponent<PlayerCharacter>();
-                    character.CharacterClass = characterClass;
+                    character.RPC_Init(characterClass);
                     SessionPlayer sessionPlayer = _sessionStateService.GetSessionPlayer(playerRef.ToNetworkId()); 
                     character.WeaponController.RPC_SetOwner(sessionPlayer);
                     character.transform.parent = playerBase.transform;
@@ -165,7 +165,7 @@ namespace Dev.Infrastructure
             PlayersBaseDictionary[playerRef].PlayerController.IsCastingMode = false;
             
             playerBase.AbilityCastController.ResetAbility();
-            SetAbilityType(playerBase, characterClass);
+            SetAbilityType(playerBase.AbilityCastController, characterClass);
 
             playerNetObj.RequestStateAuthority();
             playerNetObj.AssignInputAuthority(playerRef);
@@ -211,6 +211,8 @@ namespace Dev.Infrastructure
 
             playerBase.PlayerController.SetAllowToMove(true);
             playerBase.PlayerController.SetAllowToShoot(true);
+            
+            SetAbilityType(playerBase.AbilityCastController, newCharacterClass);
 
             SetCharacterTeamBannerColor(playerRef);
             
@@ -235,7 +237,7 @@ namespace Dev.Infrastructure
             PlayersBaseDictionary[playerRef].CharacterClass = characterClass;
         }
 
-        private void SetAbilityType(PlayerBase playerBase, CharacterClass characterClass)
+        private void SetAbilityType(AbilityCastController abilityCastController, CharacterClass characterClass)
         {
             AbilityType abilityType;
 
@@ -258,7 +260,7 @@ namespace Dev.Infrastructure
                     break;
             }
 
-            playerBase.AbilityCastController.RPC_SetAbilityType(abilityType);
+            abilityCastController.RPC_SetAbilityType(abilityType);
         }
 
         [Rpc(Channel = RpcChannel.Reliable)]

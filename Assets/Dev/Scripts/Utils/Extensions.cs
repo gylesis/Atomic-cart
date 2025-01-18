@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -102,7 +103,11 @@ namespace Dev.Utils
             transform.position = position;
         }
         */
-        
+
+         public static T GetRandom<T>(this IList<T> list)
+         {
+             return list[Random.Range(0, list.Count)];
+         }
         
         public static bool IsPointInCameraView(this Camera camera, Vector3 worldPosition, float offset = 0)
         {
